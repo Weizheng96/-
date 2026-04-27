@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />            
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="referrer" content="origin-when-cross-origin" />
+    <title>深度解读天翼云紫金DPU，软硬协同造就极致性能！ - 天翼云开发者社区 - 博客园</title>
+    <meta name="keywords" content="发布会,技术类,云计算" />
+    <meta name="description" content="算力作为数字经济时代的新生产力，已成为推动数字经济发展的核心动能和坚实底座。在当前这个算力普惠、万物互联的时代，业务场景复杂化，传统以CPU为核心的计算架构面临着诸多挑战。 12月29日，在中国电信主办的“2022天翼数字科技生态大会”，中国电信正式发布天翼云自研紫金DPU。 在科技创新合作论坛上，" />    
+    <meta property="og:description" content="算力作为数字经济时代的新生产力，已成为推动数字经济发展的核心动能和坚实底座。在当前这个算力普惠、万物互联的时代，业务场景复杂化，传统以CPU为核心的计算架构面临着诸多挑战。 12月29日，在中国电信主办的“2022天翼数字科技生态大会”，中国电信正式发布天翼云自研紫金DPU。 在科技创新合作论坛上，" />
+    <meta property="og:image" content="https://img2023.cnblogs.com/blog/2764337/202301/2764337-20230104110652482-1546414371.png" />    
+    
+    <link rel="stylesheet" href="/css/blog-common.min.css?v=9xvyan1yGH1Ggi8nKJ01Xc2nqMWMqJCy_-EYS2m06xA" />
+    
+
+    <link id="MainCss" rel="stylesheet" href="/skins/simplememory/bundle-simplememory.min.css?v=X2uwYHAKzGGLEaiB5SRZOPRR3jYJaSqk7tr8ptQin1s" />
+        <link id="highlighter-theme-cnblogs" type="text/css" rel="stylesheet" href="/css/hljs/cnblogs.css?v=5J1NDtbnnIr2Rc2SdhEMlMxD4l9Eydj88B31E7_NhS4" />
+    
+    
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/SimpleMemory/bundle-simplememory-mobile.min.css?v=efOGRGI0dxQ__xm2NVyuTk32wtXIiSFGaudtlfkc2H8" />
+    
+    <link id="favicon" rel="icon" type="image/x-icon" sizes="32x32" href="https://assets.cnblogs.com/favicon_v3_3.ico" />
+    <link id="favicon_svg" rel="icon" type="image/svg+xml" href="https://assets.cnblogs.com/favicon_v3_3.svg" />
+    <link rel="apple-touch-icon" href="https://assets.cnblogs.com/apple-touch-icon.png?v=2" />
+    <link rel="canonical" href="https://www.cnblogs.com/developer-tianyiyun/articles/17024335.html" />
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/developer-tianyiyun/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/developer-tianyiyun/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/developer-tianyiyun/wlwmanifest.xml" />
+    
+    <script type="application/ld&#x2B;json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "@id": "https://www.cnblogs.com/developer-tianyiyun/articles/17024335.html",
+      "headline": "深度解读天翼云紫金DPU，软硬协同造就极致性能！",
+      "description": "算力作为数字经济时代的新生产力，已成为推动数字经济发展的核心动能和坚实底座。在当前这个算力普惠、万物互联的时代，业务场景复杂化，传统以CPU为核心的计算架构面临着诸多挑战。 12月29日，在中国电信主办的“2022天翼数字科技生态大会”，中国电信正式发布天翼云自研紫金DPU。 在科技创新合作论坛上，",
+      "image": [
+        
+      ],
+      "author": {
+        "@type": "Person",
+        "@id": "https://www.cnblogs.com/developer-tianyiyun/",
+        "name": "天翼云开发者社区",
+        "url": "https://www.cnblogs.com/developer-tianyiyun/"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "@id": "https://www.cnblogs.com/",
+        "name": "博客园",
+        "url": "https://www.cnblogs.com/"
+      },
+      "datePublished": "2023-01-04T11:11:00.0000000&#x2B;08:00",
+      "dateModified": "2023-01-04T11:11:00.0000000&#x2B;08:00",
+      "wordCount": "4848",
+      "isPartOf": {
+        "@type": "Blog",
+        "@id": "https://www.cnblogs.com/developer-tianyiyun/",
+        "name": "天翼云开发者社区",
+        "publisher": {
+          "@type": "Organization",
+          "@id": "https://www.cnblogs.com/",
+          "name": "博客园"
+        }
+      }
+    }
+    </script>
+
+    <script>
+        var currentBlogId = 739871;
+        var currentBlogApp = 'developer-tianyiyun';
+        var isLogined = false;
+        var isBlogOwner = false;
+        window.isCorp = false;
+        window.skinName = 'SimpleMemory';
+        var visitorUserId = '';
+        window.hasCustomScript = false;
+        window.cb_enable_mathjax = false;
+        window.mathEngine = 0;
+        window.codeHighlightEngine = 1;
+        window.enableCodeLineNumber = false;
+        window.codeHighlightTheme = 'cnblogs';
+        window.darkModeCodeHighlightTheme = 'vs2015';
+        window.isDarkCodeHighlightTheme = false;
+        window.isDarkModeCodeHighlightThemeDark = true;
+        window.isDisableCodeHighlighter = false;
+        window.enableCodeThemeTypeFollowSystem = false;
+        window.enableMacStyleCodeBlock = false;        
+    </script>
+        <script>
+            window.currentPostId = 17024335;
+            window.currentPostDateAdded = '2023-01-04 11:11';
+        </script>
+    <script src="https://assets.cnblogs.com/scripts/jquery-3.3.1.min.js"></script>
+    <script src="https://cdn-www.cnblogs.com/js/blog-common.min.js?v=MMJhZnbw3FmF81D_dc5db0uxwKbkoaAT17nTpUXVpnI"></script>
+    
+</head>
+<body class="skin-simplememory has-navbar">
+    <a name="top"></a>
+    <div id="top_nav" class="navbar forpc">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding">
+                    <a href="https://www.cnblogs.com/" title="开发者的网上家园" role="banner">
+                        <img src="//assets.cnblogs.com/logo.svg" alt="博客园logo" />
+                    </a>
+                </li>
+                <li><a href="https://cnblogs.vip/">会员</a></li>
+                <li><a href="https://cnblogs.vip/store">周边</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="countClicks('nav', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="countClicks('nav', 'skin-navbar-q')">博问</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="countClicks('nav', 'skin-navbar-ing')">闪存</a></li>                
+                <li><a href="https://www.cnblogs.com/cmt/p/19316348">赞助商</a></li>
+                <li><a href="https://youclaw.dev/" target="_blank" onclick="countClicks('nav', 'skin-navbar-youclaw')">YouClaw</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search dropdown" action="https://zzk.cnblogs.com/s" method="get" role="search">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="search" tabindex="3" autocomplete="off" />
+                        <button id="zzk_search_button" onclick="window.navbarSearchManager.triggerActiveOption()">
+                            <img id="search_icon" class="focus-hidden" src="//assets.cnblogs.com/icons/search.svg" alt="搜索" />
+                            <img class="hidden focus-visible" src="//assets.cnblogs.com/icons/enter.svg" alt="搜索" />
+                        </button>
+                        <ul id="navbar_search_options" class="dropdown-menu quick-search-menu">
+                            <li tabindex="0" class="active" onclick="zzkSearch(event, document.getElementById('zzk_search_input').value)">
+                                <div class="keyword-wrapper">
+                                    <img src="//assets.cnblogs.com/icons/search.svg" alt="搜索" />
+                                    <div class="keyword"></div>
+                                </div>
+                                <span class="search-area">所有博客</span>
+                            </li>
+                                    <li tabindex="1" onclick="zzkBlogSearch(event, 'developer-tianyiyun', document.getElementById('zzk_search_input').value)">
+                                        <div class="keyword-wrapper">
+                                            <img src="//assets.cnblogs.com/icons/search.svg" alt="搜索" />
+                                            <div class="keyword"></div>
+                                        </div>
+                                        <span class="search-area">当前博客</span>
+                                    </li>
+                        </ul>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a class="navbar-user-info navbar-blog" href="https://i.cnblogs.com/EditPosts.aspx?opt=1" alt="写随笔" title="写随笔">
+                        <img id="new_post_icon" class="navbar-icon" src="//assets.cnblogs.com/icons/newpost.svg" alt="写随笔" />
+                    </a>
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://www.cnblogs.com/my" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="//assets.cnblogs.com/icons/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="//assets.cnblogs.com/icons/message.svg" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <a id="navbar_lite_mode_indicator" data-current-page="blog" style="display: none" href="javascript:void(0)" alt="简洁模式" title="简洁模式启用，您在访问他人博客时会使用简洁款皮肤展示">
+                        <img class="navbar-icon" src="//assets.cnblogs.com/icons/lite-mode-on.svg" alt="简洁模式" />
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="//assets.cnblogs.com/icons/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://www.cnblogs.com/my">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="https://vip.cnblogs.com/my">会员中心</a>
+                            <a href="javascript:void(0)" id="navbar_lite_mode_toggle" title="简洁模式会使用简洁款皮肤显示所有博客">
+    简洁模式 <span id="navbar_lite_mode_spinner" class="hide">...</span>
+</a>
+
+                            <a href="javascript:void(0)" onclick="account.logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup">注册</a>
+                    <a class="navbar-anonymous" href="javascript:void(0);" onclick="account.login()">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    
+
+    <div id="home">
+<div id="header">
+	<div id="blogTitle">
+        <a id="lnkBlogLogo" href="https://www.cnblogs.com/developer-tianyiyun/"><img id="blogLogo" src="/skins/custom/images/logo.gif" alt="返回主页" /></a>		
+		
+
+<h1><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/developer-tianyiyun">天翼云开发者社区</a>
+</h1>
+<h2></h2>
+
+
+
+
+		
+	</div>
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/developer-tianyiyun/">
+首页</a>
+</li>
+<li>
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+</li>
+<li>
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/%E5%A4%A9%E7%BF%BC%E4%BA%91%E5%BC%80%E5%8F%91%E8%80%85%E7%A4%BE%E5%8C%BA">
+联系</a></li>
+<li>
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/developer-tianyiyun/rss/">
+订阅</a>
+<!--<partial name="./Shared/_XmlLink.cshtml" model="Model" /></li>--></li>
+<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+
+		<div class="blogStats">
+			<div id="blog_stats_place_holder"><script>loadBlogStats();</script></div>
+		</div>
+	</div>
+</div>
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="post_detail">
+    
+    <div id="topics">
+        <div class="post">
+            <h1 class = "postTitle">
+                <a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/developer-tianyiyun/articles/17024335.html" title="发布于 2023-01-04 11:10">
+    <span role="heading" aria-level="2">深度解读天翼云紫金DPU，软硬协同造就极致性能！</span>
+    
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                <div id="cnblogs_post_body" class="blogpost-body blogpost-body-html">
+<p><span style="font-family: &quot;Microsoft YaHei UI&quot;">算力作为数字经济时代的新生产力，已成为推动数字经济发展的核心动能和坚实底座。在当前这个算力普惠、万物互联的时代，业务场景复杂化，传统以</span><span style="font-family: &quot;Microsoft YaHei UI&quot;">CPU为核心的计算架构面临着诸多挑战。</span></p>
+<p>12月29日，在中国电信主办的“2022天翼数字科技生态大会”，<strong><span style="font-family: &quot;Microsoft YaHei UI&quot;">中国电信正式发布<a href="https://click.ctyun.cn?track=source_boke-medium_cps-content_se460891" target="_blank" rel="noopener nofollow">天翼云</a>自研紫金</span><span style="font-family: &quot;Microsoft YaHei UI&quot;">DPU。</span></strong></p>
+<p><strong>&nbsp;</strong><span style="font-family: &quot;Microsoft YaHei UI&quot;">在科技创新合作论坛上，<a href="https://click.ctyun.cn?track=source_boke-medium_cps-content_se460891" target="_blank" rel="noopener nofollow">天翼云</a>科技有限公司副总经理兼首席技术官广小明表示，天翼云紫金</span><span style="font-family: &quot;Microsoft YaHei UI&quot;">DPU软硬协同造就极致性能，打造了为云而生的全新一代云计算体系结构，全面推动算力普惠，服务于千行百业上云用云。</span></p>
+<p>&nbsp;</p>
+<p class="p" align="justify"><strong>创新算力架构</strong></p>
+<p class="p" align="justify"><strong>DPU持续走热</strong></p>
+<p><span style="font-family: &quot;Microsoft YaHei UI&quot;">随着各行业数字化转型加速、数据爆发式增长，计算需求不断走高，业务场景也愈加复杂化，而传统以</span><span style="font-family: &quot;Microsoft YaHei UI&quot;">CPU为核心的计算架构已无法满足各行业的计算需求。近年来摩尔定律放缓，CPU性能提升速度难以满足算力需求的增长速度，主机CPU计算能力一部分用于承载虚拟化应用，这将损耗超过30%的算力，同时CPU芯片架构、操作系统种类繁多导致适配难度高、工作量大。这样的行业现状呼唤新型高性能计算架构的产生，来推动算力普惠发展，DPU正是在这样的背景下诞生。</span></p>
+<p align="center">&nbsp;<img alt="" loading="lazy" data-src="https://img2023.cnblogs.com/blog/2764337/202301/2764337-20230104110652482-1546414371.png" class="lazyload"></p>
+<p>DPU可实现业务与基础设施的操作分离、卸载网络、存储和安全等算力，并实现性能大幅提升，支持计算和存储分离等。&nbsp;随着东数西算工程的推进，以及数字新基建的提速，算力需要不断下沉，而DPU可提升计算效能，实现算力资源优化。另一方面，DPU所涉及的行业广泛，落地应用场景正从数据中心领域逐步向网络安全、网络存储、智能驾驶等领域拓展。在以上双重因素驱动下，DPU在国内不断升温。</p>
+<p><span style="font-family: &quot;Microsoft YaHei UI&quot;">广小明表示，云厂商既是</span><span style="font-family: &quot;Microsoft YaHei UI&quot;">DPU需求方，也是设计方。近年来以大规模视频处理、批量数据处理等为代表的高负载云计算应用越来越多，且业务场景运算强度大、高并发、应用复杂，这对云厂商的服务能力提出了极高要求。随后，国内云厂商纷纷踏上DPU研发之路。</span></p>
+<p><span style="font-family: &quot;Microsoft YaHei UI&quot;">作为云服务国家队，<a href="https://click.ctyun.cn?track=source_boke-medium_cps-content_se460891" target="_blank" rel="noopener nofollow">天翼云</a>是较早探索</span><span style="font-family: &quot;Microsoft YaHei UI&quot;">DPU的云厂商。在研发方面，天翼云深知DPU的打造不只是系统架构的巨大变化，更需要软硬件之间的深度协同，因此结合当前业界主流的技术方案，以及运维、可扩展性等方面的实际情况，发力DPU自主研发。</span></p>
+<p>&nbsp;</p>
+<p class="p" align="justify"><strong>三大技术突破</strong></p>
+<p class="p" align="justify"><strong><span style="font-family: &quot;Microsoft YaHei UI&quot;">天翼云紫金</span><span style="font-family: &quot;Microsoft YaHei UI&quot;">DPU全面提升算力算效</span></strong></p>
+<p>凭借在云领域的成熟技术和应用实践，<strong><span style="font-family: &quot;Microsoft YaHei UI&quot;"><a href="https://click.ctyun.cn?track=source_boke-medium_cps-content_se460891" target="_blank" rel="noopener nofollow">天翼云</a>经过一年多的研发攻坚，推出了完全自研的紫金</span><span style="font-family: &quot;Microsoft YaHei UI&quot;">DPU芯片，</span></strong><span style="font-family: &quot;Microsoft YaHei UI&quot;">并且以紫金</span><span style="font-family: &quot;Microsoft YaHei UI&quot;">DPU为基础打造了为云而生的全新一代云计算体系结构，将计算、存储、网络和安全算力迁移到完全自研的软硬结合体系中，</span><strong>构建了面向不同算力、全国产化自主可控的第二平面。</strong></p>
+<p>基于天翼云全自研能力，该架构完成了<strong>虚拟化全卸载、多种业务硬件加速和自研高性能网络协议</strong>三大技术突破。</p>
+<p class="p" align="justify"><strong>①虚拟化全卸载</strong></p>
+<p class="p" align="justify"><span style="font-family: &quot;Microsoft YaHei UI&quot;"><a href="https://click.ctyun.cn?track=source_boke-medium_cps-content_se460891" target="_blank" rel="noopener nofollow">天翼云</a>紫金架构将原运行在服务器</span><span style="font-family: &quot;Microsoft YaHei UI&quot;">CPU上的各类虚拟化组件卸载至紫金DPU，实现了服务器虚拟化零损耗，全面释放了算力，不仅提高了弹性<a href="https://click.ctyun.cn?track=source_boke-medium_cps-content_se463442" target="_blank" rel="noopener nofollow">云主机</a>的售卖效率，而且全新支持弹性裸金属服务，实现降本增效，普惠客户。</span></p>
+<p class="p" align="justify"><strong>②多种业务硬件加速</strong></p>
+<p class="p" align="justify"><span style="font-family: &quot;Microsoft YaHei UI&quot;">具备更高的性能和更低的时延。相比传统</span><span style="font-family: &quot;Microsoft YaHei UI&quot;">CPU依靠纯软件的处理方式，紫金DPU通过芯片级的硬件加速，网络PPS性能提升100%；存储IOPS性能提升200%，网络时延降低300%。新架构的整体性能实现大幅提升，为客户带来了更好的产品体验。</span></p>
+<p class="p" align="justify"><strong>③提供高性能网络协议</strong></p>
+<p><span style="font-family: &quot;Microsoft YaHei UI&quot;"><a href="https://click.ctyun.cn?track=source_boke-medium_cps-content_se460891" target="_blank" rel="noopener nofollow">天翼云</a>紫金</span><span style="font-family: &quot;Microsoft YaHei UI&quot;">DPU将高性能网络数据面、NVMe-oF协议、EC纠错码等功能全面硬件化，自研的拥塞控制算法通过端网协同的主动控制做到精准流控，通过低队列深度实现超低时延，大幅提升分布式计算通信效率，并且具有可大规模部署的优势。同时，紫金DPU还实现了主机CPU环境与虚拟化环境的物理隔离，支持“一云多芯”，对于主机不同CPU芯片架构的服务器实现“即插即用”。</span></p>
+<p>&nbsp;DPU应用范围广，未来发展可观，其作为新赛道在我国尚处于发展的起始阶段，DPU能否规模化应用，有赖于产业的规范化和标准化。广小明认为，DPU产业的标准应从电器结构标准、软件标准、芯片功能标准等方面着手综合考量，<a href="https://click.ctyun.cn?track=source_boke-medium_cps-content_se460891" target="_blank" rel="noopener nofollow">天翼云</a>将同业界共建一个标准化组织来推动相关标准的制定和出-台。</p>
+<p><span style="font-family: &quot;Microsoft YaHei UI&quot;">前我国数字经济发展呈现迅猛之势，各行业对算力的需求持续增长。天翼云紫金</span><span style="font-family: &quot;Microsoft YaHei UI&quot;">DPU全面释放算力的同时，将对软硬件系统带来创新变革，推动千行百业的业务层数字化应用更流畅、更绿色，助力企业数字化转型升级，推动数字经济与产业高质量发展。</span></p>
+<p>&nbsp;</p>
+
+</div>
+<div class="clear"></div>
+<div id="blog_post_info_block" role="contentinfo" class="post-meta-container">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+            </div>
+            <div class="postDesc">posted @ 
+<span id="post-date" data-last-update-days="0" data-date-updated="2023-01-04 11:11">2023-01-04 11:10</span>&nbsp;
+<a href="https://www.cnblogs.com/developer-tianyiyun">天翼云开发者社区</a>&nbsp;
+阅读(<span id="post_view_count">172</span>)&nbsp;
+评论(<span id="post_comment_count">0</span>)&nbsp;
+&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(17024335);return false;">收藏</a>&nbsp;
+<a href="https://report.cnblogs.com?targetLink=https%3A%2F%2Fwww.cnblogs.com%2Fdeveloper-tianyiyun%2Farticles%2F17024335.html&targetId=17024335&targetType=0" target="_blank">举报</a>
+</div>
+        </div>
+	    
+	    
+    </div><!--end: topics 文章、评论容器-->
+</div>
+<script>
+    var cb_entryId = 17024335, cb_entryCreatedDate = '2023-01-04 11:10', cb_postType = 2, cb_postTitle = '深度解读天翼云紫金DPU，软硬协同造就极致性能！';
+    var allowComments = true, cb_blogId = 739871, cb_blogApp = 'developer-tianyiyun', cb_blogUserGuid = 'a8f4aead-1d95-40b2-a424-08d9f477ef59';
+    mermaidRender.render()
+    markdown_highlight()
+    zoomManager.apply("#cnblogs_post_body img:not(.code_img_closed):not(.code_img_opened)");    
+</script>
+<a id="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav">
+        <div class="comment-nav-right">
+            <span id="span_refresh_tips"></span><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a>
+        </div>
+    </div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+        <div id="cnblogs_ch"></div>
+    <div id="opt_under_post"></div>
+        <div id="blog_c1" class="under-post-card below-post-card">
+            <a href="https://www.volcengine.com/activity/codingplan?utm_campaign=hw&amp;utm_content=hw&amp;utm_medium=devrel_tool_web&amp;utm_source=OWO&amp;utm_term=cnblogs" rel="nofollow" target="_blank" onclick="countCreativeClicks('C1-volcengine-codingplan')">
+                <img src="https://img2024.cnblogs.com/blog/35695/202604/35695-20260423213336272-1914399152.webp" onload="countCreativeImpressions('C1-volcengine-codingplan')" alt="" style="width:300px!important;height:250px!important;min-width:300px!important;max-width:300px!important;" />
+                <span id="c1_impression" style="display:none"></span>
+            </a>
+        </div>
+    <div id="under_post_card1"></div>
+    <div id="related_posts_card"></div>
+    <div id="under_post_card2"></div>
+    <div id="HistoryToday" class="under-post-card below-post-card"></div>
+    <script type="text/javascript">
+        var commentManager = new blogCommentManager();
+        commentManager.renderComments(0);
+        fixPostBody();
+        window.footnoteTipManager.generateFootnoteTips();
+
+            window.tocManager.displayDisableTocTips = false;
+            window.tocManager.generateToc();
+            
+            setTimeout(function() { countViews(cb_blogId, cb_entryId); }, 50);
+            
+            deliverT2();
+            deliverC1C2();
+            loadNewsAndKb();
+            
+            LoadPostCategoriesTags(cb_blogId, cb_entryId);
+            
+            LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+            GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+            loadOptUnderPost();
+            GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+                </script>
+</div>
+
+	</div>
+	</div>
+	<div id="sideBar">
+		<div id="sideBarMain">
+			<div id="sidebar_news" class="newsItem">
+    <h3 class="catListTitle">公告</h3>
+<div id="blog-news" class="sidebar-news">
+    <div id="sidebar_news_container">
+    </div>
+</div>
+<script>loadBlogNews();</script>
+
+
+</div>
+			<div id="blog-calendar" style="display:none"></div><script>loadBlogDefaultCalendar();</script>			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"></div>
+					<script>loadBlogSideColumn()</script>
+			</div>			
+		</div>
+	</div>
+	<div class="clear"></div>
+	</div>
+	<div class="clear"></div>
+	<div id="footer">
+		<a href="https://www.cnblogs.com/" id="footer_site_link" class="footer-brand">博客园</a>
+<span class="footer-copyright"> &nbsp;&copy;&nbsp; 2004-2026</span>
+<br /><span class="footer-icp">
+    <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=33010602011771"><img src="//assets.cnblogs.com/images/ghs.png" />浙公网安备 33010602011771号</a>
+    <a href="https://beian.miit.gov.cn" target="_blank">浙ICP备2021040463号-3</a>
+</span>
+
+
+
+	</div>
+</div>
+
+
+
+    
+
+    <input type="hidden" id="antiforgery_token" value="CfDJ8OBZrxGJLy5MvghieKIKXCxoN0RSYxuBo8GTp10Z3MqjAGvcUFeNr-YPF4rI42jXRdGeFK0WxNqoRBPN4Rd4fiF_eA2kJeqyei--JuA36USZEna9qHmSrQW9jOX-U7FE9puM1k_oH4YkrHDySZERaX8" />
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-M95P3TTWJZ"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-M95P3TTWJZ');
+</script>
+<script defer src="https://hm.baidu.com/hm.js?866c9be12d4a814454792b1fd0fed295"></script>
+</body>
+</html>

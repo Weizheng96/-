@@ -1,0 +1,382 @@
+
+<!doctype html>
+<html lang="zh-cn" >
+<head>
+    <meta charset="utf-8" />
+    <title>中国电信天翼云自研紫金 DPU 芯片发布：支持虚拟化全卸载、性能大幅提升等 - IT之家</title>
+    <meta name="description" content="DPU 可实现业务与基础设施的操作分离、卸载网络、存储和安全等算力，并实现性能大幅提升，支持计算和存储分离等" />
+    <meta name="keywords" content="中国电信,DPU" />
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+    <meta http-equiv="expires" content="0">
+    <meta name="format-detection" content="telephone=no" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    
+    <link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="https://www.ithome.com/rss/" />
+            <link href="//www.ithome.com/css/site.min.css?v=2.26.23021315" rel="stylesheet" type="text/css" />
+    <link rel="icon" href="//www.ithome.com/favicon.ico" mce_href="//www.ithome.com/favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="//www.ithome.com/favicon.ico" />
+    <link rel="apple-touch-icon" href="/img/t.png" />
+    
+    <link rel="canonical" href="https://www.ithome.com/0/664/870.htm" />
+        <link href="//img.ithome.com/file/css/card/1.css?v=2.3.25021801" rel="stylesheet" type="text/css" />
+        <link href="//www.ithome.com/css/detail.min.css?v=2.3.202512201503" rel="stylesheet" type="text/css" />
+
+    <link href="//dat.ruanmei.com/lib/login.min.css" type="text/css" rel="stylesheet">
+        <script src="//img.ithome.com/file/js/ua.min.js?v=2.2.25101501" type="text/javascript"></script>
+    <script src="https://s4.zstatic.net/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <script>(window.jQuery || document.write("<script src='https:\/\/img.ruanmei.com\/btd\/cdn\/expire-1-w\/jquery\/3.4.0\/jquery.min.js'><\/script>"));</script>
+
+</head>
+<body class="digi ">
+    <div id="top">
+        <div class="bb">
+            <a href="https://www.ithome.com" id="logo"></a>
+            <a href="https://img.ithome.com/app/songs/index.html" id="music" target="_blank"></a>
+            <div class="m-menu"><span></span></div>
+            <div class="fl">
+                <div class="mt sel">
+                    <a href="https://www.ithome.com" class="l">首页</a>
+                </div>
+                <div class="mt"><a href="https://quan.ithome.com" class="l">IT圈</a></div>
+                <div class="mt"><a href="https://www.zuihuimai.com" class="l">最会买</a></div>
+           
+            </div>
+            <div class="fr">
+
+                
+                <div class="mt" id="settings">
+                    <a href="###" class="s">设置</a>
+                    <ul class="mu">
+                        <li>
+                            <span>日夜间</span> <div id="dark-switcher">
+                                <div data-dark="2">随系统</div>
+                                <div data-dark="0">浅色</div>
+                                <div data-dark="1">深色</div>
+                            </div>
+                        </li>
+                        <li>
+                            <span>主题色</span> <div id="nav-color"><div>黑色</div></div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="mt" id="menu-con"><a href="https://dyn.ithome.com/tougao/">投稿</a></div>
+                <div class="mt" id="menu-sub">
+                    <a href="###" class="s">订阅</a>
+                    <ul class="mu">
+                        <li><a href="//www.ithome.com/rss/">RSS订阅</a></li>
+                        <li><a href="#" title="IT之家" rel="sidebar" onclick="addFav();">收藏IT之家</a></li>
+                    </ul>
+                </div>
+                <div class="mt so" id="menu-app">
+                    <a href="https://www.ruanmei.com" class="s">软媒应用</a>
+                    <ul class="mu">
+                        <li><a href="//m.ruanmei.com/" target="_blank">App客户端</a></li>
+                        <li><a href="//yaozhi.ruanmei.com/" target="_blank">要知App</a></li>
+                        <li><a href="//mofang.ruanmei.com/" target="_blank">软媒魔方</a></li>
+                    </ul>
+                </div>
+                <div id="toplogin" class="mt">
+                    <div class="init"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        nightModeHelper.init();
+        var nightMode = nightModeHelper.isNight();
+        var navColor = "";
+        if (document.cookie.indexOf("navColor=red") >= 0) {
+            document.body.className += " red";
+            navColor = "red";
+        }
+    </script>
+
+        <div id="nav" class="bb">
+            <div class="fl">
+                    <div>
+                        <a href="//it.ithome.com" target="_blank">业界</a>
+                        <a href="//mobile.ithome.com/" target="_blank">手机</a>
+                        <a href="//www.ithome.com/pc/" target="_blank">电脑</a>
+                        <a href="//www.ithome.com/labs/" target="_blank">测评</a>
+                        <a href="//www.ithome.com/video/" target="_blank">视频</a>
+                        <a href="//next.ithome.com/" target="_blank">AI</a>
+                        <a href="//www.ithome.com/apple/" target="_blank">苹果</a>
+                        <a href="//iphone.ithome.com/" target="_blank">iPhone</a>
+                        <a href="//hmos.ithome.com/" target="_blank">鸿蒙</a>
+                        <a href="//soft.ithome.com/" target="_blank">软件</a>
+                    </div>
+                    <div>
+                        <a href="//auto.ithome.com" target="_blank">智车</a>
+                        <a href="//digi.ithome.com/" target="_blank">数码</a>
+                        <a href="//www.ithome.com/college/" target="_blank">学院</a>
+                        <a href="//game.ithome.com/" target="_blank">游戏</a>
+                        <a href="//www.ithome.com/live/" target="_blank">直播</a>
+                        <a href="//www.ithome.com/5g/" target="_blank">5G</a>
+                        <a href="//www.ithome.com/microsoft/" target="_blank">微软</a>
+                        <a href="//win10.ithome.com/" target="_blank">Win10</a>
+                        <a href="//win11.ithome.com/" target="_blank">Win11</a>
+                        <a href="//www.ithome.com/zt/" target="_blank">专题</a>
+                    </div>
+            </div>
+            <div class="fr">
+                <div class="search"><input type="search" placeholder="请输入关键词" name="q" autocomplete="off" style="box-sizing: content-box;"><button name="sa">搜索</button></div>
+                <div class="hotkeyword">
+                </div>
+            </div>
+        </div>
+            <div id="tt" class="bb">
+                
+            </div>
+
+
+    
+
+
+
+
+
+<div id="dt" class="bb clearfix">
+    <div class="fl content">
+        <div class="cv">
+            <a href="//www.ithome.com">首页</a> <span class="sub">&gt;</span> <a href="https://digi.ithome.com/">数码之家</a><span class="sub">&gt;</span><a href="https://digi.ithome.com/acc">电脑硬件</a>
+        </div>
+
+        <h1>中国电信天翼云自研紫金 DPU 芯片发布：支持虚拟化全卸载、性能大幅提升等</h1>
+
+        <div class="info clearfix">
+            <div class="l">
+
+                    <span id="pubtime_baidu">2022/12/31 18:48:22</span>
+                    <span id="source_baidu">来源：<a href="https://www.ithome.com/0/664/870.htm" target="_blank">IT之家</a></span>
+                    <span id="author_baidu">作者：<strong>潇公子</strong></span>
+
+                    <span id="editor_baidu">责编：<strong>潇公子</strong></span>
+            </div>
+
+            <div class="r">
+
+                <span id="hitcount"></span>
+                    <a href="#post_comm" class="pti_comm">评论：<span id="commentcount"></span></a>
+            </div>
+        </div>
+
+
+
+        <div class="post_content " id="paragraph">
+            
+            <p data-vmark="8092"><a class="s_tag" href="https://www.ithome.com/" target="_blank">IT之家</a> 12 月 31 日消息，在中国电信主办的“2022 天翼数字科技生态大会”上，中国电信正式发布天翼云自研紫金 DPU。DPU（Data Processing Unit）是以数据为中心构造的专用处理器。</p><p data-vmark="82d3">传统以 CPU 为核心的计算架构已无法满足各行业计算需求。近年来摩尔定律放缓，CPU 性能提升速度难以满足算力需求的增长速度，主机 CPU 计算能力一部分用于承载虚拟化应用，这将损耗超过 30% 的算力，同时 CPU 芯片架构、操作系统种类繁多导致适配难度高、工作量大。IT之家了解到，<span class="accentTextColor">DPU 可实现业务与基础设施的操作分离、卸载网络、存储和安全等算力，并实现性能大幅提升，支持计算和存储分离等</span>。</p><p style="text-align: center;" data-vmark="98bf"><img src="//img.ithome.com/images/v2/t.png" w="500" h="275" class="lazy" title="中国电信天翼云自研紫金 DPU 芯片发布：支持虚拟化全卸载、性能大幅提升等" data-original="https://img.ithome.com/newsuploadfiles/2022/12/04519187-8932-441c-8212-6caa2825516c.jpg?x-bce-process=image/format,f_auto" width="500" height="275"></p><p data-vmark="eb14">中国电信天翼云推出完全自研的紫金 DPU 芯片，并且以紫金 DPU 为基础打造了为云而生的全新一代云计算体系结构，将计算、存储、网络和安全算力迁移到完全自研的软硬结合体系中，构建面向不同算力、全国产化自主可控的技术。</p><p data-vmark="e255">据中国电信介绍，基于天翼云全自研能力，该架构完成了虚拟化全卸载、多种业务硬件加速和自研高性能网络协议三大技术突破。</p><p data-vmark="4ba8"><strong>①虚拟化全卸载&nbsp;</strong>天翼云紫金架构将原运行在服务器 CPU 上的各类虚拟化组件卸载至紫金 DPU，实现服务器虚拟化零损耗，全面释放算力，不仅提高了弹性云主机的售卖效率，而且全新支持弹性裸金属服务。</p><p data-vmark="f16d"><strong>②多种业务硬件加速 </strong>具备更高的性能和更低的时延。相比传统 CPU 依靠纯软件的处理方式，紫金 DPU 通过芯片级的硬件加速，网络 PPS 性能提升 100%；存储 IOPS 性能提升 200%，网络时延降低 300%。新架构的整体性能实现大幅提升。</p><p data-vmark="ebda"><strong>③提供高性能网络协议</strong> 天翼云紫金 DPU 将高性能网络数据面、NVMe-oF 协议、EC 纠错码等功能全面硬件化，自研的拥塞控制算法通过端网协同的主动控制做到精准流控，通过低队列深度实现超低时延，大幅提升分布式计算通信效率，并且具有可大规模部署的优势。同时，紫金 DPU 还实现了主机 CPU 环境与虚拟化环境的物理隔离，支持“一云多芯”，对于主机不同 CPU 芯片架构的服务器实现“即插即用”。</p><p class="ad-tips">广告声明：文内含有的对外跳转链接（包括不限于超链接、二维码、口令等形式），用于传递更多信息，节省甄选时间，结果仅供参考，IT之家所有文章均包含本声明。</p>
+        </div>
+
+        
+        
+
+        
+
+
+            <div class="newserror">
+                <button class="water" data-nid="664870">投诉水文</button>
+                <button class="error" data-nid="664870">我要纠错</button>
+            </div>
+
+            <div class="newsgrade"></div>
+        <div class="shareto">
+            
+            <div class="bdsharebuttonbox">
+                <a href="https://connect.qq.com/widget/shareqq/index.html?url=https%3a%2f%2fwww.ithome.com%2f0%2f664%2f870.htm&title=%e4%b8%ad%e5%9b%bd%e7%94%b5%e4%bf%a1%e5%a4%a9%e7%bf%bc%e4%ba%91%e8%87%aa%e7%a0%94%e7%b4%ab%e9%87%91+DPU+%e8%8a%af%e7%89%87%e5%8f%91%e5%b8%83%ef%bc%9a%e6%94%af%e6%8c%81%e8%99%9a%e6%8b%9f%e5%8c%96%e5%85%a8%e5%8d%b8%e8%bd%bd%e3%80%81%e6%80%a7%e8%83%bd%e5%a4%a7%e5%b9%85%e6%8f%90%e5%8d%87%e7%ad%89&summary=" class="bds_qzone" target="_blank" title="分享到QQ"></a>
+                <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+                <a href="https://service.weibo.com/share/share.php?url=https%3a%2f%2fwww.ithome.com%2f0%2f664%2f870.htm&title=%e4%b8%ad%e5%9b%bd%e7%94%b5%e4%bf%a1%e5%a4%a9%e7%bf%bc%e4%ba%91%e8%87%aa%e7%a0%94%e7%b4%ab%e9%87%91+DPU+%e8%8a%af%e7%89%87%e5%8f%91%e5%b8%83%ef%bc%9a%e6%94%af%e6%8c%81%e8%99%9a%e6%8b%9f%e5%8c%96%e5%85%a8%e5%8d%b8%e8%bd%bd%e3%80%81%e6%80%a7%e8%83%bd%e5%a4%a7%e5%b9%85%e6%8f%90%e5%8d%87%e7%ad%89" target="_blank" class="bds_tsina" title="分享到新浪微博"></a>
+            </div>
+            <a class="down_app collapse" href="https://m.ithome.com/ithome/download/?popqr" target="_blank">
+                <span class="d-p">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </span>
+                <span class="d-t">下载IT之家APP，签到赚金币兑豪礼</span>
+            </a>
+        </div>
+
+        <!-- 相关文章 -->
+        <div class="related_post"><div class="title"><h2>相关文章</h2><div class="hot_tags"><span>关键词：<a href='/tags/%e4%b8%ad%e5%9b%bd%e7%94%b5%e4%bf%a1/' target='_blank'>中国电信</a>，<a href='/tags/DPU/' target='_blank'>DPU</a></span></div></div><ul class="list_3"><li><a target="_blank" href="https://www.ithome.com/0/664/447.htm">中国电信分布式物联网操作系统 CTWing OS 2.0 发布</a></span></li><li><a target="_blank" href="https://www.ithome.com/0/662/967.htm">中科驭数思威系列 DPU 卡与腾讯云 TencentOS Server 完成产品兼容性认证</a></span></li><li><a target="_blank" href="https://www.ithome.com/0/662/591.htm">中科驭数宣布 DPU 芯片 K2 成功点亮：采用 28nm 工艺制程</a></span></li><li><a target="_blank" href="https://www.ithome.com/0/662/360.htm">中国电信 11 月 5G 套餐用户数达 2.63 亿户，当月净增 602 万户</a></span></li><li><a target="_blank" href="https://www.ithome.com/0/661/928.htm">中国电信物联网用户超 4 亿，首次超过移动电话用户数</a></span></li><li><a target="_blank" href="https://www.ithome.com/0/661/459.htm">中国电信 / 华为合作建成首个支持 5G RedCap 联合测试能力的 5G 开放实验室</a></span></li></ul></div>
+
+        <script>
+            if (nightMode) {
+                document.write('<iframe align="middle" src="//www.ithome.com/block/dajia.html?night=1" scrolling="no" marginwidth="0" marginheight="0" frameborder="0" class="dajia"></iframe>');
+            } else {
+                document.write('<iframe align="middle" src="//www.ithome.com/block/dajia.html" scrolling="no" marginwidth="0" marginheight="0" frameborder="0" class="dajia"></iframe>');
+            }
+        </script>
+
+        <!-- 评论 -->
+            <div id="post_comm" data-id="ba18e5500b8956d5" data-nid="664870"></div>
+    </div>
+    <div class="fr fx no-bottom">
+        <div id="rank" class="tab-list">
+            
+        </div>
+
+        <div class="cat-list" id="cat-hot" style="display:none">
+        </div>
+
+    </div>
+</div>
+
+
+
+    <div id="fls" class="bb">
+
+
+    <p>
+        <strong>软媒旗下网站：</strong>
+        <a href="//www.ithome.com/" target="_blank">IT之家</a>
+        <a href="//www.zuihuimai.com/" target="_blank">最会买 - 返利返现优惠券</a>
+        <a href="https://iphone.ithome.com/" target="_blank">iPhone之家</a>
+        <a href="//www.win7china.com/" target="_blank">Win7之家</a>
+        <a href="//win10.ithome.com/" target="_blank">Win10之家</a>
+        <a href="https://win11.ithome.com/" target="_blank">Win11之家</a>
+    </p>
+
+    <p>
+        <strong>软媒旗下软件：</strong>
+        <a href="//m.ruanmei.com/" target="_blank">软媒手机APP应用</a>
+        <a href="//mofang.ruanmei.com/" target="_blank">魔方</a>
+        <a href="https://www.zuihuimai.com" target="_blank">最会买</a>
+        <a href="https://yaozhi.ruanmei.com/" target="_blank">要知</a>
+    </p>
+
+
+        
+    </div>
+
+
+    <footer>
+        <div id="lns">
+            <a href="//www.ithome.com/about.htm" target="_blank">关于IT之家</a>
+            |<a href="//www.ruanmei.com/#contact" target="_blank">联系我们</a>
+            |<a href="//www.ruanmei.com/joinus/" target="_blank">加入软媒</a>
+            |<a href="//m.ithome.com/" target="_blank">WAP版</a>
+            |<a href="//www.ithome.com/sitemap/" target="_blank">网站地图</a>
+            |<a href="//www.ithome.com/archiver/" target="_blank">Archiver</a>
+        </div>
+        <div id="fi">
+            <p>IT之家，软媒旗下科技门户网站 - 爱科技，爱这里。</p>
+            <p>Copyright &copy; <a href="//www.ruanmei.com" target="_blank">RuanMei.com</a>, All Rights Reserved.</p>
+            <p>
+                <a href="//www.ruanmei.com/" target="_blank">青岛软媒网络科技有限公司</a>版权所有
+                
+        </div>
+    </footer>
+
+    <script src="//dat.ruanmei.com/lib/login.min.js"></script>
+    <script src="https://s4.zstatic.net/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <script>(window.jQuery && window.jQuery.fn && window.jQuery.fn.cookie || document.write("\u003Cscript src=\u0022https:\/\/img.ithome.com\/file\/js\/jquery\/jquery.cookie.js\u0022\u003E\u003C\/script\u003E"));</script>
+    <script src="https://s4.zstatic.net/ajax/libs/jquery.lazyload/1.9.1/jquery.lazyload.min.js"></script>
+    <script>(window.jQuery && window.jQuery.fn && window.jQuery.fn.lazyload || document.write("\u003Cscript src=\u0022https:\/\/img.ithome.com\/file\/js\/jquery\/jquery.lazyload.js\u0022\u003E\u003C\/script\u003E"));</script>
+    <script src="//img.ithome.com/file/js/jquery/popwin.js?v=2.22.200813"></script>
+        <script src="//img.ithome.com/file/js/v2.3/common.js?t=20240112"></script>
+    <script src="//api.ithome.com/ovs/ovs.js"></script>
+    
+        <script src="//img.ithome.com/file/js/site.min.js?v=2.25.231124"></script>
+
+    
+    
+    <script type="text/javascript" id="bdshare_js" data="type=tools&uid=192225"></script>
+    <script>
+        var thumb = $('.post_content img').eq(0).attr("src"), title = $("h1").text(), desc = $("meta[name=description]").attr("content");
+        if (desc.length > 85 - title.length) {
+            desc = desc.substring(0, 85 - title.length)
+        }
+        window._bd_share_is_recently_loaded = !1;
+        window._bd_share_main = {
+            version: "2.0",
+            jscfg: {
+                domain: {
+                    staticUrl: "https://img.ithome.com/"
+                }
+            }
+        }
+
+        window._bd_share_config = { "common": { "bdSnsKey": { "tsina": "1369706960", "tqq": "801077952" }, "bdText": "【" + title + "】" + desc + " - 分享自 @IT之家 下载APP立得金币换豪礼！下载：https://m.ithome.com/ithome/download/ 详情：", "bdMini": "2", "bdMiniList": false, "bdPic": thumb, "bdStyle": "1", "bdSize": "32" }, "share": {} };
+        with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = '//img.ithome.com/static/api/js/share.js?v=86835285.js?cdnversion=' + ~(-new Date() / 36e5)];
+    </script>
+
+    
+        <script type="text/javascript" src="//dyn.ithome.com/grade/664870"></script>
+        <script>
+            $(".newsgrade").html(gradestr);
+        </script>
+            <script src="//cmt.ithome.com/api/comment/count?newsid=664870"></script>
+            <script type="text/javascript" src="//dyn.ithome.com/api/hitcount/664870/pc"></script>
+            <script src="//img.ithome.com/file/js/detail.es5.min.js?v=202512201503"></script>
+
+    
+    <script>
+        var commentCssFile = "https://img.ithome.com/file/css/comment/comment.min.css?v=1.1.202505211142";
+        var commentJsFile = "https://img.ithome.com/file/js/comment/comment.es5.min.js?v=1.1.202505211142";
+    </script>
+<script>
+    $(document).ready(function () {
+        var commentDiv = document.getElementById("post_comm");
+        function loadComm() {
+            if (!window._commLoaded && commentDiv) {
+                window._commLoaded = true;
+                commentDiv.innerHTML = '<span class="comm_status" style=" width:100%;text-align:center;display:block;margin-top:20px;font-size:13px; ">评论加载中...</span>';
+                loadFile(commentCssFile, null, true);
+                loadFile(commentJsFile);
+            }
+        }
+        var commentAnchor = document.querySelector(".pti_comm");
+        commentAnchor && commentAnchor.addEventListener("click", function () { window._jumpToComm = true; })
+        var scrollListener = function () { var doc = document.documentElement; var body = document.body; var scrollTop = doc.scrollTop || body.scrollTop; var windowHeight = doc.clientHeight || body.clientHeight; var scrollHeight = doc.scrollHeight || body.scrollHeight; if (scrollHeight - scrollTop - windowHeight <= 150) { loadComm() } };
+        window.addEventListener("scroll", scrollListener);
+        scrollListener();
+    })
+</script>
+    <script>
+        
+        $("#tt").load('https://www.ithome.com/block/tt.html?' + new Date().getTime());
+        
+        $("#rank").load('//www.ithome.com/block/rank.html');
+        
+        $("#cat-hot").load('//www.ithome.com/block/cat/100.html');
+        if ($("#cat-hot").find("*").length > 0) {
+            $("#cat-hot").show();
+        }
+
+        
+        $(function () {
+            if (imageSupportChecker) {
+                imageSupportChecker.ready(function () {
+                    lazyLoad()
+                })
+            } else {
+                lazyLoad()
+            }
+            function lazyLoad() {
+                $("img.lazy").lazyload();
+            }
+        });
+        
+        if ($(".post_content pre").length > 0 && loadFile) {
+            loadFile("//img.ithome.com/file/js/prettify/prettify.js", function () {
+                $("pre").addClass("prettyprint"); prettyPrint();
+            })
+        }
+    </script>
+
+    <div style="display:none">
+        <script>
+            var _hmt = _hmt || [];
+            (function () {
+                var hm = document.createElement("script");
+                hm.src = "https://hm.baidu.com/hm.js?cfebe79b2c367c4b89b285f412bf9867";
+                var s = document.getElementsByTagName("script")[0];
+                s.parentNode.insertBefore(hm, s);
+            })();
+        </script>
+    </div>
+</body>
+</html>
