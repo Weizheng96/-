@@ -8,7 +8,8 @@ Not a software codebase — a **patent-infringement analysis workspace**. There 
 
 Directory layout:
 
-- `专利集/` — root for all patent work. Each patent gets its own subfolder named with the patent ID, e.g. `专利集/CN114531405B/`. The subfolder contains the input PDF, all generated reports (`<id>.md`, `<id>"专利介绍".md`, etc.), and a `.cache/` for downloaded helper PDFs (论文、白皮书). Patent ID = filename stem (e.g. `CN114531405B.pdf` → `CN114531405B`).
+- `专利集/` — root for all patent work. Each patent gets its own subfolder named with the patent ID, e.g. `专利集/CN114531405B/`. The subfolder contains the input PDF, all generated reports (`<id>.md`, `<id>"专利介绍".md`, etc.), `.cache/` for unattributed helper PDFs, and `候选/<candidate_slug>/` per-候选 evidence folders (created by Step 5b). Patent ID = filename stem.
+- Per-候选 evidence folders hold downloaded materials (PDFs / scraped HTML / GitHub raws), an `_sources.md` index, and `_verdict.md` with the per-document sub-agent合议结果. Local archival is required before any "已排除" or "确认侵权" verdict.
 - `.claude/skills/patent-infringement-check/SKILL.md` — the main "code". A six-step pipeline skill that turns one input patent into a chain of analysis reports.
 - `.claude/skills/pdf/` — supporting skill for PDF text/table extraction (wraps `pdfplumber` / `pypdf`). Used by Step 1 as a fallback when Google Patents `WebFetch` is blocked, and by Step 5 for extracting evidence from downloaded SIGCOMM / NSDI / vendor whitepaper PDFs. Requires `pip install pypdf pdfplumber` (already done locally; may need install elsewhere).
 
