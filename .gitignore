@@ -1,0 +1,9 @@
+# 第三方 PDF（论文、白皮书）— 在本地用作 skill 取证素材，不入库
+专利集/*/.cache/
+
+# Claude Code 本地设置（如有）
+.claude/settings.local.json
+
+# Python 缓存
+__pycache__/
+*.pyc
