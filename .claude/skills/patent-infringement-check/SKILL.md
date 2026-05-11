@@ -70,7 +70,7 @@ Execute each step in order. After each step, write the output markdown file to d
 
 按 3a → 3b 顺序执行；3c 仅在 R-STANDARD = true 时执行。
 
-- **3a 领域适配** → `<patent_id>"领域适配".md`：把本专利分类到一个具体领域，**现场构造**：(i) 5 大主体类型清单 + 必跑参考清单（**强制 3 视角覆盖**：产业全景 / 金融市场 / 政府名录）；(ii) **本领域研究阵地清单**（≥ 3 个，含主域名——Step 5 §A.2 / §A.5 / §A.15 按此清单逐家跑 query）；(iii) 6 个 R-* 标志（R-OPENSOURCE / R-CONFIG / R-PARTNER / R-PATENTWALL / R-PROCURE / R-STANDARD）
+- **3a 领域适配** → `<patent_id>"领域适配".md`：把本专利分类到一个具体领域。**领域定锚强制**——必须基于 Step 1 输出"背景技术"章节的 verbatim 内容定锚，**不得外扩**到背景技术未提及的相邻领域。然后**现场构造**：(i) 5 大主体类型清单 + 必跑参考清单（**强制 3 视角覆盖**：产业全景 / 金融市场 / 政府名录）；(ii) **本领域研究阵地清单**（≥ 3 个，含主域名——Step 5 §A.2 / §A.5 / §A.15 按此清单逐家跑 query）；(iii) 6 个 R-* 标志（R-OPENSOURCE / R-CONFIG / R-PARTNER / R-PATENTWALL / R-PROCURE / R-STANDARD）
 - **3b 应用场景** → `<patent_id>"潜在应用场景".md`：轻量场景推演，每个场景必须列**具名产品列表**（防 niche / 子品牌漏检），且每个 named product 必须在 Step 4 候选清单中以独立产品族条目出现
 - **3c R-STANDARD 子流程**：仅当 R-STANDARD = true。判定 SEP / GB / 行业准入三类，影响 Step 4 候选清单处置
 
@@ -100,9 +100,11 @@ Execute each step in order. After each step, write the output markdown file to d
 - **§A 19 类源穿透**：所有候选必跑前 9 类主流来源；"公开资料不足"档候选必续跑 10-19 类非主流来源；第 20 类反向工程视成本启用。每类源跑过 0 命中也要明示"<类> 检索 0 命中"，不能默默跳过。
   - **检索单元构造（3×2 矩阵）**：每条 query 至少跨 **2 个 identifier 维度**（vendor 本地名 / 国际名 / 邮箱域）× **2 种语言**（vendor 主营市场语言 / 研究阵地主导语言）—— 防止"vendor 中文名 + 中文 topic" 单一组合的系统性漏检
   - **执行纪律 — verifiable 证据强制**：每条 query 必须留 URL 或 0-hit 显式声明；**不允许**写"建议法务深读 / 据悉 / 通常 / 推测"等推测性断言代替实际 query 执行；主 agent §A 收尾必须 grep 自检，命中推测性词汇必须返回去补跑
+  - **第三方源码 / 实现分析作为可接受证据（§A.8a）**：闭源 SDK / 大量源码不易直接 reading 时，第三方公开的源码分析（技术博客 / 课程材料 / reverse engineering 论文 / mailing list 设计讨论 / 实战教程）可接受为证据，但**置信度降一级**；如能用第三方分析定位到原始 commit / 函数 URL 则升回原始档
 - **§B 本地化证据归档**：每候选 `候选/<slug>/` 子文件夹 + `_sources.md` 索引 + 每条命中资料本地落盘
 - **§C 子 agent 逐文档审阅**（P0 必跑；P1 / P2 可选）：每份证据**独立 spawn** general-purpose agent；禁止合并多份文档到同一 agent；并行 spawn
-- **§D 状态机判定 + 三栏 verdict**：投票汇总 F# → 三档状态（确认侵权 / 已排除 / 公开资料不足）→ 5 档细化排名 → 三栏 verdict（状态机原始 ↔ 后置调整 ↔ 最终）+ 7 条后置调整逐条核查
+- **§D 状态机判定 + 三栏 verdict**：**权 1 入门检测**（漏斗式）→ 投票汇总 F# → 三档状态（确认侵权 / 已排除 / 公开资料不足）→ 5 档细化排名 → 三栏 verdict（状态机原始 ↔ 后置调整 ↔ 最终）+ 7 条后置调整逐条核查
+  - **权 1 漏斗**：每个候选必须**先把权 1 全套 F1-Fk 跑完**——权 1 任一 F# 落"已排除门槛硬条件"则整个候选直接判已排除，跳过其他独立权；权 1 命中（字面 / 等同）或公开资料不足才进入其他独立权评估，其他独立权只评估**该独立权特有限定**（共享 F1-Fk 沿用权 1 结果）
 
   状态机四条硬约束（机制层 — 防偏倚）：
   1. **等同回避偏倚**（禁止）：等同命中与字面命中同档，不得潜意识降级

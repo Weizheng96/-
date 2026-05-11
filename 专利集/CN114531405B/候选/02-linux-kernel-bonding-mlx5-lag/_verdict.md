@@ -1,36 +1,41 @@
-# Verdict — Linux kernel bonding driver + mlx5 LAG offload（核心技术 CT-2）
+# 候选：Linux Kernel — bonding driver + mlx5 / ice / bnxt / nfp tc-flower offload
 
-> 主体类型：S1 + S5；适用独立权：权 1 / 11 / 23 / 33 / 34 / 35 / 36；分级：**P0**
+## 候选标识
+- candidate_slug: `02-linux-kernel-bonding-mlx5-lag`
+- 主体类型：A. vSwitch 软件方（上游） + B. NIC driver
+- 适用独立权：权 1, 11, 23, 36
+- R-OPENSOURCE 上游 P0
 
-## 1. 核心组织
-- Linux Foundation（Linux kernel 项目）
-- Mellanox / NVIDIA（NASDAQ: NVDA）—— mlx5 LAG offload 主要贡献方
-- Linus Torvalds & Linux 内核 bonding driver maintainers（Jay Vosburgh 等）
+## §A 主流来源摘要
 
-## 2. F1-F5 命中表
+### §A.4 使用手册 / §A.7 上游归因（命中 — 真反向证据）
 
-| F# | 证据 | 命中 |
-|---|---|---|
-| F1 | Linux kernel bonding driver 支持任意 N 张 NIC 卡聚合 | **字面命中**（kernel bonding 支持 N ≥ 2）|
-| F2 | bonding driver 实现 802.3ad LACP mode 4 + 标准协议交互 | **字面命中**（Documentation/networking/bonding.rst — `bond_mode_802.3ad`）|
-| F3 | bond master interface + bond slaves 抽象 — "bond0" 即 vSwitch 视角下的"第一端口"等价物 | **字面命中** |
-| F4 | NIC miss → kernel netdev stack → upcall to userspace | **字面命中** |
-| F5 | mlx5 LAG offload（`drivers/net/ethernet/mellanox/mlx5/lag/`）— 跨 PF LAG 在硬件 e-switch 同步 offload | **字面命中候选**（mlx5 LAG 在硬件层做 LAG offload；但**单卡 dual-PF 默认拓扑下** mlx5 LAG 工作在 PF 级而非跨独立 NIC 卡）|
+| # | 源 | URL | 引文 |
+| --- | --- | --- | --- |
+| 1 | Linux kernel bonding HOWTO | https://docs.kernel.org/networking/bonding.html | bonding.rst **0 命中** "tc-flower" / "hw-offload" / "hardware offload" / "nested bond" |
+| 2 | StackHPC — VF-LAG | https://www.stackhpc.com/vflag-kayobe.html | 2024 — 决定性引文："VF-LAG only works for two ports on the same physical NIC. **It cannot be used for LAGs created using multiple NICs**" |
+| 3 | Linux ice driver docs | https://docs.kernel.org/networking/device_drivers/ethernet/intel/ice.html | "**You cannot use SR-IOV when link aggregation (LAG)/bonding is active, and vice versa.** To enforce this, the driver checks for this mutual exclusion" |
+| 4 | bnxt_tc.c (mainline) | https://github.com/torvalds/linux/blob/master/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c | tc-flower offload via VF representors in switchdev mode；无多卡同步流表 primitive |
+| 5 | NVIDIA MLNX_EN docs v23.07 | https://docs.nvidia.com/nvidia-mlnx-en-documentation-v23-07.pdf | "Only LAGs with all HCA ports are supported" — VF-LAG bound to a single HCA |
+| 6 | Red Hat KB 24528 | https://access.redhat.com/solutions/24528 | "Is it possible to configure bonding over bonded interface" — paywalled，但其作为反复 KB 问题的存在表明 mainline 不支持 nested bonding 拓扑 |
 
-## 3. 时间线
-- Linux kernel bonding driver：自 Linux 2.0 时代已有（~1996）
-- mlx5 LAG offload：~2017+
-- **现有技术 caveat**：Linux kernel bonding + mlx5 LAG offload 大量在 2020-10-31 之前已实现 — **可能影响专利新颖性**
+## §D 状态机三栏判定
 
-## 4. §A 穿透
-- §A.1 反向专利墙：Mellanox / NVIDIA 在 H04L 主分类同主题专利墙厚（包括跨 PF LAG 相关 — 强现有技术 caveat 信号）
-- §A.7 上游归因：`git log --before=2020-10-31 -- drivers/net/ethernet/mellanox/mlx5/lag/` 是关键现有技术取证目标
+| 独立权 | 状态机原始判定 | 后置调整记录 | 最终 verdict |
+| --- | --- | --- | --- |
+| 权 1 / 11 / 23 / 36 | **已排除（第 5 档）** | mlx5 真反向 "VF-LAG cannot be used for LAGs created using multiple NICs"；ice 真反向 "SR-IOV mutually exclusive with LAG"；F3 不可达；F4 无原生 sync-N-flows primitive | **已排除（多 driver 真反向证据 + 架构层级不符）** |
 
-## 5. 状态机三栏判定
+### F# 投票汇总
 
-| 独立权 | 原始 | 后置调整 | 最终 |
-|---|---|---|---|
-| 权 1 / 11 / 23 / 33 / 34 / 35 / 36 | **第 3 档：公开资料不足（强候选）** — F1-F5 多数字面，但拓扑歧义（mlx5 LAG 主要 PF 级）| 1-3 未触发；**4. 现有技术 caveat：强（Linux kernel bonding + mlx5 LAG 2017+ 已实现，与专利 2020-10-31 申请日有时间冲突 → 法务必查）**；5-6 未触发；7. patent license（OIN / Linux Foundation commitment）待法务核查 | **第 3 档：公开资料不足（强候选）+ 强现有技术 caveat** |
+- F1：单 mlx5 HCA 上 N=2 端口（不算多 NIC）；多 HCA bond 不支持 hw-offload → F1 不命中
+- F2：bonding driver mode=802.3ad LACP 支持，但仅在软件层；hw-offload 路径不支持 LACP across cards → F2 部分命中
+- F3：mlx5 VF-LAG 终结在 HCA 边界，无第二层映射 → 不命中
+- F4：bonding 无原生 sync-N-flows primitive；shared-block ≠ duplicate → 不命中
 
-## 6. 总结一句话
-Linux kernel bonding + mlx5 LAG offload：F1-F4 字面命中、F5 字面命中候选；落第 3 档强候选；附**强现有技术 caveat**（2017+ mlx5 LAG 早于专利申请日，建议法务深读 mlx5 commit history 评估新颖性影响）。
+### 最终 verdict
+
+**已排除**：Linux kernel mainline 不实现"跨多 NIC 二层映射 + 同步 N 份相同流表"。mlx5 / ice / bnxt 主流 vendor driver 在 hw-offload 路径下显式排除多卡 LAG。
+
+## 总结一句话
+
+Linux kernel mainline 不实现 F3+F4；mlx5 VF-LAG 字面"intra-HCA only"、ice "SR-IOV ⊥ LAG"——多重真反向，**落第 5 档已排除**。
