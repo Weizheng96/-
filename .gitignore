@@ -3,7 +3,18 @@
 
 # Claude Code 本地设置（如有）
 .claude/settings.local.json
+.claude/scheduled_tasks.lock
 
 # Python 缓存
 __pycache__/
 *.pyc
+
+# 凭证 / API key — 不入库
+github_token.md
+llm_apikey.json
+
+# 本地缓存目录
+.cache/
+
+# 本地 agent 工作目录
+patent_agent/

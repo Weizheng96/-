@@ -1,169 +1,446 @@
 ---
 name: patent-infringement-check
-description: Detect whether a given patent is being used (infringed) by other organizations. Use this skill whenever the user provides a patent file path (PDF or markdown, e.g. "专利集/CN12345678A.pdf"), or asks to check / 排查 / 检测 a patent for unauthorized use, infringement (侵权 / 违约), or third-party usage. Triggers on requests like "检测这个专利有没有被其他公司使用", "排查 CN... 的侵权情况", "看看谁在用这个专利". Produces a sequenced set of analysis documents (专利介绍、领域适配、潜在应用场景、潜在使用组织、潜在违约、违约列表 + per-candidate verdict/关键证据) next to the input patent file.
+description: Detect whether a given patent is being used (infringed) by other organizations. Use this skill whenever the user provides a patent ID or path, or asks to check / 排查 / 检测 / 调查 a patent for unauthorized use, infringement (侵权 / 违约), or third-party usage. Triggers on phrases like "检测这个专利有没有被其他公司使用", "排查 X 的侵权情况", "看看谁在用这个专利". Produces a 7-step chain of analysis reports next to the input patent file (潜在应用场景及侵权特征 → 潜在使用组织 → 潜在侵权产品初选 → 潜在侵权产品-全 → 候选/*/_verdict.md → 违约列表). Step 1 / init / Step 7 are Python scripts (no LLM); Steps 2-5 run as Claude's main agent; Step 6 spawns one general-purpose sub-agent per candidate in react mode for evidence collection + verdict.
 ---
 
-# Patent Infringement Check (专利侵权检测)
+# Patent Infringement Check — 7-step pipeline
 
-You are running a six-step analytical pipeline that takes one patent and produces a chain of markdown reports investigating whether other organizations have used that patent without authorization.
+每一步要么落一份 markdown 报告到 `专利集/<PATENT_ID>/`，要么填充 `候选/<slug>/` 子目录。**所有 LLM 推理由 Claude 完成**——主 agent 负责 Steps 2-5，sub-agent 负责 Step 6 每候选独立的取证+判定。Python 脚本仅做 HTTP 抓取、文件切片、模板汇总三类无 LLM 工作。
 
-**Reference docs**：本 SKILL 是流程总览。每一步的**详细模板、硬规则、跨领域示例**都在对应的 `reference/*.md` 文档中——执行该步骤时按链接读取，不要凭记忆套用模板。
+**职责分工**：
 
----
+| 工种 | 哪些步骤 |
+|---|---|
+| Python 脚本（无 LLM） | Step 1 (`fetch_patent.py`) · Step 2 切片 (`slice_patent.py`) · Step 6 候选目录初始化 (`init_candidates.py`) · Step 7 (`compile_step7.py`) · 全角引号文件写入 (`write_report.py`) |
+| Claude 主 agent | Steps 2-5 推理 + Step 6 sub-agent 编排 + 全程复核 |
+| Claude sub-agent（general-purpose, react 模式） | Step 6 每候选独立的 WebSearch + WebFetch 迭代 + 直接写 `_verdict.md` |
 
-## Inputs
+**依赖**：
 
-用户会提供专利文件路径（PDF 或 MD），如 `专利集/<patent_id>.pdf`。**filename stem 即 patent ID**。
-
-**所有工作都在 per-patent 子文件夹内**：`专利集/<patent_id>/`。子文件夹布局：
-
-```
-专利集/<patent_id>/
-  ├── <patent_id>.pdf                   ← input
-  ├── <patent_id>.md                    ← Step 1 输出
-  ├── <patent_id>"专利介绍".md          ← Step 2
-  ├── <patent_id>"领域适配".md          ← Step 3a（领域分类 + R-* 标志 + 必跑清单）
-  ├── <patent_id>"潜在应用场景".md      ← Step 3b（轻量场景推演）
-  ├── <patent_id>"潜在使用组织".md      ← Step 4
-  ├── <patent_id>"潜在违约".md          ← Step 5（候选总索引）
-  ├── <patent_id>"违约列表".md          ← Step 6（终筛，状态总表）
-  ├── 候选/<slug>/                       ← 每候选独立子文件夹（Step 5+6）
-  │   ├── _sources.md                    ← 已抓取证据索引
-  │   ├── _verdict.md                    ← 状态机三栏判定
-  │   ├── 关键证据.md                    ← Step 6 per-candidate 两小节文档
-  │   └── <下载的证据文件>
-  └── .cache/                            ← 研究过程中下载的辅助 PDF
+```bash
+pip install requests beautifulsoup4 lxml pdfplumber pypdf
 ```
 
-输出文件名严格使用全角引号格式：`<patent_id>"<阶段>".md`，引号是 **U+201C / U+201D**——Windows 路径写入有固定流程，见 [reference/operational_quirks.md](./reference/operational_quirks.md)。
+---
+
+## 0. 输入与落盘约定
+
+- **输入**：patent ID（`<PATENT_ID>`，如 `XX1234567A` 形式的公开号）或路径 `专利集/<PATENT_ID>.pdf`
+- **工作目录**：`专利集/<PATENT_ID>/`——若 PDF 在 `专利集/` 根，先建子目录并把 PDF 移进去
+- **文件名规约**（全角引号 = U+201C `"` + U+201D `"`，**不是** ASCII `"`）：
+
+```
+专利集/<PATENT_ID>/
+├── <PATENT_ID>.pdf                              ← 输入（可选）
+├── <PATENT_ID>.md                                ← Step 1
+├── <PATENT_ID>"潜在应用场景及侵权特征".md       ← Step 2
+├── <PATENT_ID>"潜在使用组织".md                  ← Step 3
+├── <PATENT_ID>"潜在侵权产品初选".md              ← Step 4
+├── <PATENT_ID>"潜在侵权产品-全".md               ← Step 5
+├── <PATENT_ID>"违约列表".md                      ← Step 7
+└── 候选/NN-<slug>/
+    ├── _meta.json                                ← init 脚本写
+    ├── _sources.md                               ← sub-agent 写（query 留痕）
+    ├── _pruned.txt (可选)                        ← sub-agent 粗筛 0 信号时写
+    ├── _verdict.md                               ← sub-agent 直接写（含"第 N 档"标签）
+    └── <下载的证据 PDF / HTML>
+```
+
+**Windows 全角引号写法**：Claude 的 `Write` 工具直接写全角引号路径会 `ENOENT`。所有 Step 2-5 输出按下述流程：
+1. Claude 用 `Write` 写到 ASCII 临时名 `_scratch_stepN.md`
+2. Claude 调 `python <scripts>/write_report.py <PATENT_ID> <stage_name> _scratch_stepN.md` 完成 rename + 删源
 
 ---
 
-## The Six-Step Pipeline
+## Step 1 — 取专利原文 → `<PATENT_ID>.md`
 
-Execute each step in order. After each step, write the output markdown file to disk before continuing — the next step reads it back. Use `TodoWrite` to track the six steps.
+```bash
+python .claude/skills/patent-infringement-check/scripts/fetch_patent.py <PATENT_ID>
+```
 
-### Step 1 — Acquire patent text → `<patent_id>.md`
+抓 `https://patents.google.com/patent/<PATENT_ID>/zh`（CN 用 `/zh`，其他用 `/en`），BeautifulSoup 直抽所有权利要求 verbatim + 说明书全文 + 基本信息（含**公开/授权日**——Step 6 时间窗判定的关键字段）。
 
-把输入专利（PDF / MD）转成完整 verbatim 的 markdown。Step 2 依赖完整 claim 文本——**不允许带截断或汇总内容进入 Step 2**。
+**退出码**：`0` 成功；`2` 失败 → Claude 回退 `WebFetch`（prompt 须强调 `Output ALL claims verbatim, do not summarize`）或 `pdf` skill 本地解析 PDF。结果都落到 `<PATENT_ID>.md`。
 
-主要路径：
-1. 输入 `.md` → 直接读，跳到 Step 2
-2. 输入 `.pdf` → 先试 Google Patents WebFetch（CN 用 `/zh`，其他用 `/en`）
-3. WebFetch 返回**汇总输出**（识别信号："权 N 至 M 涉及"、"包括"、"等"等概括用语）→ 必须按 narrow-prompt-per-claim 逐条 verbatim 重抓
-4. WebFetch 受阻 / 内容稀薄 → 本地 `pdfplumber` 提取；若 EMPTY_PAGES ≥ 80%（扫描 PDF）→ 切到 OCR 或回到 WebFetch stricter prompt
+---
 
-→ 详细流程 / WebFetch 汇总诊断信号 / narrow-prompt 模板 / PDF 提取脚本 / 扫描 PDF 处置：**[reference/step1_acquire_patent_text.md](./reference/step1_acquire_patent_text.md)**
+## Step 2 — 应用场景 + 独权 + 侵权特征 → `<PATENT_ID>"潜在应用场景及侵权特征".md`
 
-### Step 2 — Patent introduction → `<patent_id>"专利介绍".md`
+**避免读全文**：先用 slice 脚本把 `<PATENT_ID>.md` 削成仅含基本信息 + 摘要 + 背景技术 + 所有独立权的精简版（典型 1.5-4k 字符，原文常超过 30k）：
 
-把 Step 1 的 markdown 解析成结构化介绍：基本信息 / 一句话概括 / 解决的技术问题 / 核心技术方案 / **独立权利要求总览（含侵权主体映射）** / **必要技术特征清单 F1-Fk** / **每条 F# 的 satisfaction paths（独立权字面 / 从属权 alt / 等同）**。
+```bash
+python .claude/skills/patent-infringement-check/scripts/slice_patent.py <PATENT_ID> --out /tmp/<PATENT_ID>_slice.md
+```
 
-关键约束：
-- **逐条列出**所有独立权（不只权 1）+ 每条对应的侵权主体类型
-- 多条独立权共享同一组核心特征时明示"以下 N 条独立权共享 F1-Fk"
-- 每条 F# 至少列 3 类 satisfaction path——**避免漏读从属权 alt**
+Claude `Read` 这个切片（**不要再 Read 原 `<PATENT_ID>.md`**——浪费 token），按下方模板写到 `_scratch_step2.md`，再 `write_report.py` 重命名为带全角引号的最终文件。
 
-→ 完整模板 + 主体映射表（方法 / 装置 / 整机 / 芯片 / 介质五件套）+ F# satisfaction paths 规则：**[reference/step2_patent_introduction.md](./reference/step2_patent_introduction.md)**
+**模板**：
 
-### Step 3 — Domain Adaptation + Application Scenarios + R-STANDARD Subprocess
+````markdown
+# <PATENT_ID> 潜在应用场景及侵权特征
 
-按 3a → 3b 顺序执行；3c 仅在 R-STANDARD = true 时执行。
+## 基本信息
+- 专利号：
+- 标题：
+- 当前权利人：
+- 申请日 / 公开（授权）日：           ← 后续 Step 6 时间窗用此字段
 
-- **3a 领域适配** → `<patent_id>"领域适配".md`：把本专利分类到一个具体领域。**领域定锚强制**——必须基于 Step 1 输出"背景技术"章节的 verbatim 内容定锚，**不得外扩**到背景技术未提及的相邻领域。然后**现场构造**：(i) 5 大主体类型清单 + 必跑参考清单（**强制 3 视角覆盖**：产业全景 / 金融市场 / 政府名录）；(ii) **本领域研究阵地清单**（≥ 3 个，含主域名——Step 5 §A.2 / §A.5 / §A.15 按此清单逐家跑 query）；(iii) 6 个 R-* 标志（R-OPENSOURCE / R-CONFIG / R-PARTNER / R-PATENTWALL / R-PROCURE / R-STANDARD）
-- **3b 应用场景** → `<patent_id>"潜在应用场景".md`：轻量场景推演，每个场景必须列**具名产品列表**（防 niche / 子品牌漏检），且每个 named product 必须在 Step 4 候选清单中以独立产品族条目出现
-- **3c R-STANDARD 子流程**：仅当 R-STANDARD = true。判定 SEP / GB / 行业准入三类，影响 Step 4 候选清单处置
+## 一、潜在应用场景（严格来自背景技术 — 不外扩）
 
-→ 完整模板 + 多视角强制要求 + R-* 标志判定标准 + 研究阵地清单推演方法 + 3c 标准合规判定矩阵：**[reference/step3_domain_and_scenarios.md](./reference/step3_domain_and_scenarios.md)**
+### 场景 1：<场景简名>
+- **背景技术 verbatim 依据**：> "<原文引文>"
+- **场景说明**：1-2 句话，谁在用、用来干什么
+- **使用本专利的典型形式**：（如 SDK / 内嵌算法 / 工艺步骤 / 配方组分 等——仅基于背景技术明示，**不外扩**）
 
-### Step 4 — Potentially using organizations → `<patent_id>"潜在使用组织".md`
+### 场景 2 / 场景 3 ...
+（按背景技术实际描述的场景数列；若只描述 1 个就只写 1 个——**宁少勿编**。）
 
-按 Step 3 给出的 5 大主体类型分组展开候选；至少 8 个组织、覆盖至少 3 个场景。
+## 二、独立权利要求 + 侵权特征 F1-Fk
 
-七条硬规则（按优先级顺序应用）：
-1. **R-1 按"产品族"而非"公司"展开**：每个组织 ≥ 2 个产品族，独立成行
-2. **R-2 拓扑变体细分**（条件激活——独立权字面含 N ≥ 2 / K ≥ 1 / 多层结构等整数限定）：必须按拓扑变体拆成多个候选条目分别 verdict
-3. **R-3 R-OPENSOURCE 双层激活**：上游开源项目 + 商业发行版**双层独立 P0**
-4. **R-4 主体覆盖检查**：按 5 大主体类型逐条 check，不允许默默跳过
-5. **R-5 长尾覆盖检查**（技术词驱动 query，非业务定位 query）+ 用户驱动反向兜底 + 领域过拟合自检
-6. **R-6 核心技术候选归并**：多个产品共享同一核心技术 → 归并为"核心技术 + 原创组织"一行；下游使用方作为该候选 verdict 的"应用案例"
-7. **R-7 架构层级不符的预排除**：F1 概念上都不构成的候选直接预排除，保留在 Step 6 状态总表"第 5 档：已排除（架构层级不符）"以保证审计可追溯
+### 权 1 verbatim
+> <整段引自切片中权 1 的原文>
 
-→ 完整模板 + 七条硬规则的详细判定准则 + 跨领域示例：**[reference/step4_organizations.md](./reference/step4_organizations.md)**
+### F1-Fk 清单
+- **F1（<特征简名>）**：<verbatim 引自权 1 的对应句>
+- **F2（...）**：<...>
+- ...
 
-### Step 5 — 全候选证据协议 → `<patent_id>"潜在违约".md` + `候选/<slug>/_verdict.md`
+**拆分规则**：权 1 字面中"包括 / 其特征在于 / 所述 ... 包括"后面的每个并列限定 / 动作步骤 / 关键参数拆成一个 F#。禁止合并多步、禁止意译。
 
-对 **Step 4 列出的所有候选 × 它们各自适用的所有独立权**强制执行。**找到一个高置信侵权候选后不得提前终止**。
+### 其他独立权（仅当存在多条独立权时填）
+- 权 N（<形式：方法/装置/介质/.../混合>）：<verbatim 简述与权 1 的差异部分>
 
-协议四段：
+### 关键限定词与隐含约束
+- <整数限定（如 N ≥ 2）/ 多层结构 / 时间窗 / 默认 vs 可选 / 配方比例 / 工艺次序 等——每条一行>
+````
 
-- **§A 19 类源穿透**：所有候选必跑前 9 类主流来源；"公开资料不足"档候选必续跑 10-19 类非主流来源；第 20 类反向工程视成本启用。每类源跑过 0 命中也要明示"<类> 检索 0 命中"，不能默默跳过。
-  - **检索单元构造（3×2 矩阵）**：每条 query 至少跨 **2 个 identifier 维度**（vendor 本地名 / 国际名 / 邮箱域）× **2 种语言**（vendor 主营市场语言 / 研究阵地主导语言）—— 防止"vendor 中文名 + 中文 topic" 单一组合的系统性漏检
-  - **执行纪律 — verifiable 证据强制**：每条 query 必须留 URL 或 0-hit 显式声明；**不允许**写"建议法务深读 / 据悉 / 通常 / 推测"等推测性断言代替实际 query 执行；主 agent §A 收尾必须 grep 自检，命中推测性词汇必须返回去补跑
-  - **第三方源码 / 实现分析作为可接受证据（§A.8a）**：闭源 SDK / 大量源码不易直接 reading 时，第三方公开的源码分析（技术博客 / 课程材料 / reverse engineering 论文 / mailing list 设计讨论 / 实战教程）可接受为证据，但**置信度降一级**；如能用第三方分析定位到原始 commit / 函数 URL 则升回原始档
-- **§B 本地化证据归档**：每候选 `候选/<slug>/` 子文件夹 + `_sources.md` 索引 + 每条命中资料本地落盘
-- **§C 子 agent 逐文档审阅**（P0 必跑；P1 / P2 可选）：每份证据**独立 spawn** general-purpose agent；禁止合并多份文档到同一 agent；并行 spawn
-- **§D 状态机判定 + 三栏 verdict**：**权 1 入门检测**（漏斗式）→ 投票汇总 F# → 三档状态（确认侵权 / 已排除 / 公开资料不足）→ 5 档细化排名 → 三栏 verdict（状态机原始 ↔ 后置调整 ↔ 最终）+ 7 条后置调整逐条核查
-  - **权 1 漏斗**：每个候选必须**先把权 1 全套 F1-Fk 跑完**——权 1 任一 F# 落"已排除门槛硬条件"则整个候选直接判已排除，跳过其他独立权；权 1 命中（字面 / 等同）或公开资料不足才进入其他独立权评估，其他独立权只评估**该独立权特有限定**（共享 F1-Fk 沿用权 1 结果）
+**Step 2 自检**：F# 数量是否覆盖权 1 所有并列动作？整数限定 / 多层结构 / 时间窗有没有漏？
 
-  状态机四条硬约束（机制层 — 防偏倚）：
-  1. **等同回避偏倚**（禁止）：等同命中与字面命中同档，不得潜意识降级
-  2. **法律不确定性回流**（禁止）：法律解读由律师 / 法院做，写入"建议下一步"字段，不回流降低状态机判定
-  3. **反向脑补过宽读**（与硬约束 1 对偶 — 同样禁止）：vendor 文档只覆盖 F# 子集时，未覆盖 F# 不得直接标"字面命中"；**整数限定的拓扑外推禁令** — 不能用 vendor 单实例文档推 N ≥ 2 多实例命中（应回到 Step 4 R-2 拆拓扑变体）
-  4. **已排除门槛硬约束**：**0 命中 ≠ 已排除**——必须满足真反向证据 / 时间不合规 / 领域无关 / 架构错位 / 重复 5 条硬条件之一才能判已排除
+---
 
-- **§E 穷尽性证明**：所有"公开资料不足"档候选必须在 verdict 末尾列 19 类源逐类已跑 query
+## Step 3 — 潜在使用组织 → `<PATENT_ID>"潜在使用组织".md`
 
-→ 完整 §A 19 类源清单 + 3×2 矩阵 query 构造规则 + 执行纪律 verifiable 证据规则 + 7 条后置调整 + §D 状态机 4 条硬约束 + 三栏 verdict 格式 + §E 穷尽性证明模板：**[reference/step5_evidence_collection.md](./reference/step5_evidence_collection.md)**
+**Claude 主 agent 直接做**。基于 Step 2 的场景列表，按场景分组列出**真实存在**的组织。每个场景下尽量覆盖**三类视角**：
 
-### Step 6 — Final infringement list → `<patent_id>"违约列表".md` + `候选/<slug>/关键证据.md`
+- (i) 行业头部 / 主流
+- (ii) 海外上市 / 中概股 / 港股 / 独角兽
+- (iii) 政府试点 / 行业协会成员 / 标准化参与方
 
-仔细复核 Step 5 中所有 verdict（来源真实性 / 特征完整性 / 时间合规性）+ 执行专利法律状态后置调整。
+**精简输出**——每个组织只需 1 行：
 
-输出包含：
+```markdown
+### 场景 N：<场景名>
 
-- **状态总表**：按 5 档技术判定排序；同档内按子排序键 6.1-6.4（核心技术 → 权属人自营 → 第三方集成 → 仅引用方）。"一行一产品 OR 核心技术"模型；"组织"列允许列多个；**"关键证据"列**指向每候选独立的 `关键证据.md`
-- **每个候选独立的 `关键证据.md`**（强制两小节）：
-  - **一、基于被侵犯独权的 F# 证据原文 + 网页链接**：对适用独权的每条 F#，给出 verbatim 引文 + 可点击 URL（无字面引文时明示"未找到字面引文"或"公开资料不足"）
-  - **二、已检查文档清单**：逐条列出 Step 5 §A 实际跑过的资料——文档名 / 内容摘要 / URL / 简要评价（"字面命中" / "信号命中" / "无相关内容" / "未深抓取" 等）
+- **<组织名>**（类型；视角 i/ii/iii）— 1 句定位 — 代表性产品/项目：<P1, P2, P3>
+- ...
+```
 
-法律状态后置调整：
-- **Active**：标准流程
-- **Pending**：所有"确认侵权"候选标"等待授权 — 临时保护期"+ 在状态总表下方加 4 项紧凑模板（临时保护起算日 / 可执行性 / 追溯许可费基础 / 审查风险点）；**不影响排序位置**（排序只看技术判定）
-- **Expired / 无效宣告**：相应降级
+候选数量按需要——背景技术只描述 1 个场景的，组织少 4-5 个也合理；多场景多视角的可以 10+。**Step 3 不深挖产品**——Step 4 才展开到具体产品族。
 
-→ 状态总表完整模板 + 7 个列定义 + 排序规则 + per-candidate `关键证据.md` 两小节模板 + Pending 紧凑模板 + 标准合规候选清单 + 检索盲区声明：**[reference/step6_final_list.md](./reference/step6_final_list.md)**
+不确定 vendor 真实性时跑 1 条 `WebSearch` 验证；查不到不要列。
+
+写到 `_scratch_step3.md` → `write_report.py <PATENT_ID> 潜在使用组织 _scratch_step3.md`。
+
+---
+
+## Step 4 — 潜在侵权产品初选 → `<PATENT_ID>"潜在侵权产品初选".md`
+
+**Claude 主 agent 直接做**。基于 Step 3 的组织 × Step 2 的 F1-Fk，列出**有具体名字**的产品 / SDK / 服务 / 模块 / 工艺。表头**严格**：
+
+| NN | 类型 | 名称 | vendor | 命中场景 | 初判命中 F# | 公开度 | candidate_slug |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+
+**类型**取值：`产品` / `技术`（技术类是 Step 5 归并后才会出现，Step 4 默认全填"产品"）。
+
+**要求**：
+
+- 产品名是 vendor 公开使用的具体名（**不要泛指**——禁止 "<vendor> 云平台"、"<vendor> 解决方案"类）
+- 同一组织允许多个产品族（各自独立成行）
+- 若候选与 F1-Fk 概念上不在同一抽象层（如专利讲算法 / 候选是物理硬件 ODM），**不要列**（避免浪费 Step 6 预算）
+- **NN 是两位整数前缀，从 01 起**——后续 init 脚本按此创建 `候选/NN-<slug>/`
+- 公开度 = vendor 对该产品技术细节的对外公开程度（文档 / 论文 / 开源等），高 / 中 / 低
+- `candidate_slug` 形如 `NN-<vendor-product>`（ASCII 小写连字符）
+
+数量按需要，但每个 Step 3 场景至少 1-2 个产品。写到 `_scratch_step4.md` → `write_report.py`。
+
+---
+
+## Step 5 — 技术词驱动的长尾扩展 + 归并 → `<PATENT_ID>"潜在侵权产品-全".md`
+
+**Claude 主 agent 直接做（含 WebSearch）**。两阶段。
+
+### 5.1 长尾扩展（技术词驱动）
+
+从 Step 2 的 F1-Fk 抽 **2-3 个核心技术词组合**——必须是技术术语，不是 vendor / 业务定位词。然后跑下表 5 条 `WebSearch`，每条至少 1 次（行 2a / 2b 必须**双轨并行**，不能只跑一条）：
+
+| # | query 模板 | 召回意图 |
+|---|---|---|
+| 1 | `<核心技术词组合> 上市公司` | 行业头部（A 股 / 中文披露主导） |
+| 2a | `<核心技术词组合 EN> NASDAQ OR NYSE startup` | 海外原生 / 英文披露主导的中概 |
+| 2b | `<核心技术词组合 中文> 中概股 OR NASDAQ OR 美股 OR 小盘` | **美股上市但业务披露以中文 PR 为主**的中概小盘 |
+| 3 | `<核心技术词组合> 独角兽 OR 港股 OR 新三板` | 一级市场 / 港股 |
+| 4 | `<核心技术词组合> 开源 OR SDK OR 协议 OR 工艺` | 开源 / 标准 / 工艺实现 |
+
+**为什么 2a / 2b 必须双轨并行**：海外上市 ≠ 英文披露。一类中概小盘的某条业务线对外披露主要走中文 PR 渠道（网易 / IT 之家 / 新浪科技 / 中华网 / 同花顺 / 集思录等），英文资料几乎空白；只跑英文 query 会系统性漏检这一子集。反向亦然——海外原生 startup 在中文媒体往往不可见。两条 query 用的是同一组核心技术词，仅语言/关键词不同，召回成本可控。
+
+**纪律**：0 命中也明示"0 命中"；引用 URL 必须 `WebSearch` 实际返回；召回的 vendor 主业完全偏离本专利领域、仅关键词碰撞的——剔除，**不要进入归并**。
+
+**不要写中间 `长尾扩展.md` 文件**——直接在主 agent 上下文中保留 5-15 条非冗余的新候选，下一节合并。
+
+### 5.2 归并 + 去重（直接写 `潜在侵权产品-全.md`）
+
+合并 Step 4 初选 + 5.1 长尾结果，应用 **产品 vs 技术二元归并规则**：
+
+- **一个产品命中多项 F#** → 该**产品**作一个条目（"命中 F#" 列多项）
+- **多个产品共用一项技术，且该技术本身就实现了 F1-Fk**（如某 SDK / 协议 / 开源库 / 算法实现 / 配方 / 工艺规范——技术本体即侵权主体，下游产品只是集成） → 该**技术**作一个条目（"应用案例" 列下游产品）
+- 若技术只是被集成、下游有独立二次创新 → 保留产品分别成行
+
+**输出文件必须严格按下述结构**（init 脚本依此解析；偏离会导致解析失败但脚本退出码仍为 0——*静默失败*！自检表头列名 + 简介标题层级）：
+
+````markdown
+# <PATENT_ID> 潜在侵权产品-全
+
+> 合并 Step 4 初选 + Step 5.1 长尾扩展，并按"产品 / 技术二元归并规则"去重。
+> 序号 NN 即为后续 `候选/NN-<slug>/` 子文件夹的前缀。
+
+## 候选总表
+
+| NN | 类型 | 名称 | 组织 | 命中 F#（初判） | 公开度 | candidate_slug |
+| --- | --- | --- | --- | --- | --- | --- |
+| 01 | 技术 | <技术名> | <宿主组织 / 主 maintainer> | F1, F2, F4 | 高 | `01-tech-<slug>` |
+| 02 | 产品 | <产品名> | <vendor> | F1, F3, F5 | 中 | `02-<vendor>-<product>` |
+| ... | ... | ... | ... | ... | ... | ... |
+
+## 各候选简介
+
+### 01-tech-<slug>
+- 类型：技术
+- 名称：
+- 组织：
+- 命中 F#（初判）：
+- 公开度：
+- 一句话定位：
+- 应用案例（仅"技术"类条目）：<下游产品列表>
+
+### 02-<vendor>-<product>
+- 类型：产品
+- 名称：
+- vendor：
+- 命中 F#（初判）：
+- 公开度：
+- 一句话定位：
+
+### 03-...
+````
+
+写到 `_scratch_step5.md` → `write_report.py <PATENT_ID> 潜在侵权产品-全 _scratch_step5.md`。
+
+---
+
+## Step 6 — 逐候选 react 模式取证 + 直接写 verdict
+
+### 6.0 初始化候选文件夹
+
+```bash
+python .claude/skills/patent-infringement-check/scripts/init_candidates.py <PATENT_ID>
+```
+
+按 Step 5 候选总表为每个候选建 `候选/NN-<slug>/`，写 `_meta.json`（slug / type / name / organization / hit_features_initial / publicity / blurb）+ 占位 `_verdict.md`。幂等；`--force` 覆盖。
+
+### 6.1 Sub-agent react 协议（每候选一个独立 agent）
+
+主 agent **批量并行 spawn** `subagent_type: general-purpose` agent（建议每批 3-5 个；不要一次 spawn 几十个——工具并发会被节流）。
+
+**关键：每批 spawn 完后等待该批全部返回再启动下一批**——否则 Step 6 没完成就跑 Step 7 会读到空 `_verdict.md`。Step 7 不能在 Step 6 全部 sub-agent 返回前启动。
+
+**Sub-agent prompt 装配**：把下面的协议作为模板，替换其中所有 `{PATENT_ID}` 和 `{SLUG}` 为本候选的实际值。**展开方式**——主 agent 用 Python 字符串格式化或手工替换：
+
+例：候选 `03-acme-widget` 在专利 `XX1234567A` 下，sub-agent prompt 模板里 `{PATENT_ID}` → `XX1234567A`、`{SLUG}` → `03-acme-widget`。
+
+**Sub-agent 协议模板**（verbatim 嵌入，仅替换占位符；本协议是 sub-agent 的 user message，不要外加包装）：
+
+```
+你是某具体候选的证据收集 + 判定 sub-agent。一次性完成 react 模式搜索 + 证据合议 + 直接产出 _verdict.md。**禁止替专利权人下"已构成侵权"的法律结论**——只给"第 N 档"技术档位。
+
+【上下文 — 必须先读】
+
+1. 读候选元数据：`Read 专利集/{PATENT_ID}/候选/{SLUG}/_meta.json`
+2. 读专利的 F# 特征：`Read 专利集/{PATENT_ID}/{PATENT_ID}"潜在应用场景及侵权特征".md`
+3. 从该文件抽出"公开（授权）日"——作为时间窗判定基准
+
+【Phase 1 — react 模式粗筛（预算 ≤4 WebSearch）】
+
+**强制 react**：每次只发 **1 条** WebSearch，看完返回结果后再决定下一条。**禁止在一条消息内并行多条 WebSearch**。
+
+起步建议：
+  - query 1：`<vendor / 技术名> <产品 / 主仓库名> <Step 2 第一个核心技术词>`
+  - query 1 命中无关 → query 2 换 `site:` 限定或换语言
+  - query 1 命中相关 → query 2/3 用 `<vendor> <某个 F# 技术词>` 缩到具体特征
+  - 累计 4 条仍无信号 → 走"早剪枝"
+
+【早剪枝】
+
+满足任一立即停止：
+  (i) 4 条 query 全 0 命中 / 命中 URL 全部与候选无关
+  (ii) 所有命中材料发布日期 < 专利公开（授权）日 — 现有技术，不构成侵权证据
+  (iii) 命中材料显示候选实际架构层级与 F# 概念上不同（非同一抽象层）
+
+此时**只**做三件事：
+  - 写 `专利集/{PATENT_ID}/候选/{SLUG}/_pruned.txt`：一句话剪枝原因
+  - 写 `专利集/{PATENT_ID}/候选/{SLUG}/_sources.md`：跑过的 query + 0 命中声明
+  - 用下方 PRUNED VERDICT 模板写 `_verdict.md`，返回主 agent
+
+【Phase 2 — react 模式深抓（仅当 Phase 1 未剪枝；预算 ≤6 WebFetch）】
+
+对 Phase 1 中信号最强的 2-4 个 URL，逐个 `WebFetch`。每次 WebFetch 完读完再决定下一个——**禁止一次并行多个 WebFetch**。
+
+抓取重点：
+  - F# 中含**整数限定 / 多层结构 / 时间窗 / 配方比例**的，**主动找** vendor 文档中描述的实际拓扑 / 配比——如果 vendor 文档默认描述的是下界以下的形态（例：F# 要求 N ≥ 2，vendor 只描述 N=1），**verbatim 摘录**该单实例描述（这是反向证据信号）
+  - 抓 PDF 用 `curl -ksSL -o 专利集/{PATENT_ID}/候选/{SLUG}/<name>.pdf <url>`
+  - 抓长 HTML 同样落盘到候选目录
+  - 每条命中证据，记录其**发布日期**用于时间窗判定
+
+【证据真实性 — 严格反向 vs 限定语区分】
+
+| sub-agent 看到的措辞 | 是反向证据还是限定语？ |
+|---|---|
+| "Y does NOT do X" / "Y 不支持 X" / "Y 仅支持 Z（不支持 X）" / "Y explicitly excludes X" | ✅ **真反向证据** |
+| "X is out of scope" / "X is future work" / "X can work with Y" / "X 不在本文范围" | ⚠️ **作用域限定语**（**不是**反向证据） |
+| "Y achieves X via different mechanism" | ❌ **不是**反向证据——这是等同命中信号 |
+
+【输出 — 直接写 _verdict.md】
+
+把下面整个模板 verbatim 写入 `专利集/{PATENT_ID}/候选/{SLUG}/_verdict.md`（替换 `<…>` 占位符）。最终判定**必须**含字面字符串 `第 N 档`（N ∈ {1,2,3,4,5}），否则 Step 7 解析失败。
+
+  # {SLUG} verdict
+
+  ## 候选基本信息
+  - 名称：<from _meta.json name>
+  - 组织：<from _meta.json organization>
+  - 类型：<from _meta.json type>
+  - 初判命中 F#：<from _meta.json hit_features_initial>
+  - 专利公开（授权）日：<from Step 2 输出>
+
+  ## F# 命中表
+
+  | F# | 判定 | 证据 verbatim | URL | 备注 |
+  | --- | --- | --- | --- | --- |
+  | F1 | 字面命中 / 等同命中 / 公开资料不足 / 反向证据 | "<verbatim 引文>" 或"未找到" | <URL> | 等同时简述同手段/同功能/同效果 |
+  | F2 | ... | ... | ... | ... |
+  | ... | ... | ... | ... | ... |
+
+  ## 已检查文档清单
+  - <文档 1 1-行摘要> — <URL>
+  - ...
+
+  ## 最终判定
+
+  **第 N 档：<标签>**
+
+  五档定义：
+    - 第 1 档：确认侵权（高）— F1-Fk 全部字面命中
+    - 第 2 档：确认侵权（中）— F1-Fk 全部命中，含 ≥1 等同命中
+    - 第 3 档：公开资料不足（强候选）— ≥60% F# 命中，剩余公开资料不足且无反向证据
+    - 第 4 档：公开资料不足（弱候选）— <60% F# 命中
+    - 第 5 档：已排除 — 仅当：(a) ≥1 条 F# 有真反向证据，或 (b) 全部证据 < 专利公开日（现有技术），或 (c) 架构层级不同
+
+  **0 命中 ≠ 已排除**。无正向证据但也无反向证据 → "公开资料不足"（第 3 或 4 档），**不是**第 5 档。
+
+  判定依据（1-3 句话，基于上表 F# 命中分布）：
+  <理由>
+
+  ## 升级路径（仅当落第 3-4 档时填）
+  - <如何补取证：反向工程 / NDA 渠道 / 论文深读 / 招股书披露 / 客户访谈 等>
+
+  ## 总结一句话
+
+  <≤120 字，必须含"落第 N 档"字样>
+
+【PRUNED VERDICT 模板 — 仅 Phase 1 早剪枝时用】
+
+  # {SLUG} verdict
+
+  ## 候选基本信息
+  <同上>
+
+  ## 最终判定
+
+  **第 5 档：已排除（粗筛阶段）**
+
+  排除原因（粗筛后立判）：
+
+  > <一句话原因，含 (i)/(ii)/(iii) 字样指明触发条件>
+
+  ## 已跑 query 留痕
+  - query 1: `<query>` → 0 命中 / <命中要点>
+  - query 2: ...
+
+  ## 总结一句话
+
+  候选 {SLUG} 在 Phase 1 粗筛被剪枝（落第 5 档）：<原因>
+
+【纪律】
+- 不要替候选下"已构成侵权"的法律结论
+- 不要伪造 URL 或 verbatim 引文（主 agent 会抽样验证，伪造会被发现）
+- 不要在 Phase 1 / Phase 2 内并行多个工具调用 — 必须 react 模式串行
+- 整数限定外推禁令：F# 含 N ≥ 2 等限定时，若 vendor 文档只描述下界以下形态 → 不能写"理论上可扩展 → 字面命中"，应判"公开资料不足"或视具体引文情况判"反向证据"
+- 工具能力受限（付费墙 / 登录墙）时，在 `_sources.md` 明示原因，不要凭印象写
+```
+
+### 6.2 主 agent 复核（必做 — 抽样验证 sub-agent 不脑补）
+
+每批 sub-agent 全部返回后，`Read` 抽样 2-3 个 `_verdict.md`：
+
+1. "第 1 / 2 档" verdict 是否真有 F1-Fk 全套 verbatim 引文？必要时 `WebFetch` 一次验证某个引文 URL
+2. "第 5 档" verdict 是否真满足 (a)/(b)/(c) 硬条件？（防 "0 命中 → 误标已排除"——sub-agent 经常犯）
+3. F# 命中表的整数限定 / 多层结构如有命中，是否真的有多实例 / 多层引文？还是 sub-agent 用单实例引文外推了？
+
+**纠错路径**：
+- 发现 sub-agent 明显走偏 → 删 `_verdict.md` + 重 spawn 该候选的 sub-agent（传入额外指令"请注意 XX 之前误判 YY"）
+- 仅档位轻微偏移、F# 表正确 → 直接 `Edit` `_verdict.md` 改"第 N 档"字样（**保留** `## 最终判定` 标题 + `第 N 档` anchor——Step 7 解析依赖）
+
+---
+
+## Step 7 — 终筛 → `<PATENT_ID>"违约列表".md`
+
+```bash
+python .claude/skills/patent-infringement-check/scripts/compile_step7.py <PATENT_ID>
+```
+
+无 LLM 调用——读所有 `_verdict.md` + `_meta.json`，按"最终判定"段的"第 N 档"标签排序，输出状态总表 + 候选明细 + 统计 + 免责声明。
+
+**Step 7 前置条件**：所有 `候选/NN-<slug>/_verdict.md` 必须含"第 N 档"字样（不能停留在 init 时的占位"待评估"）。如有任一候选 verdict 为"第 9 档：待评估"，回 Step 6 补跑该候选后再 compile。
+
+**主 agent 交付**：`Read` 输出确认；最终给用户 3 个数字——
+- 第 1+2 档候选数 = 高置信侵权候选
+- 第 3 档数 = 建议法务深查
+- 第 5 档数 = 已排除
+
+### 法律状态 caveat
+
+如 Step 1 抓到的 `<PATENT_ID>.md` 显示专利法律状态为 **未授权 (Pending)** / **失效 (Expired)** / **无效宣告进行中**，在 `违约列表.md` 末尾追加一段说明（Pending → "确认侵权"档候选只构成"临时保护期主张追溯许可费"依据，不能直接起诉；Expired → 全部已排除；无效进行中 → 列出风险）。**法律状态不影响技术档位排序**——状态机判的是"技术上是否落入保护范围"。
 
 ---
 
 ## 全局约束
 
-### ★ 隔离与一致性硬约束
+1. **永远不要伪造引用**：每条来源必须是 `WebSearch` / `WebFetch` / `curl` 实际拿到的 URL；拿不到写"未检索到公开来源"
+2. **永远不要替用户下"已构成侵权"结论**：本 skill 输出的是**线索与证据链**；结论交给律师 / 法院。`违约列表.md` 末尾自动含免责声明
+3. **保留中间产物**：所有报告 + 候选文件夹都落盘，不要中途清理
+4. **报告语言**：默认中文，无论专利原文语言（仅 `<PATENT_ID>.md` 保留专利原文）
+5. **检索不要自治**：所有 WebSearch / WebFetch 都由 Claude（主 agent 或 sub-agent）显式发起，并由主 agent 抽样复核证据真实性。不依赖任何全自动 RAG 黑盒。
+6. **TodoWrite 跟踪 7 步**：每步完成立即 mark done；脚本退出码 ≠ 0 不要默默跳过
+7. **0 命中 ≠ 已排除**：状态机硬约束。0 命中只能落"公开资料不足"档，不能升"已排除"——这条规则在 Step 6 sub-agent prompt 内强化了一次
 
-SKILL 是机制层文档，规则的正确性由其内在逻辑独立成立。**禁止**在 SKILL 中写入任何能让主 agent 跳 1-2 步推理到具体评测答案的信息——包括但不限于：
+---
 
-- 任何评测专利号、领域分类、主分类号、关键术语
-- 评测答案候选名、其代表性产品 / 论文 / 上游项目 / 配置参数 / 关键 commit / 代表性 vendor 名
-- "实测案例 / 实测教训 / 曾发生 / 本规则源自……失误"等案例叙事
-- 用占位符暗示评测集分布的语言（如"某 X 类专利"反向暗示评测集中存在该领域专利）
-- 任何"避开 / 不要用"列表（写 avoid list 等于反向告诉读者哪些是评测集）
+## 主动改进建议
 
-从过去案例中提炼出的抽象原则**直接写进流程本身**（而非作为案例括注挂在规则旁边）。**每次修改 SKILL 后必须 grep 自查**，命中先清理再提交。
-
-### 其他全局约束
-
-- **永远不要伪造引用**：每条来源必须是 `WebSearch` / `WebFetch` 实际拿到的链接；拿不到就如实写"未检索到公开来源"
-- **永远不要替用户下结论说"已构成侵权"**：专利侵权判定是法律结论，本 skill 输出的是**线索与证据链**，最终结论应交由专业律师。文末必须包含免责声明
-- **保留中间产物**：Step 1-6 的报告都要落盘到 `专利集/<patent_id>/`；研究过程中下载的辅助 PDF 落到 `专利集/<patent_id>/.cache/`
-- **TodoWrite 跟踪六步**：每完成一步立即 mark completed
-- **报告语言**：默认中文输出，无论专利原文语言（CN / US / EP / JP / KR / WO 任一）。文件名也统一中文。仅 Step 1 抓取的专利原文 verbatim 文本 (`<id>.md`) 保留专利原文语言
-- **改进建议主动提出 + 等用户确认再编辑 SKILL**：执行过程中发现 SKILL 有改进空间，先跑完当前任务，然后在最终回复里明确提出建议（问题 / 修改方案 / 预计好处），等用户确认后再实际编辑
-
-→ Windows 全角引号文件名固定写入流程 / 中文路径 PowerShell 选择 / 403 fallback：**[reference/operational_quirks.md](./reference/operational_quirks.md)**
+执行中如发现规则 / 模板 / sub-agent prompt 不够好——**先把当前任务跑完**，然后在最终回复里明确提出建议（观察到的问题 + 修改方式 + 预计好处）。**等用户确认后再编辑** SKILL.md / scripts/。
 
 ---
 
 ## 触发示例
 
-- 用户：`检测一下 专利集/<patent_id>.pdf 有没有被其他公司使用` → 触发，按六步走
-- 用户：`帮我看看 <patent_id> 这个专利的侵权情况` → 触发；如目录里已有 PDF 则按上面流程，否则先问用户文件位置
+- `检测一下 XX1234567A 有没有被其他公司使用` → 触发，按 7 步走（Step 1 直接调 fetch_patent.py）
+- `专利集/<PATENT_ID>.pdf 排查侵权` → 触发；Step 1 先 fetch_patent.py，失败回退 WebFetch / 本地 PDF
