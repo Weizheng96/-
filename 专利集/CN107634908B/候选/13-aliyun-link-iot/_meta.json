@@ -1,0 +1,10 @@
+{
+  "nn": "13",
+  "slug": "13-aliyun-link-iot",
+  "type": "产品",
+  "name": "阿里云物联网平台 Link IoT",
+  "organization": "阿里云",
+  "hit_features_initial": "F2,F4,F5",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：阿里云物联网平台 Link IoT\n- 组织：阿里云\n- 命中 F#（初判）：F2,F4,F5\n- 公开度：低\n- 一句话定位：IoT 设备消息通道，是否在传输层做业务类型感知自适应冗余（vs 标准 MQTT/QoS 等级）待取证，旁支场景。"
+}

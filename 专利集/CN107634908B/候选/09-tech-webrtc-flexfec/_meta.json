@@ -1,0 +1,10 @@
+{
+  "nn": "09",
+  "slug": "09-tech-webrtc-flexfec",
+  "type": "技术",
+  "name": "WebRTC 开源栈（ULPFEC / FlexFEC）",
+  "organization": "Google / IETF / W3C",
+  "hit_features_initial": "F2,F4,F5",
+  "publicity": "高",
+  "blurb": "- 类型：技术\n- 名称：WebRTC 开源栈（ULPFEC / FlexFEC 自适应前向纠错）\n- 组织：Google / IETF / W3C（开源标准实现）\n- 命中 F#（初判）：F2,F4,F5\n- 公开度：高\n- 一句话定位：开源 RTC 基础栈，内置 ULPFEC/FlexFEC 按网络反馈调冗余；但是否做\"数据流特征 → 业务类型\"识别（F1）与时延预算调度（F3）存疑，源码可直接核验。\n- 应用案例（仅\"技术\"类条目）：Google Meet、众多自研/二次开发的 RTC 产品在其基础上集成（注：上游厂商若有独立二次创新则单列，本条仅指 WebRTC 原生 FEC 实现本体）。"
+}

@@ -1,0 +1,10 @@
+{
+  "nn": "02",
+  "slug": "02-netease-nertc",
+  "type": "产品",
+  "name": "网易云信 NERTC",
+  "organization": "网易（网易云信）",
+  "hit_features_initial": "F1,F2,F3,F4,F5",
+  "publicity": "高",
+  "blurb": "- 类型：产品\n- 名称：网易云信 NERTC（实时音视频通话 SDK）\n- 组织：网易（网易云信，NASDAQ/HK 上市集团）\n- 命中 F#（初判）：F1,F2,F3,F4,F5\n- 公开度：高\n- 一句话定位：头部通信云 PaaS，多篇公开博客详述 ARQ/FEC 联合调度、按 NACK 成功率/FEC 成功率反馈动态调整冗余与调度策略，证据可核实度高。"
+}

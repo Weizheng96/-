@@ -30,24 +30,35 @@ def _find_repo_root(start: Path | None = None) -> Path:
     raise FileNotFoundError("专利集/ not found")
 
 
+# Optional heading prefix: Chinese-numeral ("四、"), parenthesised ("（一）"),
+# or arabic ("4." / "4、") — CN patents often number sections this way.
+_HEADING_PREFIX = (
+    r"(?:[一二三四五六七八九十百零]+[、.\s]"
+    r"|（[一二三四五六七八九十百零]+）"
+    r"|\d+[.、]?\s*)?\s*"
+)
+
+
 def _section(md: str, names: list[str]) -> str:
     for name in names:
-        m = re.search(rf"(?:^|\n)#+\s*{re.escape(name)}[^\n]*\n(.*?)(?=\n#+\s|\Z)",
-                      md, re.IGNORECASE | re.DOTALL)
+        m = re.search(
+            rf"(?:^|\n)#+\s*{_HEADING_PREFIX}{re.escape(name)}[^\n]*\n(.*?)(?=\n#+\s|\Z)",
+            md, re.IGNORECASE | re.DOTALL)
         if m:
             return m.group(1).strip()
     return ""
 
 
+_BASIC_INFO_STOP = re.compile(rf"^#+\s*{_HEADING_PREFIX}(?:摘要|权利要求|Abstract|Claims)")
+
+
 def _basic_info(md: str) -> str:
     lines = []
     for line in md.splitlines()[:60]:
-        if line.startswith("# "):
-            lines.append(line)
-        elif line.startswith("- "):
-            lines.append(line)
-        elif line.startswith("## 摘要") or line.startswith("## 权利要求"):
+        if _BASIC_INFO_STOP.match(line):
             break
+        if line.startswith("# ") or line.startswith("- "):
+            lines.append(line)
     return "\n".join(lines).strip()
 
 
@@ -78,8 +89,12 @@ def _independent_claims(md: str) -> list[tuple[str, str]]:
     """Yield (num, body) for each independent claim. Always include claim 1
     regardless of heuristic (it is always independent by patent-law convention)."""
     out = []
-    # All claims in the file
-    pattern = re.compile(r"\n###\s*权\s*(\d+)\s*\n(.*?)(?=\n###\s*权\s*\d|\Z)", re.DOTALL)
+    # All claims in the file. Headers vary: "### 权 1", "### 权利要求 1",
+    # "### 权利要求 1（独立权 — 方法 …）" (annotation before the newline).
+    # Match "权" or "权利要求" + number, then consume the rest of the header line.
+    claim_head = r"###\s*权(?:利要求)?\s*(\d+)"
+    pattern = re.compile(
+        rf"\n{claim_head}[^\n]*\n(.*?)(?=\n###\s*权(?:利要求)?\s*\d|\Z)", re.DOTALL)
     matches = pattern.findall(md)
     if not matches:
         return out
@@ -124,12 +139,26 @@ def main(argv=None):
     md = md_path.read_text(encoding="utf-8")
     sliced = slice_md(md)
 
+    # Detect auto-extraction failure so the caller can fall back to reading the
+    # full patent instead of silently trusting a near-empty slice (exit 0 + a
+    # placeholder is a silent failure — return a non-zero code instead).
+    bg_failed = "（原文未划分独立的背景技术章节" in sliced
+    claims_failed = "（未能自动检出" in sliced
+
     if args.out:
         Path(args.out).write_text(sliced, encoding="utf-8")
         print(f"[slice] wrote {args.out}  ({len(sliced)} chars; original {len(md)} chars)",
               file=sys.stderr)
     else:
         sys.stdout.buffer.write(sliced.encode("utf-8"))
+
+    if bg_failed or claims_failed:
+        missing = ", ".join(
+            x for x, f in [("背景技术", bg_failed), ("独立权利要求", claims_failed)] if f)
+        print(f"[slice] WARNING auto-detect failed for: {missing} — "
+              f"fall back to Reading the full 专利集/{args.patent_id}/{args.patent_id}.md "
+              f"for the missing section(s).", file=sys.stderr)
+        return 3
     return 0
 
 

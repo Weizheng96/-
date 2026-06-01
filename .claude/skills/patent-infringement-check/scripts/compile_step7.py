@@ -72,14 +72,33 @@ def _classify_verdict(text: str) -> tuple[int, str]:
     return 9, "待评估"
 
 
+def _clean_summary(s: str) -> str:
+    """Trim a captured 总结 block: drop anything from a horizontal rule or a
+    免责声明 blockquote onward (these follow the summary in most templates and
+    must not leak into the one-line column), strip blockquote markers."""
+    # Cut at the first horizontal rule or 免责声明 marker.
+    s = re.split(r"\n-{3,}|\n>?\s*\*{0,2}免责声明", s, maxsplit=1)[0]
+    # Drop leading blockquote / list markers on each line.
+    s = re.sub(r"(?m)^\s*[>\-*]\s*", "", s)
+    return re.sub(r"\s+", " ", s.strip())[:180]
+
+
 def _one_line_summary(text: str) -> str:
-    m = re.search(r"##+\s*总结一句话\s*\n+(.+?)(?=\n##|\Z)", text, re.DOTALL)
+    # Accept "## 总结一句话", "## 总结", "## 七、总结一句话" etc.; stop at the
+    # next heading, a horizontal rule, or a 免责声明 blockquote.
+    m = re.search(
+        r"##+\s*(?:[一二三四五六七八九十]+、\s*)?总结(?:一句话?|一句)?\s*\n+"
+        r"(.+?)(?=\n##|\n-{3,}|\Z)",
+        text, re.DOTALL)
     if m:
-        return re.sub(r"\s+", " ", m.group(1).strip())[:180]
-    # fallback: last non-empty paragraph
+        cleaned = _clean_summary(m.group(1))
+        if cleaned:
+            return cleaned
+    # fallback: last non-empty paragraph that is not a heading/disclaimer.
     for p in reversed([p.strip() for p in text.split("\n\n") if p.strip()]):
-        if not p.startswith("#"):
-            return re.sub(r"\s+", " ", p)[:180]
+        if p.startswith("#") or "免责声明" in p or set(p) <= set("-"):
+            continue
+        return _clean_summary(p)
     return ""
 
 

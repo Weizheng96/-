@@ -1,0 +1,10 @@
+{
+  "nn": "14",
+  "slug": "14-tencent-iot-explorer",
+  "type": "产品",
+  "name": "腾讯云 IoT Explorer",
+  "organization": "腾讯",
+  "hit_features_initial": "F2,F4,F5",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：腾讯云 IoT Explorer\n- 组织：腾讯\n- 命中 F#（初判）：F2,F4,F5\n- 公开度：低\n- 一句话定位：IoT 开发平台设备通信，传输层自适应冗余披露不明，旁支场景。"
+}
