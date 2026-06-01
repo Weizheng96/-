@@ -1,0 +1,10 @@
+{
+  "nn": "13",
+  "slug": "13-aws-nitro-card",
+  "type": "产品",
+  "name": "AWS Nitro Card 网络卸载",
+  "organization": "AWS",
+  "hit_features_initial": "F1, F2, F4, F5",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：AWS Nitro Card 网络卸载\n- vendor：AWS\n- 命中 F#（初判）：F1, F2, F4, F5\n- 公开度：低\n- 一句话定位：Nitro 系统自研网络卸载卡，承担 VPC 数据面/流表卸载。"
+}

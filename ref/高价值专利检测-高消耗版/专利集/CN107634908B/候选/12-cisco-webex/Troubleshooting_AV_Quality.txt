@@ -1,0 +1,742 @@
+Troubleshooting Audio and Video Quality with
+Webex Control Hub
+Outline
+I. Introduction
+II. Audio and Video Fundamentals
+a. Impairments
+b. TCP Versus UDP
+III. Audio in Webex Meetings
+IV. Video in Webex Meetings
+a. Video Quality Artifacts
+b. Factors That Influence Video Quality
+V. Control Hub Audio and Video Troubleshooting Analytics
+VI. Use Cases and Troubleshooting Scenarios
+a. Garbled Voice and Line stripe Artifacts in Video
+b. Tips to Troubleshoot Network Issues in Home networks
+Introduction
+At the core of Webex meetings is the audio and video communication that occurs between
+participants. While this communication is usually a great experience, on rare occasions the audio
+and/or video quality can be degraded. This degradation can be caused by issues anywhere along
+the audio or video path, including laptop resource issues, network issues, or work-from-home
+bandwidth issues. These issues can lead to a poor meeting experience for attendees.
+With a focus on end user environments, this document is targeted at Webex administrators,
+partners, and other Control Hub users who have a working knowledge of voice and video in the
+context of Webex meetings. Various features and functions for audio and video troubleshooting
+are available in Webex and knowing how and when to apply these improves the resolution time
+for these issues.
+Divided into four main sections, this white paper teaches voice and video fundamental concepts
+and then applies these to troubleshooting real world use cases using the Webex administrative
+platform, Control Hub. The first section is Audio and Video Fundamentals. In this section,
+foundational elements covering topics, such as the digitization of audio and video, Quality of
+Service (QoS) impairments, and UDP versus TCP transport are discussed. Understanding these
+topics is critical for establishing a proper foundation in how audio and video communication
+streams work in today’s networks.
+In the next two sections, Audio in Webex Meetings and Video in Webex Meetings, an
+introductory look is taken at how audio and video work in general, but also in the context of
+Webex meetings. After completing these sections, you will have the proper foundation for
+learning how to effectively troubleshoot audio and video quality issues in Webex meetings.
+The section, Control Hub Audio and Video Troubleshooting Analytics, guides you through the
+various functions and capabilities in Control Hub. At the conclusion of this section, you should
+feel comfortable moving through the various Control Hub screens and knowing where to go to
+get more detailed information at the meeting and individual user level.
+The last section, Use Cases and Troubleshooting Scenarios, shows you real world examples of
+audio and video quality issues. With each example, you are guided step by step through the
+various screens in Control Hub that lead to the successful resolution or definitive next steps to be
+taken for that particular problem.
+By the end of this document, you should feel confident handling audio and video troubleshooting
+issues from your users or your customers. This document can also serve as a handy reference for
+future consultation.
+Note: This white paper is focused exclusively on troubleshooting Webex Meetings audio and video
+quality issues, not meeting join or other issues that may occur prior to the establishment of the audio
+and video connections. Quality issues typically deal with audio and video streams that present with
+impairments of some sort that in turn affect the viewing or hearing of the media.
+Audio and Video Fundamentals
+In the not-too-distant past, telephony and data networks were separate. Data traffic traveled over
+common Local Area Network (LAN) and Wide Area Network (WAN) technologies like ethernet
+and MPLS using routers and switches. Meanwhile, telephony traffic was carried over FXO/FXS
+connections and T1/E1 circuits using Private Branch eXchanges (PBXs) and telephony carrier
+switches connected to the Public Switched Telephone Network (PSTN). Starting around the turn
+of the century, the Internet Protocol (IP) telephony revolution, however, completely changed this
+paradigm.
+IP Telephony merged voice and video onto the existing data network infrastructure. IP at this
+point was becoming the ubiquitous data protocol of choice and so it made sense to use this for
+transporting telephony information as well. The analog waveforms of traditional voice and video
+were digitized and transferred across data networks in packets. The ability to take sound and
+light, which is passed using analog waveforms in the real world, and turn that into a digital
+representation of 0s and 1s is the foundation that allows the transmission of voice and video over
+today’s packet networks.
+Figure 1: Digitizing an Analog Signal
+In Figure 1, a high-level overview of the digitization of an analog signal is shown. In this case
+the source would be speech from a phone, but it just as easily could be your voice going into a
+headset on an IP phone, a teleconferencing system, or even your PC. No matter what you are
+talking into, this same process must occur. The analog speech coming out of your mouth must be
+digitized to go over an IP network.
+Note: Both audio and video must be digitized. While Figure 1 is representative of audio, the light
+captured in video is also an analog waveform initially. This must also be captured by the camera on
+your PC, video conferencing system, etc. and digitized before it is transmitted.
+Both audio and video can be digitized or encoded using a number of different algorithms. These
+algorithms are usually referred to as codecs, which is short for coder-decoder. Depending on the
+codec being used, the audio and video stream that is encoded will typically vary in quality,
+bandwidth, and amount of compression. Naturally, the best audio and video quality is desired,
+but this usually requires more bandwidth and often more processing power as well. Therefore,
+balancing several factors are necessary when audio and video codecs are selected by a device.
+For audio specifically, the digitized stream produced by a codec is divided into segments and
+packetized. The amount of audio information stuffed into each packet is determined by the
+packetization period of the codec. This is also referred to as the packetization time. For example,
+if a codec has a packetization period of 20ms, then 20ms worth of the audio conversation is
+placed into a packet and sent. Then 20ms later, another packet is sent with the next 20ms of
+information for that conversation. What this means from a troubleshooting perspective is that for
+each audio packet you lose, the packetization period determines how much of the conversation is
+lost. Losing one packet is rarely a problem but groups of consecutive packets are much more
+noticeable.
+Webex Meetings supports multiple video and audio codecs to be compatible with many different
+endpoints. Webex negotiates with each endpoint or system connected to it to ensure ideal codec
+selection. If a codec match is not possible then codecs can be converted or transcoded to allow
+for interoperability. Transcoding can occur at the endpoint locations or elsewhere in the network,
+including the Webex cloud in some cases.
+Note: With Webex Meetings, the audio and video codecs are selected automatically, so end users are
+rarely ever aware of the codec that was chosen or if transcoding is occurring. For audio connections,
+Webex Meetings prefers the Opus codec. For video streams, Webex typically uses H.264 and more
+recently, AV1.
+Impairments
+The convergence of voice and video traffic with traditional data traffic, like web and email, has
+posed some challenges. One of the biggest has been that voice and video are real-time traffic.
+This means that packets of voice and video must arrive at their destination quickly, with little
+delay. While it may be acceptable for an email to take a few seconds or even minutes to make it
+to its recipient or for a web page to take a few seconds to load, no one is ok with seconds of
+delay in their voice and video communications.
+There are three main factors that impact the quality of an audio or video call. These factors
+are packet loss, latency, and jitter. As shown in Figure 2, packet loss is simply losing one or
+more packets within a stream of packets. In this example, a Voice over IP (VoIP) packet is
+lost going from the Webex client to the Webex server. Loss can occur for a number of reasons in
+a network but most commonly it is caused by congestion or resource contention in the network
+or on the endpoints. This leads to routers, switches, or the endpoints themselves dropping or
+delaying packets. In other cases, packets encounter such a high delay that they are received too
+late to be played out. These packets will also be counted as lost.
+Figure 2: Packet Loss Example
+Latency is the one way delay between when a packet is sent from one device and received
+on the other. Latency is part of Round Trip Time (RTT), which is the time it takes for a packet
+to be sent and for a response to be received. Figure 3 illustrates delay for a VoIP packet.
+Figure 3: Latency Example
+Jitter is a little more complicated than loss or latency. Jitter refers to the variance in the
+latency between packets. For example, if two packets arrive 5ms apart and then the next packet
+arrives 100ms later, the difference in the interarrival times or the jitter between the 3 packets is
+95ms. Figure 4 provides a graphical example of jitter. You can think about jitter as the difference
+in sizes between the two arrows (representing time) between the VoIP packets.
+Figure 4: Jitter Example
+Note: Impairments can occur anywhere along the path of the audio or video stream. While Control
+Hub will usually show that an audio or video stream has been affected by packet loss, jitter, or delay, it
+is usually difficult to pinpoint the exact location. When possible, it is recommended to start at the
+endpoint and then work towards the Webex Cloud to isolate the issue.
+Effectively handling the real-time nature of voice and video communications over IP networks
+requires prioritization of these packets throughout the network infrastructure. This is commonly
+referred to as QoS or Quality of Service. In addition to prioritization, QoS also focuses on
+handling impairments that may cause the loss or delay of the voice and video packets.
+Because of the real-time nature of voice and video communications, QoS is critical to ensuring
+optimal quality. While there are a number of mechanisms that Webex can employ to compensate
+for issues related to QoS, it is still recommended that packet loss, jitter, and delay be kept to a
+minimum whenever possible.
+Note: Control Hub Diagnostics highlights potential problems with packet loss and delay by coloring
+voice and video streams as Good, Fair, or Poor. It is important to understand that just because Control
+Hub Diagnostics flags part of a conversation as Fair or Poor, it does not necessarily mean that the
+user had a bad experience. Voice and video compensation mechanisms and algorithms in combination
+with other factors can mitigate the impact of loss and delay to the point where it is not noticeable by
+the user.
+TCP Versus UDP
+In the world of IP, one of two transport layer protocols is typically used by an application. These
+two options are the Transmission Control Protocol (TCP) and the User Datagram Protocol
+(UDP) as shown in Figure 5. The purpose of these transport layer protocols is to provide end-to-
+end delivery of IP packets.
+Figure 5: Common VoIP Protocol Stack
+Both TCP and UDP as shown in Figure 5 commonly use the Real Time Transport protocol
+(RTP) to carry payloads from an audio or video codec. Designed specifically for streaming
+media, RTP was constructed to help detect issues, such as jitter, packet loss, and out of order
+packets.
+TCP and UDP take two completely different approaches in providing for the end-to-end delivery
+of IP packets. TCP takes a connection-oriented approach. Before any IP data packets are sent,
+each side of the TCP transaction agrees to a session using a handshake. Then, TCP guarantees
+that every IP packet makes it to the other side by using sequence numbers, acknowledgements,
+and retransmissions when required. This makes TCP “slower” than UDP but ensures that all data
+transmitted is received reliably.
+On the other hand, UDP handles delivery in a connectionless manner. It is not necessary to
+establish a session at all with UDP and IP packets can be sent immediately. UDP also does not
+guarantee a packet’s arrival at the destination because it does not retransmit packets that are lost.
+While UDP may initially sound like it is not useful in its functions, for applications involving
+real-time data, like voice and video, UDP is critical.
+The reason that UDP is used when transporting voice and video codec payloads, is that it is
+lightweight and retransmitting lost data is not necessary. If an audio packet is lost during a
+conversation occurring using VoIP, by the time the origination is notified that a packet has been
+lost and it is resent, it is too late. That part of the conversation has already been played out at the
+other end. In most cases, real-time audio and video sessions do not have time to resend lost or
+even late packets. This is why UDP is recommended, and almost always used, for the audio and
+video traffic.
+On occasion, UDP is not used for audio and video IP packets. This is most often caused by UDP
+ports 9000 and 5004 being blocked by a firewall or similar device. When a Webex client is
+unable to communicate with the Webex cloud using UDP, it will attempt to use TCP as a
+fallback mechanism. However, for the reasons mentioned previously, TCP is not ideal, and audio
+and video quality may be degraded more severely as compared to UDP if impairments are
+encountered.
+With Control Hub the usage of either UDP or TCP for each user is shown. In Figure 6, you can
+see a screenshot of the Webex Meeting Participant Details that can found by looking at a specific
+meeting after clicking on Troubleshooting from the selections on the left side of the screen.
+Circled in red in Figure 6 are the audio and video transport layer protocols being used for the
+audio and video media. In this case, it is UDP for both. You should also note that below this
+information are the specific audio and video codecs being transported by UDP.
+Figure 6: Screenshot of Control Hub Participant Details Highlighting the Transport Layer
+Protocol Being Used by a Participant
+TIP: UDP offers the best performance for audio and video media streams and is the preferred option
+from a Webex perspective. Devices performing firewall or NAT functions may restrict UDP traffic.
+When this occurs, Webex will fall back to TCP as the transport protocol, but this can result in reduced
+audio and video quality when impairments are encountered compared to UDP.
+Audio in Webex Meetings
+Audio is an important part of the meeting experience. Therefore, audio quality is critical for
+ensuring a productive and successful meeting. A number of factors can impact a participant’s
+audio quality, including their join method and connection type, codec selection, endpoint device,
+and the participant’s surrounding environment. In this section, you will learn more about these
+factors and how they can impact audio quality.
+Webex offers different join methods for connecting the audio path to a user. Depending on
+licensed options, the user can select the option they want to use when they join the Webex
+conference and can even change their selection during the meeting, if desired. Each of the join
+methods will utilize either VoIP or the PSTN for connecting the user to Webex. Table 2
+overviews the Webex methods for joining a conference.
+Webex Join Method Connection Type
+Device Audio – Utilize the speaker and microphone and the Internet connection VoIP
+for the device joining the meeting for audio.
+Call Back – Allows the participant to enter a phone number for the Webex PSTN
+service to call them at.
+Call In – Participant calls in to Webex from a phone and can connect to the PSTN
+conference.
+Table 2: Overview of Webex Meeting Join Methods
+When Call Back or Call In are used to join a Webex meeting, the connection between the
+participant’s device and Webex occurs through a third party PSTN provider in most cases. This
+provider often uses VoIP internally but there is little to no visibility into this PSTN provider’s
+network and the audio connection that is traversing it. Naturally, this makes any audio quality
+issues that occur for Call back or Call In a little more difficult to troubleshoot.
+For example, let’s take the following scenario shown in Figure 7. Two participants, David and
+Arun, join a Webex meeting. Arun joins using Device Audio and David prefers a call back to his
+desk phone.
+Figure 7: Webex Meeting Showing a Call Back Participant and Device Audio Participant
+In Control Hub you can view this meeting and naturally David and Arun are shown as the
+participants. With the Audio tab selected in Figure 8, you will notice that David is listed twice as
+a participant though.
+Figure 8: Webex Control Hub View of a Meeting with a Call Back Participant and Device Audio
+Participant
+The participant David in Figure 8 joined via the Call back method. This is why he is listed twice
+as a participant. The first listing is the audio path between David and Webex using Call Back as
+notated by the phone icon beside his name. The second listing is the IP connection between the
+device David is using and Webex. This connection is used for management and device
+communications that can optionally enable other services like Video or screen sharing. If video
+is enabled for a PSTN user, it will flow over the device’s Internet connection. Clicking on the
+Call Back connection for the participant David shows more details about the PSTN connection as
+detailed in Figure 9.
+Figure 9: Control Hub Audio Quality Details for a Call Back Participant
+As you can see in Figure 9, the troubleshooting information available for this Call Back join
+method using a PSTN provider is quite limited. You can get a general sense of the audio quality
+being received by Webex from the PSTN connection through the Mean Opinion Score or MOS.
+However, the MOS value provides no details about what may be causing a low score.
+The other meeting participant for the conference in Figure 7 is Arun and he joined using Device
+Audio as his meeting join method. In this case, a VoIP stream is created between Arun’s device
+and Webex. A negotiation takes place using the SIP protocol where a number of different
+parameters are determined, including the audio codec. Once an audio codec has been agreed
+upon, a bidirectional stream of packets that handles the incoming and outgoing audio for Arun is
+constructed. Because of this direct negotiation and connection to Webex, Control Hub offers
+more insight into the audio stream. In Figure 10, you can view the audio details for Arun.
+Figure 10: Control Hub Audio Quality Details for a Device Audio Participant Using VoIP
+As mentioned earlier in this document, Webex supports various audio codecs so that it can
+effectively support just any type of device. However, the preferred codec of Webex is Opus and
+you will often see this listed as the audio connection codec when troubleshooting issues in
+Control Hub. The Opus codec is a wideband codec optimized for audio in meeting environments
+while still being highly resilient to impairments, like packet loss. More information on the Opus
+codec can be found at https://opus-codec.org
+Opus and just about all other audio codecs are able to utilize algorithms that are either run on
+dedicated Digital Signal Processors (DSPs) or CPU resources to deal with impairments, like
+packet loss, delay, and jitter. In fact, some of these algorithms are even specified and built into
+the codecs themselves. These algorithms can “fill-in” for missing or late VoIP packets. The
+algorithms can be quite simple where just silence is played out to more complicated schemes that
+interpolate and conceal for missing audio samples. The amount of compensation for loss packets
+that can be achieved with these types of algorithms is impressive and gives audio streams the
+ability to deal with packet loss in a manner that is usually unnoticed by the meeting participant.
+TIP: In Control Hub, any audio quality issue detected is highlighted for transparency, but these issues
+often go unnoticed by the end user, unless the issue is extreme or happens in a short time interval. As
+mentioned in this section, algorithms and other methods are able to compensate for most impairments
+that impact a VoIP stream. Exceptions often occur when a burst of errors occur over a short time
+frame. For example, losing 100 VoIP packets over the course of a 1 hour call is not noticeable but
+losing that many over the course of a few seconds is much more impacting to the participant.
+NOTE: Video streams are unable to use the same algorithms and mechanisms to the same extent as
+audio streams when it comes to handling packet loss and other issues. Therefore, meeting participants
+will sometimes notice problems with their video and not their audio, depending on the severity of the
+impairment that is being encountered. Video compensation for packet loss and other impairments is
+discussed in detail in the upcoming section, “Factors That Influence Video Quality”.
+While having more visibility to the audio stream in Control Hub is a decided advantage when
+participants use Device Audio for a VoIP connection, the device’s audio speaker and microphone
+along with the device’s surrounding environment can sometimes be a disadvantage. PCs, laptops,
+tablets, and so on are not necessarily optimized for VoIP. The quality of the speakers and
+microphones can be poor and usually they just act as a speakerphone of sorts. Additionally, these
+devices can have resource constraints as the CPU and memory must be shared with other
+applications. This can result in audio packets not being processed in a timely manner, which can
+cause poor audio quality.
+The environment where these devices are located can also be a problem. Often, the background
+can be noisy and microphones on these devices are designed to be omnidirectional to pick up all
+surrounding sounds. This can add additional noise to the audio path, which negatively affects the
+audio quality. For these reasons, participants sometimes choose the Call Back or Call in Webex
+join method. This enables them to use a dedicated phone device optimized for human speech that
+usually allows for a headset or handset to be used as well to cut down on background noise.
+However, with the appropriate equipment and environment, VoIP audio is superior to PSTN
+audio. Even with some background noise present Webex implements specialized background
+noise removal algorithms that have excellent performance in most cases. Additionally, VoIP
+audio utilizes wideband codecs instead of the narrowband codecs used by PSTN audio.
+Wideband codecs are of much higher quality and fidelity than narrowband codecs.
+In most cases, the decision to use Device Audio, Call Back, or Call In is the choice of the
+participant and they pick the method that is best for them and their situation. At the same time, it
+is important to understand the advantages and disadvantages of these join methods, especially
+when it comes to resolving issues with them in Control Hub.
+TIP: Having participants mute themselves when they are not talking is more important than is often
+realized. Poor audio quality (and even other issues like meeting echo) can sometimes be related to end
+devices and their external environment. Muting resolves these issues in a simple manner. The option to
+Mute is available to all participants and should be heavily encouraged, especially on meetings with
+large numbers of participants.
+Video in Webex Meetings
+The number of participants who turn on video in virtual meetings has increased dramatically in
+the recent years. Participants feel more intimate and involved as video enables them to get
+connected at a human level and naturally convey their thoughts and feelings through facial
+expressions. Video also allows participants to visualize the impact of their words and
+conversation. For example, it empowers teachers to get insights into whether the remote student
+in virtual learning classrooms is paying attention or needs more help to understand the concept
+being taught.
+Video quality plays a critical role in the overall satisfaction of an end user’s Webex meeting
+experience. It is essential for Webex administrators to quickly analyze video quality issues
+reported by users and take swift action to resolve them. Often, media quality issues don’t get
+reported and hence it is highly recommended to proactively monitor Webex meeting analytics to
+determine trends that would impact end users. Having a solid foundation of what is video, how it
+works, common artifacts observed in a meeting, and factors that influence video quality will
+prepare administrators to isolate the source of the quality issue quickly and engage the right
+person to address the issue.
+Video is a sequence of images played at a specific rate. The images are captured by the video
+camera in the end user’s device (e.g., computer, smartphone, or video endpoint) and is made
+available to the video encoder as raw video frames. The encoder uses a codec such as H.264 or
+AV1 to convert raw video frames into IP video streams that are then transmitted to the Webex
+cloud. The encoder can also use H.264 Scalable Video Coding (SVC) method to transmit the
+same video in different video resolution formats. This enables Webex Cloud to minimize the
+need to use transcoders in order to send the video stream of correct resolution based on the
+meeting client needs and capabilities.
+The meeting client application or the endpoint requests one or more video streams from Webex
+cloud depending on the meeting layout selected by the end user. The Webex cloud determines
+the active speaker and sends the requested number of participant video streams to the meeting
+client in different video resolutions as shown in Figure 11. (for example, high resolution for main
+video showing the active speaker, standard resolution for videos shown in participant panel and
+low resolution for video thumbnails).
+Figure 11: Video Streams in a Webex Meeting
+The IP video streams used for video conferencing consists of two primary frame types:
+1. I-Frame – Intra frame. This frame is larger in size and contains information about all the
+pixels within a video frame.
+2. P-Frame – Prediction frame. This frame is much smaller than the I-Frame and contains
+information only about pixel changes since the last I-frame. It is generated by using the I-
+Frame as the reference frame and is sent more frequently as shown in Figure 12.
+Figure 12: Video Frame Types in a Conference Call
+Video resolution and frame rate are two key parameters that define the video quality at the source
+device. Video resolution specifies the number of pixels in the horizontal direction (width) by the
+number of pixels in the vertical direction (height) captured in each video frame. The higher the
+video resolution, the better the video quality and higher the bandwidth requirements.
+Frame rate specifies the number of video frames per second. Higher frame rates are particularly
+useful when there is frequent motion in the given scene. Typically, the primary video stream in a
+Webex meeting that contains the participant’s face is sent at a higher frame rate whereas the
+secondary video stream used for content sharing is sent at lower frame rates. Table 3 shows the
+video resolution, frame rate, and bandwidth for video stream types used in Webex meetings. The
+aggregate bandwidth utilization for a Webex meetings depends on a variety of factors, such as
+meeting layout, type of client device, and the number of screens used at the client device. The
+Bandwidth Provisioning and Capacity Planning section of Preferred Architecture for Cisco Webex
+Hybrid Services, Cisco Validated Design document provides typical and maximum video
+bandwidth requirements for Webex endpoints and applications.
+Video stream type Video resolutions Frame Rate Video bandwidth
+(fps) (bits per second)
+High-definition primary video (720p) 1280x720 30 900 Kbps to 1.8 Mbps
+High quality primary video (360p) 640x360 30 320 Kbps to 512 Kbps
+Standard quality primary video (180p) 320x180 30 128 Kbps to 256 Kbps
+Content sharing (motion and video) 1280x720 30 0.25 Mbps
+Content sharing (text and images) 1280x720 3 0.13 Mbps
+Table 3: Video Parameters for Common Video Stream Types
+Video Quality Artifacts
+The first step in troubleshooting video quality is to clearly understand the symptom experienced
+by the end user. Getting a screenshot or a picture of the display screen usually gives more
+information than a verbal description of the problem. The type of video artifacts observed in a
+screenshot or picture can be used to determine the troubleshooting path. For example, in Figure
+13, pictures (a) and (b) are artifacts that are caused when video streams experience packet loss.
+Just by seeing the picture, you can immediately start troubleshooting to identify the source of the
+packet loss.
+Figure 13: Video Quality Artifacts
+Picture (c) in Figure 13 is an example of an artifact caused when an incorrect camera driver is
+installed in the end user’s device computer, which causes a strange color pixelization. Picture (d)
+shows a blurry video in the primary video stream while the secondary video stream containing
+the presentation content has good quality. The blurriness is visibly noticeable when you try to
+read the letters on the character shown in the primary video. This scenario is typically observed
+when the resolution of the primary video stream is downgraded to accommodate the secondary
+video stream during low bandwidth conditions.
+Factors That Influence Video Quality
+There are three main factors that influence media quality:
+1. Input and Output Components
+2. Negotiated Media Capability
+3. Network Impairments
+Input and Output Components (or I/O Components) refers to the microphone, camera,
+speaker, and display screen components of the device and headsets used by the end user to join a
+Webex Meeting. The quality of the video generated by the source device depends on the
+brightness, contrast, and saturation settings of the video camera. Fortunately, the local self-
+camera view is available across most devices today and end users are adept at testing their local
+video before submitting a video quality issue ticket. To ensure the best experience,
+administrators should provide a recommended set of headsets, cameras, and PC requirements as
+part of the user onboarding process and validate whether the operating system (OS) software
+versions, and 3rd party camera driver version requirements are met. Performing these checks is
+critical for troubleshooting and preventing issues like the pixelated local video as shown in
+picture (c) of Figure 13. The video quality of the camera output can be improved by adjusting the
+brightness, contrast, saturation, sharpness levels available in the camera settings and also by
+using better lighting in the end user environment.
+Webex Control Hub makes it quite easy to find the device type and operating system version
+used by the end user to join a Webex meeting. All you need is the end user’s email address and
+meeting time to find the right meeting and to get end user’s device details. Figure 14 shows the
+list of meetings attended by a participant with the email address, rtpmsuser1@gmail.com.
+Figure 14: Participant Device Details
+Clicking the meeting of interest provides audio, video, and content sharing statistics along with
+other information for all participants in the meeting. The Details tab displays key device level
+information such as hardware type and software version of the Webex client that was used to join
+the meeting. It can be inferred from Figure 14 that the user Arun joined the meeting using Cisco
+Webex Desk Pro device running CE 9.14 software version.
+Negotiated Media Capability refers to the audio codec, video codec, resolution, frame rates and
+maximum media bitrate (bandwidth) that are negotiated and currently in use for the primary
+video and secondary video (content sharing). Clicking the participant's name in the participant
+list on the left side of Diagnostics page (Figure 14) provides insights into the codec used for
+audio, video, and content share along with video resolution. Figure 15 shows a participant that is
+using the Opus audio codec (which was discussed in more detail in the previous section “Audio
+in Webex Meetings”) and the H.264 video codec configured for the BP (Baseline Profile)
+capability. Additionally, this H.264 stream is currently receiving video at a resolution of 288p
+(512x288), which is in fact a low video resolution value. This information about the video stream
+indicates that the video may be blurry when viewed on a larger screen. It is important to note that
+the frame rate and video resolution can dynamically change during the call depending on
+network conditions or occurrence of events such as sharing a presentation.
+NOTE: The next generation AV1 codec is slowly replacing the aging H.264 video codec in Webex. The
+AV1 codec provides much better quality but is not as broadly supported by endpoints and does
+currently require more computing resources for the encoding. More information can be found here -
+https://blog.webex.com/engineering/the-av1-video-codec-comes-to-webex/
+Figure 15: Negotiated Media Capabilities
+NOTE: The device type and software version of each participant’s device are determined based
+on information received from the client. Currently, the Diagnostics details tab shows the audio
+and video codecs negotiated initially at meeting setup time and is not updated if the codecs get
+re-negotiated during the meeting.
+Network impairments such as packet loss, delay, and jitter can also impact video quality. The
+video frame data is highly compressed through the encoding process to minimize bandwidth
+utilization. This high compression makes video streams more sensitive to packet loss than
+audio streams.Even a 1% packet loss may cause noticeable artifacts if the client does not use
+advanced techniques to handle packet loss. Cisco collaboration endpoints and applications make
+use of several adaptive mechanisms to preserve high video quality even during packet loss
+situations. The animation in Figure 16 shows how missing I and P frames can affect video
+quality.
+The artifact observed by end users depends on which video frame type is missing due to packet
+loss. If an IP packet containing an I-frame is lost, the receiving endpoint would not be able to
+decode the video correctly even if it receives all the subsequent packets that contain the P-
+frames. This scenario is highlighted in the first animation of Figure 16. This is because the video
+decoder will not be able to decode the P-frames without the reference I-frame and hence need to
+discard all the P-frames until the next I-frame is successfully received. End users observe frozen
+video artifacts in this scenario. On the other hand, if the I-frame is received correctly but only
+some of the P-frames are lost during transit, then the video decoder will continue to process the
+received P-frames and the video gets rendered. Some of the motion changes captured in the
+missing P-frames cannot be rendered resulting in line stripe like artifacts shown to end users as
+indicated in the second animation of Figure 16.
+Figure 16: Video Quality Artifacts During Packet Loss
+Cisco video endpoints use several intelligent mechanisms to handle packet loss in media streams.
+The first mechanism, called RTCP based dynamic bit rate adjustment, uses Real-time Control
+Packet (RTCP) packets to become aware that the remote endpoint is experiencing packet loss
+consistently. Then, it dynamically reduces the upstream video bit rate to minimize the possibility
+of packet loss.
+The second technique uses Repair-P frames. Typically, endpoints experiencing packet loss
+request the remote peer to resend the I-Frame to recover from packet loss. As I-Frames are larger
+in size, resending them in a lossy network scenario usually makes the situation worse. To avoid
+resending I-Frames, the endpoint stores the initial I-Frame as a Long Term Reference Frame
+(LTRF) and uses small Repair-P frames to resync with the peer after experiencing packet loss.
+The size of a Repair-P frame is only 10% of the I-Frame and helps in faster video data recovery.
+The third mechanism is Forward Error Correction (FEC), which works by sending redundant
+video data within RTP packets. This enables the endpoint experiencing packet loss to
+automatically recover video data without asking the other end to resend frames. In the FEC
+scenario shown in Figure 17, even if the packet P2 is lost, the destination endpoint will be able to
+recover it by using the data available in P1. This avoids the needs to resync with the originator
+right after the packet loss.
+Figure 17: Packet Loss Recovery Using Forward Error Correction
+The fourth mechanism called Media Adaptation and Resilience Implementation (MARI) is a
+combination of several techniques. These techniques include video packet pacing which
+minimizes packet loss due to burstiness, RTP retransmission (RTX) to recover lost packets in
+delay tolerant low frame rate content sharing video streams and FEC to recover multiple lost
+packets in main video and high frame rate content sharing video streams to ensure high video
+quality experience even in lossy networks.
+Collaboration endpoints dynamically choose RTX or FEC depending on negotiated bandwidth
+and delay tolerance for a given media stream. FEC results in higher bandwidth utilization due to
+redundant video data but it doesn’t introduce additional delay to recover lost packets. Whereas
+RTX doesn’t contribute to higher bandwidth utilization because the RTP packets are
+retransmitted only when the receiver indicates packet loss in RTCP feedback channel. RTX
+introduces packet recovery delay due to the time it takes for the RTCP packet to reach the
+receiver from the sender and for the retransmitted packet to reach the receiver from the sender.
+Reducing the bandwidth consumption for Webex meetings reduces the possibility of packet loss
+due to any rate-limiting configuration within the Service provider as the Webex traffic traverses
+the Internet on its way to the Webex cloud. Video Mesh Node can be deployed in enterprise
+networks to optimize up-stream video bandwidth in Webex meetings, specifically when several
+on-premise video endpoints join the same meeting. Figure 18 shows an example scenario in
+which a virtual meeting is attended by students in class rooms using their laptops, local school
+teachers using Cisco DX80 in their offices, Webex room kit from Media lab and Webex board
+from Library. Without Video Mesh Node, each endpoint sends audio and video streams directly
+to the Webex Cloud resulting in about 23.7 Mbps for just one Webex meeting. Whereas with
+Video Mesh Node (VMN) deployment, Webex cloud instructs the endpoints to send their media
+stream to the local VMN and the local VMN sends only the media streams of the last six active
+speakers resulting in only 8.54 Mbps of upstream bandwidth.
+Figure 18: Reduced Up-stream Bandwidth using Video Mesh Node
+The audio and video RTP streams from the Webex Meetings client, Webex App, Webex Room
+Device, and Webex Mesh Nodes to the Webex Cloud are sent across a single UDP connection.
+UDP is the preferred transport method and hence is referred as Primary transport type. When
+UDP connection is not available, for example when UDP ports are blocked by firewall, clients
+use alternate transport methods such as TCP to send audio and video RTP streams. Table 4 lists
+the primary and alternate transport types and port numbers used by Webex clients. The port
+number 33434 is used only if the port numbers 5004, 9000 are blocked.
+Webex client type Primary Alternate UDP port TCP port
+transport transport numbers numbers
+type type
+Webex Meetings client UDP TCP 9000 80 / 443
+Webex App UDP TCP 9000, 33434 5004, 33434
+Webex Room Devices UDP TCP 5004, 33434 5004, 33434
+Webex Mesh Node UDP TCP 5004 5004
+Cisco Video Collaboration Devices UDP N/A 49152 - 59999 N/A
+through Expressway-E
+Table 4: Port Numbers Used by Webex Meetings Media Streams
+The RTP packets that belong to the audio and video streams have separate Differentiated Service
+Code Point (DSCP) values which enables the Network to provide higher preference to audio
+packets than the video packets. DSCP utilizes 6 bits in the IP header field to assign values to an
+IP packet so network devices, like routers, can ensure their priority.
+Figure 19: Audio RTP Packet Marked with EF DSCP
+Audio RTP packets are marked with Expedited Forwarding (EF, DSCP=46) and Video RTP
+packets are marked with Assured Forwarding (AF41, DSCP=34) as shown in Figure 19 and 20.
+Figure 20: Video RTP Packet Marked with AF41 DSCP
+NOTE: Windows OS 7 and higher require applications to have administrator privileges in order to
+be able to mark DSCP value of media streams. Webex app installed in Windows devices don’t have
+admin privileges in most deployments and hence the DSCP value of audio and video packets
+generated from such devices will be zero. To overcome this limitation, it is recommended to mark
+the Webex meeting audio and video RTP streams with the correct DSCP value by using an ingress
+QoS policy at the WAN edge router. The class-map defined within the QoS policy can use the
+source and destination port numbers or Network Based Application Recognition (NBAR) to match
+the Webex traffic. Please reference the session Webex Bandwidth Management - BRKCOL-2777 in
+the Cisco Live On-Demand Library for additional design and configuration details.
+He s
+Since the network is providing differential treatment to Audio and Video RTP streams, it is
+possible for these streams to experience different one-way network delay from the client to
+Webex Cloud. Transcoding is another reason for the network delay difference between audio and
+video streams. For example, when an endpoint that supports only H.263 video codec and G.711
+audio codec joins a Webex meeting (Webex CMR cloud), Webex performs transcoding of H.263
+→ H.264 video stream while the audio stream is processed without any transcoding. The
+receiving endpoints use a technique called RTCP based media synchronization to align audio and
+video streams together and play out the media in a synchronized fashion. If there is significant
+network delay difference between these two streams, for example audio packets consistently
+arrive earlier than the video packets during network congestion, there is a possibility of end users
+experiencing lip synchronization issues. During a lip-sync issue, the lip movement of the active
+speaker doesn’t align with speaker’s voice and the voice either lags or leads the lip movements.
+It is harder for the meeting participants to listen, focus and participate in the conversation in such
+situations.
+The variance in delay between packets of the same stream is referred to as network jitter. The
+receiving endpoints use a jitter buffer to store the audio and video data and media is played out in
+a periodic time interval. This allows packets that arrive early to be stored in the jitter buffer and
+played out in a synchronized fashion. Packets that arrive late are considered as lost packets and
+are dropped resulting in video frame loss. Table 5 provides a summary of commonly observed
+video-related issues and their most likely root causes.
+Root cause Issue symptoms
+Low packet loss Line stripes, Blocky video
+High packet loss Frozen video
+Network delay Lip synchronization
+Low network bandwidth Blurry video, Low video resolution
+Camera driver Grainy video, Video pixelization
+Table 5: Common Video Quality Symptoms and Their Causes
+Cisco validated design (CVD) guides are good sources of best practice recommendations that
+help you select the right architecture for on-prem, hybrid and cloud collaboration deployments.
+The following CVD guides provide detailed information about Quality of Service and Quality of
+Experience from Collaboration applications and end users perspective:
+1. Bandwidth Management chapter of Preferred Architecture for Cisco Webex Hybrid
+Services, CVD.
+2. Implementing Quality of Experience for Webex in Work from Home Environments.
+Control Hub Audio and Video Troubleshooting Analytics
+Often, users who experience audio and video quality issues may not take the time to report the
+issue to their internal helpdesk. Therefore, depending solely on the user feedback isn’t sufficient
+to guarantee the best experience to end users. The Webex Control Hub Analytics enables you to
+be proactive by making it easier to visualize the user experience and performance of all meetings
+within their organization in an intuitive way.
+Figure 21 shows the first level view of meetings in a 30-day timeframe from a media quality
+perspective. You are informed of the location that has the most participants with poor audio or
+video quality. This functionality saves troubleshooting time by eliminating the need to manually
+analyze the media statistics to isolate the source of the media quality issues. You can also
+identify the percentage of the meeting participants who had good, fair, and poor meeting quality
+and their geographical region and location distribution. In the example illustrated by Figure 21,
+India has the most participants experiencing voice and video quality issues.
+Figure 21: Meeting Quality Insights
+Clicking the View all Insights provides additional granular insights, such as device types and
+connection types used by participants experiencing problems. For the example scenario being
+discussed, all the participants who experienced quality issues are using a Mac computer and are
+connected to Webex across a Wireless connection as shown in Figure 22.
+Figure 22: VoIP Quality Insights
+The VoIP Quality by Participants, VoIP Quality by Connection, and VoIP Quality by
+Platform graphs in Figures 23-25 provide information about when the poor media quality was
+observed, the type of network connection used by the client devices (Ethernet, Wi-Fi, Cellular),
+and the client device types (participant joined from web browser in a device running Windows,
+MAC, Android, or iOS operating system or participant joined from the Webex application). The
+Other category in Video Quality by Platform graph includes participants joining from
+collaboration endpoints, such as Cisco DX 80 or Cisco Desk Pro.
+Figure 23: Media Quality Level Distribution
+Figure 24: Meeting Participant Connection Types
+Figure 25: Meeting Participant Device Types
+The Participants with Poor Quality section in the Quality insights page displays the list of
+participants who had an average end-to-end packet loss greater than 5% and average network
+latency greater than 400 milliseconds during the duration of one or more Webex meetings that
+occurred in the specified data range (e.g. 30 days). It is important to note that end-to-end packet
+loss refers to packet loss experienced by a client device after it has applied error recovery
+techniques such as Forward Error Correction. Clicking the participant name link in Figure 26
+will take you to the Troubleshooting section of Webex Control Hub auto-populated with the list
+of meetings attended by the participant in the date range set at the top of Quality insights page.
+You can reference the Troubleshooting scenarios in the next section of this document for further
+steps to isolate the root cause of the poor quality problem.
+Figure 26: Participant with Poor Quality
+Proactive Notifications
+It is useful to get proactively notified when specific users such as executives within your
+organization experience media quality issues so that your team can take action to resolve the issue
+right when it happens instead of working on an escalation later. You can setup Webex to notify
+your helpdesk team via email or Webex app when packet loss, jitter and latency reaches a specific
+threshold for a specific duration during the meeting of specific users. The alert details are defined
+in Control Hub (Troubleshooting > Alerts) section. Figure 27 shows an example of an alert that
+notifies helpdesk@example.com when the user ic2user1@gmail.com experiences 5% video
+packet loss or more than 400ms latency for one minute (accumulation time), one or more times in
+a three minute window (consecutive time). The alert is also generated when 10% audio packet loss
+or more than 400ms latency is observed during the same accumulation and consecutive times.
+Figure 27: Proactive Network Impairment Notification Alert Configuration
+Use Cases and Troubleshooting Scenarios
+Garbled Voice and Line Stripe Artifacts in Video
+Problem description
+You receive a report from User 1 (rtpmsuser1@gmail.com), one of the participants of a recent
+meeting, stating that the audio quality was intermittently poor. The described symptoms are
+audio drops, garbled audio, or choppy audio during the meeting # 1463195095 at around 2:50
+PM EST on 8th Oct. 2020. The users also report that at times they see line stripe artifacts in the
+video stream as shown in picture (a) of Figure 13.
+Problem Analysis using Control Hub
+Control Hub provides a wealth of information for every meeting that you can use to quickly
+isolate whether the media quality issue is caused by user’s device, user’s network, or the Webex
+cloud. The first step is to find the meeting of interest by using the Monitoring >
+Troubleshooting menu in the Control Hub Navigation bar as shown in Figure 28. Selecting the
+meeting leads you to a web page that shows the quality of each participant’s experience in a
+graphical format. The Audio and Video tabs in this webpage provides a graphical representation
+of the audio and video stream statistics from the time each participant joins the meeting.
+Figure 28: Finding the Meeting of Interest
+Figure 29: User 1’s Media Statistics Graph
+The media statistics of the meeting participant at a specific point in time can be retrieved as
+shown in Figure 29. You can quickly observe that the audio stream received by User 1 at around
+2:50 PM is marked as Red (Poor) and that User 1’s endpoint is experiencing a 10% packet loss.
+It is a good practice to check whether other participants experienced the same issue at the same
+time. User 3, User 5 and User 6 experience similar packet loss in the Receiving direction (i.e.
+from Webex to the user’s device) as shown in Figure 30. A key point to note is that the
+Receiving packet loss value displayed in the graph is the end-to-end packet loss experienced
+by the Webex client after forward error correction is applied.
+Figure 30: Meeting Participant Media Statistics Graph
+Interestingly, User 4’s statistics gives different information. The packet loss is observed in
+Sending direction instead of Receiving direction. The Sending packet loss value displayed in
+the graph is the hop-by-hop packet loss experienced by the Webex cloud in the RTP media
+stream received from the client.
+Figure 31: Meeting Participant Media Statistics Graph
+Packet loss in the sending direction indicates that Webex is not getting all the audio RTP (Real
+time protocol) packets from User 4’s endpoint or is getting the audio packets in a delayed fashion
+so that they end up being discarded. If there is packet loss in the media stream received from the
+active speaker, it impacts all the recipients. In this case, the media statistics timeline will show a
+RED (Poor quality) or ORANGE (Fair quality) color for all other participants if the packet loss
+can’t be recovered by the participant’s client device as shown in Figure 31. If an RTP packet is
+not received in a timely manner, the endpoint tries to predict the audio content based on recent
+past audio frames to conceal the missing audio gaps. This results in noticeable garbled audio
+when the time duration for audio concealment is long. At this point, you have successfully
+isolated the problem to one participant.
+NOTE: It is important to note that even though the media statistics graph is showing Red and
+Orange colors indicating network issues, it is possible for the Webex client to compensate the
+packet loss and thereby resulting in no audio or video interruptions to the end user. It is always a
+good practice to leverage the media statistics in the context of an issue reported by an end user.
+The next step in the troubleshooting process is to identify the root cause for User 4’s audio
+stream packet loss. Is it due to delayed transmission of packets at the source device, is it due to
+packets getting dropped at the user’s network edge, or is it due to packets getting dropped while
+traversing the Internet on the way to the Webex cloud? Clicking a participant’s name in the
+media quality graph leads to the Participant Details graph which provides a consolidated view
+of audio, video, content share, CPU and memory usage, and the Webex media node to which the
+user’s device is connected as shown in Figure 32.
+Figure 32: Participant Details
+The Participant details graph of User 4 shows that System CPU (13%), Webex App CPU (4%),
+System Memory (85%) and Webex App Memory (2%) utilizations are at normal usage levels.
+Therefore, we can rule out the user’s device contributing to the media quality problem. Given
+that the packet loss (10%) and latency (442 milliseconds) of the audio stream is high while other
+system parameters are normal, we can conclude that the impairments are caused by the network
+connection between end user’s device and Webex media node in Chicago.
+The troubleshooting techniques used to identify the source of packet loss between User 4 and
+Webex media node differs based on the type of network to which User 4 is connected. If User 4
+is joining the Webex meeting from an enterprise network, we can use Performance monitor
+feature in the enterprise network edge to isolate whether the packet loss is introduced within the
+enterprise network or within the Internet. If the User 4 is connected to a home network, we can
+use the troubleshooting best practices discussed in the “Tips to Troubleshoot Network Issues in
+Home Networks” section. Fortunately, the upcoming Webex – ThousandEyes integration will
+bring more visibility into the end-to-end network performance in such scenarios. This whitepaper
+will be updated once this integration is generally available for customers.
+Tips to Troubleshoot Network Issues in Home Networks
+As a Webex administrator, you can provide the following check list to an end user experiencing
+packet loss or network delays in their home network to enable them to self-solve many audio and
+video quality issues.
+1. Avoid VPN Connection for Webex meetings
+Webex meeting service can be accessed by end users directly through the Internet. Hence
+it is recommended to bypass VPN connection in order to avoid routing Webex meeting
+traffic to the VPN headend and then to the Webex cloud. VPN clients can be configured
+with Split Tunneling feature to identify Webex Traffic and not send the corresponding IP
+packets through the VPN connection. The article titled “Optimize AnyConnect Split
+Tunnel for Microsoft Office 365 and Cisco Webex” provides an example Split Tunneling
+configuration for Cisco Adaptive Security Appliance (ASA) with AnyConnect VPN
+clients.
+2. Check the network connection of the device
+Most end users connect to the home network across a Wi-Fi connection. The quality of
+the network connection greatly depends on the wireless signal strength and lack of
+interference. There are a number of free and inexpensive Wi-Fi network analyzers
+available for desktop and mobile devices. These analyzers provide insights into WiFi
+parameters, settings, and the radio signal itself. The following WiFi information is
+usually included:
+• Mode (802.11 a/b/g/n/ac/ax)
+• Band (5Ghz, 2.4 Ghz)
+• Channel
+• Signal strength
+• Signal to Noise Ratio (SNR)
+• Vendor
+Typically, the Wi-Fi network analyzer displays intuitive visual indicators to highlight
+good, average, poor wireless network connection based on the SNR level. SNR values
+stronger than 40 dB indicate a good wireless connection. Figure 36 shows information
+collected on a per channel level using NetSpot WiFi Analyzer.
+Figure 36: Wireless Connection Details
+Some home routers with pre-built WiFi access points provide native WiFi congestion
+testing tools and WiFi connection statistics. Figure 37 is an example screenshot collected
+from such a router that uses a congestion score from 1-10 to represent the congestion
+level in each WiFi channel. The “Transmit Discard Packets” indicate the number of
+packets that were dropped by the device. It is a best practice to clear the connection
+statistics and monitor whether the drop packet counter is incrementing, especially during
+a Webex call.
+Figure 37: Example of WiFi Access Point Congestion Information
+To remedy a poor WiFi connection at home, end users can use WiFi extenders, change
+the location of the device (i.e. move closer to the access point) to get a better signal,
+switch to the 5Ghz band to minimize interference, and/or select a wireless access point
+that supports faster speeds (e.g. 802.11ac).
+3. Change or upgrade the network connection
+Another approach is to choose a more reliable network connection. For example, the end
+user can connect their device directly to an ethernet port and eliminate wireless
+interferences.
+Observing the time of the day in which audio and video quality issues happen also helps
+to isolate the problem. Does the problem always occur when multiple users on the home
+network are attending online meetings at the same time? A common scenario is kids and
+parents attending school and business meetings at the same time. Irrespective of whether
+you are connected to a wireless or wired port, you will experience packet loss or delay if
+your home network experiences network congestion. Performing a network test right
+from the cable modem will give you accurate internet upload, download speeds, and
+latency. End users should ensure that their Internet service and home network can handle
+the amount of traffic being placed on it during peak usage periods.
+End users can upgrade their internet services to have higher upload speeds if their
+bandwidth consumption exceeds their upload speed. As a last resort, end users can also
+choose to use a dedicated Hotspot connection from a cellular device to bypass the local
+home network.
+4. Engage the Internet service provider
+After ensuring that the local wired or wireless connections are good, engaging the service
+provider can often be helpful. Sometimes, the problem observed by end users may be
+caused by software issues in the cable or DSL modems, a poor connection between the
+modem and the service provider network, or by issues within the service provider
+network itself.

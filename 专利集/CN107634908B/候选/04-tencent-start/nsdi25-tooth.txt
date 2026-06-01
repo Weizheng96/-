@@ -1,0 +1,1630 @@
+=== PAGE 1 ===
+Tooth: Toward Optimal Balance of Video QoE and Redundancy Cost by
+Fine-Grained FEC in Cloud Gaming Streaming
+CongkaiAn+,HuanhuanZhang+,ShiboWang+,JingyangKang+,AnfuZhou+,LiangLiu+,
+HuadongMa+,ZiliMeng◇,DeleiMa○,YushengDong○,XiaogangLei○
++BeijingUniversityofPostsandTelecommunications,
+◇HongKongUniversityofScienceandTechnology,○Well-LinkTimesInc.
+Abstract gameresponse,typicallylessthan100milliseconds[29].To
+Despitetherapidriseofcloudgaming,real-worldevalua- betterunderstandthe real-worldQoE ofcloudgaming,we
+tionsofitsqualityofexperience(QoE)remainscarce.Tofill conductacomprehensivefieldmeasurementinvolving66,128
+thisgap,weconductalarge-scalemeasurementcampaign,an- playersacross22citiesworldwide,asdetailedinTable1.Our
+alyzingover60,000sessionsonanoperationalcloudgaming measurementsrevealthatthedownlinkdeliveryofgamevideo
+platform.Wefindthatcurrentcloudgamingstreamingsuffers
+content(i.e.,fromtheremoteservertotheenddevices)isthe
+from substantialbandwidthwastageandsevereinteraction primarybottleneckimpactinginteractiveQoE. Tomitigate
+stallssimultaneously.In-depthinvestigationrevealstheun- this,besidesusualretransmissionmechanisms [21,36],cloud
+derlyingreason,i.e.,existingstreamingadoptscoarse-grained gamingcommonlyadoptsForwardErrorCorrection(FEC)
+ForwardErrorCorrection(FEC)encoding,withoutconsider- fromthecurrentvideostreamingworks[18,20,31,33,42]
+ingtheadverseimpactofframelengthvariation,whichresults torecoverlostdatapackets.However,ouranalysisindicates
+inover-protectionoflargeframes(i.e.,bandwidthwaste)and thatexistingFECalgorithmssignificantlyincreasebandwidth
+under-protectionofsmallerones(i.e.,interactionstalls).To
+usage,addinganadditional0.26×to1.0×redundancythan
+remedytheproblem,weproposeTooth,aper-frameadaptive theoriginaldatastreaming.Wefurtherconductanin-depth
+FECthataimstoachievetheoptimalbalancebetweensatis- explorationofexistingFECschemesandidentifiedtheirtwo
+factoryQoEandefficientbandwidthusage.TobuildTooth, primarylimitations.
+wedesignadual-moduleFECencodingstrategy,whichtakes • Framelengthaffectstheredundancyrateforrecoveringa
+fullconsiderationofbothframelengthvariationandnetwork frame.Specifically,FECcanrecoverthelostpacketswithin
+dynamics,andhencedeterminesanappropriateFECredun- aframewhentheredundancyratecancovertheLossRate
+dancyrateforeachframe.Moreover,wealsocircumventthe InFrame(LRIF).However,weobservethatthevideoframe
+formidableper-frameFECcomputationaloverheadbydesign- length(numberofpackets)incloudgamingvarieslargely,
+ingalightweightTooth,soastomeettherigidlatencybound i.e.,spanningfrom2packetstoover80packets,andframe
+ofreal-timecloudgaming.Weimplement,deploy,andevalu- LRIF is a random variable that follows a binomial-like
+ateToothintheoperationalcloudgamingsystem.Extensive distributionwithafunctionoftheframelength.Especially,
+fieldtestsdemonstratethatToothsignificantlyoutperforms theLRIFofasmallframeisashighas30+%andthatof
+existingstate-of-the-artFECmethods,reducingstallratesby
+alargeframeisaslowas2%,differingbyover10×and
+40.2%to85.2%,enhancingvideobitratesby11.4%to29.2%, requiringcompletelydifferentredundancyrates(§2.3).
+andloweringbandwidthcostsby54.9%to75.0%. • Existing FEC algorithms are coarse-grained, ignoring
+frameLRIFdifferencesbutapplyingauniformredundancy
+1 Introduction
+rateacrossalmostallvideoframes.Asaresult,theytendto
+Cloudgaming,asanincreasinglyembracedapplication,in- over-protectlargeframesbyaddingsignificantlymorere-
+volveshigh-qualityvideostreamingfromremoteserversto dundancythannecessary,withmedianvaluesrangingfrom
+diversedevices,therebyobviatingtheneedforadvancedlocal
+5.2×to9.2×.Worsestill,theyunder-protectsmallframes,
+hardware and enabling pervasive gameplay across all con- failingtorecovertheirlostpacketsandresultinginfrequent
+necteddevices,particularlymobiledeviceswithlimitedcom- interactionstalls,occurringmorethanonceperminute.Fur-
+putationandstoragecapacity.Inrecentyears,severalgaming thermore,ourfindingsindicatethatcoarse-grainedFECs
+platformshavelaunchedacclaimedcloud-basedversionsof exacerbatestallfrequencyinoperationalcloudgamingsys-
+games,suchasCloudGenshinImpact[12]andTowerofFan- temsduetoexcessiveredundancy,whichleadstoincreased
+tasy[13].Marketanalysesrevealthattheglobalcloudgaming networkcongestionbursts.This,inturn,elevatestheLRIF
+market,whichstoodatUS$1,905.6millionin2023,ispro- forvideoframes,particularlyforsmallerframes,making
+jectedtoreachUS$48,552.2millionby2032,demonstrating themmoredifficulttorecover.
+acompoundannualgrowthrateof42%[5]. Inthispaper,weaimtoaddressakeyproblem: Howto
+To ensure a satisfactory interaction QoE, cloud gaming follow frame LRIF to ensure successful recovery in small
+requiresconsistentlyultra-lowlatencyfromplayerrequestto framesmeanwhileavoidingwastingredundantbandwidthin
+=== PAGE 2 ===
+largeframes,soastopropelcost-effectivecloudgamingin WehaveimplementedToothinacommercialcloudgam-
+therealworld?Toaccomplishthis,weproposeTooth,anovel ing system, one of the popular cloud gaming platforms
+fine-grainedFECtailoredforcloudgamingattheframelevel. (anonymizedasCompanyW),anddeployeditinitsproduc-
+Itpreciselydeterminesthedeliveryprobabilityofeachframe tionenvironments,involvingabout2,300sessionsandlasting
+throughtheframelengthdistribution,andadaptivelyapplies 6weeksintotal.Comparedtostate-of-the-artFECsolutions
+theper-frameredundancyratesfordifferentframestoalign suchasRL-AFEC[18]andRTC-FEC[9,28],Toothachieves
+thedeliveryprobability.Althoughconceptuallysimple,build- anidealbalancebetweenoptimizedvideoQoEandefficient
+ingToothinpracticeintroducestwosignificantchallenges. redundancycost.Forinstance,itsignificantlyreducesstallfre-
+Firstly,therealisticLRIFpatternismorecomplicatedthan quencyby40.2%-85.2%,increasesperceptualvideobitrate
+thebinomialdistribution,andidentifyingthecriticalfactors by 11.4%-29.2%, and reduces bandwidth costs by 54.9%-
+that influence the binomial distribution of per-frame LRIF 75.0%.Moreover,wealsoevaluateTooth’seffectivenessin
+is essential for enabling precise FEC. Our field measure- different(i)networktypeslikeWiFi,4G,and5G;(ii)game
+mentsrevealthatboththeapplication-layerframelengthand types like 2D games and 3D games; (iii) Internet Service
+thetransport-layernetworklosspatternssignificantlyimpact Providers(ISP);(iv)distancesofgameservertoenddevices,
+LRIF.Inparticular,theframelengthcanbereadilyacquired i.e.,cross-citysessionsandintra-citysessions.Theaboveex-
+fromthevideoencoder,whileinferringthenetworklosspat- tensive experiments (§5.2) validate that Tooth can achieve
+ternisanon-trivialtask.Traditionally,losspatternsaresimply excellentQoEconsistentlyinreal-worldcloudgamingsce-
+characterizedbythelossrate[18,20,27,31,38].However,our narios.Wealsoconductaseriesofablationstudiestoverify
+evaluationsshowthatthismetricdoesnotaccuratelydepict thekeydesignmodulesofTooth.
+thedistributionofnetworklosseventsonaper-video-frame Tosummarize,ourmaincontributionsare:
+basis.Toaddressthisdeficiency,weintroduceanovelmetric– • Weconductalarge-scalemeasurementonanoperational
+networklossaggregation,whichquantifieswhethernetwork cloudgamingsystemanduncoverunderlyingreasonsfor
+packetlosseventsaremoredispersedacrossmultiplevideo theinefficienciesofexistinglossrecoverysolutions(§2).
+framesorconcentratedwithinafewframes,therebyaligning • We propose Tooth, a lightweight dual-module approach
+moreeffectivelywithfine-grainedFECencodingstrategies. that can map the application-layer frame length and
+Secondly, effectively mapping LRIF-related factors to transmission-layer network loss pattern to per-frame re-
+per-frameredundancyrate,whileensuringToothlightweight dundancyinreal-time,thusachievingafine-grainedFEC
+enoughforpracticaldeployment.Inparticular,therelation- forenhancingcloudgamingstreaming(§3).
+ship between per-frame redundancy rate and LRIF-related • WeimplementanddeployToothintheoperationalcloud
+factorsisnon-linear.Straightforwardmappingmethodslike gamingsystemandconductreal-worldevaluation,which
+linearfunctionorneuralnetworkmodels,cannotguarantee outperformsstate-of-the-artsolutionssignificantlyandcon-
+thevideoQoEandrunningcostsimultaneously(aswillbe sistentlyacrossenvironmentvariation(§5).
+validated in §5.3). Furthermore, the key factors we inves-
+2 BackgroundandMotivation
+tigated,suchasnetworklossrateandlossaggregation,are
+highlyvolatileduetonetworkdynamics,i.e.,onlyhistorical 2.1 Background
+networklosspatterncannotreliablyreflectfutureconditions.
+2.1.1 PacketLossRecovery
+Therefore,wedesignadual-moduleFECencodingforTooth,
+which consists of (i) a slow-module,whichlearns network In conventional real-time applications such as video con-
+volatilitytoestimatethefuturenetworklosspattern(lossrate ferencing,playback delays of 200 to 500 milliseconds are
+lrandlossaggregationla)basedonhistoricallosspatterns typically tolerable [28,43,47]. However,in cloud gaming
+and packet-by-packet reception. It utilizes a compressed scenarios,strongerinteractivityiscritical,withsignificantly
+neuralnetworkmodeltoimprovepredictionaccuracyandop- stricterlatencyconstraints,i.e.,theapplication-layerinterac-
+erateswithlowerfrequency,i.e.,onceforeachnetworkRTCP tionlatencymustconsistentlyremainbelow100milliseconds
+feedback cycle. (ii) a fast-module, which formulates the toensureoptimaluserQoE[22–24].Hereweclarifythatthe
+non-linearanddiscontinuousmappingbetweenLRIF-related application-layer interaction latency refers to the duration
+factorsandredundancyofeachframeasaregressionproblem, between a user’s operation input (e.g., run and hit) in the
+andthenusesalightweightrandomforestmethodtomodel game client and the moment the user receives the corre-
+the relationship. The fast-module runs every time a video spondingscreenfeedback.Itcontainsthesystemprocessing
+frameisencoded,thusensuringthatredundancyisimmedi- delay and data round-trip network delay,the measurement
+atelydeterminedandappliedtoeachnewlygeneratedvideo methodisgiveninAppendixA.Giventhestringentlatency
+frame.Asaresult,theabovedecoupleddualmodulesavoid requirementsofcloudgaming,itsignificantlyinfluencesthe
+implementingframe-levelFECthroughheavyneuralnetwork designconsiderationsforpacketlossrecovery.Inparticular,
+models and also reduce the execution frequency, which therearetypicallytwolossrecoverymechanisms,whichare
+allowsToothagileenoughtooperateinreal-worldscenarios. usuallyadoptedjointlyincloudgaming:
+=== PAGE 3 ===
+80
+60
+40
+20
+0
+14 16 18 20
+Video bitrate (Mbps)
+)stkp
+fo
+#(
+htgnel
+emarF
+80
+60
+40
+20
+0
+2D 3D-1 3D-2 3D-3
+Game type
+Figure 1: Frame length de-
+tailsatdifferentvideobitrates.
+)stkp
+fo
+#(
+htgnel
+emarF
+scenewillbeshorterthanthatofadynamicscene.
+Weconductameasurementcampaignoverouroperational
+cloudgamingsystem(laterdescribedin§2.2),andthestatis-
+ticsareshowninTable1.ThevideocodecweuseisNVENC
+[1,8]followingH.265[7]anditadoptinfiniteGOPencoding
+mannertomeetthelow-latencytransmissioncharacteristics
+ofcloudgaming.UnlikethetraditionalfiniteGOPmanner
+Figure 2: Frame length de- setsafixedGOPlength,suchas30inRL-AFEC[18],infi-
+tailsin2Dand3Dgames. niteGOPdisablestheservertosendIframesperiodically,to
+reducelatencysurges,moreexplanationsinAppendixB.The
+Hairpin Tambur Xuetal. congestion control algorithm is GCC [17]. We present the
+Feature Ours
+[36] [42] [51]
+distributionofframelengthswhentheencodingbitratesare
+Usersessions 3,308 9,700 2,430 69,426
+fixedtodifferentlevelsinFig.1,andthislengthdifference
+Playtime(hours) 600+ - 121.5 31,316
+existsinboth2Dand3Dcloudgames,asshowninFig.2.
+Players 3,308 9,700 1 66,168
+Player’sCity - - 1 22 2.2 InefficacyofExistingSolutions
+Edgeserver’sCity 1 - 1 17
+Unfortunately,whendeployingFECandretransmissioninto
+ISP 3 - - 4
+production-scalesystems,wefindthatexistingsolutionssuf-
+Userdevicemodels - - 1 83
+ferfromafundamentaltrade-offbetweenbandwidthcostand
+Cloudgameproducts 2 2 3 4
+interactionlatency.
+Table1:Datasetsstatisticsofourlarge-scalemeasurements
+MeasurementSetup.Weconductalarge-scalemeasurement
+onanoperationalcloudgamingsystem,comparedwithother
+campaign over our operational cloud gaming system. The
+existingmeasurementefforts.
+measurementcovers22citiesacrossChinaand4ISPs,with
+otherstatisticsshowninTable1.Itisworthnotingthatthe
+• Forward Error Correction (FEC) [18,20,31,42],which
+datasetwecollectisthelargestdatasetinthefieldofcloud
+proactivelysupplementsoriginaldatawithadditionalen-
+gamingtothebestofourknowledge.
+codeddataasredundancybeforeeachtransmission.Inthis
+FEC algorithms often over-protect data packets with
+case,thelostoriginaldatapacketswillverylikelyberecov-
+drastically high bandwidth costs. An interesting observa-
+eredbythereceiver.FECreducesthedelaybynotrequiring
+tion is that many existing FEC solutions often add much
+retransmissionbutincreasesthebandwidthcostsincefuture
+moreredundantpacketsthannecessary.Forexample,when
+packetlossesareuncertain.
+thereare5packetlossesoutof25datapackets,ideallyonly
+• Retransmission [21,36]. There are also recent proposals
+5additionalredundantpacketswillprotectthedatapackets.
+thatcallfortherevitalizationofretransmissionduetothe
+However,existingsolutions[18,36,42]oftenaddmuchmore
+reductionofRTT.Whenthepacketislostanddetected,the
+than5packets.Thisreasonisquiteintuitive–moreredun-
+senderwilltransmitthelostdatapacketsagain.Thiswill
+dancyisaddedtogetpreparedforunforeseenpacketlosses,
+introduceadditionalRTTdelaystothedatadelivery,but
+however,whichleadstodrasticbandwidthwaste.Especially
+willonlyconsumethebandwidthofthelostpackets.
+consideringthatbandwidthcostisthemajorcontributortothe
+operationalexpensesforstreamingapplicationssuchascloud
+2.1.2 VariationinFrameLength
+gaming,thiswilldirectlyleadtoarevenueloss[2,3,42].
+Akeyobservationinthispaperisthevariationofframelength Wevalidatetheobservationbydeployingtworepresenta-
+incloudgaming,forthefollowingtworeasons: tiveFECsinourcloudgamingplatform:
+• Rateadaptation.Theavailablenetworkbandwidthishighly • RTC-FEC[28],thede-factorule-basedsolutioninWebRTC
+dynamic,sometimesdroppingbyafactorof50×inwireless [9]basedonthecurrentvideobitrateandnetworklossrate.
+real-timecommunications[35],sotheencodingbitratewill • RL-AFEC [18],a reinforcement learning driven FEC so-
+also change accordingly. This is determined by the rate lution.ItdefinesthefirstIframeandthefollowingK-1P
+adaptationalgorithmssuchasGCC[17].Suchanadaptive frameofoneGOP(lengthisN)astheK“critical”frames1,
+bitratewillresultinthevariationinframelength(number andtheremainingN-KPframesas“non-critical”frames.
+ofpackets).Weemphasizethattheframelengthvariation RL-AFECfindsthatnon-recoverablecriticalframeshave
+hereisdifferentfromthesegmentlengthvariationreported amoreseriousnegativeimpactonvideoquality,soitsets
+in[45],whichhasafarlooselatencyrequirement. differentredundancyrates2forthecriticalframesofeach
+• Variablebitrate(VBR).Meanwhile,duetotheinternalde-
+1InRL-AFEC[18],thereare6candidatevaluesforK,i.e.,5,10,15,20,
+signofvideocodecs,evenifthebitrateisfixed,theframe
+25,and30.Hereweusetherecommendedoptimalvalue,i.e.,K=15.
+lengthcanalsovaryduetotheVBRencoding.Forexample, 2Hereweset10candidateredundancyratesforRL-AFEC,i.e.,10%,
+underthesamevideobitrate,theframelengthofastatic 20%,...100%,completelyconsistentwith[18].
+=== PAGE 4 ===
+1.0
+0.5
+0.0
+01 10 20
+per-frame redundancy / LRIF
+FDC
+0.99
+RTC-FEC (4G/5G) 0.50
+RTC-FEC (WiFi)
+RL-AFEC (4G/5G)
+RL-AFEC (WiFi)
+Oracle 0.00
+0 50 100
+LRIF (%)
+Figure3:CDFoftheratioof Figure4:Bandwidthcostsof
+per-frameredundancyrateto the representative FECs and
+LRIFforcoarse-grainedFEC. theidealOraclesolution.
+GOP.Asfortheremainingnon-criticalframes,itstilluses
+thesameuniformredundancyrate.
+AsshowninFig.3,bothalgorithmsaddmuchmoreredun-
+dantpacketstoframesthannecessary,withamediannumber
+of5.2×-8.6×in4G/5Gnetworksand6.6×-9.2×inWiFinet-
+works,resulting in serious bandwidth waste. In Fig. 4,we
+showtheoverallredundancybandwidthcostsoftworepre-
+sentative FECs, both are very high, i.e., 45.9%-100% and
+26.3%-39.4%respectively.Toshowthepotentialoptimiza-
+tionspace,wecomparetheexistingFECswithan“Oracle”
+approach,i.e.,wecounttheactualdatalossratesofallvideo
+framesastheidealbandwidthcost.AsshowninFig.4,only
+5.4%-12.1%redundancyisrequired.
+Retransmission-orientedsolutionsstillsufferfromsevere
+stalls.Includingtherecenteffort,Hairpin[36],therehasbeen
+anunderstandingthatsincetheRTTislowenough,merely
+relyingonretransmissionmightbesufficienttorecoverthe
+lostpackets.However,ourexperimentsshowthecontrary:
+• ThenetworkRTTmeasuredinourcloudgamingsystemis
+23msforWiFiusersand35msfor4G/5Gusers.Thisis
+becauseasthescaleoftheproductexpands,theuserswith
+worsenetworkconditionsarenaturallyincluded.
+• The detection of packet loss also takes time in the com-
+monlyusednegativeacknowledgement(NACK)methods.
+Forexample,inWebRTC,itwilltakethereceiverupto20
+msbeforesendingNACKthroughRTCPprotocol.
+• Affectedbythecongestioncontrolandpacingrateofthe
+sender,thetransmissiondurationofvideoframedatapack-
+etsoftenexceeds10ms.
+Therefore,consideringthestringentdeadlinerequirement
+of around 100 ms [22–24,36,37,48],it is still insufficient
+torelyonretransmissiontorecoverthelostpackets,andthe
+stallfrequencyevenreaches41.9timesperminute.Wewill
+providethedetailedexperimentalresultsin§5.2.
+2.3 Observation–Framelengthmatters
+InFig.3,wehaveshownthatexistingFECalgorithmsoften
+over-protectmanyvideoframeswhileunder-protectingsome
+others(theratio<1),leadingtobothbandwidthwasteand
+interaction stalls. In this subsection,we will show that the
+root cause of this inefficiency is the neglect of the frame
+lengthintheFECalgorithms.Forthesakeofclarity,wefirst
+FDC
+60
+40
+Frame length = 10 20
+Frame length = 50
+Confidence = 0.99
+0
+0 50 100
+Frame length (# of pkts)
+Figure5:TheCDFofvideo
+frameLRIFbinomialdistribu-
+tions with different numbers
+oftrials.
+)%(
+etar
+ycnadnudeR
+lr=1%, confid=0.9
+lr=1%, confid=0.99
+lr=2%, confid=0.9
+lr=2%, confid=0.99 lr=5%, confid=0.9
+lr=5%, confid=0.99
+Figure 6: Lines: when the
+loss rate (lr) is 1%,2%,and
+5%. Y-axis: the redundancy
+rate.X-axis:theframelength.
+denotethelossrateineachframeasLRIF,whichisdefinedas
+#of lost packetsin frame .Welaterhavethefollowingfindings:
+#of all packetsin frame
+Finding1:ThedistributionofvideoLRIFsvarysignif-
+icantlywiththeframelength.Asweallknow,networkloss
+events are random andbursty[33,36,42]. Nowlet’s begin
+withasimpleprobabilityquestion:assumethatthelossrate
+ofeachpacketis10%andtheyareindependentfromeach
+other,if we want to protect the delivery of the frame with
+theconfidenceof99%,howmanyredundantpacketsdowe
+need to add when (a) the frame has 10 data packets; and
+(b)theframehas50datapackets? Inthiscase,weneedto
+calculate the per-frame LRIF as it is the necessary redun-
+dancyratetobeset. TheLRIFinthisexamplefollowsthe
+BinomialDistribution[11],withtheprobabilityofeachtrial
+being0.9,andwewanttheminimumnumberoftrialssuchas
+P(X≥ framelength)≥0.99.Theansweris:whentheframe
+length is 10 packets,we need to add 4 redundant packets;
+whentheframelengthis50packets,weneedtoadd12redun-
+dantpackets.Theredundancyrateforsmallerframes(40%)
+ismuchhigherthanthatforthelargerframes(24%)3.
+Thereasonbehindthisphenomenonisabasiclawinprob-
+abilitytheory–thelawoflargenumbers.AsshowninFig.5,
+whenthenumberoftrials(inourcase,framelength)increases,
+itrequires a lowerredundancy rate to successfully recover
+99%ofallframes.Therefore,theredundancyrateneededto
+protecttheframewilldecreaseastheframelengthincreases.
+Hereweclarifythatalowerredundancyratedoesnotdirectly
+representaddingfewerredundantpackets.Foravideoframe,
+theidealredundancyrateisitsLRIFandtheidealnumber
+of the redundant packets is framelength×LRIF. Next,we
+furthersimulatethenecessaryredundancyrateswithdifferent
+confidencelevelsandframelengths,andtheresultsareshown
+inFig.6.Thisphenomenonisgeneral–theredundancyrate
+forsmallframesismuchhigherthanthatforlargeframes.
+Finding 2: Existing FEC algorithms ignore the LRIF
+variation caused by frame length, either over-protect
+large frames or under-protect small frames. We delve
+anewintoexistingFECalgorithmsandfindtheunderlying
+3Onecanvalidatetheresultathttps://stattrek.com/online-cal
+culator/binomial.aspx.Theparametersweuseare(0.9,14,10)and(0.9,
+62,50).
+=== PAGE 5 ===
+40
+30
+20
+10
+1
+10 20 30 40 50 60
+Frame length (# of packets)
+)%(
+FIRL
+emarF
+Insight: loss rate in frame (LRIF) decreases as
+video frame length increases
+Figure7:RelationshipbetweenvideoframelengthandLRIF.
+Thestatisticalresultscomefromvideoframesthatsuffered
+packetlossinourcommercialcloudgamingplatform.Only
+theseframescanreflecttheoptimalredundancyratetoprotect
+eachvideoframe,moreexplanationsinAppendixD.
+1.0
+0.5
+0.0
+0 25 50
+Frame length (# of pkts)
+FDC
+(10, 0.98) 60
+40
+Overall frames
+Non-recoverable 20
+frames
+0
+10 15 20 25 30
+Redundancy rate (%)
+(a) Recovery of video frames
+whenredundancyrateis20%.
+)stkp
+fo
+#(
+htgnel
+emarF
+Non-recoverable frames
+Overall frames
+some small frames
+still fail to recover
+(b)Recoveryofvideoframesun-
+derdifferentredundancyrates.
+2.16
+1.44
+0.72
+0.0 10 15 20 25 30
+Redundancy rate (%)
+)nim
+rep(
+ycneuqerf
+llatS
+15
+10
+5
+0 10 15 20 25 30
+Redundancy rate (%)
+(c)Stallfrequencyunderdifferent
+redundancyrates.
+stkp
+.der
+detsaw
+fo
+#
+8
+6
+4
+2
+)spbM(
+htdiwdnab
+detsaW
+2.5
+2.0
+1.5
+1.0
+0.5
+0.0
+10 15 20 25 30
+Redundancy rate (%)
+Wasted red. pkts
+Wasted bandwidth
+(d)Wastedredundancy(original
+streamsareaverage19.3Mbps).
+Figure8:Videoframerecoveryandwastedbandwidthunder
+coarse-grained redundancy rates. The results are obtained
+from the controlledanalysistoFEC. Wereplayreal-world
+streamtracesinthesimulatoranddon’tconsiderthedamage
+tonetworkconditioncausedbyexcessivedatatransmission.
+reason:mostofthemarecoarse-grained,ignoringtheimpact
+offramelength,andsetauniformredundancyrater(defined
+as redundantdata)forallframesbasedonnetworkconditions.
+originaldata
+WhileRL-AFEC[18]proposessettingvaryingredundancy
+rates for each of the first K critical frames in one GOP, it
+overlookstheremainingN-Knon-criticalframes.Thisises-
+pecially unsuitable in the context of cloud gaming, where
+N-K non-critical frames can comprise up to 99.9% of all
+framesin oneGOP(detailsin AppendixB). Thusthevast
+majorityofframeswillstillbesettheuniformredundancy
+rate,eventhoughtheseframesbehavewithsignificantLRIF
+variations.Therefore,allexistingFECmethodstendtoseta
+higherredundancyrate,aswepresentedabove.Unfortunately,
+eveniftheredundancyrateishighenoughformostframes,it
+mightstillbeinsufficientforsmallframes.Forexample,in
+thelineof(lr=10%,conf=99%)inFig.5,whensettingthe
+redundancy rate to 40% (4× the average loss rate),frames
+)nim
+rep(
+ycneuqerf
+llatS
+50
+40
+30
+20
+10
+10 15 20 25 30
+Redundancy rate (%)
+Figure 9: As redundant rate
+increases,theover-sentredun-
+dancyevenexacerbatesinter-
+actionstalls.
+)%(
+FIRL
+Figure10:Asredundantrate
+increases, the over-sent re-
+dundancy exacerbates small
+frames’LRIF.
+smallerthan10packetsarestilllikelytofailtorecovereven
+thoughforframeslargerthan10packetstheredundancywill
+besignificantlywasted.Wefurthervalidatethisobservation
+byouronlinemeasurementsaswell.AsshowninFig.7,as
+theframelengthincreases,theLRIFmeanoftheframesthat
+suffered packet loss decreases significantly. This indicates
+that large frames will easily be over-protected while small
+frameswillbeunder-protectedbythecoarse-grainedFECs.
+Theadverseimpactofcoarse-grainedFECsonopera-
+tionalcloudgamingsystems.Herewedemonstratehowex-
+istingcoarse-grainedFECsimpacttheperformanceofcloud
+gaming in practice,forwhichwe use alltraces as listedin
+Table1.Firstly,weapplyauniformredundancyrateof20%
+toeachgamingstreamandobservetheframerecovery.As
+showninFig.8a,thenon-recoverableframesarerelatively
+small,i.e.,98%ofthemaresmallframes(length≤10).Further-
+more,wealsoapplyother4redundancyratestoeachvideo
+streaminturn,i.e.,10%,15%,25%,30%.Fig.8bplotsthere-
+coveryresultsunderallfiveredundancyrates.Wecanobserve
+that:increasingtheredundancyratecanindeedrecovermore
+videoframes,butsomesmallframesstillfailtoberecovered,
+whichrequiresahigherredundancyrate,exceeding30%.To
+examinetheimpactonQoE,wepresenttheinteractionstall
+frequencyinFig.8candthewastedredundancyinFig.8d.
+Obviously,the stall frequency decreases along with the in-
+creaseofredundancyrate,butthemarginaleffectdiminishes
+veryfast,e.g.,webarelyhaveextragainwhentheredundancy
+raterisesfrom25%to30%butthewastedbandwidthkeeps
+increasingsubstantially,from4.5Mbpsto5.6Mbps.
+Moreimportantly,intherealworld,ourmeasurementre-
+sultsshowthecounter-intuitivefact:moreredundancyinstead
+exacerbatescloudgaming’sinteractionstall.Specifically,we
+measuretheinteractiongainsofFECunderdifferentredun-
+dancyratesof10%,15%,20%,25%,30%.AsshowninFig.9,
+when theredundancyrateisrelativelylow,i.e.,10%,15%,
+20%,FECcancontinuouslyreducetheinteractionstallfre-
+quency.However,asredundancyratekeepsincreasing,FEC
+fails to further optimize and even worsens the stall perfor-
+mance. We investigate the traces and find the root reason:
+addingtoomuchredundancywillleadtomoreburstingnet-
+workcongestion,thustheLRIFofavideoframeespeciallya
+smallframewillbeevenhigher,asshowninFig.10.
+=== PAGE 6 ===
+1.0
+0.5
+0.0
+0 5 10 15 20 25 30
+Video frame LRIF (%)
+Figure11:DesignoverviewofTooth.
+Tosumup,existingFECalgorithmsarecommonlycoarse-
+grainedandignoretheLRIFdifferencesacrossvideoframes.
+Hencetheyaretrappedinthedilemmaofimprovingframere-
+coveryandavoidingbandwidthwaste.Nowadays,cloudgam-
+ingapplicationsarebecomingmorebandwidth-demanding
+(withhigherimagequality),itismoreimperativetobreakthe
+dilemmawithanovelFECdesign.
+2.4 DesignChallenges
+Althoughwehaverevealedthesignificantimpactofframe
+lengthonper-frameredundancyrate,adaptingittoachieve
+fine-grainedFECisnon-trivial,whichfaces3keychallenges:
+(i) Besides frame length, LRIF also intertwines with the
+transport-layernetworklosspattern.Identifyingthecritical
+factors that influence the per-frame redundancy rate is es-
+sential for enabling precise FEC at the fine-grained level.
+(ii)Therelationshipbetweenper-frameredundancyrateand
+therelatedfactorsisnon-linearanddiscontinuous,makingit
+difficulttorepresentusingastraightforwardmappingfunc-
+tion. Meanwhile,network loss pattern fluctuates,meaning
+thehistoricalobservationscannotreliablyreflectthefuture
+networkconditions.(iii)Fine-grainedFECnecessitatesim-
+mediate determining and executing redundancy rate upon
+generatinganewvideoframe(e.g.,16.7msatFPS=60).The
+highfrequencyandstringenttimeconstraintsmakeexisting
+learning-drivenapproachesimpractical.
+3 Design
+3.1 DesignOverviewofTooth
+Wefirstperformthefieldmeasurementstoidentifycritical
+factorsinfluencingtheper-frameredundancyrate,including
+application-layerframelengthandtransmission-layernetwork
+losspattern.Notably,inadditiontothelossrateintroduced
+in theconventionalapproaches[16],webasedon theFEC
+operationtosupplementlosspatternwithlossaggregation,
+whichfurtherdescribesthetemporaldistributionofnetwork
+packet loss events (§3.2). Then, we design Tooth as a de-
+coupleddual-modulearchitecture(Fig.11),whichcanmap
+the LRIF-related factors to per-frame redundancy rate and
+meanwhileminimizecomputationalandinferencetimeover-
+heads.Itconsistsofaslow-moduleandafast-module,which
+circumvents the need for bulky large neural networks but
+FDC
+1.0
+(5,0.73)
+Network
+loss rate
+~1% 0.5
+(5,0.43) ~2%
+2+%
+0.0
+0 5 10 15 20 25 30
+Video frame LRIF (%)
+(a)Networklossratelr.
+FDC
+(5,0.85)
+Network loss
+aggregation
+low
+medium
+(5,0.18) high
+(b)Networklossaggregationla.
+Figure12:OtherrelatedfactorsaffectingvideoframeLRIF.
+Fig.12bisobtainedbyanalyzingthedatawithanetworkloss
+rate of∼1% in Fig. 12a. The networkloss rate is analyzed
+fromtheRTCPfeedback(every100msinoursystem).
+alsolowerstheexecutionfrequency,effectivelytacklingthe
+computationalcomplexitiesandinferencetimeconstraintsin
+real-worldenvironments.Specifically,
+• Slow-moduleutilizesacompressedneuralnetworkmodel
+to discern network fluctuations and estimate future loss
+pattern.Itdoesnotneedtoexecuteframebyframebutis
+activatedonlyuponreceivingnewRTCPnetworkfeedback
+toavoidunnecessarycomputationaloverhead(§3.3).
+• Fast-moduleincorporatesanexceedinglylightweightma-
+chinelearningmodeltodetermineper-frameredundancy
+basedontheframelengthandfuturenetworklosspatterns
+obtainedfromtheslow-module(§3.4).
+3.2 InvestigatingtheImpactFactorsofLRIFandEval-
+uatingStrawmanSolutions
+We make an in-depth analysis of the large-scale measure-
+mentdatasetin§2.2,andfindthatbesidestheframelength,
+transport-layernetworklossrate(lr)andlossaggregation
+(la)alsosignificantlyinfluenceovervideoframeLRIF.Next,
+we give more analysis: (i) in Fig. 12a,we plotthe CDF of
+thevideo frameLRIFsrelatedtonetworklossrate lr. The
+resultclearlydemonstratesatrendwhereframesexperience
+increasing LRIF as the network loss rate escalates. For in-
+stance,whenlris1%,73%oftheframeshaveLRIFsbelow
+5%.However,whenlrincreasesto2%orhigher,only43%of
+theframesmaintainLRIFsbelow5%,markingasignificant
+difference of 30%. (ii) Previous study [42] has noted that
+continuouspacketlossseverelyimpactsvideoframerecov-
+ery.However,wearguethatforadvancedFECmethodslike
+Reed-Solomon codes [41],there is no distinction between
+losing n packets continuously ordiscretely within a single
+frame.Therefore,weintroduceanovelmetric,i.e.,network
+lossaggregationla,toreflectwhetherpacketlosseventswill
+bemoredispersedinmanyframesorconcentratedinafew
+frames.lacanberepresentedasfollows,
+la=
+⎧ ⎪⎪⎪⎪
+⎨ ⎪⎪⎪⎪
+⎩ ∑
+n
+∣tn−ce
+0
+n
+ntroid∣+α
+n
+n
+>
+≤
+1
+1
+(1)
+Herenrepresentsthenumberofpacketslostwithinanetwork
+feedbackperiod,andt denotestheidealarrivaltimeofthenth
+n
+lostpacket,measuredinmilliseconds.Wedefinethetiming
+=== PAGE 7 ===
+methods,likearithmeticaverageoftheheuristicobservations,
+willbringseriousdeviationstothejudgmentofper-framere-
+dundancy,asverifiedin§5.3.Thus,weintroduceaNNmodel
+tobuildslow-module,andweprovidemoredetailsnext.
+Inputandoutput.AsillustratedinFig.13,slow-module’s
+inputisthehistoricalnetworklosspatternvectors: thenet-
+work loss rate sequence in the past n RTCP feedback,i.e.,
+P ⃗ =(lr ,lr ,...,lr ), the loss aggregation sequence (P ⃗ =
+lr 1 2 n la
+⃗
+Figure13:Slow-module’smodeldesign. la 1 ,la 2 ,...,la n ),andthespatialdistributionfeaturesP ls ofhis-
+⃗
+toricalpacketlossevents.P isextractedfromthepacketloss
+ls
+centroid of all lost packets as ∑ntn, and α is set to 0.5 to eventsinthepastnnetworkfeedbackperiods.Inparticular,
+n
+avoid∑n∣t −centroid∣being0,whichmeanspacketsarelost weencodethearrivalsofallN packetsinthepastnRTCP
+n ⃗
+within1ms.TointuitivelyillustratetheimpactoflaonLRIF, feedbackperiodsintoa0,1vectorls,i.e.:
+⎧
+webrieflydividealllavaluesinto3levelsaccordingtothe ⎪⎪1 packetlost
+numericaldistribution(i.e.,low:0-1,medium:1-5,high:5- l ⃗ s=(x 1 ,x 2 ,...,x N ), x i =⎨ ⎪⎪
+⎩0 packetreceived,
+(2)
+max)andcategorizethevideoLRIFs.AsshowninFig.12b,
+⃗
+elevatedlawillincreasethevideoframeLRIF.Forinstance, Herewebuilda1D-CNNblocktoprocessls,whichconsists
+whenlaislow,15%offrameLRIFsexceed5%,butwhenla of two cascaded one-dimensional convolution layers with
+ishigh,thisjumpsto82%offrameLRIFsexceed5%. kernelsizesof100and4,respectively.Eachconvolutionlayer
+Strawman solutions for fine-grained FEC. To assess the inthe1D-CNNmoduleusesReLUactivationandapooling
+⃗
+impactofvideoframelength(fl),networklossrate(lr),and layerwithakernelsizeof2toextractthespatialfeaturesP ls .
+lossaggregation(la)onper-frameredundancyrate,onepre- TheoutputofTooth’sslow-moduleisthefuturenetwork
+liminaryapproachistomanuallyestablishthemappingre- lossrate(lr f )andlossaggregation(la f ).
+lationship. However,this task proves to be non-trivial due Neural network model. We pass the concatenated se-
+toseveralchallenges:(i)Therelationshipsamongthethree quencesofP ⃗ (10×1),P ⃗ (10×1),andP ⃗ (12×1)totheslow-
+lr la ls
+factorsandper-frameredundancyarenotstraightforwardly module’s cascaded FC networks,with 64,32 and 16 units
+linear.Instead,theyareimplicitandcomplex,makingmanual respectively. For the loss function, we emphasize that the
+modelingdifficult.(ii)Bothlrandlaaresubjecttocontinual overestimatedlr
+f
+andla
+f
+willguideToothaddexcessivere-
+changesduetonetworkfluctuations.Notably,thereisalsoa dundancy,increasingbandwidthcost.Buttheunderestimated
+dependentrelationshipwhereanincreaseinlrcansometimes futurelr
+f
+andla
+f
+mayleadtoinsufficientredundancy,thus
+leadtoahigherla,thoughnotinvariably.Thus,itisimpera- incurringstalls,moreunacceptablethanwastingbandwidth.
+tiveforToothtoaccuratelydetermineper-frameredundancy Therefore,we seta largerloss forthe underestimatedcase
+amidvaryingnetworkconditions. andthefinallossfunctionL S isdefinedasfollows:
+Anotherstrawmanideaistoleveragepowerfulneuralnet-
+L =
+(lr
+f
+−lˆr)2+(la
+f
+−lˆa)2
+×(
+e(lˆr−lrf )+(lˆa−laf )
+),
+workmodels[18–20,31].Existingapproachesgenerallyoper- S 2 ∣lˆr−lr +lˆa−la ∣+β
+f f
+ateatacoarsergranularity,typicallymakingdecisionsevery
+(3)
+100msorlonger[32,42],whichisinadequateforTooth’sfine- wherelˆrandlˆaarethetruevaluesofnetworklossrateand
+grained frame-by-frame optimization. On one hand,Tooth
+lossaggregation.Thefirstpartcalculatesthedifferencebe-
+necessitatesfrequentredundancyexecutionwithinthetight tweentheestimatedlr ,la andthetruelˆr,lˆa.Forthesecond
+f f
+frameencodingperiodof16.7msataframerateof60FPS. part,iflr ,la arelargerthanlˆr,lˆa,thelosscanbeappropri-
+f f
+On the other hand,Tooth must maintain exceptionally low
+atelyreducedandwhenlr andla aresmallerthanlˆr,lˆa,the
+overheadsinbothcomputationandinferencetimetoenable f f
+losswillbeenlarged.βisaconstantandissetto1toavoid
+feasibledeploymentinproductionenvironments.However,
+∣lˆr−lr +lˆa−la ∣being0.
+evenneuralnetworkmodelswithoptimizedarchitecturesand f f
+parameters,suchaspruning,oftenfailtosatisfythesestrin-
+3.4 Fast-module:DeterminingPer-frameRedundancy
+gentoverheadrequirements,whichwillbevalidatedin§5.3.
+Fast-module takes the future networkloss rate lr ,loss ag-
+f
+3.3 Slow-module:EstimatingFutureNetworkLossPat-
+gregationla ,frame(tobeencoded)length flasinputs,and
+f
+tern
+outputstheper-frameredundancydecision.Incraftingfast-
+Slow-moduleistaskedwithlearningnetworkfluctuationsto module,wegatherlr,la, fl,andLRIF fromhistoricalframes
+estimatefuturenetworklossratelr andlossaggregationla , aslabeltobuildsampledataset.Next,weincorporateama-
+f f
+andupdatethem tothefast-module. Obviously,estimating chinelearningapproachdifferentfromcomplexNNmodels
+laisverychallengingsinceitispotentiallyaffectedbylrin toreducethecomputationcomplexity.
+additiontoitsownintrinsiccharacteristics.Existingsimple Incorporating Random Forest model. We clarify fast-
+=== PAGE 8 ===
+Video Codec
+Tooth
+FEC Codec
+Network
+Data Sender Monitor
+Figure14:Fast-module’smodeldesign. Cloud Game Server Player Devices
+module’sinputs(lr,la, fl)exhibitthefollowingcharacteris-
+tics:(i)Highcardinality,especiallylrandlaboasthundreds
+ofnon-continuouspotentialvalues,while fl mayalsohave
+dozens,thusrenderingthefeaturespaceinherentlyvariable
+andintricate.(ii)Thesefeaturesexertdistinctandnon-linear
+impactsonper-frameredundancy.Forinstance,amarginal1%
+increaseinlrmayresultinthelossofseveralmorepackets
+withinaframe,whereasasimilarincreasein flmaynotyield
+asubstantialdamage.Inlightoftheseissues,weleverageRan-
+domForest(RF)modeltoconstructfast-moduleasmultiple
+LRIFdecisiontrees.Ononehand,RFmodelcaneffectively
+handlehigh-cardinalitysamples.Eachredundancydecision
+treeofRFmodelwillbebuiltbyrandomlyselectingtraining
+samples,ensuringstronggeneralizationability.Ontheother
+hand,eachredundancydecisiontreewillsplititsnodesbased
+ondifferentinputfeaturesduringtheestablishmentprocess,
+enablingtolearnthedegreetowhicheachfeatureaffectsthe
+per-frame redundancy. As shown in Fig. 14,we first parti-
+tion the datasetbasedon lr,la, and fl,while ensuring that
+theelementsineachdatasetareevenlydistributedtoavoid
+situationswherealargeamountofdataisconcentratedneara
+certainvalue.Subsequently,weadjustthefeaturescarriedby
+eachsubset,andtheexplicitfeaturescarriedbyeachsubset
+aredividedinto(lr,fl),(la,fl),and(lr,la,fl).Thisstrategy
+preventsthedecisiontreesfromoverlyrelyingonacertain
+feature.Moreover,wechooseMSE(MeanSquaredError)as
+thecriteriaofRFmodeltotrainthefast-module.
+The final redundancy decision ofthe RF model is taken
+astheaverageofalldecisiontrees’outputs.Weemphasize
+that(i)thecombinationofmultipledecisiontreescanhelp
+fast-modulelearnthenon-linearrelationshipbetweenlr,la,
+fl,and per-frame redundancy. (ii) Each tree examines dis-
+tinctfeaturesandautonomouslyassessesthesignificanceof
+each input feature,culminating in the integration of multi-
+ple decision trees’ outputs. This can significantly enhance
+fast-module’sabilitytogeneralizeacrossvariednetworkcon-
+ditionsandgamingenvironments,asvalidatedin§5.2.
+4 Implementation
+Tooth’s implementation workflow. As the workflow illus-
+tratedinFig.15,Toothservesasapivotalcontrolmoduleof
+thegameserver,positionedbetweenVideoCodecandFEC
+Codec.Foreachgamingsession,Toothacquiresthereceipt
+Internet
+Figure15:TheimplementationofTooth.
+informationofpastdatapacketsfromNetworkMonitorand
+the frame length from Video Codec,subsequently control-
+lingFECCodectoaddredundancyforeachnewlygenerated
+frame.Intermsofdataflow,theservergeneratesthereal-time
+game content,whichis encodedbyVideo CodecandFEC
+Codec.Then,DataSendertransmitsthedatapacketstoplay-
+ers’devices(e.g.,smartphone,laptop,iPad)viatheInternet.
+Tooth’sdual-moduletrainingmethodology.In§2,wehave
+collectedextensivecloudgamingtracesfromtheproduction
+environment,whichrecords(i)transmissionandreceptionde-
+tailsoftransport-layerRTPpackets.Fromwhich,wecountthe
+networklossrateandaggregationatagranularityof100msto
+constructthenetworklosspatterndataset;(ii)Eachpacket’s
+sequence numberand the associated video frame ID,loca-
+tionsofalllostpackets.Foreachframe,wecountitslength,
+numberoflostpackets,andintegrateitscurrentnetworkloss
+patterntoconstructthevideoframeLRIFdataset.Basedon
+thesetwodatasets,wecompletethetrainingofTooth.
+Systemimplementationdetails.(i)Tooth’sintegration.Our
+commercialcloudgamingsystemhasbeenrunningonlinefor
+nearlytwoyearsandhasmorethan100,000players.Itfol-
+lowstheRTPprotocolstack[44]andisimplementedbasedon
+WebRTC[9,10].Ongameserver,thereisareal-timestream-
+ingservice(RTSS)module,responsibleforhandlingthegame
+videocontentandstreamingittotheclient.Toothisintegrated
+asanRTSSsub-module,embeddedintoRTSS’smediaand
+networkstackto1)obtaintheframeinformationandnetwork
+information2)returntoRTSSmainprocesstheredundancy
+rate decision. (ii) Redundancyencoding method. We lever-
+agetheReed-Solomon(RS)codes[41]tobuildFECCodec.
+Through our engineering refinement,it empowers an FEC
+blocktohandleupto256packetsandtheencodingtimecon-
+sistentlyremainsbelowmerely1ms.Also,weuseWebRTC’s
+FlexFECcodectosupportexistingFECsolutions.Forprotec-
+tionofuplinkclient-to-serverdataflow,seeAppendixC.(iii)
+NetworkMonitor discerns the RTP packets’ arrivalvia the
+client’sRTCPfeedback(per100ms)thenprovidesitforTooth
+asthebasisforFECdecision-making.Moreover,itcalculates
+theframeLRIFsandarchivescomprehensivenetworkmetrics
+(e.g.,RTT,throughput)intothetracedatabasebasedonthe
+MQTTprotocol[4].Thesemassivenetworktracesfacilitate
+continuouslyoptimizingToothintheofflineenvironment.
+=== PAGE 9 ===
+18
+16
+14
+12
+42
+)spbM(
+etartib
+oediv
+0
+RTC-FEC
+RTC-FEC+
+RL-AFEC
+Hairpin 20
+Tooth
+er
+ett
+B 40
+60
+4 3 2 1 0 4 3 2 1 0
+Stall frequency (per min) Recovery failure rate (%)
+Figure16:InteractionQoEsofallbaseline
+methods.Toothexhibitstheoptimizedperfor-
+manceinstallfrequencyandvideobitrate.
+)%(
+tsoc
+htdiwdnaB
+RTC-FEC
+RTC-FEC+
+RL-AFEC
+Tooth
+er
+ett
+B
+Figure18:CDFoftheratioofper-
+Figure 17: Redundancy rate and recovery frame redundancy rate to LRIF. A
+failurerateofdifferentFECmethods.Tooth ratioof1meansFECaddsthemost
+recoversmoreframeswithlessredundancy. appropriateredundancytoaframe.
+5 Evaluation betterpicturequalitywhenitishigher;5)videoPSNRand
+VMAF,whichareclosetotheuser-perceivedfeedbackand
+5.1 ExperimentalMethodology
+havebeenwidelyadoptedinthecommunityandindustry
+Comparison baselines. Here we compare Tooth with four [18,19,31,48].
+state-of-the-artlossrecoverybaselines:
+Toavoidtheimpactofdifferencesingamingsessionduration,
+• RL-AFEC[18],whichwehavealreadyintroducedindetail
+wecalculatethesemetricsataone-minutegranularity.
+in§2.2.HerewemaintainitsKastherecommendedop-
+Fielddeployments.WedeployToothandbaselinesolutions
+timalvalueof15in[18]andprovidethefurtherablation
+toaproductionserver,andconductrigorousA/Btestsinthe
+experimentalresultsforotherKvaluesintheAppendixE.
+realworld.Toensurefaircomparisons,werandomlyapply
+• RTC-FEC [28],as the defaultFEC solution ofWebRTC
+an FEC solution to a gaming session insteadofrelying on
+framework[9],iswidelyusedintheindustry.Weintegrate
+manualallocation,andallsolutionsoperatewithinthecon-
+the m119 release from Chromium [10] in 2023 into our
+sistentsystemenvironment.Theevaluationspansaduration
+cloudgamingsystem.
+of6weeks,andtheplayersareinvariousactivityscenarios
+• RTC-FEC+,whichreplacesRTC-FEC’sFlexFECcodec (e.g.,library,office,cafe,home,park)withvariouswireless
+with more powerful RS codec [41]. We also tune RTC- networkconditions(i.e.,WiFi,4G,5G).Weremovethefirst
+FEC+’sredundancytabletosuittheRScodec. minuteofeachgamingsession,duringwhichthegameisin
+• Hairpin[36],whichisthelatesteffortininteractivevideo theinitialanimationphasewithnouserinteraction,andthe
+streaming.Itnoticedthatthelossofretransmissionpackets systemonlymonitorstheuser’snetworklossconditions.
+will bring multiple RTT overheads and ultimately incur
+stalls.Soitaddsredundancytoretransmissionpackets. 5.2 System-levelEvaluation
+Evaluationmetrics.Foreachcloudgamingsession,welog Tooth significantly enhances interaction QoE. Here we
+thefollowingmetricstoconductacomprehensiveevaluation. first focus on the two key application-layer QoE metrics,
+• Ourdirectoptimization goals,i.e.,FEC performance,in- i.e.,stallfrequencyandvideobitrate,toexploreTooth’sQoE
+cluding1)bandwidthcostfromFECredundancy;2)recov- gains. AsshowninFig.16,Toothachievestheloweststall
+ery failure rate,which is the percentage of video frames frequency,i.e.,only0.49timesperminute,reducingthatof
+thatfailtorecoverwhensufferingpacketloss.Weclarify baselineFECsby40.2%-85.2%.Furthermore,Toothachieves
+thataddingredundancywilllowerthevideobitratebecause the highest video bitrate,i.e.,17.8 Mbps,which is 11.4%-
+productionsystemsoftenhaveabitratecap(20Mbpsin 29.2%higherthanthebaselineFECs.Asaresult,Toothcan
+our case) to control overall bandwidth costs, which is a enhancethestate-of-the-artFECs’QoEintermsofbothstall
+commonindustrypractice. Moreover,whenFECfailsto frequency andvideo bitrate. Next,we delve into all FECs’
+recoveravideoframe,retransmissionisusedtoensurethe bandwidthcostsandframerecoveryresultstofurthereluci-
+dataintegrityofnon-recoverableframes(whetherIframe date.AsdepictedinFig.17,ToothcansurpassexistingFECs
+orPframe).Otherwise,thesubsequentvideoframeswon’t in reducing their bandwidth costs by 54.9%-75.0% while
+playnormally,leadingtointeractionstalls. reducingtherecoveryfailurerateby51.9%-89.3%.Thisisat-
+• PlayerinteractionQoEs,including3)stallfrequency,i.e., tributedtoToothsetshigherredundancyratesforsmallframes
+howmanytimesaplayerexperiencesstallperminute.We topreventrecoveryfailuresandlowerredundancyratesfor
+consideran interaction latency of more than 100ms as a largeframestoreduceunnecessarybandwidthcosts.Since
+stall,forwhichplayerswillfeelthatthegameislaggy;4) therearefewersmallframes,theredundancysavedbylarge
+videobitrate,whichdoesnotincluderedundancy,represents framesfarexceedstheredundancyincreasedbysmallframes.
+=== PAGE 10 ===
+45
+30
+15 Hairpin RTC-FEC RTC-FEC+ RL-AFEC Tooth
+)Bd(
+RNSP
+90
+70
+50
+FAMV
+1.8
+PSNR VMAF
+1.2
+0.6
+0.0 RL-AFEC RTC-FEC+ Tooth
+Figure19:VideoPSNRandVMAFresultsofdifferentloss
+recoverymethods.
+Tofurtherclarifythis,wecalculatetheratioofper-framere-
+dundancyrateandLRIF,wherearatioof1meansthatFEC
+addsthemostappropriateredundancytoaframe.Asshown
+inFig.18,ToothisclosesttotheOraclesolution.
+Regardingotherbaselines:(i)RTC-FEC,constrainedby
+FlexFECcodec(mentionedin§5.1),behaveswitha45.9%
+bandwidthcostand3.3%framerecoveryfailurerate. Con-
+sequently,RTC-FEC demonstrates a QoE of3.3× stallfre-
+quency and a video bitrate of only 13.8 Mbps, inferior to
+Tooth.(ii)RTC-FEC+,optimizesRTC-FEC’sbandwidthcost
+andframerecoveryfailurerateby35.6%and77.8%,respec-
+tively,thusimprovingQoE.(iii)RL-AFECachievesa13.7%
+lower bandwidth cost than RTC-FEC+ via reinforcement
+learning,but with a 35.2% degradation in recovery failure
+rate.Thesetwocompetentcoarse-grainedFECs,RTC-FEC+
+andRL-AFEC,can onlyfallinto the inherenttrade-offbe-
+tweensavingbandwidthcostandensuringrecovery.(iv)For
+theretransmission-basedHairpin,itsstallfrequencyisashigh
+as41.9timesperminuteduetotheadditionalRTTdelays,
+despite improving video bitrate. AlthoughHairpin aims to
+recoveralllostpacketswithonlyoneroundofretransmission,
+eventhisbringsanadditionalRTTdelay,whichinoursystem
+willcausetheinteractionlatencytobenoticed.Inthefollow-
+ingsections,wewillnotdelvefurtherintothecodec-limited
+RTC-FECandretransmission-basedHairpinbecausetheyfail
+tomeetthebitrateorstallfrequencydemands.
+Tooth exhibits better video PSNR and VMAF perfor-
+mance. Note that video PSNR and VMAF require frame-
+by-framecomparisonbetweentheserver-sidesourcevideo
+andtheclient-sidereceivedvideo,whichisnotyetfeasible
+inourcurrentcommercialplatform.Therefore,werecruit20
+volunteersacrosscampustoconductasmall-scaleevaluation
+4.Specifically,wefirstbuildalocaltestbedusingourcommer-
+cialcloudgamingsystem,andrandomlyselect20network
+traces(onepervolunteer)fromournetworkdatasettosimu-
+latetherealnetworkenvironments.Then,everyvolunteeris
+askedtoinitiate5cloudgamingsessions,witheachsession
+lasting10minutesandusingdifferentpacketlossrecovery
+methods.Finally,wecollect100groupsofgamingsession
+videosandusetheFFmpegtool[6]tocalculatetheirPSNR
+4Forcampusvolunteers,weonlycollecttheiroperationinstructionsand
+videocontentfromthecloudgameclient.Thisdatacollectionprocessdoesn’t
+involveanyuserprivacyinformationandhasreceivedapprovalfromthe
+ethicalreviewcommittee.
+)nim
+rep(
+ycneuqerf
+llatS
+24
+16
+8
+0
+)spbM(
+etartib
+oediV
+9.0
+Stall frequency Bitrate
+6.0
+3.0
+0.0 RL-AFEC RTC-FEC+ Tooth
+(a)WiFinetworks.
+)nim
+rep(
+ycneuqerf
+llatS
+24
+16
+8
+0
+)spbM(
+etartib
+oediV
+Stall frequency Bitrate
+(b)4G/5Gnetworks.
+Figure 20: Interaction QoE under different network types.
+Toothcandecreasestallfrequencymorein4G/5Gnetworks.
+andVMAFresults.AsshowninFig.19,Toothoutperforms
+thebaselinemethods,witha3.3%highervideoPSNRandan
+11.9%highervideoVMAFthanthenextbestRTC-FEC+.
+Tooth is more effective in 4G/5G networks. Players on
+ourgameplatformcomefromtwonetworktypes,i.e.,WiFi
+andcellular5,whichrepresentdifferentnetworkconditions.
+WiFinetworksexhibitlowerRTTthan4G/5Gnetworks,i.e.,
+22.9msvs.35.1msinaverage,whichmeanstheretransmis-
+sionpacketsaremorelikelytotimeouttoincurstallsifFEC
+fails to recoverthe frames. Moreover,WiFi’s networkloss
+rateis1.15%and4G/5G’sis0.76%,i.e.,fewerframeswill
+suffer packet loss in 4G/5G networks. In Fig. 20,we give
+theQoEresultsunderthesetwonetworks.Weconcludethat:
+(i)FromWiFito4G/5Gnetworks,allthreeFECs’stallfre-
+quenciesincreaseobviouslyduetohigherRTT.Forexample,
+Rl-AFEC’sstallfrequencyincreasesfrom1.02tostunningly
+6.03.ButToothcanachievemoreQoEgains,fromreducing
+thebaselineFECs’stallfrequencyby35.5%-52.4%onWiFi
+to 55.9%-75.6% on 4G/5G. (ii) Due to the lowerloss rate,
+RL-AFECandRTC-FEC+tendtodecreasetheredundancy
+rate,withtheirvideobitratesincreasingby4.6%and6.7%.
+Toothcanachieveamoresignificantbitrateincreaseof7.7%.
+AsprovedinFig.7,theLRIFoflargeframesgraduallyap-
+proachesthenetworklossrate.Sowhenthenetworklossrate
+greatly reduces,there are more bandwidthcan be savedin
+largeframesforTooth,butwhichissomethingthatuniform
+redundancyrateofcoarse-grainedFECscannotachieve.
+ToothcanstillachievesignificantQoEgainsin2Dgames
+whoseframelengthdifferencesaresmaller.Asmentioned
+inFig.2,theframelengthdifferenceof2Dgamesissmaller
+overallthanthatof3Dgames,withthemaximumandmini-
+mumvaluesbeing50and80respectively.Anintuitiveworry
+is:doesToothstillhaveQoEgainsin2Dgames?Webreak
+downtheinteractionQoEresultsof3Dgamesand2Dgames
+toclarifytheissue,asshowninFig.21.For3Dgames,Tooth
+canachieve39.9%,49.5%lowerstallfrequencyand11.4%,
+16.4%highervideobitratethanRTC-FECandRL-AFEC,re-
+spectively(Fig.21a).Moreimportantly,for2Dgames,Tooth
+stillshowssignificantQoEgainsoverthebaselines(Fig.21b).
+Indetails,RL-AFECandRTC-FEC+bothshowslightlywors-
+enedstallfrequencyduetomoresmallframesin2Dgames,
+5OurgameAPPcannotobtaindetailed4Gand5Gaccessinformation
+fromplayerdevices,sotheyareunifiedintocellularplayers.Inaddition,the
+numberratioofWiFiplayerstocellularplayersisalmost8.5:1.
+=== PAGE 11 ===
+1.8
+1.2
+0.6
+0.0
+RL-AFEC RTC-FEC+ Tooth
+)nim
+rep(
+ycneuqerf
+llatS
+24
+16
+8
+0
+)spbM(
+etartib
+oediV
+1.8
+Stall frequency Bitrate
+1.2
+0.6
+0.0
+RL-AFEC RTC-FEC+ Tooth
+(a)3Dgames.
+)nim
+rep(
+ycneuqerf
+llatS
+18
+12
+6
+0
+)spbM(
+etartib
+oediV
+Stall frequency Bitrate
+(b)2Dgames.
+Figure21:Toothcannotonlybenefit3Dgamebutalso2D
+gameswhoseframelengthdifferencesaresmaller.
+2.4
+1.8
+1.2
+0.6
+0.0
+ISP-U ISP-M ISP-T ISP-B
+)nim
+rep(
+ycneuqerf
+llatS
+2.4
+1.8
+1.2
+0.6
+0.0
+intra-city cross-city
+RL-AFEC RTC-FEC+ Tooth
+Figure 22: Tooth can achieve consistently lower stall fre-
+quencythanbaselineFECsunderdifferentISPnetworks.
+from0.82to0.89andfrom0.97to0.99,respectively,while
+Toothcanfurtherdecreasethestallfrequencyfrom0.49to
+0.44.Intermsofvideobitrate,Toothstillachievesconsider-
+ableimprovement,10.4%and11.1%higherthanthebaseline
+FECs.Itcanreducethestallfrequencyby76.2%,77.8%and
+increases the video bitrate by 7.8%,12.5% (Fig. 21b). Be-
+causeinboth3Dgamesand2Dgames,frequentoperations
+anddynamicgamecontentwillleadtoinevitablevariations
+in frame length. Thus,Tooth can exploit this difference to
+adaptivelyaddappropriateredundancytoeachframe.
+Tooth exhibits exceptional stall performance in various
+ISP networks. Our cloud gaming platform encompasses
+players from all four major ISPs in China, i.e., ISP-U
+(China Unicom), ISP-M (China Mobile), ISP-T (China
+Telecom), and ISP-B (China Broadnet), with player ratios
+of1.1:3.1:1.8:0.01respectively.DespiteISPvariations,video
+bitrategainremainslargelyunaffected,thankstoconsistent
+CDNegressbandwidthsetforeachgamestream(20Mbps
+inoursystem).Remarkably,there’sanotablecontrastinstall
+frequency.IllustratedinFig.22,playersfromISP-Texhibit
+theloweststallfrequency,trailedbyISP-UandISP-M,those
+fromISP-Bencounterthehigheststallfrequency.Divergent
+stall performances stem from disparities in fundamental
+networkperformanceandlinkloadamongISPs:(i)ISP-B,
+initsnascentstage,isgraduallyenhancingitsCDNlinksand
+basestationinfrastructure,showingrelativelypoornetwork
+RTT,average28.0ms.(ii)TheRTTconditionsamongISP-M
+andISP-Uarecomparable,24.3msand23.8msrespectively,
+bothareworsethanISP-T’s21.8ms.Fortunately,irrespective
+of the ISP networks, Tooth can achieve exceptional stall
+performance,reducing the stall frequency of the next best
+RTC-FEC+by1.63×to1.72×.
+ToothcanachieveconsistentQoEgainsinbothintra-city
+andcross-citysessions.Wedividegamingsessionsintotwo
+)nim
+rep(
+ycneuqerf
+llatS
+30
+RL-AFEC
+RTC-FEC +
+Tooth 20
+10
+0
+w/o-S&F w/o-S S&F
+Figure23:Stallfrequencyun-
+derdifferentserverdistances.
+)%(
+tsoc
+htdiwdnaB
+0.8
+0.5
+0.2
+0.0
+)%(
+etar
+eruliaf
+yrevoceR
+Bandwidth cost
+Reco. failure rate
+Figure24:Ablationstudyof
+Tooth’stwomodules.
+categories:intra-citysessionsandcross-citysessions,contin-
+gentuponwhethertheplayerandgameserverareinthesame
+city,accountingfor17.2%and82.8%ofsessionsrespectively.
+AsillustratedinFig.23,Toothcandecreasethestallfrequency
+ofthebaselinesby40.5%and59.9%incross-citysessions.
+Moreimportantly,incross-citysessions,Tooth’sstallperfor-
+mancecanevenmatchthatofRL-AFECinintra-citysessions,
+anditdemonstratesgreaterrobustness(withsmallererrorbar).
+Additionally,forintra-citysessionsboastingsuperiornetwork
+conditions, Tooth shows noteworthy stall frequency gains,
+reducingby38.6%and64.5%comparedtothebaselines.
+5.3 Micro-benchmarkComparisons
+AblationstudyofTooth’stwomodules.Hereweexamine
+theseparateutilityofTooth’stwomodules.Forslow-module,
+we build its heuristic replica with the arithmetic average
+method,estimatingnetworklossratelrandlossaggregation
+laastheaveragesoverthelastthreeRTCPfeedbackperiods.
+Forfast-module’sheuristicreplica,welookforapastRTCP
+feedbackperiodwherethenetworklosspatternisclosesttolr
+andla,thenuse fl astheobservationwindowtoobservethe
+maximumnumberNoflostpacketsinthisperiod.Thereplica
+willaddN redundantpacketstotheframe.Next,wedevelop
+threevariantsofTooth:w/o-S&F,w/o-S,S&F,leveragingiden-
+ticalcloudgamingsessiontracesinthesimulatorforafair
+comparison.TheresultsinFig.24showthat:(i)w/o-S&Fcan
+yield34.3%lowerrecoveryfailureratethanw/o-S,andmean-
+whilereducethebandwidthcostby19.2%.TheS&F,employ-
+ingaRandomForestmodel,demonstratessignificantlysupe-
+rioraccuracyindeterminingper-frameredundancycompared
+to simple historical observations. (ii) Compared to w/o-S,
+slow-moduleprovidesamorepreciseestimationofnetwork
+loss patterns throughthe NN model. This enhancemental-
+lowsslow-moduletofurtherdiminishtherecoveryfailurerate
+from0.41%inw/o-Sto0.32%inS&F,markinganoteworthy
+22.0%improvement.Additionally,wealsoevaluatetheinfer-
+enceaccuracyofslow-module,moredetailsinAppendixF.
+Importance of LRIF-related factors. In §3.2,we expand
+theLRIF-relatedfactorsbeyondjustframelength(fl)toin-
+cludenetworklossrate(lr)andlossaggregation(la).Tojus-
+tifythisexpansion,weevaluatevariouscombinationsofthese
+factors as inputs to Tooth’s fast-module,specifically A (fl,
+la),B(fl,lr),andC(fl,lr,la).Wetrainthecorresponding
+fast-modulevariantswiththeseinputs,namingthemfast-A,
+=== PAGE 12 ===
+1.00
+0.75
+0.50
+0.25
+0.00
+0.0 0.2 0.4 0.6 0.8 1.0
+Normalized Model Score
+FDC
+tothescreenresponseconsistentlyremainsbelow100mil-
+fast-A fast-B fast-C
+input: la, fl input: lr, fl input: lr, la, fl liseconds [28,43,47]. Cloudgaming currently depends on
+congestion controlalgorithms [14,15,25,26,30,52–54] to
+dynamicallyadjustthedatatransmissionrate,aimingtomini-
+mizequeuingdelaysofnetworkpackets.Oursystememploys
+acustom-optimizedvariantofGCC[17]forenhancedperfor-
+mance(seeAppendixG).Despitetheseadvancedmeasures,
+Figure25:ImportanceofLRIF-relatedfactors,i.e.,network packetlossremainsaninevitablechallenge,consistentlyre-
+lossrate(lr),lossaggregation(la),andframelength(fl). sulting in incomplete data delivery. To address this,cloud
+gaming systems have to implementeffective loss recovery
+GPU CPU Inference FECencode mechanisms,suchasretransmission,representedbyART[33],
+Structure
+usage(%) usage(%) time(ms) time(ms) Hairpin[36],andPTO[21].However,retransmissionmech-
+Single-stage 7.9 7.1 3.6 0.5 anismcommonlyintroducesadditionaldelays—atleastone
+Dual-module 1.4 1.8 0.7 0.5 RTT,andcanleadtocatastrophicinteractionstalls(§5.2).
+Table2:Computationalandinferencetimeoverhead. FEC-based loss recovery. FEC is initiallyemployedto re-
+coverlost packets in audio transmissions [38,40],and has
+fast-B,and fast-C. To eliminate experimental contingency, recentlybeenexpandedtovariousvideo-relatedapplications.
+eachfast-modulevariantistrainedwith400differentsetsof Forinstance,CLOSET[50]andPATON[49]utilizeFECto
+modelparameters,obtaining1200(3×400)RandomForest reducestallsduringTCP-basedvideoplayback.DeepRS[20]
+models. These models are then testedon the same dataset, and RL-AFEC [18] integrate FEC in real-time video com-
+withhigherscoresindicatingmoreaccurateLRIFjudgment. municationstominimizeend-to-enddelayswhileoptimizing
+Fig.25illustratestheCDFofmodelscoresforeachvariant. FECbandwidthcosts.Additionally,R-FEC[31]andABRF
+Itisevidentthatthemaximumnormalizedscoresoffast-A, [19] combine FEC with congestion control to enhance the
+fast-B,andfast-Care0.30,0.65,and1.0respectively.This overallreal-timevideoQoE.Arecentadvancementinvideo-
+highlightstheimportanceofintroducinglrandlaasLRIF- conferencing,Tambur[42],introducesstreamcoding[27]to
+relatedfactors,especiallyla,whichfurtheremphasizesthe usemultiplesequentialframestorecoverlostpacketsfrom
+subtledifferencesinnetworklosspatternthathavenotbeen earlierframes,butbringsdelaythatspansmultipleframeinter-
+consideredbyexistingworks[18,20,31,49,50]. vals.However,theabovesolutionsallutilizecoarse-grained
+Overhead comparison of Tooth’s model structures. As redundancymechanismsthatdonotsatisfythestringentinter-
+discussedin§3.2,althoughitisfeasibletodirectlyusepower- actionQoErequirementsincloudgamingscenarios(§5.2).
+fulneuralnetworkstobuildToothasasingle-stagestructure,
+7 Conclusion
+thehighexecutionfrequency(every16.7ms)willinevitably
+leadtounacceptablecomputationalandinferencetimeover- Inthispaper,weproposeTooth,aninnovativefine-grained
+head.Instead,thedual-modulestructurewedesigneddecou- FECmethodspecificallydesignedforcommercialcloudgam-
+plesToothintotwomodulestoreduceoverhead.Wetestboth ing. We highlight two main novelties: the first-of-its-kind
+structuresonagameserver(CPU:Xeon8369HC;GPU:RTX large-scalemeasurementsconductedinreal-worldenviron-
+3060)andthenpresenttheirdetaileddifferencesinTable2. mentstoinvestigatethebottlenecksofexistinglossrecovery
+Obviously,bydecouplingmodulesandreducingexecutionfre- methods,andthedesignoffine-grainedFECencodingmech-
+quency,Tooth’sdual-modulestructurecanreduceGPUusage, anisms to achieve an optimal balance between video QoE
+CPUusage,andinferencetimeby5.6×,3.9×,and5.1×respec- andredundancybandwidthcost.Ouronlineevaluationssig-
+tively.BothstructuresuseRSFECcodec(mentionedin§4) nificantlydemonstratetheadvantagesofTooth.Webelieve
+andtake0.5msforencodingtheredundancy,whichisalittle thatToothhasthepotentialtobenefitawiderangeoflatency-
+lowerthanthedecision-makingtimeofTooth’sdualmodule, sensitiveapplicationsinthefuture.
+i.e.,0.7ms.However,thesingle-stagedecision-makingtime
+is7.2×longerthantheFECencodingtime,whichobviously Acknowledgements
+reducesitstimelinessincommercialcloudgaming. Wesincerelythanktheanonymousreviewersandourshep-
+herd, Quentin De Coninck for their insightful comments.
+6 Relatedwork
+Huanhuan Zhang, Anfu Zhou and Liang Liu are the cor-
+Networktransmissionoptimizationincloudgaming.Tra- responding authors. This work was supported in part by
+ditionalvideostreamingapplications,suchasvideoconfer- theNSFCProject(62225204,62302058),theA3Foresight
+encingandlivestreaming[32,34,39,46,53],typicallytoler- ProgramofNSFC(62061146002),theInnovationResearch
+ate end-to-endnetworkdelays ofseveralhundredmillisec- GroupProjectofNSFC(61921003),theBeijingMajorSci-
+onds.Incontrast,cloudgamingrequiressignificantlylower enceandTechnologyProject(Z231100007423014),andthe
+latency,necessitatingthatthetimefromtheplayer’saction YouthTopTalentSupportProgram.
+=== PAGE 13 ===
+References [16] SimoneBasso,MichelaMeo,AntonioServetti,andJuan
+Carlos De Martin. Estimating packet loss rate in the
+[1] Nvidia video encoder programming guide v4.0.
+accessthroughapplication-levelmeasurements. InW-
+https://developer.download.nvidia.cn/compu
+MUST@SIGCOMM,pages7–12.ACM,2012.
+te/nvenc/v4.0/NVENC_VideoEncoder_API_ProgG
+uide.pdf,2014.
+[17] GaetanoCarlucci,LucaDeCicco,StefanHolmer,and
+Saverio Mascolo. Analysis and design of the google
+[2] Alibabacloudcdnpricing. http://docs-aliyun.cn
+congestion control for web real-time communication
+-hangzhou.oss.aliyun-inc.com/pdf/cdn-billi
+(webrtc). InMMSys,pages13:1–13:12.ACM,2016.
+ng-intl-en-2016-07-15.pdf,2016.
+[18] KeChen,HanWang,ShuwenFang,XiaotianLi,Ming-
+[3] Howmuchdoesitcosttomaintaintwitchinfrastructure?
+hao Ye,and H. Jonathan Chao. RL-AFEC: adaptive
+https://trembit.com/blog/how-much-does-i
+forwarderrorcorrectionforreal-timevideocommunica-
+t-cost-to-maintain-twitch-infrastructure/,
+tionbasedonreinforcementlearning. InMMSys,pages
+2019.
+96–108.ACM,2022.
+[4] Mqttprotocol. [Online].Available:https://mqtt.o
+rg,2022. [19] ShengCheng,HanHu,andXinggongZhang. ABRF:
+adaptive bitrate-fec joint control for real-time video
+[5] Cloud gaming market report. [Online]. Avail- streaming. IEEETrans.CircuitsSyst.VideoTechnol.,
+able: https://www.imarcgroup.com/cloud-gamin 33(9):5212–5226,2023.
+g-market,2023.
+[20] ShengCheng,HanHu,XinggongZhang,andZongming
+[6] Ffmpeg. https://www.ffmpeg.org/,2023. Guo. Deeprs: Deep-learning basednetwork-adaptive
+FEC for real-time video communications. In ISCAS,
+[7] H.265:Highefficiencyvideocoding. https://www.it
+pages1–5.IEEE,2020.
+u.int/rec/T-REC-H.265-202309-S/en,2023.
+[21] Sheng Cheng, Han Hu, Xinggong Zhang, and Zong-
+[8] Nvidia video encoder programming guide v12.1.
+ming Guo. Rebuffering but not suffering: Exploring
+https://docs.nvidia.com/video-technologies/
+continuous-timequantitativeqoebyuser’sexitingbe-
+video-codec-sdk/12.1/nvenc-video-encoder-a
+haviors. InIEEEINFOCOM2023-IEEEConference
+pi-prog-guide/index.html#recommended-nvenc
+onComputerCommunications,pages1–10,2023.
+-settings,2023.
+[22] Mark Claypool and Kajal T. Claypool. Latency and
+[9] Webrtchomepage. [Online].Available:https://webr
+player actions in online games. Commun. ACM,
+tc.org/,2023.
+49(11):40–45,2006.
+[10] Webrtc in chromium. [Online]. Available: https:
+[23] Mark Claypool and Kajal T. Claypool. Latency can
+//chromium.googlesource.com/chromium/src/+
+kill:precisionanddeadlineinonlinegames. InMMSys,
+/e8f60fd53d98c1b1f67397209066e1453f6957ab/,
+pages215–222.ACM,2010.
+2023.
+[24] MatthiasDick,OliverWellnitz,andLarsC.Wolf. Anal-
+[11] Binomialdistribution.[Online].Available:https://en
+ysisoffactorsaffectingplayers’performanceandper-
+.wikipedia.org/wiki/Binomial_distribution,
+ceptioninmultiplayergames. InNETGAMES,pages
+2024.
+1–7.ACM,2005.
+[12] Genshinimpact·cloud. [Online].Available:https://
+[25] Mo Dong,Qingxi Li,Doron Zarchy,Philip Brighten
+cloudgenshin.hoyoverse.com/en-us,2024.
+Godfrey,andMichaelSchapira. PCC:re-architecting
+[13] Toweroffantasy. [Online].Available:https://clou congestioncontrolforconsistenthighperformance. In
+dbase.gg/g/tower-of-fantasy/,2024. NSDI,pages395–408.USENIXAssociation,2015.
+[14] SoheilAbbasloo,Chen-YuYen,andH.JonathanChao. [26] Mo Dong,Tong Meng, Doron Zarchy,Engin Arslan,
+Classicmeetsmodern:apragmaticlearning-basedcon- YossiGilad,BrightenGodfrey,andMichaelSchapira.
+gestioncontrolfortheinternet. InSIGCOMM,pages PCC vivace: Online-learning congestion control. In
+632–647.ACM,2020. NSDI,pages343–356.USENIXAssociation,2018.
+[15] VenkatArun andHari Balakrishnan. Copa: Practical [27] SilasL.Fong,AshishKhisti,BaochunLi,Wai-TianTan,
+delay-basedcongestioncontrolfortheinternet.InNSDI, XiaoqingZhu,andJohnG.Apostolopoulos. Optimal
+pages329–342.USENIXAssociation,2018. streamingcodesforchannelswithburstandarbitrary
+=== PAGE 14 ===
+erasures. IEEE Trans. Inf. Theory,65(7):4274–4292, Hu,andXueWei. Enablinghighqualityreal-timecom-
+2019. municationswithadaptiveframe-rate. InNSDI,pages
+1429–1450.USENIXAssociation,2023.
+[28] Stefan Holmer,Mikhal Shemer,and Marco Paniconi.
+Handlingpacketlossinwebrtc. InICIP,pages1860– [38] MarcinNagy,VarunSingh,JörgOtt,andLarsEggert.
+1864.IEEE,2013. CongestioncontrolusingFECforconversationalmul-
+timedia communication. In MMSys, pages 191–202.
+[29] TeemuKämäräinen,MattiSiekkinen,AnttiYlä-Jääski, ACM,2014.
+WenxiaoZhang,andPanHui. Ameasurementstudyon
+achievingimperceptiblelatencyinmobilecloudgaming. [39] Zipeng Pan, Yuan Zhang, Tao Lin, and Jinyao Yan.
+InMMSys,pages88–99.ACM,2017. Liveae: Attention-based and edge-assisted viewport
+prediction for live 360° video streaming. In
+[30] JaehongKim,YoungmokJung,HyunhoYeo,Juncheol EMS@SIGCOMM,pages28–33.ACM,2023.
+Ye,andDongsuHan. Neural-enhancedlivestreaming:
+Improving live video ingest via online learning. In [40] ColinS.Perkins,OrionHodson,andVickyHardman. A
+SIGCOMM,pages107–125.ACM,2020. surveyofpacketlossrecoverytechniquesforstreaming
+audio. IEEENetw.,12(5):40–48,1998.
+[31] Insoo Lee,Seyeon Kim,Sandesh Dhawaskar Sathya-
+[41] JamesSPlank. Atutorialonreed–solomoncodingfor
+narayana,KyungminBin,SongChong,KyunghanLee,
+fault-toleranceinraid-likesystems. Software:Practice
+DirkGrunwald,andSangtaeHa. R-FEC:rl-basedFEC
+adjustmentforbetterqoeinwebrtc.InACMMultimedia,
+andExperience,27(9):995–1012,1997.
+pages2948–2956.ACM,2022.
+[42] Michael Rudow, Francis Y. Yan, Abhishek Kumar,
+Ganesh Ananthanarayanan, Martin Ellis, and K. V.
+[32] Jinyang Li, Zhenyu Li, Ri Lu, Kai Xiao, Songlin
+Rashmi. Tambur:Efficientlossrecoveryforvideocon-
+Li, Jufeng Chen, Jingyu Yang, Chunli Zong, Aiyun
+ferencingviastreamingcodes. InNSDI,pages953–971.
+Chen, Qinghua Wu, Chen Sun, Gareth Tyson, and
+USENIXAssociation,2023.
+Hongqiang Harry Liu. Livenet: a low-latency video
+transportnetworkforlarge-scalelivestreaming. InSIG-
+[43] Sandesh Dhawaskar Sathyanarayana, Kyunghan Lee,
+COMM,pages812–825.ACM,2022.
+DirkGrunwald,andSangtaeHa. Converge:Qoe-driven
+multipath video conferencing over webrtc. In SIG-
+[33] TongLi,WeiLiu,XinyuMa,ShuaipengZhu,Jingkun
+COMM,pages637–653.ACM,2023.
+Cao,SenzhenLiu,TaotaoZhang,YinfengZhu,BoWu,
+andKeXu. ART:adaptiveretransmissionforwide-area
+[44] HenningSchulzrinne,StephenL.Casner,RonFrederick,
+lossrecoveryinthewild. InICNP,pages1–11.IEEE,
+andVanJacobson. RTP:Atransportprotocolforreal-
+2023. timeapplications. RFC,3550:1–104,2003.
+[34] Xianshang Lin, Yunfei Ma, Junshao Zhang, Yao [45] SusannaSchwarzmann,NickHainke,ThomasZinner,
+Cui, Jing Li, Shi Bai, Ziyue Zhang, Dennis Cai, ChristianSieber,WernerRobitza,andAlexanderRaake.
+HongqiangHarryLiu,andMingZhang. Gso-simulcast: Comparing fixed and variable segment durations for
+globalstreamorchestrationinsimulcastvideoconfer- adaptivevideostreaming:aholisticanalysis. InMMSys,
+encingsystems. InSIGCOMM,pages826–839.ACM, pages38–53.ACM,2020.
+2022.
+[46] ZiyiWang,YongCui,XiaoyuHu,XinWang,WeiTsang
+[35] ZiliMeng,YaningGuo,ChenSun,BoWang,Justine Ooi,andYiLi. Multilive:Adaptivebitratecontrolfor
+Sherry,HongqiangHarryLiu,andMingweiXu.Achiev- low-delay multi-party interactive live streaming. In
+ingconsistentlowlatencyforwirelessreal-timecommu- INFOCOM,pages1093–1102.IEEE,2020.
+nicationswiththeshortestcontrolloop. InSIGCOMM,
+pages193–206.ACM,2022. [47] BingyangWu,KunQian,BoLi,YunfeiMa,QiZhang,
+Zhigang Jiang, Jiayu Zhao, Dennis Cai, Ennan Zhai,
+[36] ZiliMeng,XiaoKong,JingChen,BoWang,Mingwei Xuanzhe Liu,and Xin Jin. XRON: A hybrid elastic
+Xu,RuiHan,HonghaoLiu,VenkatArun,HongxinHu, cloudoverlaynetworkforvideoconferencingatplane-
+andXueWei. Hairpin:Rethinkingpacketlossrecovery taryscale. InSIGCOMM,pages696–709.ACM,2023.
+inedge-basedinteractivevideostreaming. InUSENIX
+NSDI,2024. [48] JiangkaiWu,YuGuan,QiMao,YongCui,Zongming
+Guo,andXinggongZhang. Zgaming:Zero-latency3d
+[37] ZiliMeng,TingfengWang,YixinShen,BoWang,Ming- cloudgamingbyimageprediction.InSIGCOMM,pages
+weiXu,RuiHan,HonghaoLiu,VenkatArun,Hongxin 710–723.ACM,2023.
+=== PAGE 15 ===
+[49] JiyanWu,BoCheng,MingWang,andJunliangChen. Ifthesumofthesetwopartsofdelaysexceeds100ms,we
+Priority-awareFECcodingforhigh-definitionmobile determinethattheuserinteractionhastimedout,inthesame
+videodeliveryusingTCP. IEEETrans.Mob.Comput., way,wecanknowhowlatethecompleteframearrives.
+16(4):1090–1106,2017.
+B Applying Infinite GOP Video Encoding in
+[50] JiyanWu,ChauYuen,andJunliangChen. Leveraging
+thedelay-friendlinessofTCPwithFECcodinginreal- CloudGaming
+time video communication. IEEE Trans. Commun.,
+Traditionalreal-timevideocommunicationusuallyusesthe
+63(10):3584–3599,2015.
+finiteGOPencodingmannerandsetsafixedGOPlengthfor
+[51] XiaokunXuandMarkClaypool.Measurementofcloud- thevideocodec,suchas30setinRL-AFEC[18].Forcloud
+based game streaming system response to competing gaming, this ultra-low latency interactive video streaming
+TCPcubicorTCPBBRflows. InIMC,pages305–316. application,a common practice in the industry is to adopt
+ACM,2022. theinfiniteGOPvideoencoding[1,8].InfiniteGOPvideo
+encoding disables the server to send I frames periodically,
+[52] HyunhoYeo,ChanJuChong,YoungmokJung,Juncheol
+andthe clientis allowedto requesta new I frame only for
+Ye,andDongsuHan. Nemo:enablingneural-enhanced
+necessary error recovery,e.g.,the client frame buffer pool
+videostreamingoncommoditymobiledevices. InMo-
+overflowedaftermultiplevideoframessufferingpacketloss
+biCom,pages1–14,2020.
+and failing to be decoded. As a result, our cloud gaming
+[53] HuanhuanZhang,AnfuZhou,JiaminLu,RuoxuanMa, systemsendsanIframeevery4.7minutesonaverage,which
+YuhanHu,CongLi,XinyuZhang,HuadongMa,andXi- means ouraverage GOP lengthis 16,920 and564× higher
+aojiangChen. Onrl:improvingmobilevideotelephony thanthatofconventionalvideostreamingin[18].
+viaonlinereinforcementlearning. InMobiCom,pages WeexplainthatthePframeonlyneedstoencodethedif-
+29:1–29:14.ACM,2020. ference between the current video frame and the previous
+one,while theIframe mustencodetheentire videoframe.
+[54] Anfu Zhou,Huanhuan Zhang,Guangyuan Su,Leilei
+Whenencodingthenextvideoframe,thesizeofaPframe
+Wu,RuoxuanMa,ZhenMeng,XinyuZhang,Xiufeng
+will not exceed that of an I frame, even if the cloud gam-
+Xie,HuadongMa,andXiaojiangChen. Learningtoco-
+ingscenechanges.Therefore,theinfiniteGOPencodingcan
+ordinatevideocodecwithtransportprotocolformobile
+avoidfrequentlysendinghigh-loadIframesandtheaccom-
+videotelephony. InMobiCom,pages1–16,2019.
+panyinglatencysurge,andisrecommendedbythepopular
+NVENCvideocodec[1,8]forlow-latencycases,especially
+game-streaming,videoconferencing,etc.Weemphasizethat
+Appendices
+multipletopgamingplatforms,includingourpartnercompany
+W,adoptthisencodingmethodtooptimizethecloudgaming
+interaction latency. This is a common practice in industry
+A Measurement Method for Application-
+althoughlessfrequentlyintroducedinacademicpapers.
+layerInteractionLatency
+Wetrackuserinteractiondelaysframebyframetoidentify C Protectionofuplinkclient-to-serverdata
+whether a video frame is delayed and by how much. The
+interactionlatencyreferstothetimeittakesfromwhenauser Theclient-to-serverdataflowincloudgaming,mainlydis-
+inputsanoperation(e.g.,runandhit)intothegameclientto cussingplayeroperationdatahere,typicallyrangesfroma
+whentheuserreceivesthescreenfeedback.Tomeasurethis fewtoseveraltensofKbps,whichismuchsmallerthanthe
+latencyactually,webreakdownthecloudgamingapplication- availablenetworkbandwidth.Forsuchasmalloperationdata
+layerlatencyintotwoparts: flow,therearenomultipleconcurrentpacketslikeserver-to-
+(i)Systemprocessingdelay,whichinvolvestaskslikecap- clientvideoflow.Therefore,theindustryusuallydoesn’tadd
+turinguserinput,videoencoding,decoding,andplaybackon redundancyusingFECratherthanadoptingsomerepeated
+thegameclientandserver.Thesecontributetoatotalaverage deliverystrategies(i.e.,sendingdatareplicas)toensurereli-
+delayof32ms,whichisrelativelystable. abletransmission.Takeoursystemasaninstance,asingle
+(ii)Dataround-tripnetworkdelay,whichinvolvestrans- playeroperationamountstonomorethan10bytes,andthe
+mittinguseroperationstogameserver(uplink)andreceiving totalnumberofconcurrentoperationsremainsfarbelowthe
+allRTPpacketsoftherespondedvideoframefromthegame maximumcapacityofanRTPpacket(MTU=1500).Thus,an
+servertotheclient(downlink)viatheInternet.Thesedelays operationRTPpacketfromtheclientwillnotonlycontain
+dependonnetworktransmissionconditions,werecordframe thelatestplayeroperationsbutalsothepreviousnoperations.
+IDandthetimestampsofalluplinkanddownlinkpacketsto Additionally,eachoperationRTPpacketwillbesenttwice,
+calculatethem. witha2msinterval,tofurtherimprovereliability.
+=== PAGE 16 ===
+10
+1
+10 20 30 40 50 60
+Frame length (# of packets)
+)%(
+RLD
+emarF
+Figure26:LRIFresultsofallvideoframes(includingthose
+experiencing no losses) observedin ourcommercialcloud
+gamingplatform.
+1.8
+1.2
+0.6
+0.0
+k=5 k=10 k=15 k=20 k=25 k=30
+)nim
+rep(
+ycneuqerf
+llatS
+24
+16
+8
+0
+)spbM(
+etartib
+oediV
+30
+20
+10
+0
+lr la
+Stall frequency Bitrate
+Figure 27: Ablation experiment results of the RL-AFEC
+modelwithdifferentKvalues.
+D ADeeperDiveintoLRIFResults
+WemakethefollowingexplanationstoclarifywhyinFig.7
+we need analyze the LRIFs of frames that suffered packet
+lossratherthanallGOPframes.(i)FECinvideostreaming
+ismoreinterestedinhigherpercentilesofLRIFbecauseonly
+theycanreflecthowmanyredundantpacketsthatFECshould
+addtoprotectallvideoframesasmuchaspossiblefromnet-
+workpacketlossevents;(ii)AsshowninFig.26,theaverage
+andstandarddeviationofallGOPframeLRIFsareactually
+consistentwiththeoverallnetworklossrate(about1%),but
+obviously,FECshouldnotadjusttheredundancyratebased
+onthisinsight.So,inFig.7,weplottheLRIFaverageand
+std of video frames that suffered packet loss to reveal the
+relationshipbetweennon-zeroLRIFandvideoframelength,
+which is more meaningful for guiding us in designing the
+fine-grainedFECincloudgaming.
+E Ablation Study of RL-AFEC Using Differ-
+entKValues
+ForRL-AFEC[18],wefurtherpresentablationstudyexper-
+iments with the variation of K, i.e. setting K as 5, 10, 15,
+20,25,30,consistentwith[15].AsshowninFig.27,thesix
+candidatevaluesofKhavelittleimpactonthecloudgaming
+interactionQoE,whichcanbealmostignored.That’sbecause
+theGOPlengthofcloudgamingstreamingisverylarge,it
+isfarfromenoughtooptimizeonlyafewKcriticalframes.
+Weshouldsetafine-grainedredundancyrateforeachvideo
+frame.
+Moreimportantly,weemphasizethatdirectlydefiningK
+to be GOP size N with RL-AFEC will not yield a similar
+)%(
+etar
+rorre
+noitamitsE
+Slow-module
+Heuristic replica
+Figure28:Estimationerrorsofnetworklossratelrandloss
+aggregationla.
+outcomeasTooth.Weelaborateonthekeydifferencesinthe
+designprinciplesofToothandRL-AFEC:(i)RL-AFECisde-
+signedforcommonvideocallscenarios,wherethelengthof
+theremainingPframesremainsrelativelyuniform,apartfrom
+the initialI frame in eachGOP. In otherwords,RL-AFEC
+doesnotaccountforsignificantframelengthvariationsand
+theresultinghugeLRIFdifferencesincloudgamingstream-
+ing. As a result,RL-AFEC mayfallshortoffullymeeting
+theredundancyadaptationdesignrequiredforspecificcloud
+gaming scenarios. (ii) In RL-AFEC, the GOP length N is
+30andtheauthorsconcludethattheoptimalKvalueis15,
+thereasonisthatincreasingKwillcauseitsreinforcement
+learningmodeltoexplorehugeactionspace,resultinginan
+obviousdecreaseinitsmodeleffectiveness.Especiallycon-
+sideringthattheGOPsizeNwillbehundredseventhousands
+oftimeslargerthanKincloudgamingscenarios,definingK
+tobeNisevenlessfeasible.Instead,Tooth,withitsunique
+dual-moduledesign,makeslargerKoreveninfiniteKfea-
+sible,andultimatelyisfullycapableofsettingfine-grained
+redundancyrateforeachframe.
+F Micro-benchmark Experiments on Tooth’s
+Slow-module
+TofurtherevaluateTooth’sslow-module,weanalyzeToothon-
+linedatasettosupplementthemicro-benchmarkexperiment
+results,includingtheestimationerrors(meanandstd)ofnet-
+worklossrateleandlossaggregationla.Then,wecalculate
+themeanandstdofallestimationerrorrates.Moreover,we
+alsoreplaytheseonlinetracesinthesimulatorandevaluate
+slow-module’s heuristic replica (implementation details in
+§5.3)tocomparetheirperformancedifferences.Asshownin
+Fig.28,Tooth’sslow-modulebehavesgoodinferenceaccu-
+racy,withanaverageerrorof6.2%forlrand10.1%forla,
+whichare18.8%and29.2%lowerthantheheuristicreplica,
+respectively.
+G Fine-tuning of GCC’s hyper-parameters in
+oursystem
+ThedefaultGCCcongestioncontrolalgorithminWebRTC
+[10]isn’tfullyadaptedforthestreamingcharacteristicsof
+cloud gaming. We follow the algorithm logic of GCC but
+=== PAGE 17 ===
+customizeitshyper-parametersbasedonpracticalengineer-
+ingexperiments:(i)WeincreaseGCC’supperbitratelimit
+to20Mbpstomeettheproductionstreamingrequirementof
+cloudgaming;(ii)Weshortentheobservationwindowlength
+inGCC’strend-lineestimatorfrom20to15,makingthesys-
+temmoreawareofdelayincreases;(iii)Weslightlyenlarge
+therateincreasefactorinAIMD-basedbitratecontrolfrom
+1.08to1.11forfastbitraterecoveryafterthedelaystabilizes;
+(iv)WedisableGCC’sprobeactionduringbitratereduction
+sincecloudgamingismoredelay-sensitivethanbandwidth-
+sensitive.Probingatthistimecaneasilyharmdelayperfor-
+mance. (v) When the observed network loss rate is below
+0.3%,weblockGCC’sloss-drivendecisiononreducingbi-
+trateandrelysolelyonthedelay-drivenbitrateadjustments.

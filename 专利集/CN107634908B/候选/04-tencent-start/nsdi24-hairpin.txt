@@ -1,0 +1,1989 @@
+=== PAGE 1 ===
+Hairpin: Rethinking Packet Loss Recovery
+in Edge-based Interactive Video Streaming
+Zili Meng, Tsinghua University, Hong Kong University of Science and Technology,
+and Tencent; Xiao Kong and Jing Chen, Tsinghua University and Tencent;
+Bo Wang and Mingwei Xu, Tsinghua University; Rui Han and Honghao Liu,
+Tencent; Venkat Arun, UT Austin; Hongxin Hu, University at Buffalo, SUNY;
+Xue Wei, Tencent
+https://www.usenix.org/conference/nsdi24/presentation/meng
+This paper is included in the
+Proceedings of the 21st USENIX Symposium on
+Networked Systems Design and Implementation.
+April 16–18, 2024 • Santa Clara, CA, USA
+978-1-939133-39-7
+Open access to the Proceedings of the
+21st USENIX Symposium on Networked
+Systems Design and Implementation
+is sponsored by
+=== PAGE 2 ===
+Hairpin: Rethinking Packet Loss Recovery in Edge-based Interactive Video Streaming
+ZiliMeng1,2,3,XiaoKong1,3,JingChen1,3,BoWang1,MingweiXu1,
+RuiHan3,HonghaoLiu3,VenkatArun4,HongxinHu5,XueWei3
+1TsinghuaUniversity,2HongKongUniversityofScienceandTechnology,
+3Tencent,4UTAustin,5UniversityatBuffalo,SUNY
+Abstract 0 5% 10% 15% 20%
+Redundancy optimizations
+Init.TX
+Interactivestreamingrequiresminimizingstutteringevents(or
+1st RTX The design space of …
+deadlinemissesforvideoframes)toensureseamlessinteraction Existing solutions
+2nd RTX
+betweenusersandapplications. However,existingpacketloss Our solution -Hairpin
+3rd RTX
+recoverymechanismsuniformlyoptimizeredundancyforinitial Retransmission
+transmissionandretransmission,whichstillcouldnotsatisfythe optimizations
+delayrequirementsofinteractivestreaming,butalsointroduces
+considerablebandwidthcosts.Ourinsightisthatinedge-based
+interactivestreaming,differentiatingretransmissionsonredun-
+dancysettingscanoftenachievealowbandwidthcostandalow
+deadlinemissratesimultaneously. Inthispaper,wepropose
+Hairpin,anewpacketlossrecoverymechanismforedge-based
+interactivestreaming.Hairpinfindstheoptimalcombinationof
+datapackets,retransmissions,andredundantpacketsovermul-
+tipleroundsoftransmissions, whichsignificantlyreducesthe
+bandwidthcostwhileensuringtheend-to-endlatencyrequire-
+ment. Experimentswithproductiondeploymentsdemonstrate
+that Hairpin cansimultaneouslyreducethebandwidthcostby
+40%andthedeadlinemissrateby32%onaverageinthewild
+againststate-of-the-artsolutions.
+1 Introduction
+Edge-based interactive video streaming is coming to age.
+Emerging interactive streaming services, such as cloud
+gaming, has been attracting considerable attention from both
+academic[24,28,44,53,63]andindustrialcommunities[3,8,9].
+Theseservicesrunapplications(e.g.,videogames)onremote
+servers,streamthecontents(e.g.,screens)tousers,andinteract
+withusersinrealtime.Toprovideaseamlessinteractionbetween
+serversandusers,thestreamingneedstobedeliveredwithlow
+latency.Toreducethenetworkround-triptime(RTT)forinter-
+activestreaming,operatorsdeployserversonedgecomputing
+nodes.Forexample,cloudgamingapplicationsrendergaming
+scenesonremoteserversanddeliverthesescenestousersover
+theInternet,wheretheseserverscouldbedeployedneartheusers
+toshortenthephysicaldistanceofthestreaming.Bydeployingin-
+teractivestreamingservicesattheedge,themediannetworkRTT
+oftheseedge-basedapplicationscouldbereducedto10-20ms.
+Toprovideasatisfactoryuserexperience,controllingtheratio
+offramesviolatingthelatencyrequirementiscriticalforinter-
+activestreamingapplications[56].Thisisduetothecontinuous
+interactionsbetweenusersandapplications:Interactivestream-
+inguserswillstarttoexperiencestutterswhentheend-to-end
+delayisabove50-200ms(i.e.,thedeadlineofdeliveringaframe).
+However, even if only 0.1% of the frames stutter, users may
+,]12[kcApuD
+]23[
+OTP
+WebRTC [45], Bolot[22], USF [58]
+Hairpin
+Figure1:Anillustrationofthedesignspaceofexistingsolutionsand
+Hairpin.Byco-designingtheredundancyandretransmissionatthe
+transportlayer,Hairpinisabletobreaktheexistingtrade-offbetween
+bandwidthcostanddeadlinemissrate.
+experiencestutterseveryoneminuteataframerateof24fps.
+Thus,toimproveuserexperience,weneedtoreducetheratio
+ofdeadlinemissesinaninteractivestreamingservice[57].
+Inthiscase,amajorchallengetocontrolthedeadlinemisses
+comesfromthehighinstantaneouslossrateontheInternet.Due
+to the spatial dependency within video frames and temporal
+dependency between video frames, interactive streaming
+expectspacketstobereliablydelivered[57]. However, from
+our measurement of our edge-based cloud gaming service in
+production with O(10,000) users, sessions can experience a
+drasticallyhighinstantaneouslossrate. Althoughtheaverage
+loss rate is considerably low by mechanisms such as proper
+ratecontrol,ourmeasurementobservesthatmorethan2%of
+videoframessufferfromaninstantaneouslossrateof20%or
+higher(§2.1).Itindicatesthatthoselostpacketsareconcentrated
+onafewframes.Thus,althoughthenetworkRTTcanbevery
+low with edge deployments, retransmissions of lost packets
+takeadditionaltimeandwillconsequentlyviolatethedeadline.
+Thus,itisessentialtooptimizethelossrecoverymechanisms
+tocontrolthedeadlinemissrate(DMR)ofvideoframes.
+Unfortunately, existing solutions to recover packet losses
+cannotmeetthestringentDMRrequirementswithareasonable
+bandwidth cost. As shown in Figure 1, one line of research
+efforts (the vertical dimension) is devoted to quickly retrans-
+mittinglostpackets, suchasprobetimeout(PTO)[33], from
+thetransportlayer.However,merelyretransmittinglostpackets
+cannot meet the requirement of interactive streaming – the
+DMRismuchhigherthan0.1%(§4.3). Anotherlineofeffort
+(thehorizontaldimension)isdevotedtoadaptiveforwarderror
+correction (FEC) so that the client might be able to recover
+packetsbasedonredundantpacketswithoutretransmission[5].
+Yet, redundancy-based solutions come with the price of a
+considerablebandwidthcostof20%ormoreduetothehigh
+instantaneous loss rate. For content providers, such a high
+bandwidthcostwilldrasticallyincreaseoperatingexpensesand
+USENIX Association 21st USENIX Symposium on Networked Systems Design and Implementation 907
+=== PAGE 3 ===
+degrade users’ video quality. To the best of our knowledge, andthenproposeHairpinwithMDPformulation(§3).
+noneoftheexistingsolutionsjointlyoptimizedretransmission • WeimplementandintegrateHairpininacloudgamingappli-
+andredundancy.Suchanorthogonaldesignofredundancyand cationinproduction,andextensivelyevaluateitsperformance
+retransmission,evenwhenadoptedtogether,stillcannotmeet withtrace-drivensimulationandreal-worlddeployments(§4).
+theneedsofbandwidthcostandDMRforinteractivestreaming.
+2 BackgroundandMotivations
+Our key insight is to break the trade-off by differentiating
+retransmissionpackets. Edge-based interactive streamingser- Weintroducetheinteractivestreaming(§2.1),presentourmea-
+vices can achieve an average RTT of 10-20ms between ap- surementofpacketlosses(§2.2),analyzewhyexistingsolutions
+plication servers and users by deploying the servers on the areinsufficient(§2.3),andmotivatethedesignofHairpin(§2.4).
+edge[27,58,89]. Inthiscase,limitedtimesofretransmissions 2.1 InteractiveVideoStreaming
+(butnottoomany)aretolerableforapplicationsthathaveadead-
+Interactive streaming applications are increasingly attracting
+line of 50-200ms (§2.1). But the strategy for retransmission
+interest in many scenarios. Examples include cloud gam-
+packets must be different for the initial transmission packets.
+ing[3,8,9],remotedriving[2,54],cloudphone/PC[13,18,39],
+Thevolumeofretransmissionpacketsismuchlessthaninitial
+and regional videoconferencing [4], forming a considerable
+transmission packets since packet loss is always the minority.
+market value of billions of dollars. Compared with legacy
+Yet,retransmissionpacketshaveamuchtightertimerequirement
+live video streaming, with the intensive deployment on edge
+sincetheyhavealreadyconsumedtime.Thisbringsnewchanges
+nodes(orcontentgeneratorsinVR),thenetworkdelayoverthe
+to reduce the bandwidth cost and the DMR at the same time
+wide-areanetworkcouldbereducedforinteractivestreaming
+(§2.4). Bydifferentiatingthestrategiesforinitialtransmission
+(e.g.,anaverageRTTof10-20ms[27,58,89]).Withtherecent
+andretransmissionpackets,wecanbreakthetrade-offbetween
+emergenceofthemetaverseandsoon,theseinteractivevideo
+bandwidthcostandDMR,andimprovetheperformancesignifi-
+streamingapplicationsaregoingtobeincreasinglydominanton
+cantly(§4.4).
+theInternet.Edge-basedinteractivestreamingimposesspecific
+WethenproposeHairpin1,anewpacketlossrecoverymecha-
+requirementsontransport,assummarizedbelow.
+nismtojointlyoptimizepacketretransmissionandredundancy
+foredge-basedinteractivestreaming(§3.3). However,aslater Stringentdeadlinerequirements.Sinceinteractivestreaming
+elaborated in§3.2, to further analytically optimize the perfor- applications continuously interact with humans, controlling
+mance, we still face the challenge of (1) the dependency of end-to-enddelayiscriticalforaseamlessuserexperience.For
+decisionsandfuturestates,(2)themulti-dimensionalityofde- example,videoconferencingmayexpectanend-to-enddelayof
+cisions, and (3) the convoluted goal of DMR and bandwidth <130msfornetwork[49,56],whilecloudgamingwouldargue
+cost.Inresponse,Hairpinfurtherformulatestheproblemintoa
+foralatencyof<96ms[50]2.Inpractice,server-andclient-side
+Markovdecisionprocess(MDP),whichisknownforefficiently processingusuallytake≈30ms[14,42,74,83].Therefore,the
+optimizingthetemporaldependency[79].Wethenencodesthe end-to-endround-tripdelayforthenetworkshouldnotexceed
+decisionsandstatesintonodesofMDPtoreducethecomplexity 50-150ms (depending on scenarios), which is the deadline
+andachievetheoptimalresult. requiredbytheapplication[11,75].
+Weconductaweek-longpacket-levelmeasurementcampaign This also corroborates our measurement study with users
+onTencentSTARTcloudgamingservicetomotivatethedesign in our production cloud gaming service. We measure our
+of Hairpin(§2.3and§2.4). Wethenimplement Hairpin and cloud gaming service in production for one week (details in
+evaluate it with both trace-driven simulators and real-world Appendix A), with O(10,000) users every day, and collect a
+deploymentsinproduction(§4.1).Experimentsdemonstratethat variety of metrics. Unless other specified, the analysis using
+HairpincouldsignificantlypushforwardtheParetofrontier[1] onlinedatainthispaperisalsofromthismeasurementcampaign.
+by reducing the DMR by 67%-80% and achieve comparable Wecategorizethemeasuredround-tripinteractiondelayofeach
+bandwidthcostssimultaneouslycomparedwithstate-of-the-art videoframeintoseveralintervals. Wepresenttheappearance
+baselines(§4.3).PreliminarilytestingHairpininTencentSTART distributionofthepositionofthoseframesinaflowforeach
+cloudgaminginproductionalsoshowssignificantandconsistent categoryinFig.2,wherethex-axisisthepositionofthatframein
+performanceimprovementsindifferenttypesofnetworks(§4.7). asessionnormalizedbythelengthofthatsession.Comparedto
+WewillreleasethesimulationcodesofHairpin. theuniformdistributionoflow-delayframes(solidlines),frames
+Ourmaincontributionsaresummarizedasfollows: withanend-to-enddelayof>100ms(dashedlines)haveahigher
+• Wemotivatetheneedforjointoptimizationofretransmission probabilitytoappeararoundtheendofaflow.Wehypothesize
+and redundancy through the operating experiences of a thatthisisbecauseuserstendtoexitasessioniftheyhaveahigh
+productionedge-basedinteractivestreamingservice(§2). end-to-enddelay.User’sexitingbehaviorisacriticalmetricfor
+• Wepresentchallengesinthejointoptimizationoverretrans- user’sexperienceinreal-timevideostreaming[32].Inthemean-
+missionsandredundancyforedge-basedinteractivestreaming, time,settingadeadlineforthedeliveryandreducingthefraction
+ofhigherthanthatspecificvaluehasalsobeenwidelyadopted
+1Inbadminton,ahairpinshotisplayedwhentheshuttleisveryneartothe
+groundandthenet(thedeadlineofashot)[76]. 2Basedonthestatisticsofthemajorityofpeople.
+908 21st USENIX Symposium on Networked Systems Design and Implementation USENIX Association
+=== PAGE 4 ===
+2 .0 1 .8 1 .6
+1 .4
+1 .2
+1 .0
+0 % 3 0 % 6 0 % 9 0 % 9 5 % 1 0 0 %
+F D
+P
+1 0 0 %
+> 2 0 0 m s 1 5 0 -2 0 0 m s 9 9 % 1 0 0 -1 5 0 m s 9 8 % 5 0 -1 0 0 m s 9 5 %
+0 -5 0 m s 9 0 %
+8 0 %
+5 0 %
+0 %
+1 0 -4 1 0 -3 1 0 -2 1 0 -1 1 0 0
+P o s itio n
+Figure2:Probabilitydensity
+function(PDF)ofthepositionof
+frameswithdifferenttotaldelays.
+F D
+C
+F ra m e -le v e l lossrateoveralongtimescale. Wethencalculateframe-level
+(In s ta n ta n e o u s ) loss rate, which is the ratio of lost packets within one frame S e s s io n -le v e l (A v e ra g e ) (tensofmilliseconds),toshowtheinstantaneouslossrateover
+ashorttimescale.Forexample,ifasessionhas1Mpacketsand
+H ig h in s ta n ta n e o u s 10ofthemarelost,thesession-levelaveragelossrateis0.01%.
+lo s s ra te a t ta il
+Meanwhile,ifthese10packetsbelongtothesamevideoframe
+L o s s ra te whichhas50packetsintotal,theframe-levelinstantaneousloss
+Figure3: Session-leveland ratewillbe20%forthatframeand0%forotherframes.
+frame-levellossratedistributions AsshowninFig.3,thesession-levellossrateis0.05%atthe
+(bothaxesarelog-scaled).
+median,whichiscomparabletosimilarmeasurements[45].How-
+*Note:Unlessotherwisespecified,allmeasurementsin§2and§3are ever,theinstantaneousframe-levellossratecouldbeveryhigh:
+fromtheproductioninthewild(measurementdetailsin§4.1). 2%frameslosemorethan20%oftheirpacketswithinoneframe.
+inreal-timevideostreaming[56,57]. Thesimilaritybetween Suchahighinstantaneouspacketlossposesagreatchallengein
+the50msand100mscurveinFig.2alsoindicatesthat,aslong controllingthedeadlinemissrateto10−3orlower–wecanno
+aspacketscouldbedeliveredwithinthedeadline(∼100msin longerignorethesetransientbehaviorsandhavetodelivervideo
+thiscase),fasterdeliverybarelyimprovestheuser’sexperience. framesintimeevenwhentheinstantaneouslossrateishigh.
+Thus,weshouldminimizethedeadlinemissrate(DMR)to Moreover,thesepacketlossescannotbeeasilymitigatedbyre-
+enableaseamlessexperienceforusersininteractivestreaming, ducingthesendingrate.Toachievealowlatency,mostCCAsin
+whereinourcloudgamingservice,thedeadlineforinteraction interactivestreamingusedelayasthesignaltoreducethesending
+delayisaround100ms.Forinteractivestreaming,itisessential rate(e.g.,BBR[25],Copa[15],GCC[26]).Inthiscase,conges-
+tominimizetheoccurrenceofdeadlinemissesforframestoan tionlossesrarelyhappensincethesendingratehasalreadybeen
+ultra-lowlevel. Forexample,evenaDMRof10−3 stillleads reducedbasedonanincreasingdelayinadvance,whichhasalso
+toapoorexperienceevery1000frames(17secondsat60fps), beenmeasuredinrelatedwork[26].Ouronlinemeasurements
+whichdrasticallydegradestheuser’sexperience[11]. unveilsimilarobservations:ourcloudgamingservicehasalready
+adoptedadelay-basedCCAsimilartoGCC[26],whichiswidely
+Reliable delivery. Meanwhile, interactive streaming also
+deployedininteractivestreamingapplicationssuchasChrome
+requiresreliabledeliveryforeachframe.Forcommercialvideo
+andStadia.Wefurtherdemonstratetheweakcorrelationbetween
+codec,failingtodeliverapartoftheframewillleadtosevere RTT4increasesandpacketlossesinourmeasurementin§2.4.As
+image quality degradation. Moreover, the loss of one frame
+showninFig.3,lossesarestilloutstandingatthetail,indicating
+would also lead to blurring for the subsequent frames due to
+thatmerelycontrollingthebitrateorframerateisstillinsufficient
+thedependencybetweenframes3.Therefore,existinginteractive
+toavoidpacketlossesforedge-basedinteractivestreaming.
+streamingservicesusuallytrytheirbesttoreliablydeliverframes.
+2.3 WhyExistingSolutionsFail?
+For example, industrial frameworks (e.g., WebRTC) [5,46]
+and academic efforts [22,40,61] propose to employ forward Aswediscussedin§1,packetlossescontributealottodeadline
+errorcorrection(FEC)torecoverlostpacketsatthereceiverif misses.Thus,weinvestigatewhyexistingpacketlossrecovery
+possible,andwillretransmitlostpacketsiftherecoveryfails[7]. mechanismsareinsufficientforedge-basedinteractivestreaming.
+Existingsolutionsmainlyfallintotwocategoriesasfollows.
+Low bandwidth cost. The bandwidth cost is still one of the
+Retransmissions. Existing transport protocols (e.g., TCP)
+largest operating expenses in our and other cloud gaming
+rely on retransmissions to cope with packet losses. Merely
+service[17].Moreover,toachieveasatisfactoryuserexperience,
+relyingonretransmissionsisinsufficienttoachieveanextremely
+interactivestreamingmuststreamwithhighvideoresolutionand
+low DMR for interactive streaming frames at the magnitude
+framerate(e.g.,60fpsand>1080pforcloudgaming),which
+of 0.1% or lower. For example, when the packet loss rate is
+requireshighgoodputtosupport.Giventherequirementsoflow
+instantaneously 20%, there would still be 0.16% packets lost
+operatingexpensesandhighvideoqualityforusers, weneed
+evenafter3retransmissions.Notethatsincetherecouldbetens
+tocontrolthebandwidthcostinpacketlossrecovery.
+tohundredsofpacketsperframe,beingunabletodelivereven
+2.2 PacketLossesinEdge-basedInteractiveStreaming
+onepacketwouldviolatethedeadlinerequirementofthatframe
+Ourobservationfromourcloudgamingserviceisthatalthough since interactive streaming requires all packets to be reliably
+themedianlossrateisaslowas10−3,theinstantaneouslossrate delivered(§2.1).Thus,theDMRofframesisstillconsiderably
+couldbeveryhigh.Inourmeasurementcampaignasdescribed highwhenrelyingonretransmissionsandratecontrolsonly.Our
+in§2.1,wealsocalculatethesession-levellossrate,whichisthe evaluationin§4alsodemonstratetheperformancedegradation.
+ratiooftotallostpacketsinoneusersession(minutestohours,
+Redundancy-basedalgorithms.Therearealsoseveralsolutions
+containing at least O(10,000) frames), to reflect the average
+4Inthispaper,weuseRTTtorepresentthedelayatthenetworklayerthatdoes
+3Mechanismssuchasscalablevideocoding(SVC)allowlimitedpacketlosses, notcontainthetimeofretransmission.Weuseapplicationdelaytorefertothe
+yetreducethebandwidthefficiencyandrequireclientsupport[70]. delayattheapplicationlayerthatcontainstheretransmissions.
+USENIX Association 21st USENIX Symposium on Networked Systems Design and Implementation 909
+=== PAGE 5 ===
+1 0 0 % 1 0 0 %
+8 0 % 8 0 %
+6 0 % 6 0 %
+4 0 % 4 0 %
+2 0 % 2 0 % (b ) W iF i
+0 % 0 %
+0 5 1 0 1 5 2 0 2 5 5 0 7 5 1 0 0 0 5 1 0 1 5 2 0 2 5 5 0 7 5 1 0 0
+F
+D C
+0 % 1 ~ 5 % 5 ~ 1 0 % 1 0 ~ 1 5 % 1 5 ~ 2 0 %
+2 0 ~ 2 5 % 2 5 ~ 3 0 % 3 0 ~ 3 5 % 3 5 ~ 4 0 % 4 0 ~ 1 0 0 %
+(a ) E th e rn e t
+R T T (m s )
+F
+D C
+1 0 0 % 1 0 0 %
+8 0 % 8 0 %
+6 0 % 6 0 %
+4 0 % 4 0 %
+2 0 % 2 0 %
+1 2 4 8 1 6 3 2 6 4 1 2 8 1 2 4 8 1 6 3 2 6 4 1 2 8
+R T T (m s )
+Figure4:RTTdistributionsmeasuredinproduction,categorizedby
+theframe-levellossrate.Notethatretransmissionsarenotcounted.
+ininteractivestreamingwithredundancymechanismssuchas
+FEC.However,existingadaptiveFECsolutionsfromboththe
+industry[5,46]andacademia[22,40,61]optimizetheFECpa-
+rametersonlyfortheinitialtransmission.Theyadjustthenumber
+ofFECpacketsaccordingtolossrateandretransmitpacketsas
+usualwhenpacketlossoccurs.Notethatpacketlossesarenotde-
+terministic:whenthetransientlossprobabilityincreasesto20%,
+itdoesnotmeanpreciselyonepacketlosseveryfivepackets.In
+thiscase,toachieveanextremelylowDMRof10−3 orlower,
+FECratesneedtobemuchhigherthanthelossrate,leadingtose-
+verebandwidthcost(§4).Forexample,WebRTC,astate-of-the-
+artinteractivestreamingframework,willsend100%redundant
+packetsduringthisshorttimescaleofhighinstantaneouslossrate
+forinitialtransmissions.Inthiscase,therewillbeconsiderable
+bandwidthcostwhiletheDMRmightstillnotbesatisfied.We
+furtherevaluatetheperformanceofotherbaselinesin§4.2.
+2.4 Motivations
+Therefore,withthereducedRTT,retransmissionsaretolerableto
+someextentforedge-basedinteractivestreaming.Inthiscase,we
+havethefollowingobservationsonhowandwhattoretransmit.
+RTTbeingmuchlowerthanthedeadlineenablesthejoint
+optimization of redundancy and retransmission. As we
+discussed before, with an RTT of 10-20 ms and a deadline
+of 50-150 ms, multiple retransmissions are tolerable to some
+extent. Thisenablesthejointoptimizationofredundancyand
+retransmission,whichresultsinbenefitsintwofolds:
+• Reducethedeadlinemissrate.InexistingFECmechanisms,
+manyofthedeadlinemissescomefromthepacketlossesin
+theretransmissions.Whenaddingredundancypacketsoverre-
+transmissionpackets,wecouldeffectivelyavoidthelossofre-
+transmissionpacketsandfurtherreducethedeadlinemissrate.
+• Save bandwidth costs. To achieve the same DMR, the
+bandwidthcostofaddingredundancytoretransmissionsis
+significantlylowerthanthatofonlyaddingredundancyto
+initialtransmissions.Thisisbecauseretransmissionpackets
+arealwaystheminorityinbandwidthconsumption–redun-
+difyingretransmissionswillonlyintroducealittlebandwidth
+cost,butcouldhavesignificantDMRimprovements.
+Whenmoreroundsofretransmissionsaretolerated(e.g.,with
+smallerRTTs),thejointoptimizationwillhavemoresignificant
+benefits(laterpresentedin§4.5).Wearethusmotivatedtoutilize
+theretransmissionchancesenabledbyedgedeploymentsand
+jointlyoptimizetheredundancyandretransmissionmechanisms.
+F
+D C
+> 4 0 % > 3 5 % > 3 0 % > 2 5 %
+> 2 0 % > 1 5 % > 1 0 % > 5 %
+(a ) E th e rn e t (b ) W iF i
+D u ra tio n (fra m e s )
+F
+D C
+D u ra tio n (fra m e s )
+Figure5:Thedistributionofthedurationofeachlosseventmeasured
+inproduction.Wemeasurethedurationofeachtimewhentheloss
+rateislargerthandifferentthresholds(5%,...,40%).Lossratesare
+measuredattheframelevel.Thenetworktypeisreportedfromour
+cloudgamingclients.Betterviewedincolor.
+Lossrecoveryadaptionsattheserverarepossible.Dynam-
+icallyoptimizingthetailcasesofhighinstantaneouslossrate
+needs quick adaption. According to our measurement, the
+feedbackloopbetweentheserverandclientissmallerthanthedu-
+rationoflossevents,makingthejointoptimizationofredundancy
+andretransmissionpractical.Thiscomesintwofolds:
+• Thefeedbackloopdoesnotinflatewiththeincreaseintheloss
+rate.WemeasuretheRTTofourcloudgamingserviceandcat-
+egorizethemintodifferentframelossrateintervals.Asshown
+inFig.4(a),thedistributionofRTTdoesnotsignificantlyvary
+withtheframelossrate.TheRTTinWiFiincreaseswiththe
+increaseofframelossrate(e.g.,duetoretransmissionsatthe
+linklayer[31]).Nevertheless,evenwhentheframe-levelloss
+rateis30%(thedashedgreencurveinFig.4(b)),60%ofthose
+acknowledgedpacketshaveanRTToflessthan25ms.This
+indicates(i)theserverisabletoquicklydetectthenetwork
+conditionchanges,and(ii)therearestillmultipletransmission
+chanceswhentheinstantaneouslossrateincreases.
+• Thedurationoflosseventsistransientbutstilllongerthan
+several feedback loops. We measure the duration of lossy
+framesinourcloudgamingserviceandpresenttheresults
+inFig.5.Accordingtoourmeasurements,mostlossevents
+span multiple RTTs. For example, 70% of frames with a
+frame-levellossrateof>10%willlastmorethan2frames
+inEthernetsessions,whichisseveraltimesthemedianRTT
+(12ms) at the frame rate of 60fps. Therefore, the reaction
+fromtheserverisstilleffectivetoalleviatepacketlossesby
+adjustingtheredundancyparameters.
+3 Hairpin Optimizer
+Aswediscussedabove,edge-basedinteractivestreamingneeds
+toreducethedeadlinemissrateandbandwidthcost.Forclarity,
+wefirstpresenttheformulaofframedeadlinemissrate(DMR)
+andbandwidthcost(BWC):
+#Framesarriveafterthedeadline
+DMR=
+#Totalframes
+(1)
+Redundancy +Retransmission
+byte byte BWC=
+Data
+byte
+AhigherDMRorBWCmeansmorefrequentstuttersorhigher
+operating expenses respectively, both of which interactive
+streamingserviceproviderswilltrytoavoid.Notethatpushing
+910 21st USENIX Symposium on Networked Systems Design and Implementation USENIX Association
+=== PAGE 6 ===
+DMRtoanextremelylowleveliscriticalsincetheloweritis, Specifically,givenapacketlossrateα andbitrateB,assume
+thebetteruser’sexperienceisgoingtobe. oneofthestate-of-the-artsolutionshasalreadydeterminedthat
+In this section, we first summarize some intuitions in the β 0 (α,B)shouldbetheoptimizedredundancy. Wecouldthen
+design space of joint optimization of redundancy rate and increaseordecreasetheredundancyrateβ 0 (α,B)basedonthe
+retransmissionandpresentastrawmansolution(§3.1).Wethen remainingtransmissionchance t ,i.e.:
+RTT
+presentthedesignchallengesinthejointoptimizationofretrans-
+RTT
+missionandredundancy(§3.2). Weaddressthesechallenges β(α,B,RTT,t)=k· ·β (α,B) (2)
+0
+byprovidingaMarkovchain-basedoptimizationalgorithmto t
+efficientlyimproveboththeDMRandBWC(§3.3).Wefinally
+wherekisacoefficienttoadjusthowaggressivethestrawman
+discusshowHairpinhandlestheinaccuracyinmeasurement,the
+solutionisgoingtoincreaseordecreasetheredundancyrate.
+overheadinonlinedeployment,andotherpracticalissuesin§3.4.
+Infact,accordingtoourevaluationin§4.6,suchastrawman
+3.1 BasicIdeaandStrawmanSolution solutionisenoughtopushtheParetofrontierofDMR-BWC
+forward.However,itconfrontsaseriesofshortcomings,which
+Differentiating retransmissions from initial transmissions.
+preventstheoperatorfromfurtherimprovementsinperformance.
+The most important insight in this paper is to understand the
+Wewillelaborateonthesechallengesinthefollowingsection.
+significanceofdifferentiatingretransmissionsfrominitialtrans-
+missions.Inotherwords,wewantanadaptiveredundancyrate 3.2 DesignChallenges
+basedontheplanningofmultipletransmissionchances. The Although we have presented a heuristic RTT-aware adaptive
+shortRTTofedge-basedinteractivestreamingenablespackets FECalgorithmasabove,itisstillchallengingtooptimizethese
+to have more than one transmission chance without violating parametersduetothefollowingreasons.
+thedeadline. TheratioofRTTandremainingtimetindicates
+Temporaldependency:cascadingdecision-makingbetween
+thepotentialnumberof(re)transmissions. Forexample,when
+transmissionrounds.Whenconsideringmultipletransmission
+thecurrentRTTis20msandpacketsstillhave40mstowards
+chances, the decision of FEC parameters of one round of
+theirdeadline,theratiofollows t =40ms=2,indicatingthat
+RTT 20ms transmission would cascadingly affect the optimization of
+thesepacketscouldbeapproximatelytransmittedtwicebefore
+the next round. For example, if we aggressively add a high
+thedeadline.Packetswithmoretransmissionchancescouldbet-
+redundancy rate to a group of packets, the number of packet
+terutilizethepotentialretransmissionstodeliverpacketsbefore
+losseswillthenbedecreased.Onthecontrary,alowredundancy
+thedeadline,whichhasalreadybeendiscussedin§2.4. There-
+rate for the same group of packets would probabilistically
+fore,ourbasicideaistotakefuturetransmissionchancesinto
+increasethenumberofpacketlossesunderthesamenetwork
+considerationwhenoptimizingtheredundancyrate.Whenone
+condition. However, these packet losses bring more packets
+batchofpacketshasmoreforeseeabletransmissionchances(i.e.,
+toretransmitinthenextround. Ifweconsiderallactionsfor
+thedeadlineisstillfaraway),wecouldreducetheredundancy
+F packets for the foreseeable L rounds of transmission, the
+ratetosavebandwidthcosts.Whentheremainingtimeofthese
+actionspacewillbeextremelylarge:Sinceforeachredundancy
+packetsisgettingclosertothedeadlineduetoretransmissions,
+decision,thereareF possiblescenariosofthenumberofpackets
+wecouldfurtherincreasetheredundancyratetoavoiddeadline
+totransmitinthenextround(dependingonhowmanypackets
+misses.
+arelost),thenumberofvariablesthatweneedtooptimizewillbe
+Strawman solution: RTT-aware adaptive FEC algorithm. O(FL)5.Therefore,intheenlargedactionspaceovermultiplere-
+Therefore, a strawman solution is to (i) add redundancy to transmissions,itischallengingtoefficientlyoptimize.Moreover,
+bothinitialtransmissionsandretransmissions,and(ii)consider theconditionalprobabilitybetweenscenariosisnotlinear(e.g.,
+the remaining transmission chance in the optimization of the hypergeometricforindividuallyindependentlyandidentically
+redundancyrate.Sincetherehavealreadybeenexistingsolutions distributed losses). Therefore, using traditional optimization
+ontheredundancyratebasedonnetworkconditions[5,22,61], methods such as integer programming in an extremely large
+wecouldintroduceamultipliercontrolledbythetransmission actionspaceisimpractical.Weneedtocoordinatethechoicesin
+chanceovertheexistingredundancyrateoptimizations,i.e. a differentroundsoftransmissiontoachieveoptimalperformance.
+strawmansolutionistoreducetheredundancyratewhenthere
+Spatial dependency: redundancy rate and block size are
+aremanytransmissionchances,andincreaseitwhentransmis-
+tightly coupled. Even in a single round, different variables
+sionchancesarefew.Thus,wecouldenhancethesealgorithms
+(e.g.,redundancyrate,blocksize,etc.) stillhavecomplicated
+byintroducingafactorovertheresultsfromexistingalgorithms.
+dependenciesoneachother.Thisgoestothefollowingaspects:
+FECconsistsoftwoparameters(d,k),whereddatapackets
+(a)Numberofpacketstotransmitinoneroundaffectsredun-
+andkredundantpacketsaresentasablock.Blockiscomposed
+dancyrates.Thenumberofpacketstotransmitinthedifferent
+totheconvenienceofFECencoding.Ifthereareuptokpackets
+roundsisvarying,dependingonhowmanydatapacketsarelost
+lostinanFECblock(d,k),anidealFECdecodercanrecoverall
+datapacketswithanyremainingpackets[64,65,85].Wedenote 5Foraframewith50packets(F=50),and5potentialtransmissionrounds(L=5,
+β=k astheFECredundancyrate,anddastheFECblocksize. e.g.,RTTis20msanddeadlineis100ms),thisturnsinto108variables.
+d
+USENIX Association 21st USENIX Symposium on Networked Systems Design and Implementation 911
+=== PAGE 7 ===
+Deadline RTT RTT
+1 1 2 2 3 3 1 1 2 2
+RTT
+1 2 3 1’ 2’ 3’ 1 2 3 1’ 2’ 3’
+Figure6: Smallerblocksizesinoneframecouldhavebetter
+performance.Scenariosaboveandbelowrepresentusingsmalland
+largeblocks.DataandFECpacketsareshadedorangeandblue.
+1 0 0 %
+8 0 %
+6 0 %
+4 0 % 2 0 %
+0 %
+0 4 8 1 2 1 6 2 0
+F
+D C
+1 6
+1 2
+B lo c k s ize : 5 3 0 8
+1 0 3 5 1 5 4 0 4 2 0 4 5
+2 5 5 0 0
+0 1 0 2 0 3 0 4 0 5 0
+R e c e iv e tim e (m s )
+(a)Cumulativedistribution.
+) s
+m(
+e mit
+e vi e c
+e R
+solution,withoutexplicitlyestimatingwhetherthatframeisgo-
+ingtomissthedeadlineornot,willhavesuboptimalresults.For
+example,therelationshipbetweenthepacketlossrateandthesuc-
+cessrateofdeliveringavideoframewithtensofpacketsinasin-
+gleroundishypergeometric,evenundertheidenticalandindepen-
+dentdistribution(i.i.d.)assumption.Consideringmultiplefuture
+roundstogetherwillonlymaketherelationshipbetweendeadline
+missrateandnetworkconditionsmoreconvoluted. Moreover,
+9 9 % ile someapplicationsoreventhesameapplicationindifferentoper-
+9 0 % ile atingregionsmayhavedifferentpreferencesoverdeadlinemiss
+5 0 % ile ratev.s.bandwidthcost.Thetrafficcostinsomeregionsmightbe
+higherthaninanother,andsomeapplicationsmaygiveitallfor
+theuser’sexperiencewhileothersmaynot.Therefore,weneedto
+explicitlyoptimizetowardsthegoaltoachievetheoptimalresult.
+B lo c k s iz e (p a c k e ts )
+(b)Trendofpercentiles.
+3.3 ModelFormulationandOptimization
+Figure7:Blockreceivingtimewithdifferentblocksizes.FECblocks
+areburstilysentoutattheserverside.Fig.7(b)isprocessedfrom Wehavethefollowingdesignstoaddressthechallengesabove.
+Fig.7(a).Measurementdetailsin§4.2.Betterviewedincolor.
+Encodethetemporaldependencyinmulti-roundplanning
+duringthelasttransmission.Thepenaltyofredundancyrateon into edges in Markov chain. Markov chain is widely used
+BWCalsovariesaccordingtothenumberofpacketstoretrans- intheoptimizationofthesequentialdecision-makingprocess
+mit.Forexample,whentherearefewpacketstoretransmit,even (e.g., reinforcement learning [79]). With the Markov chain,
+addingaredundancyrateof100%forretransmissionswould we can formulate the loss detection between two rounds of
+not consume too much bandwidth, as also discussed in§2.4. (re)transmissionintothetransitionbetweentwoMarkovnodes.
+Therefore,fewerdatapacketstoretransmitwouldencouragea Inthiscase,byonlyfocusingontheoptimalparametersbetween
+moreaggressiveredundancyrate.Thestrawmansolutionisnot thetransitionofthecurrentstateanditspotentialstatesinthe
+awareofthedependencyhere,leadingtoitssuboptimalresult. next round, we could decouple the cascading effects of the
+transitionsbetweenneighbornodes,whichreducestheaction
+(b) Dispersion of blocks might lead to deadline misses when
+spacesignificantly. WefurthershowinAppendixB.1that,in
+usinglargerblocks.Duetothebandwidthlimitatthebottleneck
+suchaMarkovchain,locallyfocusingontheneighbornodes
+link,packetssentoutatthesametimecouldbedispersed[47]
+couldstillhavegloballyoptimalresults.
+andarriveatthereceiveronebyone.Inthiscase,constructing
+large blocks will increase the delay to wait for all packets Encoding the spatial dependency between variables into
+at the receiver. Since packet losses can only be determined nodes in Markov chain. To ensure the number of packets
+after the completion of one block, smaller blocks may know to transmit is considered in the optimization, we build a 2-D
+earlierwhethertheyneedretransmissionandenjoyadditional Markovchain,withtwodimensionsasthetransmissionchance
+transmissionchancesbeforethedeadline.Forexample,inFig.6, and the number of packets to transmit. We present the state
+duetotheearlydeterminationofpacketloss,theretransmission transitionofourMarkovchaininFig.8.Eachnodeisrepresented
+of data packets for small blocks could arrive at the receiver by(d,l),whereddenotesthenumberofremainingdatapackets
+before the deadline, while no packets could arrive before the totransmit,andlrepresentstheremainingtransmissionchance
+deadlineforlargeblocks.Wequantifytheinfluenceofblocksize forthosepackets.Ourgoalistofindouttheoptimalredundancy
+bymeasuringthereceivingtimeofFECblocksfromourservice ratefornode(B,L),whereBisagivenblocksize,andListhe
+onlinewithdifferentblocksizes.AswecanseeinFig.7and7(b), remainingtransmissionchancefromEq.3.Inthiscase,boththe
+withablocksizeof50packets,morethan10%blockscouldspan temporaldependencyandspatialcorrelationbetweenvariables
+10msatthereceiver,whichisevencomparabletotheRTT.Also, couldbeformulatedintothis2-DMarkovchain.
+smallerblocksizesmightalsobebeneficialwhenthelossrate
+Explicitlyoptimizedeadlinemissrateandbandwidthcost
+ishigherthantheredundancyrate.AsillustratedinFig.6,when
+withMarkovchainformulation.Wefinallyprovideanexplicit
+thefirstfourpacketsarelostduringthetransmission,datapacket
+expressionofthedeadlinemissrateandbandwidthcostformulti-
+#3couldstillbesuccessfullydeliveredforasmallblocksize(the
+roundoptimizationwithintheformulationofMDP.Weinversely
+caseaboveinFig.6).Forlargeblocks,thereisnowaytorecover
+calculatetheDMRandBWCatdifferentstatesfromthelast
+anylostpacketifthelossrateislargerthantheredundancyrate.
+chancetotransmit(asthelastlayeroftheMarkovchain),tothe
+Convolutedgoal:deadlinemissrateandbandwidthcost.Un- firstchancetotransmit(asthefirstlayeroftheMarkovchain).
+likelatencyorthroughputwhichwecandirectlymeasure,thees- Inthisway,thetransitionprobabilitiesbetweenstatescouldbe
+timationoftheexpecteddeadlinemissrateneedstoconsidermul- directlyiterated.Wefurtherdecoupletheoptimizationofredun-
+tiplepotentialroundsoftransmission.Inthisway,thestrawman dancyrateandblocksizetoimprovetheoptimizationefficiency.
+912 21st USENIX Symposium on Networked Systems Design and Implementation USENIX Association
+=== PAGE 8 ===
+0,𝐿 …… 0,1 0,0
+1,𝐿 …… 1,1 1,0
+2,𝐿 …… 2,1 2,0
+𝐹(cid:2868),𝐿 …… 𝐹(cid:2868),1 𝐹(cid:2868),0
+…… …… ……
+Transmission chance
+Deadline satisfied
+Deadline missed One missed packet will lead to the deadline miss of the block.
+𝑑 0,2
+1,2
+2,2
+𝐹(cid:2868),2
+……
+1 0 0 R e ly in g o n R T X : m a g n itu d e s o f d iffe re n c e
+1 0 -1
+1 0 -2 1 0 -3
+1 0 -4 1 0 -5 0 4 8 1 2 1 6 2 0
+Figure8:TheabsorbingMarkovchaininredundancyrateoptimization
+atgivenlossrateandframesize.listheestimatedremaining
+transmissionchancesforthepacketstotransmit.
+Wepresenttheanalyticalmodelandthealgorithmbelow.In
+interactive streaming, frames are continuously generated and
+sent out from the server. There are thousands to millions of
+frameswithinonestream,dependingonthespecificapplication,
+wheretheretransmissionofpreviousframesoverlapswiththe
+transmission of subsequent frames. Therefore, similar to the
+finiteelementanalysisinmechanics[10], wepickoneframe
+fromthestream,andanalyzetheexpectedDMRandBWCof
+thatframe.TheexpectedDMRandBWCofoneframeshould
+beconsistentwiththeDMRandBWCofastream. Welistall
+notationsthatwilluseinTable2inAppendixB.1.Specifically,
+HairpinoptimizestheFECparametersasfollows:
+Step1: Calculatingremainingtransmissionchance.Given
+currentnetworkRTT,theremainingtimetowardsdeadlineT,
+the bottleneck bandwidth Θ, and a certain block size d, the
+remainingtransmissionchanceLcouldbecalculatedas:
+T−d/Θ
+L= (3)
+RTT
+Step 2: Generating absorbing Markov chain. We then
+calculate the optimal redundancy rate given the current loss
+rateαandframesizeF.Weiterativelycalculatetheabsorbing
+Markovchainfromlayerl−1tolayerl. Forthenode(d,l),
+at a certain redundancy rate β,we respectively calculate the
+DMR(d,l;β)andBWC(d,l;β)basedontheDMRandBWC
+from the l −1-th layer. We leave the detailed equations to
+AppendixB.1.Then,wecalculatetheoptimalβ for(d,l):
+βopt(d,l)=argmin
+β
+utility(DMR(d,l;β),BWC(d,l;β)) (4)
+Here, utility(DMR,BWC) is the utility function to balance
+preferenceforlowDMRandlowBWC.Forsimplicity,weadopt
+alinearcombinationofDMRandBWCastheoptimizationgoal:
+utility(DMR,BWC)=DMR+λ·BWC (5)
+NotethatHairpindoesnotfallintothesametrade-offbetween
+DMRandBWCasbaselines,butimprovesbothDMRandBWC,
+aswewillevaluatelaterin§4.3. Inpractice,serviceproviders
+can adjust the coefficient λ to balance stuttering events and
+bandwidthcostsindifferentscenarios.Alowerλ indicatesthat
+userspreferthedeadlinemissratemorethanbandwidthcosts.We
+alsoevaluateperformancewithdifferentutilityfunctionsin§4.5.
+et
+a R er
+uli a F
+F e w p a c k e ts in R T X : n o m a jo r d iffe re n c e
+M e c h a n is m (re d u n d a n c y , lo s s ra te ) D U P (2 0 0 % , 2 0 % )
+D U P (1 0 0 % , 2 0 % ) D U P (1 0 0 % , 1 0 % )
+F E C (2 0 0 % , 2 0 % ) F E C (1 0 0 % , 2 0 % ) F E C (1 0 0 % , 1 0 % ) # P a c k e ts to re tra n s m it
+Figure9:Atheoreticalillustrationofthefailurerateofretransmitting
+differentnumbersofpacketsbyper-packetduplicationorconstructing
+FECblocks.ThefailurerateofDUPincreaseswiththenumberof
+packetstoretransmit,sinceweneedtoensureeverydatapacketis
+delivered.Wevarytheredundancyrateandlossrate.
+Therefore,theredundancyratefor(B,L)couldbeoptimized
+accordingly.Aftercalculatingallnodesatthelayerl,wecould
+thencalculatetheDMRandBWCatthelayerl+1,untilthenode
+(B,L)hasbeencalculated. Sincetheiterationsbetweennodes
+arelinear,aslongastheutilityfunctionismonotonictoDMR
+andBWC(e.g.,linearrelationship),theoptimalitystillholds.
+We set DMR(d,0) to 1 for d >0 since one missed packet
+wouldleadtothemissoftheblock(shadedgreen).Wealsoset
+allDMR(0,l)to0sincethereisnoremainingpackettotransmit.
+TheBWC foralltheseboundarynodesissetto0. Notethat
+differentblocksizesandremainingtransmissionchancecould
+multiplexthesamechaintoacceleratetheoptimization,since
+thechainonlydependsonlossrateα andframesizeF.
+Step 3: Calculating optimal block size. We enumerate the
+possibleblocksizesfrom1totheframesize,calculatetheDMR
+andBWCforeachblockaccordingtothechaininStep2,and
+finally find the optimal block size in terms of a given utility
+function. WeleavethemathematicaldetailstoAppendixB.2.
+Accordingtoourevaluationin§4.6,notsurprisingly,whenthe
+bottleneckbandwidthishigh(i.e.,thedispersionisinsignificant),
+the optimal block size for most scenarios is the frame size.
+Nevertheless, when the dispersion is significant, constructing
+smaller blocks could achieve better DMR. Operators could
+optimizetheblocksizeforimprovementsatthelastmile.
+Duringtheoptimizationofblocksizes,wealsooptimizethe
+trade-offofwhenalosshasbeendetected,whethertoretransmit
+thatpacketassoonaspossibleorwaitforotherpacketstofor-
+mulateanFECblock.Onrecoveryability,constructingseveral
+lostpacketsintooneFECblockmightbemoreeffectivethan
+individuallyretransmitting(orduplicating,ifwithredundancy)
+each packet. We calculate the failure rate of delivering these
+packetswhentherearedifferentnumbersofpacketstoretransmit
+atdifferentredundancyratesandlossratesandpresenttheresults
+inFig.9.Whentherearefewpacketsthatneedretransmission,
+whetherduplicatingorconstructingFECblockshasnomajor
+difference(dashedlineandsolidlinesshadedgreen).However,
+whenoptimizingatthetailforinteractivestreaming,therecould
+bemultiplepacketlosseswithinoneframe. Therefore,consid-
+eringeachframecouldcontaintensofpackets,itispossibleto
+sufferlossesof4packetsormoreatthetail.ConstructingFEC
+blocksfortheseretransmissionpacketscouldreducethefailure
+rateofdeliveringpacketsbyseveralmagnitudes.
+USENIX Association 21st USENIX Symposium on Networked Systems Design and Implementation 913
+=== PAGE 9 ===
+Step 4: Getting the optimal parameters. Finally, based on Server Client
+Video Encoder Rate Controller Video Decoder
+network conditions and remaining time towards a deadline,
+HairpincancalculatetheoptimalblocksizebasedonStep3,and FEC Hairpin Statistics
+Encoder Optimizer(§3.3) Collector FEC Decoder
+theoptimalredundancyratewiththeblocksizebasedonStep2.
+3.4 DeploymentDiscussions Packet Sender Packet Receiver
+Data Flow Control Flow
+In§3,weanalyticallyoptimizetheFECparametersgivencertain Figure10:OverviewofHairpinimplementation.
+networkconditions.Therealitymightbemorecomplicatedthan
+onlyfocusesonhowmanypacketswithinablockarelost.Since
+thetheoreticalmodel.Inthissection,wediscussseveralpractical
+ourdataiscollectedframebyframe,iftheburstinessspansover
+concernsofHairpinbasedonouroperationalexperiences.Our
+severalframes,itwillbedirectlyreflectedonthevalueofloss
+furthertrace-drivensimulationanddeploymentsinproduction
+rates. Iftheburstinessspanswithintheframe,nomatterhow
+in§4alsodemonstratetheeffectivenessofHairpininthewild.
+thepatternchanges,thenumberoflostpacketswillnotchange,
+Reducing computational overhead online. Hairpin adopts whichdoesnotaffecttherecoveryefficiencyoftheFECcodec.
+an optimization-based algorithm, which might not scale to Forexample,whenthereare4packetlossesinoneblock,no
+production-scale deployments in terms of computational matterwhethertheselossesareconsecutiveorseparatedinthe
+overhead. Since the optimization needs to run frequently block,aslongasthereare4additionalFECpacketsinthesame
+(approximatelyeveryframe)andscaletotensofthousandsof FECblock,theclientwouldbeabletorecoverthesepacketlosses.
+users simultaneously, it should be computation-efficient and Therefore,Hairpindoesnotrelyontheassumptionofunderlying
+time-efficient.Inresponse,wedoanofflinestepofenumerating loss patterns, but only focuses on the number of lost packets.
+the state space and solving each specific instance. Then, in Packetlossesmightbeconsecutiveacrossseveralframes.Inthis
+theonlinestep,thealgorithmwillbereducedtoasimpletable case,duetotheshortfeedbackloopenabledbyedgedeployments,
+lookuptowardspre-computedoptimizedredundancyparameters. Hairpinshouldhavealreadytimelyreactedasanalyzedin§2.4.
+WeenumeratethestatespaceofHairpinasbelow.
+4 Evaluation
+1. Remainingtransmissionchance:1to10.
+2. Lossrate:0%to50%withquantizationof1%. We introduce the implementations in§4.1 and experiment
+3. Framesize:5to60packetswithquantizationof5packets. settingsin§4.2.Wefurtheranswerthefollowingquestions:
+4. Number of packets to (re)transmit: 5 to 60 packets with
+• How does Hairpin perform under real-world traces? We
+quantizationof5packets.
+demonstrate that Hairpin could push forward the Pareto
+Hairpin then stores the best redundancy rate and block size
+frontierofbaselinesonDMRandBWC(§4.3).
+underdifferentconditions. Wefoundthatthebenefitsoffiner
+• Is Hairpin sensitive to the settings of parameters? We
+quantization are marginal. Our further evaluation in the real
+investigate the performance variation of Hairpin with
+worldin§4.7showsthatthememoryconsumption(2MB)and
+different parameters, and demonstrate that Hairpin has
+tablelookuptimearenegligibleforonlinedeployment.
+performanceimprovementsinawiderange(§4.5).
+Handling network fluctuations. We discuss how Hairpin • Which design in Hairpin contributes to the performance
+improvementagainstotherbaselines?In§4.4,webreakdown
+handles the fluctuations in network conditions. For RTT, as
+theperformanceimprovementsofHairpin.
+presented in Fig. 4, RTT does not increase too much – the
+medianRTTalwaysallows Hairpin tohave3-5transmission • HowdoesHairpinmakedecisionsandhoweachoptimization
+affectstheuser’sexperience?Wefurtherdiveintothedetails
+chancesnomatterthelossrate. Moreover,wefurthermeasure
+thenetworkconditionsinHairpinwithashortslidingwindow
+ofHairpin’sdesignin§4.6.
+tomakesure Hairpin hasthemostrecentnetworkconditions. • HowdoesHairpinperformwellinthewild?Finally,wede-
+ployHairpininproductionserversandfindthatHairpinsignif-
+Wesetthemeasurementwindowto2framesandevaluatethe
+icantlyimprovesbothDMRandBWCintherealworld(§4.7).
+sensitivityofthisparameterin§4.5. Inthiscase,thetransient
+fluctuationofRTTcouldbereflectedintheoptimizationresults 4.1 Hairpin Implementation
+immediately. Welaterdemonstratein§4that Hairpin behaves
+We implement Hairpin in both an ns3-based WebRTC
+wellwithreal-worldtracesandproductiondeployments.
+simulator[88]andourcloudgamingapplicationinproduction.
+Handlingvariouslosspatterns.Inthispaper, whengivena We present the workflow of Hairpin in the network stack in
+certainlossrate, Hairpin assumesthepatternofpacketlosses Fig.10.WithoutHairpin,interactivecontentsarefirstencoded
+is identically and independently distributed (in the transition with Video Encoder by the application, and then sent out
+probabilityofEq.6). Notethatthedurationofacertainloss atthetransportlayerframe-by-frame. Thenthevideoframes
+ratestillfollowstheresultsoftheonlinemeasurementinFig.5. couldbereceivedbytheprotocolstackattheclient. Packet
+Inpracticaldeployment,workingwithFECcodecsthatcould Sender and Packet Receiver abstract the network stack
+recover from different loss patterns (bursty or arbitrary) [65], atthetransportlayerforconnectionmanagement. Afterthat,
+Hairpin couldalsohandledifferentlosspatternssince Hairpin Video Decoder decodesthestreamingcontentsanddisplays
+914 21st USENIX Symposium on Networked Systems Design and Implementation USENIX Association
+=== PAGE 10 ===
+3 5 W e b R TC NOW + P TO
+3 0
+2 5 W e b R TC NOW
+2 0
+1 5 B o lo t+ P TO U S F+ P TO 1 0 B o lo t U S F
+5 H a irp in W e b R TC '14+ P TO P TO 0 W e b R TC '14 R TX
+0 2 4 6 8 1 0 1 2 1 4
+)
+%(
+t s o
+C ht
+di w d n a
+B
+4 5 W e b R TC NOW + P TO Better 4 0
+3 5
+3 0
+2 5 W e b R TC NOW
+2 0 B o lo t+ P TO 1 5 U S F+ P TO 1 0 B o lo t W e b R TC '14+ P TO
+H a irp in U S F P TO 5 0 W e b R TC '14 R TX
+0 5 1 0 1 5 2 0 2 5 3 0
+D e a d lin e M is s R a te (1 /1 0 k )
+(a)Ethernettraces.
+)
+%(
+t s o
+C ht
+di w d n a
+B
+3 0 Better
+2 5
+W e b R TC NOW + P TO
+2 0
+1 5
+W e b R TC '14+ P TO 1 0 W e b R TC NOW
+5 B o lo t+ P TO W e b R TC '14 H a irp in U S F+ P TO P TO 0 B o lo t U S F R TX
+0 2 4 6 8 1 0 1 2 1 4 1 6 1 8
+D e a d lin e M is s R a te (1 /1 0 k )
+(b)WiFitraces.
+)
+%(
+t s o
+C ht
+di w d n a
+B
+Better
+D e a d lin e M is s R a te (1 /1 0 k )
+(c)Cellulartraces.
+Figure11:Trace-drivensimulation.ThebluedashedlineistheenvelopeofallbaselinesontheParetofrontier.
+themtousers.Meanwhile,networkconditions(e.g.,RTT,packet • Probe timeout (PTO).Besides, toquicklydetectpacket
+loss events) will be measured at the server, collected by the losses of tail packets, recent researchers also propose an
+Statistics Collector,andreportedto Rate Controller aggressivetimeout-basedlossdetectionmechanism[33].
+toadaptivelyadjustthestreamingbit-rateaccordingtonetwork Ontheaxisofredundancyparameteroptimization,weimplement
+conditions[26].Hairpininsertsbetweentheexistingapplication thefollowingmechanisms:
+layer and transport layer, and optimizes the redundancy • WebRTC′14 comes from the research paper published by
+parametersbasedoncurrentnetworkconditions, asshownin Googlein2014[46].
+Fig.10. Thenetworkstatisticsisstillpassedtothecongestion • WebRTC is the adaptive FEC mechanism used in
+NOW
+controller(ratecontroller)withoutmodification.Theunderlying WebRTCnow(adoptedbyGoogleStadia[35], Meet[23],
+transportprotocolinourcloudgamingserviceisacustomized etc.), replacing the WebRTC′14 . The difference is that
+version of the RTP protocol [69] based on UDP to allow the WebRTC′14 isawareofRTTandwillreducetheredundancy
+lossofredundantpacketswithoutmodifyingthekernelatthe ratewhenRTTislow,while WebRTC ismoreaggressive
+NOW
+client. WeimplementReed-SolomonFECduetoitsrecovery onaddingredundancy.Wemigratetheimplementationofthe
+performance when the redundancy rate is <100% [65], and m88versionofChromiumreleasedinDecember2020[7].
+implementacustomizedFECcodecfortheredundancyrateof • Bolot [22]and USF [61]aretwoheuristicadaptiveFEC
+>100%. Notethat Hairpin couldalsoworkwithothercodecs algorithms from the research community. Unlike Hairpin,
+(e.g.,XORFEC,FlexFEC,etc.)aslongastheirparametersare theydonotaddredundantpacketsforretransmissions.
+exposedtoHairpin.WediscussFECcodecsinAppendixC. • RTX addsnoredundancy,butfullyreliesonretransmissions.
+4.2 ExperimentSetup Note that none of these baselines optimize the redundancy
+Traces. As for simulation traces, we collect a dataset in one for retransmissions here. Since these two lines of work are
+productionserverinthewildonourcloudgamingserviceintwo orthogonal to each other, we combinatorially implement
+weeksinJanuaryandAugust2021,resultinginmorethan100M 2(retransmission)×5(redundancy)=10baselines.
+videoframesandmorethan600hoursofplaytime. Thisalso
+Hairpin Setup. Inoursimulation,wesetthecoefficientinthe
+supportsourmeasurementsin§2and§3. Usersaccesstheser-
+utilityfunctioninEq.5toλ=10−4,themeasurementwindow
+viceviaeitherEthernet,WiFi,orcellularconnection,whichwe
+ofnetworkconditionsto2frames,andthedeadlineto100ms.
+collectfromourcloudgamingclient.Thecloudgamingservice
+Weevaluatethesensitivityoftheseparametersettingsin§4.5.
+streamsattheframerateof60fpsandthebitraterangingfrom
+2Mbpsto30Mbps.Thenetworkconditionsarerecordedonthe 4.3 Trace-drivenSimulations
+serverofourcloudgamingservice,includingtheaverageRTT, To evaluate the performance of Hairpin in dynamic network
+averagebitrate,andlossrateattheframelevel(approximately conditions, we simulate Hairpin over real-world traces as
+every16ms).Thetracescontain1,995Ethernetgamingsessions, introduced in§4.2. We emulate the collected traces of loss
+741WiFisessions,and572cellularsessionsintotal,eachlasting rateandRTTwith ns-3,andevaluatewhether Hairpin could
+fromminutestohours. Tothebestofourknowledge,weare capturethenetworkdynamicsoflossandRTTvariationsand
+thefirsttocollectonlinetracesfromaninteractivestreaming effectively adapt in real traces. We first present the trade-off
+serviceforweeksatboththeframelevelandpacketlevel. betweenDMRandBWCoverthreesetsoftracesinFig.11.
+Baselines. We orthogonally review the public adaptive FEC AsshowninFigure11, RTX hasthelowestbandwidthcost
+mechanismsandretransmissionmechanismswithdeployments since RTX onlyretransmitsapacketafteritislost. However,
+in practice. On the axis of retransmission optimization, we italsohasthehighestdeadlinemissrateamongallbaselines.
+implementthefollowingbaselines. Meanwhile, WebRTC working with PTO has the lowest
+NOW
+• Out-of-order.Traditionally,packetlossesaredetectedby DMR among all baselines but also the highest BWC. Other
+checkingtheout-of-orderpackets,suchasTCPduplicated baselines stay on the Pareto frontier in the trade-off between
+ACK[21].Weuseitasourdefaultlossdetectionmechanism. DMRandBWC.Incontrast,Hairpincouldbreakthetrade-off
+USENIX Association 21st USENIX Symposium on Networked Systems Design and Implementation 915
+=== PAGE 11 ===
+BB
+8 aa ss ee
+6
+lliinn
+ee ss 4 H a irp in
+2 0
+0 5 1 0 1 5 2 0 2 5 3 0
+)
+%( t s
+o C ht di
+w d n a B
+H airpinSam
+e
+Better
+D e a d lin e M is s R a te (1 /1 0 k )
+Figure12:Breakingdownthe
+performanceimprovementsof
+Hairpin.
+)%(
+tsoC
+htdiwdnaB
+B a s e lin e s 4 0 H a irp in
+3 0 2 0
+1 0 H a irp in 0
+0 4 0 8 0 1 2 0 1 6 0
+Figure13:Parametersensitivityof
+λ inHairpin,andtheeffectiveness
+ofdifferentiatingretransmission.
+and achieve a much better DMR and BWC, as the red stars
+denotedinFigure11: 67%-80%lowerthanthelowestDMR
+(WebRTC ), and comparable BWC as RTX. Thus, as we
+NOW
+analyzedabove, Hairpin couldeffectivelyimprovebothDMR
+andBWCsignificantlycomparedwithallotherbaselines.
+Notethatthetracesherearecollectedfromourproduction
+servers,includingthenetworkRTTandinstantaneouslossrate,
+with a fined granularity of every 16ms. The results in WiFi
+tracesareworsethaninEthernettracessinceWiFitraceshave
+higherlossratesandRTTs,asmeasuredin§2.4. Resultsover
+cellulartracesaresurprisinglygood.Thisisbecause,duringour
+onlinemeasurements,wejuststartedtoprovidecloudgaming
+serviceforcellularusersandhadadmissioncontrolovernetwork
+conditionsduringthattime. Inall, Hairpin couldsignificantly
+pushforwardtheParetofrontierofexistingbaselinesinalltraces.
+4.4 PerformanceBreakdown
+Asdiscussedbefore,theperformanceimprovementofHairpin
+comesfromtwoaspects:acarefullycraftedoptimizationmodel,
+and the design space of differentiating retransmissions from
+initialtransmissions.Toinvestigatethecontributionofthesetwo
+components,wesetupanothercandidate: HairpinSame. Hair-
+pinSameadoptsthesameMarkovChain-basedmodelasHairpin,
+butenforcestheredundancyrateofallroundstobethesame.
+Wefurthersweepthechoiceofλ from{10−4,10−2,10−1,1,5,10}
+forHairpinSametoshowthetrade-offbetweenbandwidthcost
+anddeadlinemissrateinthisnon-differentiatingscenario. We
+alsopresenttheenvelopeofallbaselinesfromFigure11(b)as
+thebluedashedlineinFigure12.
+AsshowninFigure12,evenwithoutdifferentiatingretrans-
+missions, HairpinSame is still able to significantly push the
+frontierforward.Forexample,whenthebandwidthcostis4.5%,
+Hairpinisabletoreducethedeadlinemissratefromto0.28%
+to0.17%,asshowninthegapbetweenthepurplesolidlineand
+bluedashedline. Wearenotgoingtoarguethattheproposed
+Markovchainalgorithmoutperformsallthebaselinesduetothe
+optimizationalgorithm. Wehypothesizethattheimprovement
+isduetothechangeoftheoptimizationgoal.Previousbaselines
+focus on the optimization of tail latency, which is different
+fromdeadlinemissrateasdiscussedin§2. Infact,wefurther
+presentthelatencydistributionof Hairpin andallbaselinesin
+AppendixD(Figure22),andtheresultsofHairpinandbaselines
+arecomparableformostpercentilesbelowthe99.9th.Therefore,
+withthefocusmostlyontheextremetailsafterthe99.9thper-
+) %( t
+s o C ht di
+w d n a B
+B a s e lin e s 4 0 H a irp in
+3 0 2 0
+Better 1 0 H a irp in 0
+0 1 2 3 4 5 6 7
+D e a d lin e M is s R a te (1 /1 0 k )
+(a)Deadline=50ms.
+) %( t
+s o C ht di
+w d n a B Better
+D e a d lin e M is s R a te (1 /1 0 k )
+(b)Deadline=200ms.
+Figure14:Theperformanceof Hairpin andallbaselines(labels
+omittedforbrevity)onWiFitraceswhenthedeadlinerequirement
+fromtheapplicationisdifferent.
+centile, Hairpin isabletosignificantlyreducethedeadlinemiss
+rate,orreducebandwidthcostforthesamedeadlinemissrate.
+Nevertheless, with the new design space of differentiating
+retransmissions,Hairpincanfurtherreducethedeadlinemissrate
+from0.17%to0.06%whenthebandwidthcostis4.5%,asshown
+inthegapbetweentheredstarandpurplelineinFigure12.This
+furtherdemonstratestheimportanceofdifferentiatingretrans-
+missions.Bothdesignsarecriticaltoperformanceimprovement.
+Wefurtherwanttoseehowfaranaivealgorithm,whichdoes
+nothingbutdifferentiatesretransmissions,willgo. Tothisend,
+wehave HairpinFixedRTX,whichonlyaddsFECpacketsto
+retransmissionswithafixedratio,andneveraddsFECpackets
+to initial transmissions, in contrast to all existing solutions in
+§4.2. We vary the static redundancy rate for retransmissions
+from2%to200%.Asshowninthegapbetweenthegreensolid
+lineandthebluedashedlineinFigure13, HairpinFixedRTX
+significantlyimprovesthetrade-offbetweenDMRandBWC
+against existing baselines. The series of red stars will later
+be explained in§4.5. This demonstrates that differentiatedly
+addingFECoverinitialtransmissionandretransmissionpackets
+caneffectivelyimproveperformance. Aswediscussedin§3,
+even naively differentiating the retransmissions with another
+fixedredundancyratewouldalreadybehelpful,illustratingthe
+necessityofdifferentiatingretransmissions.
+4.5 ParameterSensitivity
+WealsoevaluatehowHairpinperformswithdifferentparameters.
+Utilitycoefficientλ.Fortheutilitycoefficientλ inEq.5,as
+introducedin§4.2,itcouldadjustthepreferenceoverthetrade-
+offbetweentheDMRandBWC.Ahigherλ indicatesthatusers
+prefertheBWCmore,whilealowerλ indicatesthattheDMR
+isoutweighingtheBWC.Therefore,wechangeλ from10−1to
+10−7,andpresenttheDMRandBWCofHairpinwithdifferent
+λ overWiFitracesinFig.13. NotethatFig.13iszoomedin
+fromFig.11(b).AsshownintheredstarsinFig.13,theBWCis
+decreasingwiththeincreaseofλ,whiletheDMRisincreasing
+byalittle.Thus,operatorscouldadjustλ tobalancetheDMR
+andBWCaccordingtotherequirementsofapplications.
+The setting of the deadline. In the evaluation in§4.3, the
+deadline is set to 100ms. We also investigate how Hairpin
+performswhenthedeadlineisshorterorlonger.Thus,wepresent
+theresultsofDMRandBWCofHairpinandbaselinesoverWiFi
+traceswhenthedeadlineissetto50ms(Fig.14(a))or200ms
+916 21st USENIX Symposium on Networked Systems Design and Implementation USENIX Association
+=== PAGE 12 ===
+1 0 0 % 9 9 .9 9 %
+9 9 .9 %
+9 9 % 9 0 %
+0 %
+1 2 3 4 5 6
+F D C
+3 5 3 0
+2 5
+2 0 1 5 1 0 5
+0
+1 2 3 4 5 6
+Tra n sm issio n ro u n d (a)Numberofrounds.
+)
+%(
+et ar ss oL
+R T X U S F
+B o lo t
+W e b R T C '14 W e b R T C NOW H a irp in
+i-th tra n sm issio n ro u n d (b)Lossratesbyround.
+Figure15:Thelossrateineachtransmissionround.
+1 2
+1 0
+8 6 4 2 0 RTX Bolot US W F ebRT W C e N b O R W T H C ai 1 r 4 pin
+sll
+ats
+f o r e b m u N
+D u p A ck 3 0 B y fra m e
+P T O 2 5 B y tim e
+2 5 % ~ 7 5 % 2 0 1 0 % ~ 9 0 % 1 5 M e d ia n 1 0 A ve ra g e 5 0 0 5 1 0 1 5 2 0 2 5 3 0
+(a)Numberofstallspersession.
+) %(
+ts
+oc ht di w d n a B
+2 5 B a se lin e s 2 0 H a irp in
+1 5 1 0 H airp in 5
+0
+0 5 1 0 1 5 2 0 2 5
+D e a d lin e m iss ra te (1 /1 0 k )
+(b)DMRbyframeandbytime.
+Figure16:TheeffectofDMRonothermetrics.
+(Fig.14(b)).AspresentedinFig.14,giventhesametrace,when
+thedeadlineisshorter(50ms),theadvantagesof Hairpin over
+baselinesarealittlelessthanwhenthedeadlineis100ms.This
+isbecausetheretransmissionchanceislessandthedesignspace
+issmallerwhenthedeadlineisshorter.Nevertheless,Hairpinis
+stillmuchbetterthanallexistingbaselines.Whenthedeadlineis
+longer,thebenefitsareevenlargerduetothelargerdesignspace
+inretransmission.Resultsoverothersetsoftracesaresimilar.
+4.6 Hairpin DeepDive
+We further provide a deeper understanding of Hairpin in the
+followingaspects.
+Understanding Hairpin’s decisions. In Appendix D, we
+presenttheredundancyrateandblocksizeresultsof Hairpin
+to provide a deeper understanding of how Hairpin optimizes
+in different scenarios. Besides, we present the number of
+transmission rounds of Hairpin and baselines in Fig. 15(a).
+WhenHairpingraduallyincreasestheredundancyrateinfuture
+transmissionrounds,mostframescouldthereforebedelivered.
+Thus,the99.9thpercentileofthenumberoftransmissionrounds
+in Hairpin is less than all other baselines by more than one.
+Similarly,whenweinspectthelossrateineachroundasshown
+in Fig. 15(b), Hairpin also successfully maintains the lowest
+lossratewhenthetransmissionroundgoesup.Notethattheloss
+ratehereissignificantlyhighduetothesurvivorshipbias–only
+lostpacketswillhaveanothertransmissionround,whilelosshas
+alreadyindicatedadegradednetworkperformance. Thisalso
+indicatesthatthelossisnoti.i.d.butburstyintheexperiments.
+OptimizingtowardsextremelylowDMR.Wefurtherillustrate
+why we need to achieve an extremely low DMR and how it
+affectsuser’sexperience. Asanalyzedin§3.1,alowerDMR
+approachingzerodirectlyindicatesfewerstalleventsinagaming
+session.Wemeasurethenumberofstalleventsineachgaming
+session, where stall event is only counted once if there are
+multiplemissedframesinonesecondorifitlastslongerthan
+onesecond. AsshowninFig.16(a), Hairpin canreducethe
+) %( ts
+o
+C ht di w d
+n
+a
+B
+2 5 B a se lin e s 2 0 H a irp in
+1 5 1 0 Better 5 H airp in
+0
+0 5 1 0 1 5 2 0 2 5
+D e a d lin e M iss R a te (1 /1 0 k ) (a)GCC[88].
+) %( ts
+o
+C ht di w d
+n
+a
+B
+Better
+D e a d lin e M iss R a te (1 /1 0 k ) (b)NADA[90].
+Figure17:TheperformanceofHairpinandallbaselines(labelsomit-
+tedforbrevity)onWiFitraceswithdifferentdeadlinerequirements.
+averageandmediannumberofstallevents(whichisalsocritical
+foruser’sopinionscores[67])byahalformoreagainstbaselines. By having a DMR of 0.06%, Hairpin is able to reduce the 75thpercentilenumberofstallsinasessionto2. Considering thedurationofagamingsession(minutestohours), thiswill considerablyimprovetheuser’sexperience.
+WealsoshowthedifferenceofcalculatingDMRbyframe
+andbytimeinFig.16(b). Inthispaper,wedonotargueusing
+anewmetric(DMRbyframe)isbetter–wecalculateDMR
+bythenumberofmissedframesovertotalframesbecauseof
+thesimplicityintheformulationin§3.3. CalculatingDMRby
+time is almost equivalent to DMR by frame since the stalled
+timeisthenumberofstalledframes(missedframes)timesthe
+intervalbetweenframes.Therefore,wereplotFig.11(b)using
+two different DMRs. As shownin Fig. 16(b), theresults are
+almostthesamewitheachother.
+Integratingwithcongestioncontrol.Tofurtherinvestigatethe
+performance of Hairpin when interacting with the CCA, we
+integratetheHairpinwithtwoCCAsintheWebRTCframework,
+GCC[26]andNADA[90],inoursimulation. Wethenreplay
+thecollectedtracesbysettingtheirbandwidth, RTT,andloss
+rate to the link in ns-3. The bandwidth ranges from 2Mbps
+to30Mbps. AsshowninFig.17, Hairpin couldstillachieve
+significantadvantagesoverallexistingbaselines.
+4.7 Real-WorldExperiments
+Finally, we deploy the Hairpin in a production server in our
+cloudgamingservice. WeconductanA/Btestinproduction
+of Hairpin againstthe WebRTC baseline. Thebitrateof
+NOW
+thecloudgamingservicealsosupportstherangeof2-30Mbpsas
+simulatedin§4.3.TheA/BtestrunsforoneweekinSeptember
+2021,covering17ksessionsintotal,allofwhichhaveaduration
+of at least 4 minutes. Hairpin has been integrated into the
+UDP-basedconnectionsofourcloudgamingservicesincethen.
+Sinceotheroptimizationsarealsodeployedintoourserviceafter
+wedeployHairpin,tomakeafaircomparison,weonlypresent
+theresultsfromthecontrolledA/BtestinSeptember2021.
+Performance.AsshowninTable1,Hairpinisabletoimprove
+both the average DMR and the average BWC compared to
+WebRTC .Specifically,forEthernetsessions,Hairpincould
+NOW
+improve the DMR by 32% while also reducing the BWC by
+40%against WebRTC .ForWiFisessions,theimprovements
+NOW
+onDMRandBWCare30%and43%. Wealsomeasurethe
+ratioofsessionswithanaverageDMRoflargerthan1%,i.e.
+USENIX Association 21st USENIX Symposium on Networked Systems Design and Implementation 917
+=== PAGE 13 ===
+Ethernet DMR BWC P(DMR>1%) #Session vicesinthewildduetotheirhardwaresupport.Tothebestofour
+WebRTCNOW 0.34% 30.4% 6.9% 8380 knowledge, Hairpin isthefirstworkto(i)jointlyoptimizethe
+Hairpin 0.23% 3.0% 4.6% 7306 retransmissionandredundancytowardsthetailperformance,and
+WiFi DMR BWC P(DMR>1%) #Session
+(ii)deployinarealinteractivestreamingapplicationinproduction.
+WebRTCNOW 0.72% 31.8% 19.3% 652
+Therearealsoresearchestoreducepacketlossesbymanipulating
+Hairpin 0.51% 3.0% 15.3% 613
+sendingpatterns[20,38],whichcanworktogetherwithHairpin.
+Table1:Real-worldexperimentresults.P(DMR>1%)denotesthe
+ratioofsessionswithanaverageDMRoflargerthan1%. Low-latency interactive streaming. Finally, as an emerging
+direction,low-latencyinteractivestreamingalsoattractsmuch
+tailsessions.Hairpincouldalsoreducethetailsessionsby34%
+attention.Atthetransportlayer,intensiveeffortshavealsobeen
+and21%forEthernetandWiFisessionsrespectivelycompared
+devotedtotheoptimizationofCCAs[26,41,48,90],orthecross-
+to WebRTC .NotethattheDMRsinreal-worldexperiments
+NOW
+layer optimization for interactive streaming to link layer [31].
+arealittlehigherthanthoseinsimulations(§4.3). Thismight
+Asfortheinfrastructure,recenteffortsproposetointroduceedge
+be because of other external factors (e.g., user devices) that
+computingforshorterlatency[58,77,89],whichareorthogonal
+couldaffecttheDMR.Nevertheless, Hairpincouldsignificantly
+to Hairpin.Incontrast,Hairpinisinsertedbetweenthetransport
+improve the users’ experiences on both the DMR and BWC
+layerandtheapplicationlayer,andisdesignedtooptimizethe
+comparedto WebRTC .
+NOW
+redundancyofedge-basedinteractivestreaming. Intheevalua-
+Overhead.Wefurthermeasuretheoverheadoftheoptimization tionanddeploymentofHairpin(§4),wehavealreadyintegrated
+ofHairpin.Asintroducedin§3.4,toacceleratetheoptimization Hairpin with some efforts above for a better user experience.
+online,weprecomputetheoptimizedFECparametersandstore Moreover,thereareotherresearchefforts[34,84]thatoptimize
+theresulttableforonlinelook-up.Atourquantizationgranularity other application metrics for interactive video streaming in
+ofthetable,ittakes1.98MBtostorethetable,whichisnegligi- imageorvideoquality(e.g.,SSIM[81]orPSNR[6]),which
+bleonserverssincethetableisstaticandcouldbesharedbyall areorthogonaltotheinteractiondelay(thedelayforeachframe)
+connections.Moreover,accordingtoourmeasurements,thetime wefocusoninthispaper–theyfocusonthesharpnessofthe
+oflookingupthetableisalwayslessthan1ms,whichisalsoneg- videobutwefocusontheinteractionlagthatusersmayhave
+ligiblesincethetableislookedupatthegranularityoftheframe.
+6 Conclusion
+5 RelatedWork
+WeproposeHairpin,apacketlossrecoverymechanismforedge-
+WefirstdiscussthelimitationsinAppendixE,andthendiscuss
+basedinteractivestreamingtodifferentiateretransmissionsand
+somepiecesofrelatedworkhere.
+jointlyoptimizeredundancywithretransmissions.Hairpinmo-
+Deadline-awareoptimization.Optimizingtransportprotocols tivatesthejointoptimizationwithreal-worldmeasurements,and
+fordeadline-awareflowshasbeenintensivelystudiedinthenet- optimizestheredundancyandretransmissionswithMarkovde-
+workingcommunity.Researcheffortshavebeendevotedtothe cisionprocess.Bothtrace-drivensimulationsandreal-worldde-
+optimizationoftransportprotocolsundertheassumptionofdeliv- ploymentsshowthatthejointoptimizationsignificantlyreduces
+erydeadlineinvideostreaming[72,87],spacenetwork[73],and theDMRandBWCcomparedwithstate-of-the-artsolutions.
+others.Therearealsodeadline-awareoptimizationindatacenters Thisworkdoesnotraiseanyethicalissues.
+forflowcompletiontime[30,78,82]andjobcompletiontime[36].
+Acknowledgements
+Theseresearcheffortsmainlyfocusonthepriority-awareschedul-
+ingbetweendifferentpackets,jobs,orflows. Instead, Hairpin We sincerely thank our shepherd Junchen Jiang, anonymous
+isorthogonaltothemandoptimizeswithinonestream. reviewers,andlabmatesintheRoutingGroupfromTsinghuaUni-
+Lossrecoveryoptimization.Therearemanypreviousresearch versityfortheirvaluablefeedback.Thisworkissponsoredbythe
+efforts in individually optimizing the retransmission mecha- NationalNaturalScienceFoundationofChina(No.62221003
+nisms[21,62,68]orredundancystrategies[5,22,29,40,51,59,61]. and62372261)andtheTsinghua-TencentCollaborativeGrant.
+Evenforthejointoptimizationofredundancyandretransmission, BoWangandMingweiXuarethecorrespondingauthors.
+wearenotthefirstworktoproposesimilarstrategies.Inwireless
+References
+communications,therearealreadypreviouseffortsinthejoint
+optimizationofredundancyandretransmission[12,60].There [1] Paretofront-wikipedia. https://en.wikipedia.org
+arealsoresearchestryingtocombineretransmissionandredun- /wiki/Pareto_front.
+dancy(e.g.,WebRTC [71]andalso[16,37,86]). However,
+2011
+as discussed in§2.4 and evaluated in§4, without optimizing [2] 5g can make remote driving a reality, telefon-
+redundancy over retransmissions, the tail performance is far ica and ericsson demostrate at mwc. https:
+fromsatisfactoryforedge-basedinteractivestreaming.Besides, //www.telefonica.com/en/web/press-office/
+therearealsoresearcheffortstryingtoadoptloss-resilientvideo -/5g-can-make-remote-driving-a-reality-tel
+codec[41,80],whichareunfortunatelynotdeployableforser- efonica-and-ericsson-demostrate-at-mwc,2017.
+918 21st USENIX Symposium on Networked Systems Design and Implementation USENIX Association
+=== PAGE 14 ===
+[3] Cloud gaming (beta) with xbox game pass — xbox. [17] MatthewBallandJacobNavok. Challenge#3:Enormous
+https://www.xbox.com/en-US/xbox-game-pass/ bandwidthcostsandoperationalburdens—cloudgaming:
+cloud-gaming,2020. Why it matters and the games it will create. https:
+//www.matthewball.vc/all/cloudmiles,2020.
+[4] Criticalservicesreport: Videoconferencing(uk)—blog.
+https://samknows.com/blog/critical-service [18] Asha Barbaschow. Alibaba unveils cloud 2.0, wuy-
+s-report-video-conferencing-uk,2020. ing cloud computer, and xiaomanlv logistics robot.
+https://www.zdnet.com/article/alibaba-unvei
+[5] Issue93006: Updatetomedia opt util: -codereview. ls-cloud-2-0-wuying-cloud-computer-and-xia
+https://webrtc-codereview.appspot.com/93006, omanlv-logistics-robot/,2020.
+2020.
+[19] Apurv Bhartia, Bo Chen, Feng Wang, Derrick Pallas,
+[6] Peaksignal-to-noiseratio-wikipedia. https://en.wik Raluca Musaloiu-E, Ted Tsung-Te Lai, and Hao Ma.
+ipedia.org/wiki/Peak_signal-to-noise_ratio, Measurement-based, practical techniques to improve
+2020. 802.11acperformance. InProc.ACMIMC,2017.
+[20] SaadBiazandNitinHVaidya. ”de-randomizing”conges-
+[7] Psa: Webrtc m88 release notes. https:
+tionlossestoimprovetcpperformanceoverwired-wireless
+//groups.google.com/g/discuss-webrtc/c/
+networks. IEEE/ACMTransactionsonNetworking,2005.
+A0FjOcTW2c0/m/UAv-veyPCAAJ,2020.
+[21] EthanBlanton,Dr.VernPaxson,andMarkAllman. TCP
+[8] Stadia - one place for all the ways we play.
+CongestionControl. IETFRFC5681,2009.
+https://stadia.google.com/,2020.
+[22] J-CBolot,SachaFosse-Parisis,andDonTowsley.Adaptive
+[9] Yourgames.yourdevices.playanywhere—nvidiageforce fec-based error control for internet telephony. In Proc.
+now. https://www.nvidia.com/en-us/geforce-n IEEEINFOCOM,1999.
+ow/,2020.
+[23] brianhu. Googlemeettroubleshootingplaybook-network
+[10] Finiteelementmethod-wikipedia. https://en.wikip and hardware troubleshooting. https://www.goog
+edia.org/wiki/Finite_element_method,2021. lecloudcommunity.com/gc/Workspace-Product-A
+rticles/Google-Meet-Troubleshooting-Playboo
+[11] Optimizing5gforanewclassoflow-latencyexperiences k-Network-and-Hardware/ta-p/165810,2021.
+[video]. https://www.qualcomm.com/news/onq/
+2021/07/20/optimizing-5g-new-class-low-lat [24] James Bulman and Peter Garraghan. A cloud gaming
+ency-experiences,2021. framework for dynamic graphical rendering towards
+achieving distributed game engines. In Proc. USENIX
+[12] Ashfaq Ahmed, Arafat Al-Dweik, Youssef Iraqi, HotCloud,2020.
+Husameldin Mukhtar, Muhammad Naeem, and Ekram
+[25] Neal Cardwell, Yuchung Cheng, C Stephen Gunn,
+Hossain.Hybridautomaticrepeatrequest(harq)inwireless
+Soheil Hassas Yeganeh, and Van Jacobson. Bbr:
+communicationssystemsandstandards:Acontemporary
+Congestion-basedcongestioncontrol. ACMQueue,2016.
+survey. IEEECommunicationsSurveys&Tutorials,2021.
+[26] GaetanoCarlucci,LucaDeCicco,StefanHolmer,andSave-
+[13] Amit. Huawei news — huawei launched cloud mobile
+rioMascolo. Congestioncontrolforwebreal-timecommu-
+phone. https://www.huaweiupdate.com/huawei-l
+nication. IEEE/ACMTransactionsonNetworking,2017.
+aunched-cloud-mobile-phone/,2020.
+[27] Marc Carrascosa and Boris Bellalta. Cloud-gaming:
+[14] ArsTechnica. Nvidia gtx 1080 review: The new perfor-
+Analysisofgooglestadiatraffic. arXiv:2009.09786,2020.
+mance king. https://arstechnica.com/gadgets/
+2016/05/nvidia-gtx-1080-review/4/,2016. [28] Hao Chen, Xu Zhang, Yiling Xu, Ju Ren, Jingtao Fan,
+ZhanMa,andWenjunZhang. T-gaming:Acost-efficient
+[15] Venkat Arun and Hari Balakrishnan. Copa: Practical cloud gaming system at scale. IEEE Transactions on
+delay-basedcongestioncontrolfortheinternet. InProc. ParallelandDistributedSystems,2019.
+USENIXNSDI,2018.
+[29] KeChen,HanWang,ShuwenFang,XiaotianLi,Minghao
+[16] LucaBaldantoni,HenrikLundqvist,andGunnarKarlsson. Ye,andH.JonathanChao. Rl-afec:Adaptiveforwarderror
+Adaptive end-to-end fec for improving tcp performance correction for real-time video communication based on
+overwirelesslinks. InProc.IEEEICC,2004. reinforcementlearning. InProc.ACMMMSys,2022.
+USENIX Association 21st USENIX Symposium on Networked Systems Design and Implementation 919
+=== PAGE 15 ===
+[30] LiChen,KaiChen,WeiBai,andMohammadAlizadeh. [42] GFXBench. 3dgraphicsperformanceofgooglepixelc.
+Scheduling mix-flows in commodity datacenters with https://gfxbench.com/device.jsp?D=Google+Pix
+karuna. InProc.ACMSIGCOMM,2016. el+C,2017.
+[31] Wei Chen, Liangping Ma, and Chien-Chung Shen. [43] MoinakGhoshal,PranabDash,ZhaoningKong,QianXu,
+Congestion-awaremaclayeradaptationtoimprovevideo Y.Charlie Hu, Dimitrios Koutsonikolas, and Yuanjie Li.
+teleconferencingoverwi-fi. InProc.ACMMMSys,2015. Can5gmmwaveenablemulti-userarapps? InProc.PAM,
+2022.
+[32] ShengCheng,HanHu,XinggongZhang,andZongming
+Guo. Rebufferingbutnotsuffering:Exploringcontinuous- [44] YuGuan,ChengyuanZheng,XinggongZhang,Zongming
+timequantitativeqoebyuser’sexitingbehaviors. InProc. Guo, and Junchen Jiang. Pano: Optimizing 360 video
+IEEEINFOCOM,2023. streamingwithabetterunderstandingofqualityperception.
+InProc.ACMSIGCOMM,2019.
+[33] Yuchung Cheng, Neal Cardwell, Nandita Dukkipati,
+and Priyaranjan Jha. The RACK-TLP Loss Detection [45] OsamaHaq,MamoonRaja,andFahadRDogar. Measur-
+AlgorithmforTCP. IETFRFC8985,2021. ingandimprovingthereliabilityofwide-areacloudpaths.
+InProc.WWW,2017.
+[34] MalleshamDasari, KumaraKahatapitiya, SamirR.Das,
+Aruna Balasubramanian, and Dimitris Samaras. Swift: [46] Stefan Holmer, Mikhal Shemer, and Marco Paniconi.
+Adaptivevideostreamingwithlayeredneuralcodecs. In Handlingpacketlossinwebrtc.In2013IEEEInternational
+Proc.USENIXNSDI,2022. ConferenceonImageProcessing,2013.
+[35] AndreaDiDomenico,GianlucaPerna,MartinoTrevisan, [47] Manish Jain and Constantinos Dovrolis. End-to-end
+LucaVassio,andDaniloGiordano. Anetworkanalysison available bandwidth: Measurement methodology, dy-
+cloudgaming:Stadia,geforcenowandpsnow. Network, namics,andrelationwithtcpthroughput. InProc.ACM
+2021. SIGCOMM,2002.
+[36] AndrewDFerguson,PeterBodik,SrikanthKandula,Eric [48] Ingemar Johansson and Zaheduzzaman Sarker. Self-
+Boutin,andRodrigoFonseca. Jockey: guaranteedjobla- ClockedRateAdaptationforMultimedia. IETFRFC8298,
+tencyindataparallelclusters.InProc.ACMEuroSys,2012. 2017.
+[37] TobiasFlach,NanditaDukkipati,AndreasTerzis,Barath [49] AlanJones,PeterSevcik,andRebeccaWetzel. Internet
+Raghavan, NealCardwell, YuchungCheng, AnkurJain, connectionrequirementsforeffectivevideoconferencing
+Shuai Hao, Ethan Katz-Bassett, and Ramesh Govindan. tosupportworkfromhomeandelearning—netforecast.
+Reducingweblatency:thevirtueofgentleaggression. In https://www.netforecast.com/wp-content/upl
+Proc.ACMSIGCOMM,2013. oads/NFR5137-Videoconferencing_Internet_Requ
+irements.pdf,2021.
+[38] TobiasFlach,PavlosPapageorge,AndreasTerzis,LuisPe-
+drosa,YuchungCheng,TayebKarim,EthanKatz-Bassett, [50] Teemu Ka¨ma¨ra¨inen, Matti Siekkinen, Antti Yla¨-Ja¨a¨ski,
+andRameshGovindan. Aninternet-wideanalysisoftraffic WenxiaoZhang,andPanHui. Ameasurementstudyon
+policing. InProc.ACMSIGCOMM,2016. achievingimperceptiblelatencyinmobilecloudgaming.
+InProc.ACMMMSys,2017.
+[39] Mary Jo Foley. Microsoft marches toward launch-
+ing its ’cloud pc’ service, possibly this summer. [51] Bala´zsKreith, VarunSingh, andJo¨rgOtt. Fractal: Fec-
+https://www.zdnet.com/article/microsoft-mar basedratecontrolforrtp. InProc.ACMMultimedia,2017.
+ches-toward-launching-its-cloud-pc-service
+-possibly-this-summer/,2021. [52] Tong Li, Kai Zheng, Ke Xu, Rahul Arvind Jadhav,
+Tao Xiong, Keith Winstein, and Kun Tan. Tack:
+[40] Silas L Fong, Ashish Khisti, Baochun Li, Wai-Tian
+Improving wireless transport performance by taming
+Tan, XiaoqingZhu, andJohnApostolopoulos. Optimal
+acknowledgments. InProc.ACMSIGCOMM,2020.
+streaming codes for channels with burst and arbitrary
+erasures. IEEETransactionsonInformationTheory,2019. [53] XiaofeiLiao,LiLin,GuangTan,HaiJin,XiaobinYang,
+WeiZhang,andBoLi.Liverender:Acloudgamingsystem
+[41] SadjadFouladi,JohnEmmons,EmreOrbay,CatherineWu,
+based on compressed graphics streaming. IEEE/ACM
+RiadSWahby,andKeithWinstein. Salsify:Low-latency
+TransactionsonNetworking,2016.
+networkvideothroughtighterintegrationbetweenavideo
+codecandatransportprotocol. InProc.USENIXNSDI, [54] RuilinLiu,DaehanKwak,SrinivasDevarakonda,Kostas
+2018. Bekris,andLiviuIftode. Investigatingremotedrivingover
+920 21st USENIX Symposium on Networked Systems Design and Implementation USENIX Association
+=== PAGE 16 ===
+theltenetwork. InProceedingsofthe9thInternational [66] Carolyn Rowe, Diana Hanson, Chiffers Craig, David
+ConferenceonAutomotiveUserInterfacesandInteractive Coulter,JustinGilmore,DavidByrd,AjayanBorys,Kelly
+VehicularApplications,pages264–269,2017. Baker,BaardHermansen,SerdarSoysal,etal. Microsoft
+teams call flows - microsoft teams — microsoft docs.
+[55] Bill Marczak and John Scott-Railton. Move fast
+https://docs.microsoft.com/en-us/microsoftt
+and roll your own crypto: A quick look at the con-
+eams/microsoft-teams-online-call-flows,2021.
+fidentiality of zoom meetings - the citizen lab.
+https://citizenlab.ca/2020/04/move-fast-rol
+[67] MichaelRudow,FrancisY.Yan,AbhishekKumar,Ganesh
+l-your-own-crypto-a-quick-look-at-the-confi
+Ananthanarayanan,MartinEllis,andK.V.Rashmi.Tambur:
+dentiality-of-zoom-meetings/,2020.
+Efficientlossrecoveryforvideoconferencingviastreaming
+codes. InProc.USENIXNSDI,2023.
+[56] Zili Meng, Yaning Guo, Chen Sun, Bo Wang, Justine
+Sherry,HongqiangHarryLiu,andMingweiXu.Achieving
+[68] PasiSarolahti,MarkkuKojo,andKimmoRaatikainen. F-
+ConsistentLowLatencyforWirelessRealTimeCommu-
+rto:anenhancedrecoveryalgorithmfortcpretransmission
+nicationswiththeShortestControlLoop. InProc.ACM
+timeouts. ACM SIGCOMM Computer Communication
+SIGCOMM,2022.
+Review,2003.
+[57] Zili Meng, Tingfeng Wang, Yixin Shen, Bo Wang,
+Mingwei Xu, Rui Han, Honghao Liu, Venkat Arun, [69] HenningSchulzrinne,StephenL.Casner,RonFrederick,
+Hongxin Hu, and Xue Wei. Enabling High Quality and Van Jacobson. RTP: A Transport Protocol for
+Real-Time Communications with Adaptive Frame-Rate. Real-TimeApplications. IETFRFC3550,2003.
+InProc.USENIXNSDI,2023.
+[70] Heiko Schwarz, Detlev Marpe, and Thomas Wiegand.
+[58] ChinaMobileandZTE. Poweredbysa: 5gmec-based Overview of the scalable video coding extension of the
+cloudgameinnovationpractice. GSMA5GCaseStudies( h.264/avcstandard. IEEETransactionsoncircuitsand
+https://www.gsma.com/futurenetworks/wp-conte systemsforvideotechnology,2007.
+nt/uploads/2020/03/Powered-by-SA-5G-MEC-Bas
+ed-Cloud-Game-Innovation-Practice-.pdf),2020. [71] Mikhal Shemer. Commit - video coding robustness:
+Updatinghybridmode’ssettings—googlegit. https:
+[59] Marcin Nagy, Varun Singh, Jo¨rg Ott, and Lars Eggert.
+//webrtc.googlesource.com/src/+/ae7a0522c59d
+Congestioncontrolusingfecforconversationalmultimedia
+932d72f3d3377c38bebab7ab2b31%5E%21/,2011.
+communication. InProc.ACMMMSys,2014.
+[72] HangShi, YongCui, FengQian, andYumingHu. Dtp:
+[60] Hoang Anh Ngo and Lajos Hanzo. Hybrid automatic-
+Deadline-awaretransportprotocol. InProc.APNet,2019.
+repeat-request systems for cooperative wireless commu-
+nications. IEEE Communications Surveys & Tutorials,
+[73] HangShi, LeiZhang, XutongZuo, QianWu, HewuLi,
+16(1):25–45,2013.
+andYongCui. Multipathdeadline-awaretransportproxy
+[61] Chinmay Padhye, Kenneth J Christensen, and Wilfrido forspacenetwork. IEEEInternetComputing,2021.
+Moreno. A new adaptive fec loss control algorithm for
+voiceoveripapplications.InProc.IEEEINFOCOM,2000. [74] Shu Shi, Cheng-Hsin Hsu, Klara Nahrstedt, and Roy
+Campbell. Usinggraphicsrenderingcontextstoenhance
+[62] Colin Perkins, Orion Hodson, and Vicky Hardman. A thereal-timevideocodingformobilecloudgaming. In
+survey of packet loss recovery techniques for streaming Proc.ACMMultimedia,2011.
+audio. IEEENetwork,1998.
+[75] Ivan Slivar, Lea Skorin-Kapov, and Mirko Suznjevic.
+[63] FengQian,BoHan,QingyangXiao,andVijayGopalakr-
+Cloud gaming qoe models for deriving video encoding
+ishnan. Flare: Practical viewport-adaptive 360-degree
+adaptationstrategies. InProceedingsofACMInternational
+video streaming for mobile devices. In Proc. ACM
+ConferenceonMultimediaSystems(MMSys),2016.
+Mobicom,2018.
+[76] KaarmukilanS.P. Whatishairpinnetshotinbadminton?-
+[64] Vincent Roca, Mathieu Cunche, Jerome Lacan, Amine
+quora. https://www.quora.com/What-is-hairpin
+Bouabdallah, and Kazuhisa Matsuzono. Simple Reed-
+-net-shot-in-badminton/answer/Kaarmukilan-S
+Solomon Forward Error Correction (FEC) Scheme for
+-P,2020.
+FECFRAME. IETFRFC6865,2013.
+[65] Vincent Roca, Jani Peltotalo, Jerome Lacan, and Sami [77] ZhaoweiTan,YuanjieLi,QianruLi,ZhehuiZhang,Zhehan
+Peltotalo. Reed-SolomonForwardErrorCorrection(FEC) Li,andSongwuLu. Supportingmobilevrinltenetworks:
+Schemes. IETFRFC5510,2009. Howclosearewe? Proc.ACMSIGMETRICS,2018.
+USENIX Association 21st USENIX Symposium on Networked Systems Design and Implementation 921
+=== PAGE 17 ===
+[78] Balajee Vamanan, Jahangir Hasan, and TN Vijaykumar.
+1 0 0 %
+Deadline-aware datacenter tcp (d2tcp). In Proc. ACM 8 0 %
+SIGCOMM,2012. 6 0 %
+4 0 %
+[79] MartijnvanOtterloandMarcoWiering. Reinforcement 2 0 %
+0 % Learning and Markov Decision Processes, pages 3–42. 1 1 0 1 0 0
+SpringerBerlinHeidelberg,Berlin,Heidelberg,2012.
+[80] TingfengWang, ZiliMeng, MingweiXu, RuiHan, and
+Honghao Liu. Enabling high frame-rate uhd real-time
+communication with frame-skipping. In Proc. ACM
+WorkshoponHotTopicsinVideoAnalyticsandIntelligent
+Edges,2021.
+[81] ZhouWang,AlanCBovik,HamidRSheikh,andEeroP
+Simoncelli. Imagequalityassessment:fromerrorvisibility
+to structural similarity. IEEE Transactions on Image
+Processing,2004.
+[82] ChristoWilson,HiteshBallani,ThomasKaragiannis,and
+AntRowtron. Betterneverthanlate: Meetingdeadlines
+indatacenternetworks. InProc.ACMSIGCOMM,2011.
+[83] RaphaelWimmer,AndreasSchmid,andFlorianBockes.
+Onthelatencyofusb-connectedinputdevices. InProc.
+ACMCHI,pages1–12,2019.
+[84] SamanZadtootaghaj,StevenSchmidt,SaeedShafieeSabet,
+SebastianMo¨ller,andCarstenGriwodz. Qualityestimation
+modelsforgamingvideostreamingservicesusingpercep-
+tualvideoqualitydimensions.InProc.ACMMMSys,2020.
+[85] Mo Zanaty, Varun Singh, Ali C. Begen, and Giridhar
+Mandyam. RTP Payload Format for Flexible Forward
+ErrorCorrection(FEC). IETFRFC8627,2019.
+[86] Fan Zhai, Yiftach Eisenberg, Thrasyvoulos N Pappas,
+RandallBerry,andAggelosKKatsaggelos. Rate-distortion
+optimized hybrid error control for real-time packetized
+video transmission. IEEE Transactions on Image
+Processing,2006.
+[87] Lei Zhang, Yong Cui, Junchen Pan, and Yong Jiang.
+Deadline-aware transmission control for real-time video
+streaming. InProc.IEEEICNP,2021.
+[88] Songyang Zhang. Soonyangzhang/webrtc-gcc-ns3: test
+googlecongestioncontrolonns3. https://github.c
+om/SoonyangZhang/webrtc-gcc-ns3,2020.
+[89] XuZhang,HaoChen,YangchaoZhao,ZhanMa,Yiling
+Xu, Haojun Huang, Hao Yin, and Dapeng Oliver Wu.
+Improvingcloudgamingexperiencethroughmobileedge
+computing. IEEEWirelessCommunications,2019.
+[90] Xiaoqing Zhu, Rong Pan, Michael A. Ramalho, and
+Sergio Mena de la Cruz. Network-Assisted Dynamic
+Adaptation (NADA): A Unified Congestion Control
+SchemeforReal-TimeMedia. IETFRFC8698,2020.
+F
+D C
+1 0 0 % E th e rn e t
+W iF i 8 0 %
+6 0 %
+4 0 %
+2 0 %
+0 % 1 0 -5 1 0 -4 1 0 -3 1 0 -2 1 0 -1 1 0 0
+N e tw o rk D e la y (m s )
+(a)Frame-leveldelay
+F
+D C
+E th e rn e t
+W iF i
+> 1 0 0 m s
+> 8 0 m s > 6 0 m s
+> 4 0 m s
+> 2 0 m s
+D e la y R a tio
+(b)Session-leveldelayratio
+Figure18:Networkdelaydistributionsoftheinteractivestreaming
+serviceofcompanyT.Delayratioistheratioofframeswithadelay
+of>20,>40,>60,>80and>100msineachsession.Notethatthe
+delayhereismeasuredattheapplicationlayer(detailsin§4.2).
+1 0 0 %
+8 0 %
+6 0 %
+4 0 %
+2 0 %
+0 % 0 .0 5 0 .1 0 .2 0 .5 1 2 5 1 0
+F
+D
+C
+E th e rn e t
+W iF i
+D u ra tio n (se c)
+Figure19:DistributionofnetworkRTTmaintenancedurationinour
+interactivestreamingservice.
+Appendices
+A MeasurementsinProduction
+Wepresentourmeasurementresultsonthecloudgamingservice
+Xinproductiontosupportsomeclaimsinthepaper.
+To investigate the effect of edge acceleration of interactive
+streaming in the wild, we conduct a measurement campaign
+onthecloudgamingserviceX.Themeasurementslastforone
+weekwiththousandsofsessions(containingheterogeneoususers
+throughEthernet,WiFiwithWindowsandMacOSsystems)and
+arepresentedinFig.18. AsshowninFig.18(a),themajority
+of network delay collected at the granularity of video frame
+fallsinto10-20msforbothEthernetandWiFi.Wealsomeasure
+theflow-leveldelayratioatdifferentthresholdsandpresentthe
+results in Fig. 18(b). With the edge acceleration, the ratio of
+frameswithlongerthan100msdelayinmostflowsislessthan
+10−2.Amongthem,Ethernetflowsperformslightlybetterthan
+WiFiflows.Thisvalidatestheeffectivenessofedgeacceleration:
+theaveragenetworkdelaycouldbereducedto10-20mswith
+aproperedgeacceleration.
+WefurthermeasurethefluctuationofRTTbytheduration
+whenRTTisroughlykeptatthesamelevel. Wequantifyitby
+calculatingthetransmissionchance(i.e.,layerL)fortheRTT
+measuredbyeachframe,andcalculatethedurationwhenthe
+chanceiskeptthesame.Forexample,givenadeadlineof100ms
+in this paper, when the RTT measurements are [26ms, 18ms,
+17ms, 22ms, 17ms, 19ms, 19ms], the transmission chances
+are [3, 5, 5, 4, 5, 5, 5]. In this case, the durations of each
+transmissionchanceare[1,2,1,3],whicharedenotedasRTT
+maintenance durations. We present the distribution of RTT
+maintenance duration measured in our cloud gaming service
+inFig.19.TheRTTmaintenancedurationofEthernetismuch
+longer than that of WiFi, indicating that Ethernet has a more
+stableend-to-enddelay.Meanwhile,themediandurationofboth
+EthernetandWiFiisabovehundredsofmilliseconds,whichis
+922 21st USENIX Symposium on Networked Systems Design and Implementation USENIX Association
+=== PAGE 18 ===
+Notation Explanation firstdiscussthescenarioofn >0.Wedenotethetotalnumber
+2
+Inputs: ofpacketlosses(includingdataandredundancy)inther-thtrans-
+α Networklossrate. missionasl(n ,r).Wedenotethenumberofredundantpackets
+1
+T Remainingtimetillthedeadline.
+inther-thtransmissionask(n ,r).Sincethepacketlossesofall
+1
+RTT Thenetworkround-triptime.
+packetsshouldnotbelessthanthepacketlossesofdatapackets,
+Θ Thenetworkbottleneckbandwidth.
+wehavel(n ,r)⩾n . Meanwhile,sincethereareonlyk(n ,r)
+F Theframesizeofthatframe. 1 2 1
+redundantpacketsintotal,wehavel(n ,r)⩽n +k(n ,r). We
+Intermediatevariables: 1 2 1
+alsohavel(n ,r)>k(n ,r),otherwisethelostpacketscouldbe
+L Remainingtransmissionchance. 1 1
+Thenumberoflostpacketsatther-thlayer recoveredwithFEC.Therefore,theprobabilityofn 2 datapacket
+l(n,r)
+withndatapackets. losses under the condition of l(n 1 ,r−1) total packet losses
+Thenumberofredundantpacketsatther-th followsthehypergeometricdistribution:
+k(n,r)
+layerwithndatapackets.
+DMR Deadlinemissrate. H(n ;n +k(n ,r−1),n ,l(n ,r))
+2 1 1 1 1
+BWC Bandwidthcost. (cid:18)n (cid:19)(cid:18) k(n ,r) (cid:19)(cid:30)(cid:18)n +k(n ,r)(cid:19) (8)
+Outputs: = 1 1 1 1
+n l(n ,r)−n l(n ,r)
+2 1 2 1
+βi Redundancyrateatthei-thlayer.
+b
+i
+FECblocksizeatthei-thlayer.
+Thus,thetransitionprobabilityfrom(n ,r)to(n ,r−1)is:
+1 2
+Table2:Notationsin§3andAppendixB.
+p((n ,r)→(n ,r−1))=
+muchhigherthanthefeedbackloopof Hairpin.Thisindicates 1 2
+that RTT does not frequently change, and Hairpin is able to ∑ H(n 2 ;n 1 +k(n 1 ,r),n 1 ,l(n 1 ,r))·P(l(n 1 ,r)losses) (9)
+detectandreacttothefluctuationsofRTT. l(n1,r)
+B OptimizationModel Ontheotherhand,atthelossrateofα,losingl(n 1 ,r)packets
+inalln +k(n ,r)packetsfollowstheBinomialdistribution:
+In this section, we present the notations used in the Markov 1 1
+chainin§3.3.WelistallnotationsinTable2.Wefurtherpresent
+P(l(n
+1
+,r)losses)=Bi(l(n
+1
+,r);n
+1
++k(n
+1
+,r),α)=
+thedetaileddesignshere.
+(cid:18)n +k(n ,r)(cid:19) (10)
+B.1 OptimizationoftheRedundancyRate
+1 1 αl(n1,r)(1−α)n1+k(n1,r)−l(n1,r)
+l(n ,r)
+1
+WebuildanabsorbingMarkovchaintomodeltheredundancy
+andcalculatethedeadlinemissrateconsideringretransmission, Therefore,bysubstitutingEq.8and10intoEq.9,wecanhave
+asshowninFig.8.WefirstdefinethestateintheMarkovchain thetransitionprobabilityforn 2 >0.Similarly,whenstatetransits
+as (n,r), where n is the number of unacknowledged packets from(n 1 ,r)to(0,r−1),thenthenumberoflostpacketsinthe
+within the block, and r is the number of retransmission. For r-th layer of Fig. 8 must be less than k(n 1 ,r). Therefore, the
+example,(d ,0)representstheinitialtransmissionwherealld transitionprobabilitysatisfies:
+0 0
+packetshavenotbeenreceivedbefore(sinceitisthefirsttime
+oftransmission).(3,2)denotesthattherearestill3datapackets
+k(n1,r)
+p((n
+1
+,r)→(0,r−1))= ∑ Bi(i;n
+1
++k(n
+1
+,r),α) (11)
+thatneedtoberetransmittedforthesecondtime.
+i=0
+Fornode(d,l),givenredundancyrateβ,itsDMRfollows:
+B.2 OptimizationofBlockSize
+d
+DMR(d,l;β)= ∑p((d,l)→(d′,l−1);β)·DMR(d′,l−1) (6) Inthefollowinganalysis,wearegoingtocomparetheutilityof
+d′=0 transmittingthewholeframeforLchances,orsplittingtheframe
+where p((d,l)→(d′,l−1);β)isthetransitionprobabilityfrom into several blocks and some of them enjoying L+1 chances.
+(d,l)to(d′,l−1)andcouldbecalculatedbasedonthecurrent Withthat,weassumethatthedispersionislessthanoneRTT.
+lossrateα andredundancyrateβ. Similarly,theBWCcould Therefore, when the block size is set to d, there are N L+1
+alsobeupdatedas: blocksthatcouldenjoyL+1chancesoftransmission,andthe
+remainingN blockswithLchancesoftransmission,where
+L
+d d
+BWC(d,l;β)=β
+F
++∑p((d,l)→(d′,l−1);β)·BWC(d′,l−1) (7) (cid:22)DDL−(L+1)·RTT(cid:23)
+d′=0 N L+1 = d/Θ
+(12)
+wherethelattertermistheadditionalBWCintroducedinthis (cid:24)F(cid:25)
+layerl. N L = d −N L+1
+We then calculate the transition probability between states
+in the Markov chain. For the transition between state (n ,r) Therefore,theon-timedeliveryoftheframerequirestheon-time
+1
+to(n ,r−1),weknowthatn datapacketsarelostinther-th deliveryofeachblock.Sincethedeadlinemissrateisequalto
+2 2
+transmissionandneedtobetransmittedforthe(r+1)time.We oneminustheprobabilityofon-timedelivery,wehavetheframe
+USENIX Association 21st USENIX Symposium on Networked Systems Design and Implementation 923
+=== PAGE 19 ===
+DMR(FDMR)givenacertainblocksizedas: 1 0
+1−FDMR(d)=(1−DMR(L+1,d))NL+1·(1−DMR(L,d))NL 8
+⇒FDMR(d)=1−(1−DMR(L+1,d))NL+1·(1−DMR(L,d))NL 6 =N L+1 ·DMR(L+1,d)+N L ·DMR(L,d) 0 (13) 1 2 4 8
+where the last equation holds since DMR(L,d) ≪ 1 and
+(1−α)n=1−nα when α ≪1. As for the bandwidth cost,
+recallingEq.7,thenumberofextrapacketsoftheframeisthe
+sumofthenumberofextrapacketsforeachblock. Sincethe
+BWCofeachblocksharesthesamedenominator(framesize
+S),theframeBWCisalsothesumofBWCofeachblock:
+FBWC(d)=N L+1 ·BWC(L+1,d)+N L ·BWC(L,d) (14)
+Therefore,theoptimalblocksizeis:
+d =argmaxutility(FDMR(d),FBWC(d)) (15)
+opt
+d
+Inourimplementation,weiteratethepossibleblocksizeB
+from1totheframesizeS,andstoretheoptimalblocksizein
+eachscenarioinanofflinelookuptable. SincetheDMR(L,B)
+andBWC(L,B)areaccessibleintheabsorbingMarkovchain
+constructedabove,theconstructionofthetableistime-efficient.
+C ImplementationDetails
+We are going to introduce the sending mechanism beneath
+Hairpinandtheimplementationoftheredundancyoptimization
+inHairpin.
+Acknowledgement aggregation. In wireless networks, re-
+searchersalsoproposetoaggregateseveralacknowledgementsat
+theclientsidetoalleviatetheuplinkinterference[52].However,
+the delayed acknowledgement might also interfere with the
+measurementsofRTT,delaythedetectionofpacketlossesand
+waste potential chances of retransmission. In our implemen-
+tation, to eliminate the interference from acknowledgement
+mechanisms,wedisabletheaggregationofacknowledgements.
+TheprecisemeasurementofRTTinthescenarioofaggregated
+acknowledgementcouldalsobeimplementedwithrecentefforts
+suchasTACK[52],whichisoutofourscope.
+Notethatthisisdifferentfromtheaggregationonwireless
+routers [19]. Such aggregations due to wireless channel
+competitionshouldbereflectedinourmeasurementsofnetwork
+RTT fluctuations in Fig. 4. In our simulation with online
+measurementsanddeploymentsinproduction,Hairpinbehaves
+wellevenwiththeRTTfluctuations.
+FECcodec.Forthescenarioswitharedundancyrateof⩽100%,
+weimplementtheFECcodecasRS-FEC,assuggestedbymany
+otherrelatedefforts[65]. Wereferthereadersto[65]forthe
+detailsofRS-FEC.However,whenimplementingtheredundancy
+rateof>100%,RS-FECisnotdesignedtoreliablyrecoverlost
+packetsinallcases.Forexample,whenthereare2datapackets
+and 4 FEC packets, RS-FEC cannot always recover 2 data
+) k 0 1/
+1(
+R M D e g ar e v A
+) %(
+C
+W B e g ar e v A
+) %(
+C
+W B eli % 5 9
+D e a d lin e m iss ra te (A v e ra g e , le ft a x is)
+D e a d lin e m iss ra te
+(9 5 % ile , le ft a x is) B a n d w id th co st (A v e ra g e , rig h t a x is) B a n d w id th co st (9 5 % ile , rig h t a x is)
+M e a su re m e n t w in d o w (fra m e )
+) k 0 1/
+1(
+R M D eli % 5 9
+1 0 5 .5 2 1
+8 5 .0 2 0
+6 4 .5 1 9 0 0 .0 0
+Figure20:Sensitivityofthemeasurementwindowin§3.4.
++ 2 .5 m s
++ 2 .0 m s
++ 1 .5 m s
++ 1 .0 m s
++ 0 .5 m s
+R e f
+RTX P W TO e W b e R b T R C T '1 C 4 '14 +PTO Hairpin US U F SF+PTO Bo B lo o t lot+ W PT e W O b e R b T R C T N C O N W OW +PTO
+y al
+e
+D
+e
+g ar
+ev
+A
+E th e rn e t W iFi C e llu la r
+(R e f= 1 4 m s) (R e f= 2 1 m s) (R e f= 3 7 m s)
+Figure21:Averageend-to-enddelayofintheexperimentsin§4.3.
+Wetrimthelowestaveragedelayindifferenttracesforcomparison.
+packetswhenthereare4packetlossesduetotheinvertibilityof
+thedecodingmatrix:itdependsonwhethertwopacketsreceived
+attheclientarelinearlyindependentatthegenerationmatrix.
+Therefore, we implement a customized FEC codec. For
+example,fordatapacketsaandb,whenconsideringthemas
+twonumbers(withalengthofupto12kbits),wecouldcalculate
+a+b, a+2b, 2a+b, etc., and send them to the client. The
+only overhead is the additional bits that could overflow from
+theaddition,whichismuchlessthanthedatabits. Moreover,
+asshowninFig.25,inmostcasestheredundancyrateisless
+than 100%. Therefore, the overall decoding overhead is also
+acceptable. We leave the further adoption of advanced FEC
+codecwhentheredundancyrateis>100%asourfuturework.
+D SupplementaryExperiments
+Measurementwindow.Wealsoevaluatetheperformanceof
+Hairpin byadjustingthemeasurementwindowofthenetwork
+conditionsthatwediscussedin§3.4. Since Hairpin optimizes
+the redundancy parameters based on real-time measurements
+of the network conditions, the size of the measurement
+windowmightaffecttheperformanceof Hairpin. Wevarythe
+measurementwindowfromthelast1to8framesandreconduct
+the experiments over WiFi traces. We measure the average
+and 95th percentile DMR and BWC, and present the results
+inFig.20. TheDMRandBWCarequiterobust: Byvarying
+themeasurementwindowfrom1to8,theaverageDMRand
+average BWC vary within 0.47%-0.49% and 6.94%-7.19%,
+whichissubordinatetotheimprovementsin§4.3(Fig.11(b)).
+Inpractice,operatorscandecidethemeasurementwindowbased
+onthefluctuationsofnetworkconditions.
+Per-framelatencyof Hairpin. Besides,wealsomeasurethe
+averageend-to-enddelayforthesuccessfullydeliveredframesin
+theexperimentsin§4.3forHairpinanddifferentbaselines.As
+showninFig.21,theaverageend-to-enddelayofHairpindoes
+increasecomparedtothebaselinewiththelowestaveragedelay.
+However,theincreaseisonly0.1-1.5msforalltraces,whichis
+negligiblecomparedwiththeRTT(1%-7%),andconsidering
+924 21st USENIX Symposium on Networked Systems Design and Implementation USENIX Association
+=== PAGE 20 ===
+1 0 0 %
+9 9 .9 9 %
+9 9 .9 % 9 9 % 9 0 %
+0 %
+0 2 0 4 0 6 0 8 0 1 0 0
+F D C
+R T X
+B o lo t
+U S F
+W e b R T C N O W W e b R T C '14 H a irp in
+F ra m e d e la y (m s)
+Figure22:Thedistributionofthedeliverytimeofeachframe.Note
+thatthey-axisislog-scaled.
+9 9 .9 %
+9 9 %
+9 0 %
+0 %
+0 % 2 0 % 4 0 % 6 0 % 8 0 % 1 0 0 %
+F D C
+1 0 0 %
+8 0 %
+R T X U S F 6 0 % B o lo t 4 0 % W e b R T C '14 W e b R T C NOW 2 0 % H a irp in
+0 %
+0 % 2 0 % 4 0 % 6 0 % 8 0 % 1 0 0 %
+Lo ss ra te
+(a)Initialtransmission
+F D C R TX U S F B o lo t W e b R TC '14 W e b R TC NOW H a irp in
+Lo ss ra te
+(b)The3rdretransmission
+Figure23: Distributionoflossratesbyframeineachroundof
+transmission.
+3 5 H a irp in
+3 0 H a irp in -lin 2 5 E n ve lo p e o f b a se lin e s
+2 0 k=4
+1 5 k=2
+1 0 k=1
+5 H airp in k=0.5
+0
+0 5 1 0 1 5 2 0 2 5
+)
+%( ts o
+C ht
+di
+w
+d
+n a
+B
+4 0 %
+3 0 %
+2 0 % 1 0 %
+0 8 1 6 2 4
+P a c k e ts to tra n s m it
+Better
+D e a d lin e M iss R a te (1 /1 0 k )
+Figure24:Heuristic-based Hairpin (Hairpin-lin).Theenvelopeof
+baselinesisfromFigure11(b).
+thedeadlineeffectwediscussedin§2.1.Furthermore,operators
+couldalsoadoptlessaggressivemappings(e.g.,increasingλ)
+totradeoffbetweenthetaildelayandaveragedelay.
+Wealsopresentthedistributionofthedelayofeachframe
+in Fig. 22. Similar to Fig. 21, the average (median) latency
+of frames of Hairpin is similar to other baselines. However,
+Hairpincouldreducethetaillatencysignificantly.Forexample,
+Hairpincanreducethe99.9thpercentileframelatencyto80ms
+whileallbaselinesoflongerthan100ms.Lookingatthevertical
+axis,Hairpinisalsocapableofreducingtheratioofhigherthan
+100msbymorethanahalf,asshowninFig.11(b).
+Lossratesineachround.Wefurtherpresentthedistributions
+of loss rates of all frames in each round (specifically, initial
+transmission and the third retransmission) in Fig. 23. This
+expandstheresultsinFig.15(b).WecantellfromFig.23(a)that
+duetotheconservativeredundancystrategyofHairpin,theloss
+rateofHairpinishigher.However,whenretransmissionstarts,
+Hairpinisabletomaintainalowlossrate–whichmeansahigh
+successrateindeliveringframes–comparedtootherbaselines.
+ThisshowsthestrategyofHairpin:conservativelyaddingFEC
+packetswhendeadlineisfaraway,andaggressivelyaddingFEC
+packetstoretransmissions.
+TheimprovementsofusingMarkovchain.Asweanalyzedin
+§3.2,astrawmansolutionisgoodbutnotenoughtofullyutilize
+thedesignspaceofredundancyandretransmission. Thus,we
+alsoevaluatetheheuristicbaselinewepresentin§3.1(denoted
+et
+ar s s o L
+4 0 %
+3 0 %
+2 0 % 1 0 %
+0 8 1 6 2 4
+P a c k e ts to tra n s m it
+(a)Redundancyrate(L=1).
+et
+ar s s o L
+4 0 %
+3 0 %
+2 0 % 1 0 %
+0 8 1 6 2 4
+P a c k e ts to tra n s m it
+(b)L=2.
+et
+ar s s o L
+(c)L=3.
+6 0
+5 0
+4 0
+3 0
+2 0
+2 0 4 0 6 0 8 0 B o ttle n e c k B a n d w id th (M b p s )
+)
+s
+m(
+T
+T R
+R e d u n d a n c y ra te
+B lo c k s iz e
+2 5 2 0 1 5 1 0 5 0
+1 0
+8
+P a c k e ts to tra n s m it
+6
+4
+2
+0
+0 2 4 6 8 1 0
+elti
+T
+Y
+5 0 0 % 4 0 0 % 3 0 0 % 2 0 0 % 1 0 0 % 0 %
+(d)Blocksizeandlegends. Figure25:OptimizationresultsbyHairpin.Fig.25(a)to25(c)present
+theredundancyratewithdifferenttransmissionchancesL.
+as Hairpin-lin, withsweepingthecoefficientk from0.5to4,
+andpresenttheresultsinFigure24.Aswecansee,Hairpin-lin
+(green line) does improve the trade-off compared to existing
+baselines(dashedblueline).Yet,thereisstillahalfgapbetween
+Hairpin-linandtheMarkovchain-based Hairpin (theredstar).
+Therefore,itisnecessarytoanalyticallyformulatetheproblem
+withtheMarkovchaintofurtherpushthetrade-offforward.
+Understanding Hairpin’s decisions. We further present the
+redundancyrateresultsof Hairpin toprovideadeeperunder-
+A
+standingofhow Hairpin optimizesindifferentscenarios. For
+redundancyrate,sincetheoptimizationoftheabsorbingMarkov
+chain(§3.2)reliesontheremainingtransmissionchanceL,loss
+rate,remainingdatapacketstotransmit,andtheframesize,we
+presenttheoptimizedredundancyrateoverdifferentparameters
+inFig.25(a)to25(c).Withmoretransmissionchances,Hairpin
+woulddecreasetheredundancyrateandrelyonretransmissions
+for packet loss recovery. With fewer packets to retransmit,
+Hairpin alsoprefersahigherredundancyrate,asdiscussedin
+§3.2. Moreover, when the number of packets to transmit is
+small,theoptimizedredundancyrateisupto500%inFig.25(a),
+demonstratingtheeffectivenessofaredundancyrateof>100%.
+Asfortheoptimizationofblocksize,aswealsodiscussed
+in§3.2, the optimal block size is the frame size (24 packets)
+inmanycases. Nevertheless,aswediscussed,atthedecision
+boundaryofremainingtransmissionchance,smallerblocksizes
+do enjoy a slightly better performance by having additional
+transmission chances. As shown in Fig. 25(d), although the
+optimalblocksizeistheframesizeinmostcases,whentheRTT
+isaround33msand50ms(thedividingpointbetween1,2,and
+3transmissionchances),theoptimalblocksizemightbesmaller
+thantheframesize.Forexample,comparedtosettingtheblock
+sizetotheframesize,theDMRwiththeoptimizedblocksize
+of Hairpin couldbefurtherreducedby1.78×aroundtheRTT
+of50msandbottleneckbandwidthof60Mbps.Weoptimizethe
+blocksizeforthelastmileperformanceimprovement.
+USENIX Association 21st USENIX Symposium on Networked Systems Design and Implementation 925
+=== PAGE 21 ===
+E Limitations
+Delay components in interactive streaming. Hairpin could
+have maximum benefits when the end-to-end network delay
+dominatesthetotaldelayfromthevideoencodertothedecoder
+inFig.10.Thisisgenerallytrueininteractivestreamingservices.
+Relatedmeasurementstudiesalsodemonstratethatthenetwork
+delay is still one of the bottlenecks of edge-based interactive
+streaming [43,57]. Therefore, we focus on the optimization
+ofstreamsbetweenedgeserversandclients.Ourdeployments
+in the wild demonstrate that optimizing the network latency
+could significantly improve the user’s experience (note that
+DMR is measured end-to-end). Hairpin can also work with
+the optimization of other delay components (e.g., encoding,
+decoding,etc.)tofurtherimprovetheperformance.
+Deployment efforts for applications. Another concern of
+deploying Hairpin is that both the server and the client need
+modification to support the redundancy and retransmissions.
+TherearepreviouseffortsimplementingtheFECmechanism
+over TCP [16,37], which needs to modify the TCP protocol
+stack at the client and are not suitable for products at scale.
+For scenarios where TCP is compulsory for transport, the
+deployment of Hairpin may depend on the ability to modify
+thereceptionmechanismofTCPpacketsattheclient.However,
+most interactive streaming applications adopt UDP to reduce
+thenetworkdelay[23,35,55,66],includingourservice.Inthis
+case, Hairpin couldbeimplementedwithintheapplicationat
+theserverandtheclient,whichispracticalformostapplications.
+926 21st USENIX Symposium on Networked Systems Design and Implementation USENIX Association

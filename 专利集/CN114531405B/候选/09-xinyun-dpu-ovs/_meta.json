@@ -1,0 +1,10 @@
+{
+  "nn": "09",
+  "slug": "09-xinyun-dpu-ovs",
+  "type": "产品",
+  "name": "全系列 DPU 网卡（OVS 硬件流表全卸载/VTEP）",
+  "organization": "星云智联",
+  "hit_features_initial": "F1, F2, F3, F4, F5",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：星云智联 全系列 DPU 网卡（OVS 硬件流表全卸载/VTEP）\n- vendor：星云智联（独角兽，美团/百度投资）\n- 命中 F#（初判）：F1, F2, F3, F4, F5\n- 公开度：中\n- 一句话定位：DPU 产品明确具备\"OVS 硬件流表全卸载、全流统计、HQoS\"，互联网/运营商/行业云落地。"
+}

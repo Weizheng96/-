@@ -1,0 +1,10 @@
+{
+  "nn": "14",
+  "slug": "14-azure-smartnic-boost",
+  "type": "产品",
+  "name": "Azure Accelerated Networking / Boost SmartNIC",
+  "organization": "Microsoft Azure",
+  "hit_features_initial": "F1, F2, F4, F5",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：Azure Accelerated Networking / Azure Boost SmartNIC\n- vendor：Microsoft Azure\n- 命中 F#（初判）：F1, F2, F4, F5\n- 公开度：低\n- 一句话定位：FPGA/SmartNIC 卸载虚拟网络数据面（含流表匹配转发）。"
+}

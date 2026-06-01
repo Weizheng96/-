@@ -1,0 +1,10 @@
+{
+  "nn": "42",
+  "slug": "42-fortinet-sdwan-afec",
+  "type": "产品",
+  "name": "Fortinet SD-WAN Adaptive FEC",
+  "organization": "Fortinet",
+  "hit_features_initial": "F2, F4, F5",
+  "publicity": "高",
+  "blurb": "- 类型：产品\n- 名称：FortiGate SD-WAN Adaptive FEC\n- 组织：Fortinet（NASDAQ: FTNT）\n- 命中 F#（初判）：F2, F4, F5\n- 公开度：高\n- 一句话定位：Fortinet 企业 SD-WAN 设备的自适应 FEC 功能（v7.0.2+），按 SLA metrics 动态调整 FEC 包比例；命中场景 3（DC 间 / 跨广域）。**注意**：是否有 F1（基于数据流特征变量识别业务类型）需 Step 6 验证——SD-WAN 一般是按 SLA / 应用识别 (DPI) 进行业务分类，与本专利 F1 的\"流量统计特征\"路径不同。"
+}

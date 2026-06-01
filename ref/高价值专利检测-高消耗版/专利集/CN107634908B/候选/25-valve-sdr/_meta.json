@@ -1,0 +1,10 @@
+{
+  "nn": "25",
+  "slug": "25-valve-sdr",
+  "type": "产品",
+  "name": "Steam Datagram Relay (SDR)",
+  "organization": "Valve",
+  "hit_features_initial": "F2, F3, F4, F5",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：Steam Datagram Relay (SDR)\n- 组织：Valve\n- 命中 F#（初判）：F2, F3, F4, F5\n- 公开度：中\n- 一句话定位：Valve 游戏 UDP 加速路由 + 抗丢包，官方技术博客有。"
+}

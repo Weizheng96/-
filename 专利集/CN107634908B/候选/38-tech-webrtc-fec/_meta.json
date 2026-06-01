@@ -1,0 +1,10 @@
+{
+  "nn": "38",
+  "slug": "38-tech-webrtc-fec",
+  "type": "技术",
+  "name": "WebRTC FEC (ULPFEC / FlexFEC / Opus FEC / Pion FEC)",
+  "organization": "开源 / WebRTC.org / Google 主导 / IETF",
+  "hit_features_initial": "F2, F3, F4, F5",
+  "publicity": "高",
+  "blurb": "- 类型：技术\n- 名称：WebRTC FEC (ULPFEC / FlexFEC / Opus FEC / Pion FEC)\n- 组织：开源 / WebRTC.org / Google 主导 / IETF（RFC 5109 / RFC 8854 / draft-ietf-rtcweb-fec-10 / flexfec-03）\n- 命中 F#（初判）：F2, F3, F4, F5\n- 公开度：高\n- 一句话定位：WebRTC 内置的两类 packet-level FEC 标准（XOR 算法），是大量 RTC SDK 的下游基础。**注意**：纯 WebRTC FEC 默认不显式建模\"业务类型\"——F1 可能不命中。Step 6 验证。\n- 应用案例（仅\"技术\"类条目）：所有基于 WebRTC 源码改造的 RTC 引擎（包括但不限于 Pion 的下游产品、Janus、mediasoup、SignalWire、Daily.co、LiveKit、Twilio Video 等）；Mozilla Firefox / Google Chrome 内置 RTC stack。"
+}

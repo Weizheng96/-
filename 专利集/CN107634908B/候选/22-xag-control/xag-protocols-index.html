@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>极飞科技</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="description" content="Description">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <link rel="stylesheet" href="//xag-static-cdn.oss-cn-hangzhou.aliyuncs.com/protocols/docsify/4.9.4/themes/vue.css">
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+    if (typeof navigator.serviceWorker !== 'undefined') {
+      //navigator.serviceWorker.register('sw.js')
+    }
+    window.$docsify = {
+      name: '极飞科技',
+      auto2top: true,
+      repo: '',
+      notFoundPage: '404.md',
+      logo: 'https://xag-static-cdn.oss-cn-hangzhou.aliyuncs.com/logo/xag/nav-icon-phone.png',
+
+      // 加载 _navbar.md
+      // loadNavbar: true,
+      // 指定加载 nav.md
+      //loadNavbar: 'nav.md'
+
+      // 加载 _sidebar.md
+      // loadSidebar: true,
+      // 指定加载 summary.md
+      //loadSidebar: 'summary.md'
+      // maxLevel: 1
+      subMaxLevel: 5,
+      // plugins: [
+      //   function (hook) {
+      //     var footer = [
+      //       '<hr/>',
+      //       '<footer>',
+      //       '<span> &copy;2019 <a href="https://www.xag.cn">XAG</a></span>',
+      //       '</footer>'
+      //     ].join('')
+
+      //     hook.afterEach(function (html) {
+      //       return html + footer
+      //     })
+      //   }
+      // ]
+    }
+    window.onload = function () {
+      var target = document.getElementsByClassName('sidebar-toggle')
+      for (var i = 0; i < target.length; i++) {
+        target[i].style.display = 'none'
+      }
+    }
+  </script>
+  <script src="//xag-static-cdn.oss-cn-hangzhou.aliyuncs.com/protocols/docsify/4.9.4/docsify.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "nn": "32",
+  "slug": "32-tencent-ccn",
+  "type": "产品",
+  "name": "腾讯云 CCN",
+  "organization": "腾讯云",
+  "hit_features_initial": "F2, F4, F5",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：腾讯云 CCN\n- 组织：腾讯云\n- 命中 F#（初判）：F2, F4, F5\n- 公开度：中\n- 一句话定位：腾讯云联网，类似 CEN。"
+}

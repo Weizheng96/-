@@ -1,0 +1,10 @@
+{
+  "nn": "17",
+  "slug": "17-baidu-apollo",
+  "type": "产品",
+  "name": "Apollo 云控平台 + V2X 通道",
+  "organization": "百度",
+  "hit_features_initial": "F2, F3, F4, F5",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：Apollo 云控平台 + V2X 通道\n- 组织：百度\n- 命中 F#（初判）：F2, F3, F4, F5\n- 公开度：中\n- 一句话定位：自动驾驶 + V2X 控制消息，公开代码部分。"
+}

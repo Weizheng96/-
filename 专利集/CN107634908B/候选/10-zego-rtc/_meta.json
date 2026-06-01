@@ -1,0 +1,10 @@
+{
+  "nn": "10",
+  "slug": "10-zego-rtc",
+  "type": "产品",
+  "name": "ZEGO Express RTC",
+  "organization": "ZEGO（即构）",
+  "hit_features_initial": "F1, F2, F3, F4, F5",
+  "publicity": "高",
+  "blurb": "- 类型：产品\n- 名称：ZEGO Express RTC\n- 组织：ZEGO（即构）\n- 命中 F#（初判）：F1, F2, F3, F4, F5\n- 公开度：高\n- 一句话定位：即构科技 RTC SDK，公开博客对 FEC+ARQ 原理详细说明。"
+}

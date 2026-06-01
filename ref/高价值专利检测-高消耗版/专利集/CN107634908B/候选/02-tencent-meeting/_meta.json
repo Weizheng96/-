@@ -1,0 +1,10 @@
+{
+  "nn": "02",
+  "slug": "02-tencent-meeting",
+  "type": "产品",
+  "name": "腾讯会议",
+  "organization": "腾讯",
+  "hit_features_initial": "F1, F2, F3, F4, F5",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：腾讯会议\n- 组织：腾讯\n- 命中 F#（初判）：F1, F2, F3, F4, F5\n- 公开度：中\n- 一句话定位：腾讯自家视频会议产品，底层复用 TRTC media stack 的概率高，疫情后用户基数巨大。"
+}

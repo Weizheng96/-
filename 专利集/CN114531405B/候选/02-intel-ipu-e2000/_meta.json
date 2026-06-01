@@ -1,0 +1,10 @@
+{
+  "nn": "02",
+  "slug": "02-intel-ipu-e2000",
+  "type": "产品",
+  "name": "IPU E2000（Mount Evans）流表硬件卸载",
+  "organization": "Intel",
+  "hit_features_initial": "F1, F2, F4, F5",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：Intel IPU E2000（Mount Evans）\n- vendor：Intel\n- 命中 F#（初判）：F1, F2, F4, F5\n- 公开度：中\n- 一句话定位：Intel 基础设施处理单元，承担虚拟交换/流表卸载，云厂商（含 Google）部署。"
+}

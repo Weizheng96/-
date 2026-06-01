@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rm -rf \"候选\")",
+      "Bash(rm -f *.md)"
+    ]
+  }
+}

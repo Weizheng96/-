@@ -1,0 +1,10 @@
+{
+  "nn": "04",
+  "slug": "04-amd-pensando-dsc",
+  "type": "产品",
+  "name": "Pensando DSC DPU 流表卸载",
+  "organization": "AMD",
+  "hit_features_initial": "F1, F2, F4, F5",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：AMD Pensando DSC DPU\n- vendor：AMD\n- 命中 F#（初判）：F1, F2, F4, F5\n- 公开度：中\n- 一句话定位：P4 可编程 DPU，做有状态流表卸载，嵌入企业存储/云网络。"
+}

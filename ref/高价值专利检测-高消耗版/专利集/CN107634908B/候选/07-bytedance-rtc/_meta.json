@@ -1,0 +1,10 @@
+{
+  "nn": "07",
+  "slug": "07-bytedance-rtc",
+  "type": "产品",
+  "name": "火山引擎 veRTC",
+  "organization": "字节跳动",
+  "hit_features_initial": "F1, F2, F3, F4, F5",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：火山引擎 veRTC\n- 组织：字节跳动\n- 命中 F#（初判）：F1, F2, F3, F4, F5\n- 公开度：中\n- 一句话定位：字节跳动对外 RTC，飞书会议 / 抖音直播连麦底层复用。"
+}

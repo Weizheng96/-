@@ -1,0 +1,10 @@
+{
+  "nn": "09",
+  "slug": "09-netease-yunxin",
+  "type": "产品",
+  "name": "网易云信 NERTC",
+  "organization": "网易",
+  "hit_features_initial": "F1, F2, F3, F4, F5",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：网易云信 NERTC\n- 组织：网易\n- 命中 F#（初判）：F1, F2, F3, F4, F5\n- 公开度：中\n- 一句话定位：网易对外 RTC SDK，自家游戏 + 在线教育复用。"
+}
