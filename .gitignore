@@ -18,3 +18,6 @@ llm_apikey.json
 
 # 本地 agent 工作目录
 patent_agent/
+
+# 评测标准答案 — dogfood 基准，本地保留但不入库
+正确答案.md
