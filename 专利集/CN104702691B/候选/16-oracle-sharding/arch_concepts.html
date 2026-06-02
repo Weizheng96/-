@@ -1,0 +1,1232 @@
+<!DOCTYPE html
+  SYSTEM "about:legacy-compat">
+<html xml:lang="en-us" lang="en-us">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <meta name="DC.Type" content="topic">
+      <meta name="DC.Title" content="Oracle Sharding Architecture and Concepts">
+      <meta name="abstract" content>
+      <meta name="description" content>
+      <meta name="DC.subject" content="Oracle Sharding, partitions, chunks, tablespaces, system-managed, method, user-defined, composite sharding, subpartitions, duplicated objects, high availability, replication, with Oracle Data Guard">
+      <meta name="keywords" content="Oracle Sharding, partitions, chunks, tablespaces, system-managed, method, user-defined, composite sharding, subpartitions, duplicated objects, high availability, replication, with Oracle Data Guard">
+      <meta name="DC.Creator" content="Roopam Jain">
+      <meta name="DC.Creator" content="Shailesh Dwivedi">
+      <meta name="DC.Creator" content="Jean-Francois Verrier">
+      <meta name="DC.Creator" content="Prakash Jashnani">
+      <meta name="DC.Creator" content="Pankaj Chandiramani">
+      <meta name="DC.Creator" content="Mark Dilman">
+      <meta name="DC.Creator" content="Nourdine Benadjaoud">
+      <meta name="DC.Creator" content="Rennie Sreekumar Ranjit Kumar">
+      <meta name="DC.Creator" content="David Colello">
+      <meta name="DC.Creator" content="Steve Ball">
+      <meta name="DC.Creator" content="Abhishek Srivastava">
+      <meta name="DC.Creator" content="Sebastian Binek">
+      <meta name="DC.Creator" content="Shahab Hamid">
+      <meta name="DC.Creator" content="Virginia Beecher">
+      <meta name="DC.Publisher" content="November2025">
+      <meta name="DC.Format" content="XHTML">
+      <meta name="DC.Identifier" content="GUID-9DC0048A-2D6E-4759-BA80-10F8855E6871">
+      <meta name="DC.Language" content="en-US">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="abstract" content>
+      <meta name="description" content>
+      <title>Oracle Sharding Architecture and Concepts</title>
+      <meta property="og:site_name" content="Oracle Help Center">
+      <meta property="og:title" content="Using Oracle Sharding">
+      <meta property="og:description" content>
+      <link rel="stylesheet" href="/sp_common/book-template/ohc-book-template/css/book.css">
+      <link rel="shortcut icon" href="/sp_common/book-template/ohc-common/img/favicon.ico">
+      <meta name="application-name" content="Using Oracle Sharding">
+      <meta name="generator" content="DITA Open Toolkit version 1.8.5 (Mode = doc)">
+      <meta name="plugin" content="SP_docbuilder HTML plugin release 18.2.2">
+      <link rel="alternate" href="oracle-globally-distributed-ai-database-guide.pdf" title="PDF File" type="application/pdf">
+      <link rel="schema.dcterms" href="http://purl.org/dc/terms/">
+      <meta name="dcterms.created" content="2025-11-26T13:52:46-08:00">
+      
+      <meta name="dcterms.dateCopyrighted" content="2018, 2025">
+      <meta name="dcterms.category" content="database">
+      <meta name="dcterms.identifier" content="E87088-16">
+      
+      <meta name="dcterms.product" content="en/database/oracle/oracle-database/19">
+      
+      <link rel="prev" href="sharding-overview.html" title="Previous" type="text/html">
+      <link rel="next" href="security-oracle-sharding-environment-19c-only1.html" title="Next" type="text/html">
+      <script>
+        document.write('<style type="text/css">');
+        document.write('body > .noscript, body > .noscript ~ * { visibility: hidden; }');
+        document.write('</style>');
+     </script>
+      <script data-main="/sp_common/book-template/ohc-book-template/js/book-config" src="/sp_common/book-template/requirejs/require.js"></script>
+      <script>
+            if (window.require === undefined) {
+                document.write('<script data-main="sp_common/book-template/ohc-book-template/js/book-config" src="sp_common/book-template/requirejs/require.js"><\/script>');
+                document.write('<link href="sp_common/book-template/ohc-book-template/css/book.css" rel="stylesheet"/>');
+            }
+        </script>
+      <script type="application/json" id="ssot-metadata">{"primary":{"category":{"short_name":"database","element_name":"Database","display_in_url":true},"suite":{"short_name":"oracle","element_name":"Oracle","display_in_url":true},"product_group":{"short_name":"not-applicable","element_name":"Not applicable","display_in_url":false},"product":{"short_name":"oracle-database","element_name":"Oracle Database","display_in_url":true},"release":{"short_name":"19","element_name":"Release 19","display_in_url":true}}}</script>
+      
+    <meta name="dcterms.title" content="Oracle Globally Distributed AI Database Guide">
+    <meta name="dcterms.release" content="Release 19">
+    <meta name="dcterms.isVersionOf" content="SHARD">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Oracle Sharding Architecture and Concepts","description":"","datePublished":"2025-11-26 CST","dateModified":"2025-11-26 CST"}</script>
+    <script>window.ohcglobal || document.write('<script src="/en/dcommon/js/global.js">\x3C/script>')</script></head>
+   <body>
+      <div class="noscript alert alert-danger text-center" role="alert">
+         <a href="sharding-overview.html" class="pull-left"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>Previous</a>
+         <a href="security-oracle-sharding-environment-19c-only1.html" class="pull-right">Next<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
+         <span class="fa fa-exclamation-triangle" aria-hidden="true"></span> JavaScript must be enabled to correctly display this content
+        
+      </div>
+      <article class>
+         <a id="GUID-9DC0048A-2D6E-4759-BA80-10F8855E6871" name="GUID-9DC0048A-2D6E-4759-BA80-10F8855E6871"></a>
+         
+         <h2 id="SHARD-GUID-9DC0048A-2D6E-4759-BA80-10F8855E6871" class="sect2"><span class="enumeration_chapter">2 </span>Oracle Sharding Architecture and
+        Concepts
+         </h2>
+         <div class="ind">
+            <div>
+               <p></p>
+               <p></p>
+            </div>
+            <div class="sect2"><a id="GUID-3D41F762-BE04-486D-8018-C7A210D809F9" name="GUID-3D41F762-BE04-486D-8018-C7A210D809F9"></a><h3 id="SHARD-GUID-3D41F762-BE04-486D-8018-C7A210D809F9" class="sect3">Components of the Oracle Sharding Architecture</h3>
+               <div>
+                  <p>The following figure illustrates the major architectural components of
+                Oracle Sharding, which are described in the topics that follow.</p>
+                  <div class="figure" id="GUID-3D41F762-BE04-486D-8018-C7A210D809F9__GUID-65F25F7E-0A7B-4DC2-8B45-21DE4055DFA2">
+                     <p class="titleinfigure">Figure 2-1 Oracle Sharding Architecture</p><img src="img/admin_3v_143d.png" alt="Description of Figure 2-1 follows" title="Description of Figure 2-1 follows" longdesc="img_text/admin_3v_143d.html"><br><a href="img_text/admin_3v_143d.html">Description of "Figure 2-1 Oracle Sharding Architecture"</a></div>
+               </div>
+               <div class="sect3"><a id="GUID-AD61049F-4A94-4298-A8CD-8F2536399CAD" name="GUID-AD61049F-4A94-4298-A8CD-8F2536399CAD"></a><h4 id="SHARD-GUID-AD61049F-4A94-4298-A8CD-8F2536399CAD" class="sect4">Sharded Database and
+        Shards</h4>
+                  <div>
+                     <p>A&nbsp;<strong class="term">sharded database</strong>&nbsp;is a collection
+        of&nbsp;<strong class="term">shards</strong>.
+                     </p>
+                     <p>A sharded database is a single logical Oracle Database that is horizontally
+            partitioned across a pool of physical Oracle Databases (shards) that share no hardware
+            or software.</p>
+                     <p>Each shard in the sharded database is an independent Oracle Database
+            instance that hosts subset of a sharded database's data. Shared storage is not required
+            across the shards.</p>
+                     <p>Shards can be hosted anywhere an Oracle database can be hosted. Oracle
+            Sharding supports all of the deployment choices for a shard that you would expect with a
+            single instance or clustered Oracle Database, including on-premises, any cloud platform,
+            Oracle Exadata Database Machine, virtual machines, and so on.</p>
+                     <p>Shards can all be placed in one region or can be placed in different regions.
+            A region in the context of Oracle Sharding represents a data center or multiple data
+            centers that are in close network proximity.</p>
+                     <p>Shards are replicated for high availability and disaster recovery with
+            Oracle Data Guard. For high availability, Data Guard standby shards can be placed in the
+            same region where the primary shards are placed. For disaster recovery, the standby
+            shards can be located in another region.</p>
+                     <div class="infoboxnote" id="GUID-AD61049F-4A94-4298-A8CD-8F2536399CAD__GUID-61626119-CFFB-47A7-A9EC-9069B0E41749">
+                        <p class="notep1">Note:</p><span>Oracle GoldenGate replication support for Oracle Sharding High
+                    Availability is deprecated in Oracle Database 21c. </span></div>
+                  </div>
+               </div>
+               <div class="sect3"><a id="GUID-5D5E33CA-0770-4659-8D1F-888DA552366B" name="GUID-5D5E33CA-0770-4659-8D1F-888DA552366B"></a><h4 id="SHARD-GUID-5D5E33CA-0770-4659-8D1F-888DA552366B" class="sect4">Shard Catalog</h4>
+                  <div>
+                     <p>A <strong class="term">shard catalog</strong> is an Oracle Database that supports automated
+        shard deployment, centralized management of a sharded database, and multi-shard
+        queries.
+                     </p>
+                     <p>A shard catalog serves following purposes </p>
+                     <ul style="list-style-type: disc;" id="GUID-5D5E33CA-0770-4659-8D1F-888DA552366B__UL_VR1_W5R_CMB">
+                        <li>
+                           
+                           <p>Serves as an administrative server for entire shareded database</p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Stores a gold copy of the database schema</p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Manages multi-shard queries with a multi-shard query coordinator</p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Stores a gold copy of duplicated table data</p>
+                           
+                        </li>
+                     </ul>
+                     <p>The shard catalog is a special-purpose Oracle Database that is a persistent
+            store for sharded database configuration data and plays a key role in centralized
+            management of a sharded database. All configuration changes, such as adding and removing
+            shards and global services, are initiated on the shard catalog. All DDLs in a sharded
+            database are executed by connecting to the shard catalog. </p>
+                     <p>The shard catalog also contains the master copy of all duplicated tables in
+            a sharded database.&nbsp;The shard catalog uses materialized views to automatically replicate
+            changes to duplicated tables in all shards.&nbsp;The shard catalog database also acts as a
+            query coordinator used to process multi-shard queries and queries that do not specify a
+            sharding key.</p>
+                     <p>Multiple shard catalogs can be deployed for high availability purposes.
+            Using Oracle Data Guard for shard catalog high availability is a recommended best
+            practice.</p>
+                     <p>At run time, unless the application uses key-based queries, the shard
+            catalog is required to direct queries to the shards.&nbsp;Sharding key-based transactions
+            continue to be routed and executed by the sharded database and are unaffected by a
+            catalog outage.</p>
+                     <p>During the brief period required to complete an automatic failover to a
+            standby shard catalog, downtime affects the ability to perform maintenance operations,
+            make schema changes, update duplicated tables, run multi-shard queries, or perform other
+            operations like add shard, move chunks, and so on, which induce topology change.</p>
+                  </div>
+               </div>
+               <div class="sect3"><a id="GUID-3CE236B1-7AFC-4B01-8059-141F9018F0A3" name="GUID-3CE236B1-7AFC-4B01-8059-141F9018F0A3"></a><h4 id="SHARD-GUID-3CE236B1-7AFC-4B01-8059-141F9018F0A3" class="sect4">Shard Director</h4>
+                  <div>
+                     <p>Shard directors are network listeners that enable high performance
+        connection routing based on a sharding key.</p>
+                     <p>Oracle Database 12<span class="italic">c</span> introduced the global service manager to route
+            connections based on database role, load, replication lag, and locality. In support of
+            Oracle Sharding, global service managers support routing of connections based on data
+            location. A global service manager, in the context of Oracle Sharding, is known as a
+            shard director.
+                     </p>
+                     <p>A shard director is a specific implementation of a global service manager
+            that acts as a regional listener for clients that connect to a sharded database. The
+            director maintains a current topology map of the sharded database. Based on the sharding
+            key passed during a connection request, the director routes the connections to the
+            appropriate shard.</p>
+                     <p>For a typical sharded database, a set of shard directors are installed on
+            dedicated low-end commodity servers in each region. To achieve high availability and
+            scalability, deploy multiple shard directors. You can deploy up to 5 shard directors in
+            a given region.</p>
+                     <p>The following are the key capabilities of shard directors:</p>
+                     <ul style="list-style-type: disc;" id="GUID-3CE236B1-7AFC-4B01-8059-141F9018F0A3__UL_X2Y_KWR_CMB">
+                        <li>
+                           
+                           <p>Maintain runtime data about sharded database configuration and
+                    availability of shards</p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Measure network latency between its own and other regions</p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Act as a regional listener for clients to connect to a sharded
+                    database</p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Manage global services</p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Perform connection load balancing</p>
+                           
+                        </li>
+                     </ul>
+                  </div>
+               </div>
+               <div class="sect3"><a id="GUID-C9393B55-1BEE-4A65-921C-4163E78CF736" name="GUID-C9393B55-1BEE-4A65-921C-4163E78CF736"></a><h4 id="SHARD-GUID-C9393B55-1BEE-4A65-921C-4163E78CF736" class="sect4">Global Service</h4>
+                  <div>
+                     <p>A <strong class="term">global service</strong> is a database service that is use to access
+        data in a sharded database.
+                     </p>
+                     <p>A global service is an extension to the notion of the traditional database
+            service. All of the properties of traditional database services are supported for global
+            services. For sharded databases, additional properties are set for global services — for
+            example, database role, replication lag tolerance, region affinity between clients and
+            shards, and so on. For a read-write transactional workload, a single global service is
+            created to&nbsp;access data from any primary shard in a sharded database. For highly
+            available shards using Active Data Guard,&nbsp;a separate read-only global service can be
+            created.</p>
+                  </div>
+               </div>
+            </div>
+            <div class="sect2"><a id="GUID-3D0475BE-3F6F-4D2E-8B2E-B1161DBB1A78" name="GUID-3D0475BE-3F6F-4D2E-8B2E-B1161DBB1A78"></a><h3 id="SHARD-GUID-3D0475BE-3F6F-4D2E-8B2E-B1161DBB1A78" class="sect3">Partitions, Tablespaces, and Chunks</h3>
+               <div>
+                  <p>Distribution of partitions across shards is achieved by creating partitions in tablespaces that reside on different shards.</p>
+                  <p>Each partition of a sharded table is stored in a separate tablespace, making the tablespace the unit of data distribution in an SDB.</p>
+                  <p>As described in <a href="architecture-and-concepts1.html#GUID-4E2E01CA-5103-4F4D-AB2A-79527A62B2E7" title="A sharded table family is a set of tables that are sharded in the same way. Often there is a parent-child relationship between database tables with a referential constraint in a child table (foreign key) referring to the primary key of the parent table.">Sharded Table Family</a>, to minimize the number of multi-shard joins, corresponding partitions of all tables in a table family are always stored in the same shard. This is guaranteed when tables in a table family are created in the same set of distributed tablespaces as shown in the syntax examples where tablespace set <code class="codeph">ts1</code> is used for all tables.
+                  </p>
+                  <p>However, it is possible to create different tables from a table family in different
+            tablespace sets, for example the Customers table in tablespace set <code class="codeph">ts1</code>
+            and Orders in tablespace set <code class="codeph">ts2</code>. In this case, it must be guaranteed
+            that the tablespace that stores partition 1 of Customers always resides in the same
+            shard as the tablespace that stores partition 1 of Orders. 
+                  </p>
+                  <p>To support this functionality, a set of corresponding partitions from all of
+            the tables in a table family, called a <span class="italic">chunk</span>, is formed. A chunk contains a
+            single partition from each table of a table family. This guarantees that related data
+            from different sharded tables can be moved together. In other words, a chunk is the unit
+            of data migration between shards. In system-managed and composite sharding, the number
+            of chunks within each shard is specified when the sharded database is created. In
+            user-defined sharding, the total number of chunks is equal to the number of
+            partitions.
+                  </p>
+                  <p>A chunk that contains corresponding partitions from the tables of Cutomers-Orders-LineItems schema is shown in the following figure.</p>
+                  <div class="figure" id="GUID-3D0475BE-3F6F-4D2E-8B2E-B1161DBB1A78__GUID-46F9193B-A26D-4960-AD7B-843C40D122D1">
+                     <p class="titleinfigure">Figure 2-2 Chunk as a Set of Partitions</p><img src="img/admin_3v_125a.png" alt="Description of Figure 2-2 follows" title="Description of Figure 2-2 follows" longdesc="img_text/admin_3v_125a.html"><br><a href="img_text/admin_3v_125a.html">Description of "Figure 2-2 Chunk as a Set of Partitions"</a></div>
+                  <p>Each shard contains multiple chunks as shown in the following figure.</p>
+                  <div class="figure" id="GUID-3D0475BE-3F6F-4D2E-8B2E-B1161DBB1A78__GUID-FB1AEC5A-B050-4497-94EB-757F2E1C6E40">
+                     <p class="titleinfigure">Figure 2-3 Contents of a Shard</p><img src="img/admin_3v_126a.png" alt="Description of Figure 2-3 follows" title="Description of Figure 2-3 follows" longdesc="img_text/admin_3v_126a.html"><br><a href="img_text/admin_3v_126a.html">Description of "Figure 2-3 Contents of a Shard"</a></div>
+                  <p>In addition to sharded tables, a shard can also contain one or more duplicated tables. Duplicated tables cannot be stored in tablespaces that are used for sharded tables.</p>
+               </div>
+            </div>
+            <div class="sect2"><a id="GUID-1C1C26C4-B407-4343-9330-C35C22C21AF9" name="GUID-1C1C26C4-B407-4343-9330-C35C22C21AF9"></a><h3 id="SHARD-GUID-1C1C26C4-B407-4343-9330-C35C22C21AF9" class="sect3">Tablespace Sets</h3>
+               <div>
+                  <p>Oracle Sharding creates and manages tablespaces as a unit called a
+            <code class="codeph">TABLESPACE SET</code>.
+                  </p>
+                  <p>System-managed and composite sharding use <code class="codeph">TABLESPACE SET</code>, while
+            user-defined sharding uses regular tablespaces.
+                  </p>
+                  <p>A tablespace is a logical unit of data distribution in a sharded database. The
+            distribution of partitions across shards is achieved by automatically creating
+            partitions in tablespaces that reside on different shards. To minimize the number of
+            multi-shard joins, the corresponding partitions of related tables are always stored in
+            the same shard. Each partition of a sharded table is stored in a separate
+            tablespace.</p>
+                  <p>The <code class="codeph">PARTITIONS AUTO</code> clause specifies that the number of partitions
+            should be automatically determined. This type of hashing provides more flexibility and
+            efficiency in migrating data between shards, which is important for elastic
+            scalability.
+                  </p>
+                  <p>The number of tablespaces created per tablespace set is determined based on the number of
+            chunks that were defined for the shardspace during deployment.</p>
+                  <div class="infoboxnote" id="GUID-1C1C26C4-B407-4343-9330-C35C22C21AF9__GUID-A6E8D269-524F-453D-8E43-2730AEAF190B">
+                     <p class="notep1">Note:</p>
+                     
+                     <p>Only Oracle Managed Files are supported by tablespace sets.</p>
+                     
+                     <p>Individual tablespaces cannot be dropped or altered independently of the
+                entire tablespace set.</p>
+                     
+                     <p><code class="codeph">TABLESPACE SET</code> cannot be used with the user-defined
+                sharding method.
+                     </p>
+                     
+                  </div>
+               </div>
+            </div>
+            <div class="sect2"><a id="GUID-3B07D91C-CEAA-4170-A94B-ACF47BEE617B" name="GUID-3B07D91C-CEAA-4170-A94B-ACF47BEE617B"></a><h3 id="SHARD-GUID-3B07D91C-CEAA-4170-A94B-ACF47BEE617B" class="sect3">Sharding Methods</h3>
+               <div>
+                  <p>The following topics discuss sharding methods supported by Oracle Sharding,
+        how to choose a method, and how to use subpartitioning.</p>
+               </div>
+               <div class="sect3"><a id="GUID-37F20817-EFD5-400B-A082-41171C0B6D1C" name="GUID-37F20817-EFD5-400B-A082-41171C0B6D1C"></a><h4 id="SHARD-GUID-37F20817-EFD5-400B-A082-41171C0B6D1C" class="sect4">System-Managed Sharding</h4>
+                  <div>
+                     <p>System-managed sharding is a sharding method which does not require the user to specify mapping of data to shards. Data is automatically distributed across shards using partitioning by consistent hash. The partitioning algorithm evenly and randomly distributes data across shards.</p>
+                     <p>The distribution used in system-managed sharding is intended to eliminate hot spots and provide uniform performance across shards. Oracle Sharding automatically maintains the balanced distribution of chunks when shards are added to or removed from an SDB.</p>
+                     <p>Consistent hash is a partitioning strategy commonly used in scalable distributed systems. It is different from traditional hash partitioning. With traditional hashing, the bucket number is calculated as <code class="codeph">HF(key) % N</code> where HF is a hash function and N is the number of buckets. This approach works fine if N is constant, but requires reshuffling of all data when N changes.
+                     </p>
+                     <p>More advanced algorithms, such as linear hashing, do not require rehashing of the entire table to add a hash bucket, but they impose restrictions on the number of buckets, such as the number of buckets can only be a power of 2, and on the order in which the buckets can be split.</p>
+                     <p>The implementation of consistent hashing used in Oracle Sharding avoids these limitations by dividing the possible range of values of the hash function (for example. from 0 to 2<sup>32</sup>) into a set of N adjacent intervals, and assigning each interval to a chunk , as shown in the figure below. In this example, the SDB contains 1024 chunks, and each chunk gets assigned a range of 2<sup>22  </sup>hash values. Therefore partitioning by consistent hash is essentially partitioning by the range of hash values.
+                     </p>
+                     <div class="figure" id="GUID-37F20817-EFD5-400B-A082-41171C0B6D1C__GUID-C7895345-3AAF-40F1-AA8D-08E52E8F4593">
+                        <p class="titleinfigure">Figure 2-4 Ranges of Hash Values Assigned to Chunks</p><img src="img/admin_3v_127a.png" alt="Description of Figure 2-4 follows" title="Description of Figure 2-4 follows" longdesc="img_text/admin_3v_127a.html"><br><a href="img_text/admin_3v_127a.html">Description of "Figure 2-4 Ranges of Hash Values Assigned to Chunks"</a></div>
+                     <p>Assuming that all of the shards have the same computing power, an equal number of chunks is assigned to each shard in the SDB. For example, if 1024 chunks are created in an SDB that contains 16 shards, each shard will contain 64 chunks.</p>
+                     <p>In the event of resharding, when shards are added to or removed from an SDB, some of the chunks are relocated among the shards to maintain an even distribution of chunks across the shards. The contents of the chunks does not change during this process; no rehashing takes place.</p>
+                     <p>When a chunk is split, its range of hash values is divided into two ranges, but nothing needs to be done for the rest of the chunks. Any chunk can be independently split at any time.</p>
+                     <p>All of the components of an SDB that are involved in directing connection requests to shards maintain a routing table that contains a list of chunks hosted by each shard and ranges of hash values associated with each chunk. To determine where to route a particular database request, the routing algorithm applies the hash function to the provided value of the sharding key, and maps the calculated hash value to the appropriate chunk, and then to a shard that contains the chunk.</p>
+                     <p>The number of chunks in an SDB with system-managed sharding can be specified in the GDSCTL command, <code class="codeph">CREATE SHARDCATALOG</code>. If not specified, the default value, 120 chunks per shard, is used. Once an SDB is deployed, the number of chunks can only be changed by splitting chunks.
+                     </p>
+                     <p>Before creating a sharded table partitioned by consistent hash, a set of tablespaces (one tablespace per chunk) has to be created to store the table partitions. The tablespaces are automatically created by executing the SQL statement, <code class="codeph">CREATE TABLESPACE SET</code>. 
+                     </p>
+                     <p>All of the tablespaces in a tablespace set have the same physical attributes and can only contain Oracle Managed Files (OMF). In its simplest form, the <code class="codeph">CREATE TABLESPACE SET</code> statement has only one parameter, the name of the tablespace set, for example:
+                     </p><pre class="pre codeblock"><code>CREATE TABLESPACE SET ts1;</code></pre><p>In this case each tablespace in the set contains a single OMF file with default attributes. To customize tablespace attributes, the <code class="codeph">USING TEMPLATE</code> clause (shown in the example below) is added to the statement. The <code class="codeph">USING TEMPLATE</code> clause specifies attributes that apply to each tablespace in the set.  
+                     </p><pre class="pre codeblock"><code>CREATE TABLESPACE SET ts1
+USING TEMPLATE
+( 
+ DATAFILE SIZE 10M
+ EXTENT MANAGEMENT LOCAL UNIFORM SIZE 256K
+ SEGMENT SPACE MANAGEMENT AUTO
+ ONLINE
+)
+;</code></pre><p>After a tablespace set has been created, a table partitioned by consistent hash can be created with partitions stored in the tablespaces that belong to the set. The <code class="codeph">CREATE TABLE</code> statement might look as follows:
+                     </p><pre class="pre codeblock"><code>CREATE SHARDED TABLE customers 
+( cust_id     NUMBER NOT NULL
+, name        VARCHAR2(50)
+, address     VARCHAR2(250) 
+, location_id VARCHAR2(20)
+, class       VARCHAR2(3)
+, signup      DATE
+, CONSTRAINT cust_pk PRIMARY KEY(cust_id)
+)
+PARTITION BY CONSISTENT HASH (cust_id)
+PARTITIONS AUTO
+TABLESPACE SET ts1
+;</code></pre><p><code class="codeph">PARTITIONS AUTO</code> in this statement means that the number of partitions is automatically set to the number of tablespaces in the tablespace set <code class="codeph">ts1</code> (which is equal to the number of chunks) and each partition will be stored in a separate tablespace. 
+                     </p>
+                     <p>Each tablespace in a tablespace set belongs to a distinct chunk. In the other words, a chunk can contain only one tablespace from a given tablespace set. However, the same tablespace set can be used for multiple tables that belong to the same table family. In this case, each tablespace in the set will store multiple partitions, one from each table. </p>
+                     <p>Alternatively, each table in a table family can be stored in a separate tablespace set. In this case, a chunk contains multiple tablespaces, one from each tablespace set with each tablespace storing a single partition.</p>
+                     <p>The following figure illustrates the relationship between partitions, tablespaces, and shards for a use case with a single sharded table. In this case, each chunk contains a single tablespace, and each tablespace stores a single partition.</p>
+                     <div class="figure" id="GUID-37F20817-EFD5-400B-A082-41171C0B6D1C__GUID-BFB73823-F61F-4BBA-A484-83DE345F4875">
+                        <p class="titleinfigure">Figure 2-5 System-Managed Sharding</p><img src="img/admin_3v_128a.png" alt="Description of Figure 2-5 follows" title="Description of Figure 2-5 follows" longdesc="img_text/admin_3v_128a.html"><br><a href="img_text/admin_3v_128a.html">Description of "Figure 2-5 System-Managed Sharding"</a></div>
+                     <div class="infoboxnote" id="GUID-37F20817-EFD5-400B-A082-41171C0B6D1C__GUID-13087058-EABF-44FF-A3C0-99844EC01E4F">
+                        <p class="notep1">Note:</p>The sharding method is specified in the <code class="codeph">GDSCTL CREATE SHARDCATALOG</code> command and cannot be changed later.
+                     </div>
+                  </div>
+               </div>
+               <div class="sect3"><a id="GUID-DA34E219-A601-40B3-A6E4-6545CA2EBB0B" name="GUID-DA34E219-A601-40B3-A6E4-6545CA2EBB0B"></a><h4 id="SHARD-GUID-DA34E219-A601-40B3-A6E4-6545CA2EBB0B" class="sect4">User-Defined Sharding</h4>
+                  <div>
+                     <p>User-defined sharding lets you explicitly specify the mapping of data to individual shards. It is used when, because of performance, regulatory, or other reasons, certain data needs to be stored on a particular shard, and the administrator needs to have full control over moving data between shards.</p>
+                     <p>For a user-defined sharded database, two replication schemes are supported: Oracle Data Guard or Oracle Active Data Guard. User-defined sharding is not supported where Oracle GoldenGate is used as the replication method.</p>
+                     <p>Another advantage of user-defined sharding is that, in case of planned or unplanned outage of a shard, the user knows exactly what data is not available. The disadvantage of user-defined sharding is the need for the database administrator to monitor and maintain balanced distribution of data and workload across shards.</p>
+                     <p>With user-defined sharding, a sharded table can be partitioned by range or list. The <code class="codeph">CREATE TABLE</code> syntax for a sharded table is not very different from the syntax for a regular table, except for the requirement that each partition should be stored in a separate tablespace.
+                     </p><pre class="pre codeblock"><code> CREATE SHARDED TABLE accounts
+( id             NUMBER
+, account_number NUMBER
+, customer_id    NUMBER
+, branch_id      NUMBER
+, state          VARCHAR(2) NOT NULL
+, status         VARCHAR2(1)
+)
+PARTITION BY LIST (state)
+( PARTITION p_northwest VALUES ('OR', 'WA') TABLESPACE ts1
+, PARTITION p_southwest VALUES ('AZ', 'UT', 'NM') TABLESPACE ts2
+, PARTITION p_northcentral VALUES ('SD', 'WI') TABLESPACE ts3
+, PARTITION p_southcentral VALUES ('OK', 'TX') TABLESPACE ts4
+, PARTITION p_northeast VALUES ('NY', 'VM', 'NJ') TABLESPACE ts5
+, PARTITION p_southeast VALUES ('FL', 'GA') TABLESPACE ts6
+)
+;</code></pre><p>There is no tablespace set for user-defined sharding. Each tablespace has to be created individually and explicitly associated with a shardspace. A <span class="italic">shardspace </span>is set of shards that store data that corresponds to a range or list of key values.
+                     </p>
+                     <p>In user-defined sharding, a shardspace consists of a shard or a set of fully replicated shards. See <a href="architecture-and-concepts1.html#GUID-C668B8C7-0F94-4F85-B8E1-A6B91548BBB6" title="Oracle Sharding is integrated with Oracle Database replication technologies for high availability and disaster recovery at the shard level.">Shard-Level High Availability</a> for details about replication with user-defined sharding. For simplicity, assume that each shardspace consists of a single shard.
+                     </p>
+                     <p>The following statements can be used to create the tablespaces for the accounts table in the example above.</p><pre class="pre codeblock"><code>CREATE TABLESPACE tbs1 IN SHARDSPACE west;
+CREATE TABLESPACE tbs2 IN SHARDSPACE west;
+
+CREATE TABLESPACE tbs3 IN SHARDSPACE central;
+CREATE TABLESPACE tbs4 IN SHARDSPACE central;
+
+CREATE TABLESPACE tbs5 IN SHARDSPACE east;
+CREATE TABLESPACE tbs6 IN SHARDSPACE east;</code></pre><p>Before executing the <code class="codeph">CREATE TABLESPACE</code> statements, the shardspaces must be created and populated with shards. For example, you can use the following GDSCTL commands:
+                     </p><pre class="pre codeblock"><code>ADD SHARDSPACE -SHARDSPACE east
+ADD SHARDSPACE -SHARDSPACE central
+ADD SHARDSPACE -SHARDSPACE west
+ADD SHARD &#x2013;CONNECT shard-1 &#x2013;SHARDSPACE west;
+ADD SHARD &#x2013;CONNECT shard-2 &#x2013;SHARDSPACE central;
+ADD SHARD &#x2013;CONNECT shard-3 &#x2013;SHARDSPACE east;</code></pre><p>The following figure shows the mapping of partitions to tablespaces, and tablespaces to shards, for the <code class="codeph">accounts</code> table in the previous examples.
+                     </p>
+                     <div class="figure" id="GUID-DA34E219-A601-40B3-A6E4-6545CA2EBB0B__GUID-5093677C-5703-4EDC-8CF2-CC2A5EEB6790">
+                        <p class="titleinfigure">Figure 2-6 User-Defined Sharding</p><img src="img/admin_3v_129a.png" alt="Description of Figure 2-6 follows" title="Description of Figure 2-6 follows" longdesc="img_text/admin_3v_129a.html"><br><a href="img_text/admin_3v_129a.html">Description of "Figure 2-6 User-Defined Sharding"</a></div>
+                     <p>As with system-managed sharding, tablespaces created for user-defined sharding are assigned to chunks. However, no chunk migration is automatically started when a shard is added to the SDB. The user needs to execute the GDSCTL <code class="codeph">MOVE CHUNK</code> command for each chunk that needs to be migrated. 
+                     </p>
+                     <p>The GDSCTL <code class="codeph">SPLIT CHUNK</code> command, which is used to split a chunk in the middle of the hash range for system-managed sharding, is not supported for user-defined sharding. You must use the <code class="codeph">ALTER TABLE SPLIT PARTITION</code> statement to split a chunk.
+                     </p>
+                     <div class="infoboxnote" id="GUID-DA34E219-A601-40B3-A6E4-6545CA2EBB0B__GUID-C76F7CAB-C095-408A-AFC2-AA811F6E4A2A">
+                        <p class="notep1">Note:</p>The sharding method is specified in the <code class="codeph">GDSCTL CREATE SHARDCATALOG</code> command and cannot be changed later.
+                     </div>
+                  </div>
+               </div>
+               <div class="sect3"><a id="GUID-1FCC7F96-59BF-4C8D-B71A-6A307D7283EA" name="GUID-1FCC7F96-59BF-4C8D-B71A-6A307D7283EA"></a><h4 id="SHARD-GUID-1FCC7F96-59BF-4C8D-B71A-6A307D7283EA" class="sect4">Composite Sharding</h4>
+                  <div>
+                     <p>The composite sharding method allows you to create multiple shardspaces for different subsets of data in a table partitioned by consistent hash. A <span class="italic">shardspace</span> is set of shards that store data that corresponds to a range or list of key values.
+                     </p>
+                     <p>System-managed sharding uses partitioning by consistent hash to randomly distribute data across shards. This provides better load balancing compared to user-defined sharding that uses partitioning by range or list. However, system-managed sharding does not give the user any control on assignment of data to shards.</p>
+                     <p>When sharding by consistent hash on a primary key, there is often a requirement to differentiate subsets of data within an SDB in order to store them in different geographic locations, allocate to them different hardware resources, or configure high availability and disaster recovery differently. Usually this differentiation is done based on the value of another (non-primary) column, for example, customer location or a class of service.</p>
+                     <p>Composite sharding is a combination of user-defined and system-managed sharding which, when required, provides benefits of both methods. With composite sharding, data is first partitioned by list or range across multiple shardspaces, and then further partitioned by consistent hash across multiple shards in each shardspace. The two levels of sharding make it possible to automatically maintain balanced distribution of data across shards in each shardspace, and, at the same time, partition data across shardspaces.</p>
+                     <p>For example, suppose you want to allocate three shards hosted on faster servers to “gold” customers and four shards hosted on slower machines to “silver” customers. Within each set of shards, customers have to be distributed using partitioning by consistent hash on customer ID.</p>
+                     <div class="figure" id="GUID-1FCC7F96-59BF-4C8D-B71A-6A307D7283EA__GUID-308B8722-D0E6-4C9C-93E3-B6157A115686">
+                        <p class="titleinfigure">Figure 2-7 Composite Sharding</p><img src="img/admin_3v_131a.png" alt="Description of Figure 2-7 follows" title="Description of Figure 2-7 follows" longdesc="img_text/admin_3v_131a.html"><br><a href="img_text/admin_3v_131a.html">Description of "Figure 2-7 Composite Sharding"</a></div>
+                     <p>The following commands would be issued to create this configuration. Note that two
+      shardspaces need to be created for this configuration.</p><pre class="pre codeblock"><code>create SHARDCATALOG -sharding composite -database 
+     <span class="variable" translate="no">cat_host</span>:1521/<span class="variable" translate="no">cat_pdb.domain</span> -user gsmcatuser/<span class="variable" translate="no">gsmcatuser_pwd</span> 
+     -region dc1
+ 
+add gsm -gsm gsm1 -listener 1540 -catalog <span class="variable" translate="no">cat_host</span>:1521/<span class="variable" translate="no">cat_pdb.domain</span>
+     -region dc1 -pwd <span class="variable" translate="no">gsmcatuser_pwd</span>
+gdsctl start gsm
+ 
+add shardspace -shardspace shspace1 -chunks 60
+add shardspace -shardspace shspace2 -chunks 120
+ 
+ADD SHARDGROUP -shardgroup gold -shardspace shspace1 -region dc1 -deploy_as 
+     primary
+ADD SHARDGROUP -shardgroup silver -shardspace shspace2 -region dc1 -deploy_as 
+     primary
+ 
+add CDB -connect <span class="variable" translate="no">cdb1_host</span>:1521/<span class="variable" translate="no">cdb1.domain</span> -pwd <span class="variable" translate="no">gsmrootuser_pwd</span>
+add CDB -connect <span class="variable" translate="no">cdb2_host</span>:1521/<span class="variable" translate="no">cdb2.domain</span> -pwd <span class="variable" translate="no">gsmrootuser_pwd</span>
+add CDB -connect <span class="variable" translate="no">cdb3_host</span>:1521/<span class="variable" translate="no">cdb3.domain</span> -pwd <span class="variable" translate="no">gsmrootuser_pwd</span>
+add CDB -connect <span class="variable" translate="no">cdb4_host</span>:1521/<span class="variable" translate="no">cdb4.domain</span> -pwd <span class="variable" translate="no">gsmrootuser_pwd</span>
+add CDB -connect <span class="variable" translate="no">cdb5_host</span>:1521/<span class="variable" translate="no">cdb5.domain</span> -pwd <span class="variable" translate="no">gsmrootuser_pwd</span>
+add CDB -connect <span class="variable" translate="no">cdb6_host</span>:1521/<span class="variable" translate="no">cdb6.domain</span> -pwd <span class="variable" translate="no">gsmrootuser_pwd</span>
+add CDB -connect <span class="variable" translate="no">cdb7_host</span>:1521/<span class="variable" translate="no">cdb7.domain</span> -pwd <span class="variable" translate="no">gsmrootuser_pwd</span>
+ 
+add shard -cdb cdb1 -shardgroup gold -connect 
+     <span class="variable" translate="no">cdb1_host</span>:1521/<span class="variable" translate="no">sh1_pdb.domain</span> -pwd <span class="variable" translate="no">gsmuser_pwd</span>
+add shard -cdb cdb2 -shardgroup gold -connect 
+     <span class="variable" translate="no">cdb2_host</span>:1521/<span class="variable" translate="no">sh2_pdb.domain</span> -pwd <span class="variable" translate="no">gsmuser_pwd</span>
+add shard -cdb cdb3 -shardgroup gold -connect 
+     <span class="variable" translate="no">cdb3_host</span>:1521/<span class="variable" translate="no">sh3_pdb.domain</span> -pwd <span class="variable" translate="no">gsmuser_pwd</span>
+ 
+add shard -cdb cdb4 -shardgroup silver -connect 
+     <span class="variable" translate="no">cdb4_host</span>:1521/<span class="variable" translate="no">sh4_pdb.domain</span> -pwd <span class="variable" translate="no">gsmuser_pwd</span>
+add shard -cdb cdb5 -shardgroup silver -connect 
+     <span class="variable" translate="no">cdb5_host</span>:1521/<span class="variable" translate="no">sh5_pdb.domain</span> -pwd <span class="variable" translate="no">gsmuser_pwd</span>
+add shard -cdb cdb6 -shardgroup silver -connect 
+     <span class="variable" translate="no">cdb6_host</span>:1521/<span class="variable" translate="no">sh6_pdb.domain</span> -pwd <span class="variable" translate="no">gsmuser_pwd</span>
+add shard -cdb cdb7 -shardgroup silver -connect 
+     <span class="variable" translate="no">cdb7_host</span>:1521/<span class="variable" translate="no">sh7_pdb.domain</span> -pwd <span class="variable" translate="no">gsmuser_pwd</span>
+ 
+deploy</code></pre><p>With composite sharding, as with the other sharding methods, tablespaces are used to specify the mapping of partitions to shards. To place subsets of data in a sharded table into different shardspaces, a separate tablespace set must be created in each shardspace as shown in the following example.</p><pre class="pre codeblock"><code>CREATE TABLESPACE SET tbs1 IN SHARDSPACE shspace1;
+CREATE TABLESPACE SET tbs2 IN SHARDSPACE shspace2;</code></pre><p>To store user-defined subsets of data in different tablespaces, Oracle Sharding provides syntax to group partitions into sets and associate each set of partitions with a tablespace set. Support for partition sets can be considered a logical equivalent of a higher level of partitioning which is implemented on top of partitioning by consistent hash.</p>
+                     <p>The statement in the following example partitions a sharded table into two partition sets: gold and silver, based on class of service. Each partition set is stored in a separate tablespace. Then data in each partition set is further partitioned by consistent hash on customer ID. </p><pre class="pre codeblock"><code>CREATE SHARDED TABLE customers
+( cust_id NUMBER NOT NULL
+, name VARCHAR2(50)
+, address VARCHAR2(250) 
+, location_id VARCHAR2(20) 
+, class VARCHAR2(3) 
+, signup_date DATE 
+, CONSTRAINT cust_pk PRIMARY KEY(cust_id, class) 
+)
+<span class="bold">PARTITIONSET BY LIST</span> (class) 
+  PARTITION BY CONSISTENT HASH (cust_id)
+  PARTITIONS AUTO
+<span class="bold">(PARTITIONSET gold VALUES (‘gld’) TABLESPACE SET tbs1,</span>
+<span class="bold"> PARTITIONSET silver VALUES (‘slv’) TABLESPACE SET tbs2</span>)
+;</code></pre><div class="infoboxnote" id="GUID-1FCC7F96-59BF-4C8D-B71A-6A307D7283EA__GUID-903581CA-34E4-45C9-93AB-90D2D658BE8D">
+                        <p class="notep1">Note:</p>In Oracle Database 12<span class="italic">c</span> Release 2 only a single partition set from a table can be stored in a shardspace.
+                        <p>The sharding method is specified in the <code class="codeph">GDSCTL CREATE SHARDCATALOG</code> command and cannot be changed later.
+                        </p>
+                     </div>
+                  </div>
+               </div>
+               <div class="sect3"><a id="GUID-11AE3897-003D-4723-89C4-23AD5A837B89" name="GUID-11AE3897-003D-4723-89C4-23AD5A837B89"></a><h4 id="SHARD-GUID-11AE3897-003D-4723-89C4-23AD5A837B89" class="sect4">Using Subpartitions with Sharding</h4>
+                  <div>
+                     <p>Because Oracle Sharding is based on table partitioning, all of the subpartitioning methods provided by Oracle Database are also supported for sharding. </p>
+                     <p>Subpartitioning splits each partition into smaller parts and may be beneficial for efficient parallel execution within a shard, especially in the case of sharding by range or list when the number of partitions per shard may be small.</p>
+                     <p>From a manageability perspective, subpartitioning makes it possible to support the tiered storage approach by putting subpartitions into separate tablespaces and moving them between storage tiers. Migration of subpartitions between storage tiers can be done without sacrificing the scalability and availability benefits of sharding and the ability to perform partition pruning and partition-wise joins on a primary key.</p>
+                     <p>The following example shows system-managed sharding by consistent hash combined with subpartitioning by range. </p><pre class="pre codeblock"><code>CREATE SHARDED TABLE customers 
+( cust_id     NUMBER NOT NULL
+, name        VARCHAR2(50)
+, address     VARCHAR2(250)
+, location_id VARCHAR2(20)
+, class       VARCHAR2(3)
+, signup_date DATE
+, CONSTRAINT cust_pk PRIMARY KEY(cust_id, signup_date)
+)
+TABLESPACE SET ts1
+PARTITION BY CONSISTENT HASH (cust_id)
+<span class="bold">SUBPARTITION BY RANGE (signup_date)</span>
+<span class="bold">SUBPARTITION TEMPLATE</span> 
+<span class="bold">( SUBPARTITION per1 VALUES LESS THAN (TO_DATE('01/01/2000','DD/MM/YYYY')),</span>
+  <span class="bold">SUBPARTITION per2 VALUES LESS THAN (TO_DATE('01/01/2010','DD/MM/YYYY')),</span>
+  <span class="bold">SUBPARTITION per3 VALUES LESS THAN (TO_DATE('01/01/2020','DD/MM/YYYY')),</span>
+  <span class="bold">SUBPARTITION future VALUES LESS THAN (MAXVALUE)</span>
+<span class="bold">)</span>
+PARTITIONS AUTO
+;</code></pre><p>The following figure offers a graphical view of the table created by this statement.</p>
+                     <div class="figure" id="GUID-11AE3897-003D-4723-89C4-23AD5A837B89__GUID-14178DD1-D520-4895-87C2-5D6473C48256">
+                        <p class="titleinfigure">Figure 2-8 Subpartitions Stored in the Tablespace of the Parent Partition</p><img src="img/admin_3v_130a.png" alt="Description of Figure 2-8 follows" title="Description of Figure 2-8 follows" longdesc="img_text/admin_3v_130a.html"><br><a href="img_text/admin_3v_130a.html">Description of "Figure 2-8 Subpartitions Stored in the Tablespace of the Parent Partition"</a></div>
+                     <p>In this example each subpartition is stored in the parent partition’s tablespace. Because subpartitioning is done by date, it makes more sense to store subpartitions in separate tablespaces to provide the ability to archive older data or move it to a read-only storage. The appropriate syntax is shown here.</p><pre class="pre codeblock"><code>CREATE SHARDED TABLE customers 
+( cust_id     NUMBER NOT NULL
+, name        VARCHAR2(50)
+, address     VARCHAR2(250) 
+, location_id VARCHAR2(20)
+, class       VARCHAR2(3)
+, signup_date DATE NOT NULL
+, CONSTRAINT cust_pk PRIMARY KEY(cust_id, signup_date)
+)
+PARTITION BY CONSISTENT HASH (cust_id)
+<span class="bold">SUBPARTITION BY RANGE(signup_date)
+SUBPARTITION TEMPLATE 
+( SUBPARTITION per1 VALUES LESS THAN (TO_DATE('01/01/2000','DD/MM/YYYY'))
+       TABLESPACE SET ts1,
+  SUBPARTITION per2 VALUES LESS THAN (TO_DATE('01/01/2010','DD/MM/YYYY'))
+       TABLESPACE SET ts2,
+  SUBPARTITION per3 VALUES LESS THAN (TO_DATE('01/01/2020','DD/MM/YYYY'))
+       TABLESPACE SET ts3,
+  SUBPARTITION future VALUES LESS THAN (MAXVALUE) 
+       TABLESPACE SET ts4
+)
+</span>PARTITIONS AUTO
+;</code></pre><p>Note that in the case of a database that is not sharded, when tablespaces are specified in the subpartition template it means that subpartition N from every partition is stored in the same tablespace. This is different in case of sharding when subpartitions that belong to the different partitions must be stored in separate tablespaces so that they can be moved in the event of resharding.</p>
+                     <p>Subpartitioning can be used with composite sharding, too. In this case data in a table is organized in three levels: partition sets, partitions, and subpartitions. Examples of the three levels of data organization are shown below.</p>
+                     <p>Specifying subpartition templates per partitionset is not supported to ensure that there is uniformity in the number and bounds of subpartitions across partitionsets. If you need to specify tablespaces for subpartitions per partitionset, you can use the <code class="codeph">SUBPARTITIONS STORE IN</code> clause.
+                     </p><pre class="pre codeblock"><code>CREATE SHARDED TABLE customers 
+( cust_id     NUMBER NOT NULL
+, name        VARCHAR2(50)
+, address     VARCHAR2(250) 
+, location_id VARCHAR2(20)
+, class       VARCHAR2(3) NOT NULL
+, signup_date DATE NOT NULL
+, CONSTRAINT cust_pk PRIMARY KEY(cust_id, class, signup_date)
+)
+<span class="bold">PARTITIONSET BY LIST (class)</span>
+PARTITION BY CONSISTENT HASH (cust_id)
+SUBPARTITION BY RANGE (signup_date)
+  SUBPARTITION TEMPLATE /* applies to both SHARDSPACEs */
+  ( SUBPARTITION per1 VALUES LESS THAN (TO_DATE('01/01/2000','DD/MM/YYYY'))
+  , SUBPARTITION per2 VALUES LESS THAN (TO_DATE('01/01/2010','DD/MM/YYYY'))
+  , SUBPARTITION per3 VALUES LESS THAN (TO_DATE('01/01/2020','DD/MM/YYYY'))
+  , SUBPARTITION future VALUES LESS THAN (MAXVALUE)
+)
+PARTITIONS AUTO
+<span class="bold">(
+  PARTITIONSET gold   VALUES (‘gld’) TABLESPACE SET tbs1
+ subpartitions store in(tbs1)
+, PARTITIONSET silver VALUES (‘slv’) TABLESPACE SET tbs2
+ subpartitions store in(tbs2)
+)
+</span>;</code></pre></div>
+               </div>
+            </div>
+            <div class="sect2"><a id="GUID-1B8DAEE1-A662-4516-9EA9-04FF711211C3" name="GUID-1B8DAEE1-A662-4516-9EA9-04FF711211C3"></a><h3 id="SHARD-GUID-1B8DAEE1-A662-4516-9EA9-04FF711211C3" class="sect3">Sharded Database Schema
+        Objects</h3>
+               <div>
+                  <p>To obtain the benefits of sharding, the schema of a sharded database should
+        be designed in a way that maximizes the number of database requests executed on a single
+        shard. The following topics define and illustrate the schema objects that form a sharded
+        database to inform your design.</p>
+               </div>
+               <div class="sect3"><a id="GUID-1DBC6C7F-4E0C-47E5-8870-05F829D6C3B3" name="GUID-1DBC6C7F-4E0C-47E5-8870-05F829D6C3B3"></a><h4 id="SHARD-GUID-1DBC6C7F-4E0C-47E5-8870-05F829D6C3B3" class="sect4">Sharded Tables</h4>
+                  <div>
+                     <p>A database table is split up across the shards, so that each shard contains
+        the table with the same columns, but a <span class="italic">different subset of rows</span>. A table split up in
+        this manner is called a <span class="italic">sharded table</span>.
+                     </p>
+                     <p>The following figure shows how a set of large tables (referred to as a table
+            family), shown in the one database on the left, can be horizontally partitioned across
+            the three shards shown on the right, so that each shard contains a subset of the data,
+            indicated with red, yellow, and blue rows.</p>
+                     <div class="figure" id="GUID-1DBC6C7F-4E0C-47E5-8870-05F829D6C3B3__FIG_PY3_DT3_SKB">
+                        <p class="titleinfigure">Figure 2-9 Horizontal Partitioning of a Table
+                Across Shards</p><br><div class="imageleft"><img class="imageleft" id="GUID-1DBC6C7F-4E0C-47E5-8870-05F829D6C3B3__IMAGE_QY3_DT3_SKB" src="img/admin_3v_138e.png" alt="Description of Figure 2-9 follows" title="Description of Figure 2-9 follows" longdesc="img_text/admin_3v_138e.html"><br><a href="img_text/admin_3v_138e.html">Description of "Figure 2-9 Horizontal Partitioning of a Table
+                Across Shards"</a></div><br></div>
+                     <p>Partitions are distributed across shards at the tablespace level, based on a
+            sharding key. Examples of keys include customer ID, account number, and country ID. The
+            following data types are supported for the sharding key.</p>
+                     <ul style="list-style-type: disc;" id="GUID-1DBC6C7F-4E0C-47E5-8870-05F829D6C3B3__UL_OHB_5ZC_KGB">
+                        <li>
+                           
+                           <p><code class="codeph">NUMBER</code></p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p><code class="codeph">INTEGER</code></p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p><code class="codeph">SMALLINT</code></p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p><code class="codeph">RAW</code></p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p><code class="codeph">(N)VARCHAR</code></p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p><code class="codeph">(N)VARCHAR2</code></p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p><code class="codeph">(N)CHAR</code></p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p><code class="codeph">DATE</code></p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p><code class="codeph">TIMESTAMP</code></p>
+                           
+                        </li>
+                     </ul>
+                     <p>Each partition of a sharded table resides in a separate tablespace, and each
+            tablespace is associated with a specific shard. Depending on the sharding method, the
+            association can be established automatically or defined by the administrator.</p>
+                     <p>Even though the partitions of a sharded table reside in multiple shards, to
+            the application, the table looks and behaves exactly the same as a partitioned table in
+            a single database. SQL statements issued by an application never have to refer to shards
+            or depend on the number of shards and their configuration.</p>
+                     <p>The familiar SQL syntax for table partitioning specifies how rows should be
+            partitioned across shards. For example, the following SQL statement creates a sharded
+            table, horizontally partitioning the table across shards based on the sharding key
+                <code class="codeph">cust_id</code>.
+                     </p><pre class="pre codeblock"><code>CREATE SHARDED TABLE customers 
+( cust_id     NUMBER NOT NULL
+, name        VARCHAR2(50)
+, address     VARCHAR2(250)
+, region      VARCHAR2(20)
+, class       VARCHAR2(3)
+, signup      DATE
+,CONSTRAINT cust_pk PRIMARY KEY(cust_id)
+)
+PARTITION BY CONSISTENT HASH (cust_id)
+PARTITIONS AUTO
+TABLESPACE SET ts1
+;</code></pre><p>The sharded table is partitioned by consistent hash, a special type of hash
+            partitioning commonly used in scalable distributed systems. This technique automatically
+            spreads tablespaces across shards to provide an even distribution of data and workload. </p>
+                     <div class="infoboxnote" id="GUID-1DBC6C7F-4E0C-47E5-8870-05F829D6C3B3__GUID-BD4F92FE-1438-415C-96E3-9BBA127D7AAF">
+                        <p class="notep1">Note:</p>Global indexes on sharded tables are
+            not supported, but local indexes are supported.
+                     </div>
+                  </div>
+               </div>
+               <div class="sect3"><a id="GUID-4E2E01CA-5103-4F4D-AB2A-79527A62B2E7" name="GUID-4E2E01CA-5103-4F4D-AB2A-79527A62B2E7"></a><h4 id="SHARD-GUID-4E2E01CA-5103-4F4D-AB2A-79527A62B2E7" class="sect4">Sharded Table Family</h4>
+                  <div>
+                     <p>A sharded table family is a set of tables that are sharded in the same way.
+    Often there is a parent-child relationship between database tables with a referential constraint
+    in a child table (foreign key) referring to the primary key of the parent table. </p>
+                     <p>Multiple tables linked by such relationships typically form a tree-like structure
+      where every child has a single parent. A set of such tables is referred to as a table family.
+      A table in a table family that has no parent is called the root table. There can be only one
+      root table in a table family.</p>
+                  </div>
+                  <div class="sect4"><a id="GUID-54D2A9BB-5F38-45BE-A060-63FAC436ACD1" name="GUID-54D2A9BB-5F38-45BE-A060-63FAC436ACD1"></a><h5 id="SHARD-GUID-54D2A9BB-5F38-45BE-A060-63FAC436ACD1" class="sect5">How a Table Family Is
+        Sharded</h5>
+                     <div>
+                        <p>Sharding a table family is illustrated here with the
+        Customers&#x2013;Orders&#x2013;LineItems schema.</p>
+                        <p>Before sharding, the tables in the schema may look as shown in the examples
+            below. The three tables have a parent-child relationship, with Customers as the root
+            table.</p>
+                        <p><span class="bold">Customers Table (Root) Before Sharding</span></p><pre class="oac_no_warn" dir="ltr">CustNo    Name       Address        Location  Class
+--------- ---------- -------------- --------- ------
+123       Brown      100 Main St    us3       Gold
+456       Jones      300 Pine Ave   us1       Silver
+999       Smith      453 Cherry St  us2       Bronze</pre><p><span class="bold">Orders Table Before Sharding</span></p><pre class="oac_no_warn" dir="ltr">OrderNo   CustNo   OrderDate
+--------- -------- -----------
+4001      123      14-FEB-2013
+4002      456      09-MAR-2013
+4003      456      05-APR-2013
+4004      123      27-MAY-2013
+4005      999      01-SEP-2013</pre><p><span class="bold">LineItems Table Before Sharding</span></p><pre class="oac_no_warn" dir="ltr">LineNo  OrderNo  CustNo  StockNo    Quantity
+------  -------  ------  -------    --------
+40011   4001     123     05683022   1
+40012   4001     123     45423609   4
+40013   4001     123     68584904   1
+40021   4002     456     05683022   1
+40022   4002     456     45423509   3
+40022   4003     456     80345330   16
+40041   4004     123     45423509   1
+40042   4004     123     68584904   2
+40051   4005     999     80345330   12</pre><p>The tables can be sharded by the customer number, <code class="codeph">CustNo</code>,
+            in the Customers table, which is the root. The shard containing data pertaining to
+            customer 123 is shown in the following example tables.
+                        </p>
+                        <p><span class="bold">Customers Table Shard With Customer 123 Data</span></p><pre class="oac_no_warn" dir="ltr">CustNo    Name       Address        Location   Class
+--------- ---------- -------------- ---------- ------
+123       Brown      100 Main St    us3        Gold
+</pre><p><span class="bold">Orders Table Shard With Customer 123 Data</span></p><pre class="oac_no_warn" dir="ltr">OrderNo   CustNo   OrderDate
+--------- -------- -----------
+4001      123      14-FEB-2013
+4004      123      27-MAY-2013
+</pre><p><span class="bold">LineItems Table Shard With Customer 123 Data</span></p><pre class="oac_no_warn" dir="ltr">LineNo  OrderNo  CustNo  StockNo    Quantity
+------  -------  ------  -------    --------
+40011   4001     123     05683022   1
+40012   4001     123     45423609   4
+40013   4001     123     68584904   1
+40041   4004     123     45423509   1
+40042   4004     123     68584904   2
+</pre></div>
+                  </div>
+                  <div class="sect4"><a id="GUID-06905A40-9A2B-4301-B98D-311DF20A5C91" name="GUID-06905A40-9A2B-4301-B98D-311DF20A5C91"></a><h5 id="SHARD-GUID-06905A40-9A2B-4301-B98D-311DF20A5C91" class="sect5">Designing Schemas With Multiple
+        Table Families</h5>
+                     <div>
+                        <p>A sharded database schema can have multiple table families, where all of the
+        data from different table families reside in the same chunks, which contain partitions from
+        different table families sharing the same hash key range.</p>
+                        <div class="infoboxnote" id="GUID-06905A40-9A2B-4301-B98D-311DF20A5C91__GUID-A0CCA651-6A61-4B1E-89A6-BF2261E9CB70">
+                           <p class="notep1">Note:</p>Multiple table families are supported
+            in system-managed sharded databases only. Composite and user-defined sharded databases
+            only support one table family.
+                        </div>
+                        <p>To create a new table family, create a root sharded table and specify
+            tablespace sets that are not used by existing tablespace families. Each table family is
+            identified by its root table. Tables in the different table families should not be
+            related to each other.</p>
+                        <p>Each table family should have its own sharding key definition, while the
+            same restriction on having the same sharding key columns in child tables still holds
+            true within each table family. This means that all tables from different table families
+            are sharded the same way with consistent hash into the same number of chunks, with each
+            chunk containing data from all the table families.</p>
+                        <p>Design your table families such that queries between different table-families
+            are minimal and only carried out on the sharding coordinator, as many such joins will
+            have an effect on performance</p>
+                        <p>The following example shows you how to create multiple table families using
+            the <code class="codeph">PARENT</code> clause with a system-managed sharding methodology
+                (<code class="codeph">PARTITION BY CONSISTENT HASH</code>).
+                        </p><pre class="pre codeblock"><code>CREATE SHARDED TABLE Customers &lt;=== Table Family #1
+( CustId NUMBER NOT NULL
+, Name VARCHAR2(50)
+, Address VARCHAR2(250)
+, region VARCHAR2(20)
+, class VARCHAR2(3)
+, signup DATE
+)
+PARTITION BY CONSISTENT HASH (CustId)
+PARTITIONS AUTO
+TABLESPACE SET ts1
+;
+
+CREATE SHARDED TABLE Orders
+( OrderNo NUMBER
+, CustId NUMBER
+, OrderDate DATE
+)
+<span class="bold">PARENT Customers</span>
+PARTITION BY CONSISTENT HASH (CustId)
+PARTITIONS AUTO
+TABLESPACE SET ts1
+;
+
+CREATE SHARDED TABLE LineItems
+( LineNo NUMBER
+, OrderNo NUMBER
+, CustId NUMBER
+, StockNo NUMBER
+, Quantity NUMBER
+)
+)
+<span class="bold">PARENT Customers</span>
+PARTITION BY CONSISTENT HASH (CustId)
+PARTITIONS AUTO
+TABLESPACE SET ts1
+;
+
+CREATE SHARDED TABLE Products &lt;=== Table Family #2
+( ProdId NUMBER NOT NULL,
+  CONSTRAINT pk_products PRIMARY KEY (ProdId)
+)
+PARTITION BY CONSISTENT HASH (ProdId)
+PARTITIONS AUTO
+TABLESPACE SET ts_2
+;</code></pre><div class="infoboxnote" id="GUID-06905A40-9A2B-4301-B98D-311DF20A5C91__GUID-562CA524-3141-4148-9051-FB878F664567">
+                           <p class="notep1">Note:</p>
+                           
+                           <p>ORA-3850 is thrown if you attempt to use a tablespace set for a table
+                family, but that tablespace set is already in use by an existing table family.</p>
+                           
+                           <p>Joins across table families may not be efficient, and if you have many
+                such joins, or if they are performance-critical, you should use duplicated tables
+                instead of multiple table families.</p>
+                           
+                        </div>
+                        <p><span class="bold">Associating Global Services With Multiple Table Families</span></p>
+                        <p>Each table family should be associated with a different global service.
+            Applications from different table families each have their own connection pool and
+            service, and use their own sharding key for routing to the correct shard.</p>
+                        <p>When you create the first root table (that is, the first table family) all
+            of the existing global services are automatically associated with it. You can use the
+                <code class="codeph">GDSCTL</code>
+                           <code class="codeph">MODIFY SERVICE</code> command to change the services associated with a table
+            family after more table families are created, as shown in this example.
+                        </p><pre class="pre codeblock"><code>GDSCTL&gt; MODIFY SERVICE &#x2013;GDSPOOL shdpool &#x2013;TABLE_FAMILY sales.customer -SERVICE sales</code></pre></div>
+                  </div>
+               </div>
+               <div class="sect3"><a id="GUID-50D56C0A-5185-4F04-A0CA-EAA442E825D3" name="GUID-50D56C0A-5185-4F04-A0CA-EAA442E825D3"></a><h4 id="SHARD-GUID-50D56C0A-5185-4F04-A0CA-EAA442E825D3" class="sect4">Duplicated Tables</h4>
+                  <div>
+                     <p>In Oracle Sharding a table with the same contents in each shard is called a
+            <span class="italic">duplicated table</span>.
+                     </p>
+                     <p>For many applications, the number of database requests handled by a single
+            shard can be maximized by duplicating read-only or read-mostly tables across all shards.
+            This strategy is a good choice for relatively small tables that are not updated
+            frequently, and that are often accessed together with sharded tables. Duplicated tables
+            tend to be updated less frequently than sharded tables and are not expected to be very
+            large.</p>
+                     <p>A sharded database includes both sharded tables that are horizontally partitioned
+            across shards, and duplicated tables that are replicated to all shards. Duplicated
+            tables contain reference information, for example, a Stock Items table that is common to
+            each shard. The combination of sharded and duplicated tables enables all transactions
+            associated with a sharding key to be processed by a single shard. This technique enables
+            linear scalability and fault isolation.</p>
+                     <p>As an example of the need for a duplicated table, consider the table family that is described in <a href="architecture-and-concepts1.html#GUID-4E2E01CA-5103-4F4D-AB2A-79527A62B2E7" title="A sharded table family is a set of tables that are sharded in the same way. Often there is a parent-child relationship between database tables with a referential constraint in a child table (foreign key) referring to the primary key of the parent table.">Sharded Table Family</a>. The database schema might also include a <code class="codeph">Products</code> table which contains data that is shared by all the customers in the shards that were created for this table family, and it cannot be sharded by the customer number. To prevent multi-shard queries during order processing, the entire table must be duplicated on all shards.
+                     </p>
+                     <p>The difference between sharded tables (Customers, Orders, and LineItems) and a duplicated table (Products) is shown in the following figure.</p>
+                     <div class="figure" id="GUID-50D56C0A-5185-4F04-A0CA-EAA442E825D3__GUID-BDE4A5B3-9ECE-4E00-8D7A-AFC1E345D229">
+                        <p class="titleinfigure">Figure 2-10 Sharded Tables and a Duplicated Table in a
+                Sharded Database</p><img src="img/admin_3v_138e.png" alt="Description of Figure 2-10 follows" title="Description of Figure 2-10 follows" longdesc="img_text/admin_3v_138e.html"><br><a href="img_text/admin_3v_138e.html">Description of "Figure 2-10 Sharded Tables and a Duplicated Table in a
+                Sharded Database"</a></div>
+                  </div>
+               </div>
+               <div class="sect3"><a id="GUID-FCD9BB15-6B24-4EF0-A66B-4AE16D5DA286" name="GUID-FCD9BB15-6B24-4EF0-A66B-4AE16D5DA286"></a><h4 id="SHARD-GUID-FCD9BB15-6B24-4EF0-A66B-4AE16D5DA286" class="sect4">Non-Table Objects Created on All Shards</h4>
+                  <div>
+                     <p>In addition to duplicated tables, other schema objects, such as users, roles, views, indexes, synonyms, functions, procedures, and packages, and non-schema database objects, such as tablespaces, tablespace sets, directories, and contexts, can be created on all shards.</p>
+                     <p>Unlike tables, which require an extra keyword in the <code class="codeph">CREATE</code> statement—<code class="codeph">SHARDED</code> or <code class="codeph">DUPLICATED</code>—other objects are created on all shards using existing syntax. The only requirement is that the <code class="codeph">SHARD DDL</code> session property must be enabled.
+                     </p>
+                     <p>Note that <span class="italic">automatic</span> creation on all shards of the following objects is not supported in this release. These objects can be created by connecting to individual shards.
+                     </p>
+                     <ul style="list-style-type: disc;">
+                        <li>
+                           <p>Cluster</p>
+                        </li>
+                        <li>
+                           <p>Control file</p>
+                        </li>
+                        <li>
+                           <p>Database link</p>
+                        </li>
+                        <li>
+                           <p>Disk group</p>
+                        </li>
+                        <li>
+                           <p>Edition</p>
+                        </li>
+                        <li>
+                           <p>Flashback archive</p>
+                        </li>
+                        <li>
+                           <p>Materialized zone map</p>
+                        </li>
+                        <li>
+                           <p>Outline</p>
+                        </li>
+                        <li>
+                           <p>Pfile</p>
+                        </li>
+                        <li>
+                           <p>Profile</p>
+                        </li>
+                        <li>
+                           <p>Restore point</p>
+                        </li>
+                        <li>
+                           <p>Rollback segment</p>
+                        </li>
+                        <li>
+                           <p>Summary</p>
+                        </li>
+                     </ul>
+                     <p>Materialized views and view logs are supported starting in Oracle Database 18<span class="italic">c</span>, with the following restrictions: 
+                     </p>
+                     <ul style="list-style-type: disc;">
+                        <li>
+                           <p>Materialized views created on sharded tables remain empty on the catalog database, while the corresponding materialized views on shards contain data from each of the individual shards.</p>
+                        </li>
+                        <li>
+                           <p>Only the <code class="codeph">REFRESH COMPLETE ON DEMAND USING TRUSTED CONSTRAINTS</code> option is supported for materialized views on sharded tables.
+                           </p>
+                        </li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+            <div class="sect2"><a id="GUID-C668B8C7-0F94-4F85-B8E1-A6B91548BBB6" name="GUID-C668B8C7-0F94-4F85-B8E1-A6B91548BBB6"></a><h3 id="SHARD-GUID-C668B8C7-0F94-4F85-B8E1-A6B91548BBB6" class="sect3">Shard-Level High Availability</h3>
+               <div>
+                  <p>Oracle Sharding is integrated with Oracle Database replication technologies for high availability and disaster recovery at the shard level.</p>
+                  <p>The following topics describe how to use Oracle’s replication technologies to make your sharded databases highly available:</p>
+               </div>
+               <div class="sect3"><a id="GUID-133A4C15-FCD5-46E3-B33B-0DB3EBE54064" name="GUID-133A4C15-FCD5-46E3-B33B-0DB3EBE54064"></a><h4 id="SHARD-GUID-133A4C15-FCD5-46E3-B33B-0DB3EBE54064" class="sect4">About Sharding and Replication</h4>
+                  <div>
+                     <p>Oracle Sharding is tightly integrated with the Oracle replication and disaster recovery technologies Oracle Data Guard and Oracle GoldenGate.</p>
+                     <div class="infoboxnote" id="GUID-133A4C15-FCD5-46E3-B33B-0DB3EBE54064__GUID-D3104AEB-4A80-4D17-AC2A-7382EAB41D84">
+                        <p class="notep1">Note:</p><span>Oracle GoldenGate replication support for Oracle Sharding High
+                    Availability is deprecated in Oracle Database 21c. </span></div>
+                     <p>Replication provides high availability, disaster recovery, and additional scalability for reads. A unit of replication can be a shard, a part of a shard, or a group of shards.</p>
+                     <p>Replication topology in a sharded database is declaratively specified using GDSCTL command syntax. You can choose one of two technologies—Oracle Data Guard or Oracle GoldenGate—to replicate your data. Oracle Sharding automatically deploys the specified replication topology and enables data replication. </p>
+                     <p>The availability of a sharded database is not affected by an outage or slowdown of one or more shards. Replication is used to provide individual shard-level high availability (Oracle Active Data Guard or Oracle GoldenGate). Replication is automatically configured and deployed when the sharded database is created. Optionally, you can use Oracle RAC for shard-level high availability, complemented by replication, to maintain shard-level data availability in the event of a cluster outage. Oracle Sharding automatically fails over database connections from a shard to its replica in the event of an unplanned outage.</p>
+                  </div>
+               </div>
+               <div class="sect3"><a id="GUID-52E55FFE-2AF7-45B0-B29A-6664D6CB78AB" name="GUID-52E55FFE-2AF7-45B0-B29A-6664D6CB78AB"></a><h4 id="SHARD-GUID-52E55FFE-2AF7-45B0-B29A-6664D6CB78AB" class="sect4">Using Oracle Data Guard with a Sharded Database</h4>
+                  <div>
+                     <p>Oracle Data Guard replication maintains one or more synchronized copies (standbys) of a shard (the primary) for high availability and data protection. Standbys may be deployed locally or remotely, and when using Oracle Active Data Guard can also be open for read-only access.</p>
+                     <p>Oracle Data Guard can be used as the replication technology for sharded databases using the system-managed, user-defined, or composite method of sharding.</p>
+                     <div class="section">
+                        <p class="subhead3" id="GUID-52E55FFE-2AF7-45B0-B29A-6664D6CB78AB__GUID-79D148A4-A50E-4C08-A50C-64D86AFBF196">Using Oracle Data Guard with a System-Managed Sharded Database</p>
+                        <p>In system-managed and composite sharding, the logical unit of replication is a group of shards called a <span class="italic">shardgroup</span>. In system-managed sharding, a shardgroup contains all of the data stored in the sharded database. The data is sharded by consistent hash across shards that make up the shardgroup. Shards that belong to a shardgroup are usually located in the same data center. An entire shardgroup can be fully replicated to one or more shardgroups in the same or different data centers.
+                        </p>
+                        <p>The following figure illustrates how Data Guard replication is used with system-managed sharding. In the example in the figure there is a primary shardgroup, Shardgroup 1, and two standby shardgroups, Shardgroup 2 and Shardgroup 3. Shardgroup 1 consists of Data Guard primary databases (shards 1-3). Shardgroup 2 consists of local standby databases (shards 4-6) which are located in the same datacenter and configured for synchronous replication. And Shardgroup 3 consists of remote standbys (shards 7-9) located in a different datacenter and configured for asynchronous replication. Oracle Active Data Guard is enabled in this configuration, so each standby is open read-only.</p>
+                        <div class="figure" id="GUID-52E55FFE-2AF7-45B0-B29A-6664D6CB78AB__GUID-821EC77F-6FBE-4142-A165-2AD1328EF293">
+                           <p class="titleinfigure">Figure 2-11 System-Managed Sharding with Data Guard Replication</p><img src="img/admin_3v_136a.png" alt="Description of Figure 2-11 follows" title="Description of Figure 2-11 follows" longdesc="img_text/admin_3v_136a.html"><br><a href="img_text/admin_3v_136a.html">Description of "Figure 2-11 System-Managed Sharding with Data Guard Replication"</a></div>
+                        <p>The concept of shardgroup as a logical unit of replication hides from the user the implementation details of replication. With Data Guard, replication is done at the shard (database) level. The sharded database in the figure above consists of three sets of replicated shards: {1, 4, 7}, {2, 5, 8} and {3, 6, 9}. Each set of replicated shards is managed as a Data Guard Broker configuration with fast-start failover (FSFO) enabled.</p>
+                        <p>To deploy replication, specify the properties of the shardgroups (region, role, and so on) and add shards to them. Oracle Sharding automatically configures Data Guard and starts an FSFO observer for each set of replicated shards. It also provides load balancing of the read-only workload, role based global services and replication lag, and locality based routing.</p>
+                        <p>Run the following GDSCTL commands to deploy the example configuration shown in the figure above.</p><pre class="pre codeblock"><code>CREATE SHARDCATALOG &#x2013;database host00:1521:shardcat &#x2013;region dc1,dc2
+
+ADD GSM -gsm gsm1 -listener 1571 &#x2013;catalog host00:1521:shardcat &#x2013;region dc1
+ADD GSM -gsm gsm2 -listener 1571 &#x2013;catalog host00:1521:shardcat &#x2013;region dc2
+START GSM -gsm gsm1
+START GSM -gsm gsm2
+
+ADD SHARDGROUP -shardgroup shardgroup1 -region dc1 -deploy_as primary 
+ADD SHARDGROUP -shardgroup shardgroup2 -region dc1 -deploy_as active_standby 
+ADD SHARDGROUP -shardgroup shardgroup3 -region dc2 -deploy_as active_standby 
+
+CREATE SHARD -shardgroup shardgroup1 -destination host01 -credential oracle_cred 
+CREATE SHARD -shardgroup shardgroup1 -destination host02 -credential oracle_cred 
+CREATE SHARD -shardgroup shardgroup1 -destination host03 -credential oracle_cred 
+...
+CREATE SHARD -shardgroup shardgroup3  -destination host09 -credential oracle_cred
+
+DEPLOY</code></pre></div>
+                     <div class="section">
+                        <p class="subhead3" id="GUID-52E55FFE-2AF7-45B0-B29A-6664D6CB78AB__GUID-0C743452-E7C3-485A-82B1-24B5204139D8">Using Oracle Data Guard with a User-Defined Sharded Database</p>
+                        <p>With user-defined sharding the logical (and physical) unit of replication is a shard. Shards are not combined into shardgroups. Each shard and its replicas make up a <span class="italic">shardspace</span> which corresponds to a single Data Guard Broker configuration. Replication can be configured individually for each shardspace. Shardspaces can have different numbers of standbys which can be located in different data centers. An example of user-defined sharding with Data Guard replication is shown in the following figure.
+                        </p>
+                        <div class="figure" id="GUID-52E55FFE-2AF7-45B0-B29A-6664D6CB78AB__GUID-657DD600-76BF-4F95-B211-BCF9C798B572">
+                           <p class="titleinfigure">Figure 2-12 User-Defined Sharding with Data Guard Replication</p><img src="img/admin_3v_135a.png" alt="Description of Figure 2-12 follows" title="Description of Figure 2-12 follows" longdesc="img_text/admin_3v_135a.html"><br><a href="img_text/admin_3v_135a.html">Description of "Figure 2-12 User-Defined Sharding with Data Guard Replication"</a></div>
+                        <p>Run the following GDSCTL commands to deploy the example user-defined sharded database with Data Guard replication shown in the figure above.</p><pre class="pre codeblock"><code>CREATE SHARDCATALOG -sharding user &#x2013;database host00:1521:cat &#x2013;region dc1,dc2,dc3
+
+ADD GSM -gsm gsm1 -listener 1571 &#x2013;catalog host00:1521:cat &#x2013;region dc1
+ADD GSM -gsm gsm2 -listener 1571 &#x2013;catalog host00:1521:cat &#x2013;region dc2
+ADD GSM -gsm gsm3 -listener 1571 &#x2013;catalog host00:1521:cat &#x2013;region dc3
+START GSM -gsm gsm1
+START GSM -gsm gsm2
+START GSM -gsm gsm3
+
+ADD SHARDSPACE -shardspace shardspace_a 
+ADD SHARDSPACE -shardspace shardspace_b
+ADD SHARDSPACE -shardspace shardspace_c
+
+CREATE SHARD -shardspace shardspace_a &#x2013;region dc1 -deploy_as primary  -destination 
+host01 -credential oracle_cred -netparamfile /home/oracle/netca_dbhome.rsp
+
+CREATE SHARD -shardspace shardspace_a &#x2013;region dc1 -deploy_as standby  -destination 
+host04 -credential oracle_cred -netparamfile /home/oracle/netca_dbhome.rsp
+
+CREATE SHARD -shardspace shardspace_a &#x2013;region dc2 -deploy_as standby  -destination 
+host06 -credential oracle_cred -netparamfile /home/oracle/netca_dbhome.rsp
+
+CREATE SHARD -shardspace shardspace_a &#x2013;region dc3 -deploy_as standby  -destination 
+host08 -credential oracle_cred -netparamfile /home/oracle/netca_dbhome.rsp
+
+CREATE SHARD -shardspace shardspace_b &#x2013;region dc1 -deploy_as primary  -destination 
+host08 -credential oracle_cred -netparamfile /home/oracle/netca_dbhome.rs
+...
+
+CREATE SHARD -shardspace shardspace_c &#x2013;region dc3 -deploy_as standby  -destination 
+host10 -credential oracle_cred -netparamfile /home/oracle/netca_dbhome.rsp
+
+DEPLOY</code></pre></div>
+                     <div class="section">
+                        <p class="subhead3" id="GUID-52E55FFE-2AF7-45B0-B29A-6664D6CB78AB__GUID-DF0FF1E2-B6A1-4E5E-8DC6-65A32DF948B7">Using Oracle Data Guard with a Composite Sharded Database</p>
+                        <p>In composite sharding, similar to user-defined sharding, a sharded database consists of multiple shardspaces. However, each shardspace, instead of replicated shards, contains replicated shardgroups.</p>
+                        <div class="figure" id="GUID-52E55FFE-2AF7-45B0-B29A-6664D6CB78AB__GUID-CC41C14B-41D0-4AD6-8668-86F6B1390D14">
+                           <p class="titleinfigure">Figure 2-13 Composite Sharding with Data Guard Replication</p><img src="img/admin_3v_133c.png" alt="Description of Figure 2-13 follows" title="Description of Figure 2-13 follows" longdesc="img_text/admin_3v_133c.html"><br><a href="img_text/admin_3v_133c.html">Description of "Figure 2-13 Composite Sharding with Data Guard Replication"</a></div>
+                        <p>Run the following GDSCTL commands to deploy the example configuration shown in the previous figure.</p><pre class="pre codeblock"><code>CREATE SHARDCATALOG -sharding composite &#x2013;database host00:1521:cat &#x2013;region dc1,dc2,dc3
+
+ADD GSM -gsm gsm1 -listener 1571 &#x2013;catalog host00:1521:cat &#x2013;region dc1
+ADD GSM -gsm gsm2 -listener 1571 &#x2013;catalog host00:1521:cat &#x2013;region dc2
+ADD GSM -gsm gsm3 -listener 1571 &#x2013;catalog host00:1521:cat &#x2013;region dc3
+START GSM -gsm gsm1
+START GSM -gsm gsm2
+START GSM -gsm gsm3
+
+ADD SHARDSPACE -shardspace shardspace_a 
+ADD SHARDSPACE -shardspace shardspace_b
+
+ADD SHARDGROUP -shardgroup shardgroup_a1 &#x2013;shardspace shardspace_a -region dc1 
+-deploy_as primary 
+ADD SHARDGROUP -shardgroup shardgroup_a2 &#x2013;shardspace shardspace_a -region dc1     
+-deploy_as active_standby
+ADD SHARDGROUP -shardgroup shardgroup_a3 &#x2013;shardspace shardspace_a -region dc3     
+-deploy_as active_standby 
+ADD SHARDGROUP -shardgroup shardgroup_b1 &#x2013;shardspace shardspace_b -region dc1 
+-deploy_as primary 
+ADD SHARDGROUP -shardgroup shardgroup_b2 &#x2013;shardspace shardspace_b -region dc1     
+-deploy_as active_standby 
+ADD SHARDGROUP -shardgroup shardgroup_b3 &#x2013;shardspace shardspace_b -region dc2     
+-deploy_as active_standby 
+
+CREATE SHARD -shardgroup shardgroup_a1 -destination host01 &#x2013;credential orcl_cred  
+...
+
+CREATE SHARD -shardgroup shardgroup_b3 -destination host09 -credential orcl_cred 
+
+DEPLOY</code></pre></div>
+                  </div>
+               </div>
+               <div class="sect3"><a id="GUID-4FC0AC46-0B8B-4670-BBE4-052228492C72" name="GUID-4FC0AC46-0B8B-4670-BBE4-052228492C72"></a><h4 id="SHARD-GUID-4FC0AC46-0B8B-4670-BBE4-052228492C72" class="sect4">Using Oracle GoldenGate with a Sharded Database</h4>
+                  <div>
+                     <p>Oracle GoldenGate is used for fine-grained active-active replication where all shards are writable, and each shard can be partially replicated to other shards within a shardgroup.</p>
+                     <div class="infoboxnote" id="GUID-4FC0AC46-0B8B-4670-BBE4-052228492C72__GUID-2374A8DB-DF8B-4AAF-BA73-73534EAF93B5">
+                        <p class="notep1">Note:</p>Oracle Database 21c supports only
+            multitenant architecture (CDB). Oracle GoldenGate versions 12.3-19.1 only support Oracle
+            Sharding with single-instance Oracle databases (release 11g through 19c.) 
+                     </div>
+                     <p>In Oracle GoldenGate, replication is handled at the chunk level. For example, in Shardgroup 1 in the following figure, half of the data stored in each shard is replicated to one shard, and the other half to another shard. If any shard becomes unavailable, its workload is split between two other shards in the shardgroup. The multiple failover destinations mitigate the impact of a shard failure because there is no single shard that has to handle all of the workload from the failed shard.</p>
+                     <div class="figure" id="GUID-4FC0AC46-0B8B-4670-BBE4-052228492C72__SYSTEM-MANAGEDSHARDINGWITHGOLDENGAT-A0EF952D">
+                        <p class="titleinfigure">Figure 2-14 System-Managed Sharding with Golden Gate Replication</p><img src="img/admin_3v_137a.png" alt="Description of Figure 2-14 follows" title="Description of Figure 2-14 follows" longdesc="img_text/admin_3v_137a.html"><br><a href="img_text/admin_3v_137a.html">Description of "Figure 2-14 System-Managed Sharding with Golden Gate Replication"</a></div>
+                     <p>With Oracle GoldenGate replication, a shardgroup can contain multiple replicas of each row in a sharded table; therefore, high availability is provided within a shardgroup, and there is no need to have a local replica of the shardgroup, as there is in the case of Data Guard replication. The number of times each row is replicated within a shardgroup is called its <span class="italic">replication factor</span> and is a configurable parameter.
+                     </p>
+                     <p>To provide disaster recovery, a shardgroup can be replicated to one or more data centers. Each replica of a shardgroup can have a different number of shards, replication factor, database versions, and hardware platforms. However, all shardgroup replicas must have the same number of chunks, because replication is done at the chunk level. </p>
+                     <p>Shardgroup 2 in the figure above contains the same data as Shardgroup 1, but resides in a different data center. Shards in both data centers are writable. The default replication factor, 2, is used for both shardgroups.</p>
+                     <p>Note that because Shardgroup 2 contains only two shards and the replication factor is 2, the shards are fully replicated, and each of them contains all of the data stored in the sharded database. This means that any query routed to these shards can be executed without going across shards. There is only one failover destination in this shardgroup; if a shard goes down, the load on the other shard doubles.</p>
+                     <p>Oracle Sharding is designed to minimize the number of conflicting updates performed to the same row on different shards. This is achieved designating a <span class="italic">master chunk</span> for each range of hash values and routing most of requests for the corresponding data to this chunk. 
+                     </p>
+                     <p>Sometimes it is impossible to avoid update conflicts because of state transitions, such as a chunk move or split, or a shard going up or down. The user may also intentionally allow conflicts in order to minimize transaction latency. For such cases Oracle GoldenGate provides automatic conflict detection and resolution which handles all kinds of conflicts including insert-delete conflicts.</p>
+                     <div class="infoboxnote" id="GUID-4FC0AC46-0B8B-4670-BBE4-052228492C72__GUID-762C2E8A-0B04-41BD-BE0B-4AF8429320BB">
+                        <p class="notep1">Note:</p>
+                        
+                        <p>Oracle GoldenGate does not support the user defined sharding method.</p>
+                        
+                        <p>For system-managed sharding with Oracle GoldenGate, a shard must have at
+                least two chunks.</p>
+                        <p>Oracle GoldenGate does not support PDBs as shards.</p>
+                     </div>
+                     <div class="infoboxnotealso" id="GUID-4FC0AC46-0B8B-4670-BBE4-052228492C72__GUID-DB192465-74C2-4853-A026-F4A32BAE6C77">
+                        <p class="notep1">See Also:</p>
+                        <p><a href="/pls/topic/lookup?ctx=en/database/oracle/oracle-database/19/shard&amp;id=GGSAU-GUID-2C059382-7753-4EFA-B313-A6E0DAF7EA1C" target="_blank">Working with Oracle GoldenGate Sharding</a> in the Fusion Middleware <span id="GUID-4FC0AC46-0B8B-4670-BBE4-052228492C72__GGSAU"><cite>Using the Oracle GoldenGate Microservices Architecture</cite></span> guide for more information about using Oracle GoldenGate with Oracle Sharding.
+                        </p>
+                        <p></p>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div class="sect2"><a id="GUID-9C13DCC4-0018-4049-94D8-70F518008504" name="GUID-9C13DCC4-0018-4049-94D8-70F518008504"></a><h3 id="SHARD-GUID-9C13DCC4-0018-4049-94D8-70F518008504" class="sect3">Query Processing and the Query
+        Coordinator</h3>
+               <div>
+                  <p>The <strong class="term">query coordinator</strong> is part of the shard
+        catalog. The query coordinator provides query processing support for the sharded database.
+        With its access to the sharded database topology metadata in the shard catalog, there are
+        three general cases in which the query coordinator plays an important part.
+                  </p>
+                  <ol id="GUID-9C13DCC4-0018-4049-94D8-70F518008504__UL_IS4_2HS_CMB">
+                     <li>
+                        
+                        <p>Single Shard Queries with No Sharding Key</p>
+                        
+                        <p>If a sharding key is not passed from the application, the query coordinator
+                    figures out which shard contains the data required by the query and sends the
+                    query there for execution.</p>
+                        
+                     </li>
+                     <li>
+                        
+                        <p>Multi-Shard Queries</p>
+                        
+                        <p>The query coordinator can also assist with queries that need data from more than
+                    one shard, called <strong class="term">multi-shard queries</strong>, for example <code class="codeph">SELECT
+                        COUNT(*) FROM Customer</code>.
+                        </p>
+                        
+                     </li>
+                     <li>
+                        
+                        <p>Aggregate Queries</p>
+                        
+                        <p>The query coordinator handles aggregate queries typically used in reporting, such
+                    as aggregates on sales data.</p>
+                        
+                     </li>
+                  </ol>
+                  <p>In every case, the query coordinator’s SQL compiler identifies the relevant
+            shards automatically and coordinates the query execution across all of the participating
+            shards.</p>
+                  <p>In a single-shard query scenario, the entire query is executed on the single
+            participating shard, and the query coordinator just passes processed rows back to the
+            client.</p>
+                  <p>For a multi-shard query the SQL compiler analyzes and rewrites the query into
+            query fragments that are sent and executed by the participating shards. The queries are
+            rewritten so that most of the query processing is done on the participating shards and
+            then aggregated by the coordinator. </p>
+                  <p>The query coordinator uses Oracle Database's parallel query engine to optimize and push
+            multi-shard queries in parallel to the shards. Each shard executes the query on the
+            subset of data that it has. Then the results are returned back to the query coordinator,
+            which sends them back to the client.</p>
+                  <p>In essence, the shards act as compute nodes for the queries executed by the
+            query coordinator. Because the computation is pushed to the data, there is reduced
+            movement of data between shards and the coordinator. This arrangement also enables the
+            effective use of resources by offloading processing from the query coordinator on to the
+            shards as much as possible.</p>
+                  <p><span class="bold">Specifying Consistency Levels</span></p>
+                  <p>You can specify different consistency levels for multi-shard queries. For example, you
+            might want some queries to avoid the cost of SCN synchronization across shards, and
+            these shards could be globally distributed. Another use case is when you use standbys
+            for replication and slightly stale data is acceptable for multi-shard queries, as the
+            results could be fetched from the primary and its standbys. A multi-shard query must
+            maintain global read consistency (CR) by issuing the query at the highest common SCN
+            across all the shards.</p>
+                  <p><span class="bold">High Availability and Performance</span></p>
+                  <p>It is highly recommended that the query coordinator be protected with Oracle Data Guard
+            in Maximum Availability protection mode (zero data loss failover) with fast-start
+            failover enabled. The query coordinator may optionally be Oracle RAC-enabled for
+            additional availability and scalability. To improve the scalability and availability of
+            multi-shard query workloads, Oracle Active Data Guard standby shard catalog databases in
+            read-only mode can act as multi-shard query coordinators. </p>
+                  <p>In aggregation use cases and SQL execution without a sharding key, you will experience a
+            reduced level of performance compared with direct, key-based, routing.</p>
+               </div>
+            </div>
+            <div class="sect2"><a id="GUID-D1B05BE6-06FD-4F8B-93C4-25DF65F4FF2B" name="GUID-D1B05BE6-06FD-4F8B-93C4-25DF65F4FF2B"></a><h3 id="SHARD-GUID-D1B05BE6-06FD-4F8B-93C4-25DF65F4FF2B" class="sect3">Client Application Request
+        Routing</h3>
+               <div>
+                  <p>To route a client application request directly to a shard, you connect to
+        the shard using the Oracle drivers and provide a sharding key with the request.</p>
+                  <p><span class="bold">About Sharding Keys</span></p>
+                  <p>All database requests that require high performance and fault isolation must
+            only access data associated with a single value of the sharding key. The application
+            must provide the sharding key when establishing a database connection. If this is the
+            case, the request is routed directly to the appropriate shard.</p>
+                  <p>Multiple requests can be executed in the same session as long as they all are
+            related to the same sharding key. Such transactions typically access 10s or 100s of
+            rows. Examples of single-shard transactions include order entry, lookup and update of a
+            customer’s billing record, and lookup and update of a subscriber’s documents.</p>
+                  <p>Database requests that must access data associated with multiple values of
+            the sharding key, or for which the value of the sharding key is unknown, must be
+            executed from the query coordinator which orchestrates parallel execution of the query
+            across multiple shards. </p>
+                  <p><span class="bold">About Oracle Connection Drivers</span></p>
+                  <p>At run time, connection pools act as shard directors by routing database
+            requests across pooled connections. Oracle Database supports connection-pooling in data
+            access drivers such as OCI, JDBC, and ODP.NET. These drivers can recognize sharding keys
+            specified as part of a connection request. Similarly, the Oracle Universal Connection
+            Pool (UCP) for JDBC clients can recognize sharding keys specified in a connection
+            URL.&nbsp;Oracle UCP also enables non-Oracle application clients such as Apache Tomcat and
+            WebSphere to work with Oracle Sharding.</p>
+                  <p>Oracle clients use UCP cache routing information to directly route a
+            database request to the appropriate shard, based on the sharding keys provided by the
+            application.&nbsp;Such data-dependent routing of database requests eliminates an extra
+            network hop, decreasing the transactional latency for high volume applications.</p>
+                  <p>Routing information is cached during an initial connection to a shard, which
+            is established using a shard director.&nbsp;Subsequent database requests for sharding keys
+            within the cached range are routed directly to the shard, bypassing the shard
+            director.</p>
+                  <p>Like UCP, a shard director can process a sharding key specified in a connect
+            string and cache routing information.&nbsp;However, UCP routes database requests using an
+            already established connection, while a shard director routes connection requests to a
+            shard.&nbsp;The routing cache automatically refreshes when a shard becomes unavailable or
+            changes occur to the sharding topology. For high-performance, data-dependent routing,
+            Oracle recommends using a connection pool when accessing data in the sharded
+            database.</p>
+                  <p>Separate connection pools must be used for direct routing and routing requests
+            through the query coordinator. For direct routing, separate global services must be
+            created for read-write and read-only workloads. This is true only if Data Guard
+            replication is used. For proxy routing, use the <code class="codeph">GDS$CATALOG</code> service on
+            the shard catalog database.
+                  </p>
+               </div>
+            </div>
+            <div class="sect2"><a id="GUID-A9FE2E08-405E-4FD1-926A-A4B18A93A5F8" name="GUID-A9FE2E08-405E-4FD1-926A-A4B18A93A5F8"></a><h3 id="SHARD-GUID-A9FE2E08-405E-4FD1-926A-A4B18A93A5F8" class="sect3">Management Interfaces for a
+        Sharded Database</h3>
+               <div>
+                  <p>The GDSCTL command-line utility is used to configure, deploy, monitor, and
+        manage an Oracle Sharding sharded database. Oracle Enterprise Manager Cloud Control can also
+        be used for sharded database monitoring and management.</p>
+                  <p>Like SQL*Plus, <code class="codeph">GDSCTL</code> is a command-line utility with which you can
+            control all stages of a sharded database's life cycle. You can run
+                <code class="codeph">GDSCTL</code> remotely from a different server or laptop to configure and
+            deploy a sharded database topology, and then montior and manage your sharded
+            database.
+                  </p>
+                  <p><code class="codeph">GDSCTL</code> provides a simple declarative way of specifying the
+            configuration of a sharded database and automating its deployment. Only a few GDSCTL
+            commands are required to create a sharded database.
+                  </p>
+                  <p>You can also use Cloud Control for sharded database monitoring and life
+            cycle management if you prefer a graphical user interface. With Cloud Control you can
+            monitor availability and performance, and you can make changes to a sharding
+            configuration, such as add and deploy shards, services, shard directors, and other
+            sharding components.</p>
+               </div>
+            </div>
+         </div>
+      </article>
+   </body>
+</html>

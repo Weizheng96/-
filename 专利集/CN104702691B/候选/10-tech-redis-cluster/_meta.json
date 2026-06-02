@@ -1,0 +1,10 @@
+{
+  "nn": "10",
+  "slug": "10-tech-redis-cluster",
+  "type": "技术",
+  "name": "Redis Cluster（hash slot + replica + reshard）",
+  "organization": "Redis Ltd",
+  "hit_features_initial": "F0,F1,F2,F3",
+  "publicity": "中",
+  "blurb": "- 类型：技术\n- 名称：Redis Cluster（hash slot + replica）\n- 组织：Redis Ltd\n- 命中 F#（初判）：F0,F1,F2,F3\n- 公开度：中（开源核心 + 文档，但 slot 再均衡较多依赖外部工具/运维）\n- 一句话定位：内存数据库，16384 slot 分片，每主含 replica（F0），副本置于不同节点（F2），reshard 迁移 slot（F1/F3）。\n- 应用案例（技术类）：Redis Enterprise、AWS ElastiCache、Valkey（fork）"
+}

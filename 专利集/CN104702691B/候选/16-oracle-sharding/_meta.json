@@ -1,0 +1,10 @@
+{
+  "nn": "16",
+  "slug": "16-oracle-sharding",
+  "type": "产品",
+  "name": "Oracle Globally Distributed Database / Sharding（shard + 复制 + shard director）",
+  "organization": "Oracle",
+  "hit_features_initial": "F0,F1,F2,F3",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：Oracle Globally Distributed Database / Oracle Sharding\n- vendor：Oracle\n- 命中 F#（初判）：F0,F1,F2,F3\n- 公开度：中\n- 一句话定位：企业级分布式数据库，shard + 自动复制（Data Guard / 23ai Raft），shard director 路由，chunk 在 shard 间移动均衡（F1/F3）。"
+}

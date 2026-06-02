@@ -1,0 +1,10 @@
+{
+  "nn": "05",
+  "slug": "05-cockroachlabs-cockroachdb",
+  "type": "产品",
+  "name": "CockroachDB（range 副本 + locality rebalancing）",
+  "organization": "Cockroach Labs",
+  "hit_features_initial": "F0,F1,F2,F3",
+  "publicity": "高",
+  "blurb": "- 类型：产品\n- 名称：CockroachDB\n- vendor：Cockroach Labs（独角兽）\n- 命中 F#（初判）：F0,F1,F2,F3\n- 公开度：高\n- 一句话定位：分布式 SQL，range 含多副本，按 locality 约束分散副本（F2），自动 rebalancing 把副本从高负载搬到低负载 store（F3）。"
+}

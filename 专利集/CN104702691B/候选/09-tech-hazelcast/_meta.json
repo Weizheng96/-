@@ -1,0 +1,10 @@
+{
+  "nn": "09",
+  "slug": "09-tech-hazelcast",
+  "type": "技术",
+  "name": "Hazelcast（partition + backup + migration；背景技术显式引用→须辨析现有技术 vs 改进）",
+  "organization": "Hazelcast Inc",
+  "hit_features_initial": "F0,F1,F2,F3",
+  "publicity": "高",
+  "blurb": "- 类型：技术\n- 名称：Hazelcast（partition + backup + migration）\n- 组织：Hazelcast Inc\n- 命中 F#（初判）：F0,F1,F2,F3\n- 公开度：高\n- 一句话定位：内存数据网格，partition 含 backup 副本，成员级反亲和（F2），migration 实现再均衡（F1/F3）。**注意：背景技术显式把 hazelcast 列为现有方案——Step 6 须区分\"hazelcast 现有方法（现有技术，不侵权）\"与\"2017-12-01 后引入的改进特性是否落入本专利\"。**\n- 应用案例（技术类）：Hazelcast Platform/Cloud"
+}

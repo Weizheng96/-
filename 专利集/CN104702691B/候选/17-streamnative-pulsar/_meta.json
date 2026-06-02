@@ -1,0 +1,10 @@
+{
+  "nn": "17",
+  "slug": "17-streamnative-pulsar",
+  "type": "产品",
+  "name": "Apache Pulsar（bundle/broker LB + BookKeeper ensemble 放置）",
+  "organization": "StreamNative",
+  "hit_features_initial": "F0,F1,F3",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：Apache Pulsar\n- vendor：StreamNative\n- 命中 F#（初判）：F0,F1,F3\n- 公开度：中\n- 一句话定位：事件流平台，topic 分 bundle 由 broker 负载均衡（F1/F3），存储层 BookKeeper ensemble 跨 bookie/rack 放置副本——F2 形态与本专利\"按主分区分组的备副本均衡\"不完全一致，Step 6 核。"
+}

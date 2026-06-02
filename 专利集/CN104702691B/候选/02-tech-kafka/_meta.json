@@ -1,0 +1,10 @@
+{
+  "nn": "02",
+  "slug": "02-tech-kafka",
+  "type": "技术",
+  "name": "Apache Kafka（leader/follower partition + rack-aware + Cruise Control）",
+  "organization": "Confluent Inc",
+  "hit_features_initial": "F0,F1,F2,F3",
+  "publicity": "高",
+  "blurb": "- 类型：技术\n- 名称：Apache Kafka（partition leader/follower + 副本分配 + 再均衡）\n- 组织：Confluent Inc（NASDAQ: CFLT，Kafka 主要商业主体）\n- 命中 F#（初判）：F0,F1,F2,F3\n- 公开度：高（KIP / 官方文档 / 开源代码）\n- 一句话定位：事件流平台，topic partition 含 leader+follower 副本，rack-aware replica assignment 反亲和（F2），Cruise Control / Confluent Self-Balancing 实现高低负载再均衡（F3）。\n- 应用案例（技术类）：Confluent Platform/Cloud、AWS MSK、Aiven、Redpanda（兼容）"
+}

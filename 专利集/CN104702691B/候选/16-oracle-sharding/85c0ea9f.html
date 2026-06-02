@@ -1,0 +1,147 @@
+<!DOCTYPE html
+  SYSTEM "about:legacy-compat">
+<html xml:lang="en-us" lang="en-us">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <meta name="DC.Type" content="concept">
+      <meta name="DC.Title" content="Raft Replication Configuration and Management">
+      <meta name="abstract" content="Raft replication in Oracle Globally Distributed AI Database creates smaller replication units and distributes them automatically to handle chunk assignment, chunk movement, workload distribution, and balancing upon scaling (addition or removal of shards), including planned or unplanned shard availability changes.">
+      <meta name="description" content="Raft replication in Oracle Globally Distributed AI Database creates smaller replication units and distributes them automatically to handle chunk assignment, chunk movement, workload distribution, and balancing upon scaling (addition or removal of shards), including planned or unplanned shard availability changes.">
+      <meta name="DC.Creator" content="Sravya Balagala">
+      <meta name="DC.Creator" content="Steve Ball">
+      <meta name="DC.Creator" content="Nourdine Benadjaoud">
+      <meta name="DC.Creator" content="Sebastian Binek">
+      <meta name="DC.Creator" content="Prasad Budithi">
+      <meta name="DC.Creator" content="Pankaj Chandiramani">
+      <meta name="DC.Creator" content="David Colello">
+      <meta name="DC.Creator" content="Richard Delval">
+      <meta name="DC.Creator" content="Mark Dilman">
+      <meta name="DC.Creator" content="Shailesh Dwivedi">
+      <meta name="DC.Creator" content="Shahab Hamid">
+      <meta name="DC.Creator" content="Prakash Jashnani">
+      <meta name="DC.Creator" content="Nitin Karkhanis">
+      <meta name="DC.Creator" content="Aman Kumar">
+      <meta name="DC.Creator" content="Rupesh Kumar">
+      <meta name="DC.Creator" content="Rennie Sreekumar Ranjit Kumar">
+      <meta name="DC.Creator" content="Lin Lu">
+      <meta name="DC.Creator" content="Darshan Maniyani">
+      <meta name="DC.Creator" content="Vikas Mehta">
+      <meta name="DC.Creator" content="Sathis Muniyasamy">
+      <meta name="DC.Creator" content="Leo Novak">
+      <meta name="DC.Creator" content="Kehinde Otubamowo">
+      <meta name="DC.Creator" content="Dinesh Putchala">
+      <meta name="DC.Creator" content="Sachin Rathod">
+      <meta name="DC.Creator" content="Sampanna Salunke">
+      <meta name="DC.Creator" content="Vijaya Sarode">
+      <meta name="DC.Creator" content="Abhishek Srivastava">
+      <meta name="DC.Creator" content="Jean-Francois Verrier">
+      <meta name="DC.Creator" content="Lik Wong">
+      <meta name="DC.Creator" content="Zaixian Xie">
+      <meta name="DC.Creator" content="Jean Zeng">
+      <meta name="DC.Creator" content="Virginia Beecher">
+      <meta name="DC.Publisher" content="November2025">
+      <meta name="template" content="Concept">
+      <meta name="DC.Format" content="XHTML">
+      <meta name="DC.Identifier" content="GUID-AB5D3A4B-51BD-456C-B03E-4C6B3EDB4C2B">
+      <meta name="DC.Language" content="en-US">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="abstract" content="Raft replication in Oracle Globally Distributed AI Database creates smaller replication units and distributes them automatically to handle chunk assignment, chunk movement, workload distribution, and balancing upon scaling (addition or removal of shards), including planned or unplanned shard availability changes.">
+      <meta name="description" content="Raft replication in Oracle Globally Distributed AI Database creates smaller replication units and distributes them automatically to handle chunk assignment, chunk movement, workload distribution, and balancing upon scaling (addition or removal of shards), including planned or unplanned shard availability changes.">
+      <title>Raft Replication Configuration and Management</title>
+      <meta property="og:site_name" content="Oracle Help Center">
+      <meta property="og:title" content="Oracle Globally Distributed AI Database Guide">
+      <meta property="og:description" content="Raft replication in Oracle Globally Distributed AI Database creates smaller replication units and distributes them automatically to handle chunk assignment, chunk movement, workload distribution, and balancing upon scaling (addition or removal of shards), including planned or unplanned shard availability changes.">
+      <link rel="stylesheet" href="/sp_common/book-template/ohc-book-template/css/book.css">
+      <link rel="shortcut icon" href="/sp_common/book-template/ohc-common/img/favicon.ico">
+      <meta name="application-name" content="Oracle Globally Distributed AI Database Guide">
+      <meta name="generator" content="DITA Open Toolkit version 1.8.5 (Mode = doc)">
+      <meta name="plugin" content="SP_docbuilder HTML plugin release 18.2.2">
+      <link rel="alternate" href="oracle-globally-distributed-ai-database-guide.pdf" title="PDF File" type="application/pdf">
+      <link rel="schema.dcterms" href="http://purl.org/dc/terms/">
+      <meta name="dcterms.created" content="2025-11-26T13:55:19-08:00">
+      <meta name="dcterms.title" content="Oracle Globally Distributed AI Database Guide">
+      <meta name="dcterms.dateCopyrighted" content="2018, 2025">
+      <meta name="dcterms.category" content="database">
+      <meta name="dcterms.identifier" content="F56768-03">
+      
+      <meta name="dcterms.product" content="en/database/oracle/oracle-database/26">
+      
+      <link rel="prev" href="data-guard-chapter-orientation.html" title="Previous" type="text/html">
+      <link rel="next" href="raft-replication-concepts.html" title="Next" type="text/html">
+      <script>
+        document.write('<style type="text/css">');
+        document.write('body > .noscript, body > .noscript ~ * { visibility: hidden; }');
+        document.write('</style>');
+     </script>
+      <script data-main="/sp_common/book-template/ohc-book-template/js/book-config" src="/sp_common/book-template/requirejs/require.js"></script>
+      <script>
+            if (window.require === undefined) {
+                document.write('<script data-main="sp_common/book-template/ohc-book-template/js/book-config" src="sp_common/book-template/requirejs/require.js"><\/script>');
+                document.write('<link href="sp_common/book-template/ohc-book-template/css/book.css" rel="stylesheet"/>');
+            }
+        </script>
+      <script type="application/json" id="ssot-metadata">{"primary":{"category":{"short_name":"database","element_name":"Database","display_in_url":true},"suite":{"short_name":"oracle","element_name":"Oracle","display_in_url":true},"product_group":{"short_name":"not-applicable","element_name":"Not applicable","display_in_url":false},"product":{"short_name":"oracle-database","element_name":"Oracle Database","display_in_url":true},"release":{"short_name":"26","element_name":"Release 26","display_in_url":true}}}</script>
+      
+    <meta name="dcterms.release" content="Release 26">
+    <meta name="dcterms.isVersionOf" content="SHARD">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Raft Replication Configuration and Management","description":"Raft replication in Oracle Globally Distributed AI Database creates smaller replication units and distributes them automatically to handle chunk assignment, chunk movement, workload distribution, and balancing upon scaling (addition or removal of shards), including planned or unplanned shard availability changes.","datePublished":"2025-11-26 CST","dateModified":"2025-11-26 CST"}</script>
+    <script>window.ohcglobal || document.write('<script src="/en/dcommon/js/global.js">\x3C/script>')</script></head>
+   <body>
+      <div class="noscript alert alert-danger text-center" role="alert">
+         <a href="data-guard-chapter-orientation.html" class="pull-left"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>Previous</a>
+         <a href="raft-replication-concepts.html" class="pull-right">Next<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
+         <span class="fa fa-exclamation-triangle" aria-hidden="true"></span> JavaScript must be enabled to correctly display this content
+        
+      </div>
+      <article class>
+         <a id="GUID-AB5D3A4B-51BD-456C-B03E-4C6B3EDB4C2B" name="GUID-AB5D3A4B-51BD-456C-B03E-4C6B3EDB4C2B"></a>
+         
+         <h2 id="SHARD-GUID-AB5D3A4B-51BD-456C-B03E-4C6B3EDB4C2B" class="sect2"><span class="enumeration_chapter">6 </span>Raft Replication Configuration and
+        Management
+         </h2>
+         <div class="ind">
+            <div>
+               <p>Raft replication in <span>Oracle Globally Distributed AI Database</span> creates smaller replication units and distributes them automatically to handle chunk
+        assignment, chunk movement, workload distribution, and balancing upon scaling (addition or
+        removal of shards), including planned or unplanned shard availability changes.
+               </p>
+               <p>As part of the distributed database configuration, when creating the shard catalog, you
+            can choose a replication method: Raft replication or Oracle Data Guard. Unlike Oracle
+            Data Guard replication, Raft replication does not need to be reconfigured when shards
+            are added or removed, and replicas do not need to be actively managed.</p>
+               <p><span>Oracle Globally Distributed AI Database</span> provides commands and options in the GDSCTL CLI to enable and manage Raft replication
+            in a system-managed <span>distributed database</span>.
+               </p>
+               <div class="infoboxnote" id="GUID-AB5D3A4B-51BD-456C-B03E-4C6B3EDB4C2B__GUID-4150AC11-5312-4B01-8435-EF368FB825CC">
+                  <p class="notep1">Note:</p>
+                  
+                  <ul style="list-style-type: disc;" id="GUID-AB5D3A4B-51BD-456C-B03E-4C6B3EDB4C2B__UL_FSN_LX3_ZDC">
+                     <li>
+                        
+                        <p>Raft replication does not provide high availability for the catalog database.
+                        You can configure Data Guard separately on the catalog. See <a href="adding-shard-catalog-standby.html#GUID-0EF4ACE2-EFED-4887-9E52-0284CEB263AA" title="You can modify the shard director to add a standby shard catalog database (that has already been created).">Creating a Shard Catalog Standby</a>.
+                        </p>
+                        
+                     </li>
+                     <li>
+                        
+                        <p>Raft replication is only supported for system-managed (automatic) data
+                        distribution method.</p>
+                        
+                     </li>
+                  </ul>
+                  
+               </div>
+               <p><span class="bold">Topics:</span></p>
+               <ul style="list-style-type: disc;" id="GUID-AB5D3A4B-51BD-456C-B03E-4C6B3EDB4C2B__UL_JYN_NN4_ZDC">
+                  <li><a href="raft-replication-concepts.html#GUID-AF14C34B-4F55-4528-8B28-5073A3BFD2BE" title="Oracle Globally Distributed AI Database provides built-in fault tolerance with Raft replication, a capability that integrates data replication with transaction execution in a distributed database.">Using Raft Replication in Oracle Globally Distributed AI Database</a></li>
+                  <li><a href="enabling-raft-replication.html#GUID-F4568AD4-321C-4549-96A3-E6EF695C9592" title="You enable Raft replication when you configure the shard catalog.">Enabling Raft Replication</a></li>
+                  <li><a href="raft-replication-operations.html#GUID-0D3B427D-043B-4C21-8BBB-A56F221FA71B">Raft Replication Operations and Settings</a></li>
+                  <li><a href="raft-replication-restrictions.html#GUID-1FD6F057-E8A9-4B88-86A0-E6E874AFD0D7" title="The following restrictions apply to Raft replication in Oracle Globally Distributed AI Database.">Raft Replication Restrictions</a></li>
+               </ul>
+            </div>
+         </div>
+      </article>
+   </body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "nn": "06",
+  "slug": "06-yugabyte-yugabytedb",
+  "type": "产品",
+  "name": "YugabyteDB（tablet 副本 + zone-aware rebalance）",
+  "organization": "Yugabyte Inc",
+  "hit_features_initial": "F0,F1,F2,F3",
+  "publicity": "高",
+  "blurb": "- 类型：产品\n- 名称：YugabyteDB\n- vendor：Yugabyte Inc（独角兽）\n- 命中 F#（初判）：F0,F1,F2,F3\n- 公开度：高\n- 一句话定位：分布式 SQL，tablet 含多副本，cloud/region/zone 感知放置（F2），load balancer 自动均衡 tablet 副本（F1/F3）。"
+}

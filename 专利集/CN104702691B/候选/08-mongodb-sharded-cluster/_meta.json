@@ -1,0 +1,10 @@
+{
+  "nn": "08",
+  "slug": "08-mongodb-sharded-cluster",
+  "type": "产品",
+  "name": "MongoDB Sharded Cluster（chunk balancer + zone sharding + replica set）",
+  "organization": "MongoDB Inc",
+  "hit_features_initial": "F0,F1,F2,F3",
+  "publicity": "高",
+  "blurb": "- 类型：产品\n- 名称：MongoDB Sharded Cluster\n- vendor：MongoDB Inc（NASDAQ: MDB）\n- 命中 F#（初判）：F0,F1,F2,F3\n- 公开度：高\n- 一句话定位：文档数据库，chunk 跨 shard 由 Balancer 均匀分布（F1/F3），每 shard 为 Replica Set（F0），zone sharding 控制放置（F2）。"
+}

@@ -1,0 +1,1535 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head><meta charset="UTF-8" /><script>if(navigator.userAgent.match(/MSIE|Internet Explorer/i)||navigator.userAgent.match(/Trident\/7\..*?rv:11/i)){var href=document.location.href;if(!href.match(/[?&]nowprocket/)){if(href.indexOf("?")==-1){if(href.indexOf("#")==-1){document.location.href=href+"?nowprocket=1"}else{document.location.href=href.replace("#","?nowprocket=1#")}}else{if(href.indexOf("#")==-1){document.location.href=href+"&nowprocket=1"}else{document.location.href=href.replace("#","&nowprocket=1#")}}}}</script><script>class RocketLazyLoadScripts{constructor(){this.v="1.2.5.1",this.triggerEvents=["keydown","mousedown","mousemove","touchmove","touchstart","touchend","wheel"],this.userEventHandler=this._triggerListener.bind(this),this.touchStartHandler=this._onTouchStart.bind(this),this.touchMoveHandler=this._onTouchMove.bind(this),this.touchEndHandler=this._onTouchEnd.bind(this),this.clickHandler=this._onClick.bind(this),this.interceptedClicks=[],this.interceptedClickListeners=[],this._interceptClickListeners(this),window.addEventListener("pageshow",e=>{this.persisted=e.persisted,this.everythingLoaded&&this._triggerLastFunctions()}),document.addEventListener("DOMContentLoaded",()=>{this._preconnect3rdParties()}),this.delayedScripts={normal:[],async:[],defer:[]},this.trash=[],this.allJQueries=[]}_addUserInteractionListener(e){if(document.hidden){e._triggerListener();return}this.triggerEvents.forEach(t=>window.addEventListener(t,e.userEventHandler,{passive:!0})),window.addEventListener("touchstart",e.touchStartHandler,{passive:!0}),window.addEventListener("mousedown",e.touchStartHandler),document.addEventListener("visibilitychange",e.userEventHandler)}_removeUserInteractionListener(){this.triggerEvents.forEach(e=>window.removeEventListener(e,this.userEventHandler,{passive:!0})),document.removeEventListener("visibilitychange",this.userEventHandler)}_onTouchStart(e){"HTML"!==e.target.tagName&&(window.addEventListener("touchend",this.touchEndHandler),window.addEventListener("mouseup",this.touchEndHandler),window.addEventListener("touchmove",this.touchMoveHandler,{passive:!0}),window.addEventListener("mousemove",this.touchMoveHandler),e.target.addEventListener("click",this.clickHandler),this._disableOtherEventListeners(e.target,!0),this._renameDOMAttribute(e.target,"onclick","rocket-onclick"),this._pendingClickStarted())}_onTouchMove(e){window.removeEventListener("touchend",this.touchEndHandler),window.removeEventListener("mouseup",this.touchEndHandler),window.removeEventListener("touchmove",this.touchMoveHandler,{passive:!0}),window.removeEventListener("mousemove",this.touchMoveHandler),e.target.removeEventListener("click",this.clickHandler),this._disableOtherEventListeners(e.target,!1),this._renameDOMAttribute(e.target,"rocket-onclick","onclick"),this._pendingClickFinished()}_onTouchEnd(){window.removeEventListener("touchend",this.touchEndHandler),window.removeEventListener("mouseup",this.touchEndHandler),window.removeEventListener("touchmove",this.touchMoveHandler,{passive:!0}),window.removeEventListener("mousemove",this.touchMoveHandler)}_onClick(e){e.target.removeEventListener("click",this.clickHandler),this._disableOtherEventListeners(e.target,!1),this._renameDOMAttribute(e.target,"rocket-onclick","onclick"),this.interceptedClicks.push(e),e.preventDefault(),e.stopPropagation(),e.stopImmediatePropagation(),this._pendingClickFinished()}_replayClicks(){window.removeEventListener("touchstart",this.touchStartHandler,{passive:!0}),window.removeEventListener("mousedown",this.touchStartHandler),this.interceptedClicks.forEach(e=>{e.target.dispatchEvent(new MouseEvent("click",{view:e.view,bubbles:!0,cancelable:!0}))})}_interceptClickListeners(e){EventTarget.prototype.addEventListenerBase=EventTarget.prototype.addEventListener,EventTarget.prototype.addEventListener=function(t,i,r){"click"!==t||e.windowLoaded||i===e.clickHandler||e.interceptedClickListeners.push({target:this,func:i,options:r}),(this||window).addEventListenerBase(t,i,r)}}_disableOtherEventListeners(e,t){this.interceptedClickListeners.forEach(i=>{i.target===e&&(t?e.removeEventListener("click",i.func,i.options):e.addEventListener("click",i.func,i.options))}),e.parentNode!==document.documentElement&&this._disableOtherEventListeners(e.parentNode,t)}_waitForPendingClicks(){return new Promise(e=>{this._isClickPending?this._pendingClickFinished=e:e()})}_pendingClickStarted(){this._isClickPending=!0}_pendingClickFinished(){this._isClickPending=!1}_renameDOMAttribute(e,t,i){e.hasAttribute&&e.hasAttribute(t)&&(event.target.setAttribute(i,event.target.getAttribute(t)),event.target.removeAttribute(t))}_triggerListener(){this._removeUserInteractionListener(this),"loading"===document.readyState?document.addEventListener("DOMContentLoaded",this._loadEverythingNow.bind(this)):this._loadEverythingNow()}_preconnect3rdParties(){let e=[];document.querySelectorAll("script[type=rocketlazyloadscript][data-rocket-src]").forEach(t=>{let i=t.getAttribute("data-rocket-src");if(i&&0!==i.indexOf("data:")){0===i.indexOf("//")&&(i=location.protocol+i);try{let r=new URL(i).origin;r!==location.origin&&e.push({src:r,crossOrigin:t.crossOrigin||"module"===t.getAttribute("data-rocket-type")})}catch(n){}}}),e=[...new Map(e.map(e=>[JSON.stringify(e),e])).values()],this._batchInjectResourceHints(e,"preconnect")}async _loadEverythingNow(){this.lastBreath=Date.now(),this._delayEventListeners(this),this._delayJQueryReady(this),this._handleDocumentWrite(),this._registerAllDelayedScripts(),this._preloadAllScripts(),await this._loadScriptsFromList(this.delayedScripts.normal),await this._loadScriptsFromList(this.delayedScripts.defer),await this._loadScriptsFromList(this.delayedScripts.async);try{await this._triggerDOMContentLoaded(),await this._pendingWebpackRequests(this),await this._triggerWindowLoad()}catch(e){console.error(e)}window.dispatchEvent(new Event("rocket-allScriptsLoaded")),this.everythingLoaded=!0,this._waitForPendingClicks().then(()=>{this._replayClicks()}),this._emptyTrash()}_registerAllDelayedScripts(){document.querySelectorAll("script[type=rocketlazyloadscript]").forEach(e=>{e.hasAttribute("data-rocket-src")?e.hasAttribute("async")&&!1!==e.async?this.delayedScripts.async.push(e):e.hasAttribute("defer")&&!1!==e.defer||"module"===e.getAttribute("data-rocket-type")?this.delayedScripts.defer.push(e):this.delayedScripts.normal.push(e):this.delayedScripts.normal.push(e)})}async _transformScript(e){if(await this._littleBreath(),!0===e.noModule&&"noModule"in HTMLScriptElement.prototype){e.setAttribute("data-rocket-status","skipped");return}return new Promise(t=>{let i;function r(){(i||e).setAttribute("data-rocket-status","executed"),t()}try{if(navigator.userAgent.indexOf("Firefox/")>0||""===navigator.vendor)i=document.createElement("script"),[...e.attributes].forEach(e=>{let t=e.nodeName;"type"!==t&&("data-rocket-type"===t&&(t="type"),"data-rocket-src"===t&&(t="src"),i.setAttribute(t,e.nodeValue))}),e.text&&(i.text=e.text),i.hasAttribute("src")?(i.addEventListener("load",r),i.addEventListener("error",function(){i.setAttribute("data-rocket-status","failed"),t()}),setTimeout(()=>{i.isConnected||t()},1)):(i.text=e.text,r()),e.parentNode.replaceChild(i,e);else{let n=e.getAttribute("data-rocket-type"),s=e.getAttribute("data-rocket-src");n?(e.type=n,e.removeAttribute("data-rocket-type")):e.removeAttribute("type"),e.addEventListener("load",r),e.addEventListener("error",function(){e.setAttribute("data-rocket-status","failed"),t()}),s?(e.removeAttribute("data-rocket-src"),e.src=s):e.src="data:text/javascript;base64,"+window.btoa(unescape(encodeURIComponent(e.text)))}}catch(a){e.setAttribute("data-rocket-status","failed"),t()}})}async _loadScriptsFromList(e){let t=e.shift();return t&&t.isConnected?(await this._transformScript(t),this._loadScriptsFromList(e)):Promise.resolve()}_preloadAllScripts(){this._batchInjectResourceHints([...this.delayedScripts.normal,...this.delayedScripts.defer,...this.delayedScripts.async],"preload")}_batchInjectResourceHints(e,t){var i=document.createDocumentFragment();e.forEach(e=>{let r=e.getAttribute&&e.getAttribute("data-rocket-src")||e.src;if(r){let n=document.createElement("link");n.href=r,n.rel=t,"preconnect"!==t&&(n.as="script"),e.getAttribute&&"module"===e.getAttribute("data-rocket-type")&&(n.crossOrigin=!0),e.crossOrigin&&(n.crossOrigin=e.crossOrigin),e.integrity&&(n.integrity=e.integrity),i.appendChild(n),this.trash.push(n)}}),document.head.appendChild(i)}_delayEventListeners(e){let t={};function i(i,r){return t[r].eventsToRewrite.indexOf(i)>=0&&!e.everythingLoaded?"rocket-"+i:i}function r(e,r){var n;!t[n=e]&&(t[n]={originalFunctions:{add:n.addEventListener,remove:n.removeEventListener},eventsToRewrite:[]},n.addEventListener=function(){arguments[0]=i(arguments[0],n),t[n].originalFunctions.add.apply(n,arguments)},n.removeEventListener=function(){arguments[0]=i(arguments[0],n),t[n].originalFunctions.remove.apply(n,arguments)}),t[e].eventsToRewrite.push(r)}function n(t,i){let r=t[i];t[i]=null,Object.defineProperty(t,i,{get:()=>r||function(){},set(n){e.everythingLoaded?r=n:t["rocket"+i]=r=n}})}r(document,"DOMContentLoaded"),r(window,"DOMContentLoaded"),r(window,"load"),r(window,"pageshow"),r(document,"readystatechange"),n(document,"onreadystatechange"),n(window,"onload"),n(window,"onpageshow")}_delayJQueryReady(e){let t;function i(t){return e.everythingLoaded?t:t.split(" ").map(e=>"load"===e||0===e.indexOf("load.")?"rocket-jquery-load":e).join(" ")}function r(r){if(r&&r.fn&&!e.allJQueries.includes(r)){r.fn.ready=r.fn.init.prototype.ready=function(t){return e.domReadyFired?t.bind(document)(r):document.addEventListener("rocket-DOMContentLoaded",()=>t.bind(document)(r)),r([])};let n=r.fn.on;r.fn.on=r.fn.init.prototype.on=function(){return this[0]===window&&("string"==typeof arguments[0]||arguments[0]instanceof String?arguments[0]=i(arguments[0]):"object"==typeof arguments[0]&&Object.keys(arguments[0]).forEach(e=>{let t=arguments[0][e];delete arguments[0][e],arguments[0][i(e)]=t})),n.apply(this,arguments),this},e.allJQueries.push(r)}t=r}r(window.jQuery),Object.defineProperty(window,"jQuery",{get:()=>t,set(e){r(e)}})}async _pendingWebpackRequests(e){let t=document.querySelector("script[data-webpack]");async function i(){return new Promise(e=>{t.addEventListener("load",e),t.addEventListener("error",e)})}t&&(await i(),await e._requestAnimFrame(),await e._pendingWebpackRequests(e))}async _triggerDOMContentLoaded(){this.domReadyFired=!0,await this._littleBreath(),document.dispatchEvent(new Event("rocket-readystatechange")),await this._littleBreath(),document.rocketonreadystatechange&&document.rocketonreadystatechange(),await this._littleBreath(),document.dispatchEvent(new Event("rocket-DOMContentLoaded")),await this._littleBreath(),window.dispatchEvent(new Event("rocket-DOMContentLoaded"))}async _triggerWindowLoad(){await this._littleBreath(),document.dispatchEvent(new Event("rocket-readystatechange")),await this._littleBreath(),document.rocketonreadystatechange&&document.rocketonreadystatechange(),await this._littleBreath(),window.dispatchEvent(new Event("rocket-load")),await this._littleBreath(),window.rocketonload&&window.rocketonload(),await this._littleBreath(),this.allJQueries.forEach(e=>e(window).trigger("rocket-jquery-load")),await this._littleBreath();let e=new Event("rocket-pageshow");e.persisted=this.persisted,window.dispatchEvent(e),await this._littleBreath(),window.rocketonpageshow&&window.rocketonpageshow({persisted:this.persisted}),this.windowLoaded=!0}_triggerLastFunctions(){document.onreadystatechange&&document.onreadystatechange(),window.onload&&window.onload(),window.onpageshow&&window.onpageshow({persisted:this.persisted})}_handleDocumentWrite(){let e=new Map;document.write=document.writeln=function(t){let i=document.currentScript;i||console.error("WPRocket unable to document.write this: "+t);let r=document.createRange(),n=i.parentElement,s=e.get(i);void 0===s&&(s=i.nextSibling,e.set(i,s));let a=document.createDocumentFragment();r.setStart(a,0),a.appendChild(r.createContextualFragment(t)),n.insertBefore(a,s)}}async _littleBreath(){Date.now()-this.lastBreath>45&&(await this._requestAnimFrame(),this.lastBreath=Date.now())}async _requestAnimFrame(){return document.hidden?new Promise(e=>setTimeout(e)):new Promise(e=>requestAnimationFrame(e))}_emptyTrash(){this.trash.forEach(e=>e.remove())}static run(){let e=new RocketLazyLoadScripts;e._addUserInteractionListener(e)}}RocketLazyLoadScripts.run();</script>
+
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta name='robots' content='index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' />
+	<style>img:is([sizes="auto" i], [sizes^="auto," i]) { contain-intrinsic-size: 3000px 1500px }</style>
+	
+	<!-- This site is optimized with the Yoast SEO Premium plugin v25.7.1 (Yoast SEO v25.7) - https://yoast.com/wordpress/plugins/seo/ -->
+	<title>Hash Slot Resharding and Rebalancing for Redis Cluster | Severalnines</title>
+	<meta name="description" content="In this blog post, we will look into how to perform hash slot maintenance operations for a Redis Cluster, which is commonly required for cluster scaling on the Redis Community server." />
+	<link rel="canonical" href="https://severalnines.com/blog/hash-slot-resharding-and-rebalancing-redis-cluster/" />
+	<meta property="og:locale" content="en_US" />
+	<meta property="og:type" content="article" />
+	<meta property="og:title" content="Hash Slot Resharding and Rebalancing for Redis Cluster" />
+	<meta property="og:description" content="In this blog post, we will look into how to perform hash slot maintenance operations for a Redis Cluster, which is commonly required for cluster scaling on the Redis Community server." />
+	<meta property="og:url" content="https://severalnines.com/blog/hash-slot-resharding-and-rebalancing-redis-cluster/" />
+	<meta property="og:site_name" content="Severalnines" />
+	<meta property="article:published_time" content="2021-07-07T13:55:05+00:00" />
+	<meta property="article:modified_time" content="2025-03-07T13:20:09+00:00" />
+	<meta property="og:image" content="https://severalnines.com/wp-content/uploads/2022/05/fb132b227a22b9b72213a76de0b244df-1.jpg" />
+	<meta property="og:image:width" content="1920" />
+	<meta property="og:image:height" content="1280" />
+	<meta property="og:image:type" content="image/jpeg" />
+	<meta name="author" content="Ashraf Sharif" />
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:label1" content="Written by" />
+	<meta name="twitter:data1" content="Ashraf Sharif" />
+	<meta name="twitter:label2" content="Est. reading time" />
+	<meta name="twitter:data2" content="7 minutes" />
+	<script type="application/ld+json" class="yoast-schema-graph">{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://severalnines.com/blog/hash-slot-resharding-and-rebalancing-redis-cluster/","url":"https://severalnines.com/blog/hash-slot-resharding-and-rebalancing-redis-cluster/","name":"Hash Slot Resharding and Rebalancing for Redis Cluster | Severalnines","isPartOf":{"@id":"https://severalnines.com/#website"},"primaryImageOfPage":{"@id":"https://severalnines.com/blog/hash-slot-resharding-and-rebalancing-redis-cluster/#primaryimage"},"image":{"@id":"https://severalnines.com/blog/hash-slot-resharding-and-rebalancing-redis-cluster/#primaryimage"},"thumbnailUrl":"https://severalnines.com/wp-content/uploads/2022/05/fb132b227a22b9b72213a76de0b244df-1.jpg","datePublished":"2021-07-07T13:55:05+00:00","dateModified":"2025-03-07T13:20:09+00:00","author":{"@id":"https://severalnines.com/#/schema/person/5657d7aef6279d56b86b667822cfc7e0"},"description":"In this blog post, we will look into how to perform hash slot maintenance operations for a Redis Cluster, which is commonly required for cluster scaling on the Redis Community server.","breadcrumb":{"@id":"https://severalnines.com/blog/hash-slot-resharding-and-rebalancing-redis-cluster/#breadcrumb"},"inLanguage":"en-US","potentialAction":[{"@type":"ReadAction","target":["https://severalnines.com/blog/hash-slot-resharding-and-rebalancing-redis-cluster/"]}]},{"@type":"ImageObject","inLanguage":"en-US","@id":"https://severalnines.com/blog/hash-slot-resharding-and-rebalancing-redis-cluster/#primaryimage","url":"https://severalnines.com/wp-content/uploads/2022/05/fb132b227a22b9b72213a76de0b244df-1.jpg","contentUrl":"https://severalnines.com/wp-content/uploads/2022/05/fb132b227a22b9b72213a76de0b244df-1.jpg","width":1920,"height":1280},{"@type":"BreadcrumbList","@id":"https://severalnines.com/blog/hash-slot-resharding-and-rebalancing-redis-cluster/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://severalnines.com/"},{"@type":"ListItem","position":2,"name":"posts pages","item":"https://severalnines.com/?page_id=1163"},{"@type":"ListItem","position":3,"name":"Hash Slot Resharding and Rebalancing for Redis Cluster"}]},{"@type":"WebSite","@id":"https://severalnines.com/#website","url":"https://severalnines.com/","name":"Severalnines","description":"","potentialAction":[{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://severalnines.com/?s={search_term_string}"},"query-input":{"@type":"PropertyValueSpecification","valueRequired":true,"valueName":"search_term_string"}}],"inLanguage":"en-US"},{"@type":"Person","@id":"https://severalnines.com/#/schema/person/5657d7aef6279d56b86b667822cfc7e0","name":"Ashraf Sharif","image":{"@type":"ImageObject","inLanguage":"en-US","@id":"https://severalnines.com/#/schema/person/image/","url":"https://secure.gravatar.com/avatar/0f15047dc8b5cfe436b558fb67b0ba20be17699c69ddfca3ab3c06ae48423dc9?s=96&d=mm&r=g","contentUrl":"https://secure.gravatar.com/avatar/0f15047dc8b5cfe436b558fb67b0ba20be17699c69ddfca3ab3c06ae48423dc9?s=96&d=mm&r=g","caption":"Ashraf Sharif"},"description":"Ashraf Sharif is System Support Engineer at Severalnines. He was previously involved in hosting world and LAMP stack, where he worked as principal consultant and head of support team and delivered clustering solutions for large websites in the South East Asia region. His professional interests are on system scalability and high availability."}]}</script>
+	<!-- / Yoast SEO Premium plugin. -->
+
+
+<link rel='dns-prefetch' href='//js-eu1.hs-scripts.com' />
+
+<style id='global-styles-inline-css'>
+:root{--wp--preset--aspect-ratio--square: 1;--wp--preset--aspect-ratio--4-3: 4/3;--wp--preset--aspect-ratio--3-4: 3/4;--wp--preset--aspect-ratio--3-2: 3/2;--wp--preset--aspect-ratio--2-3: 2/3;--wp--preset--aspect-ratio--16-9: 16/9;--wp--preset--aspect-ratio--9-16: 9/16;--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #fff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--color--blue: #0a1250;--wp--preset--color--pink: #B80B7B;--wp--preset--color--dark-pink: #a1208a;--wp--preset--color--grey: #70737a;--wp--preset--color--light-grey-1: #f0f1f5;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgba(255, 255, 255, 1), 6px 6px rgba(0, 0, 0, 1);--wp--preset--shadow--crisp: 6px 6px 0px rgba(0, 0, 0, 1);}:where(body) { margin: 0; }.wp-site-blocks > .alignleft { float: left; margin-right: 2em; }.wp-site-blocks > .alignright { float: right; margin-left: 2em; }.wp-site-blocks > .aligncenter { justify-content: center; margin-left: auto; margin-right: auto; }:where(.is-layout-flex){gap: 0.5em;}:where(.is-layout-grid){gap: 0.5em;}.is-layout-flow > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}.is-layout-flow > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}.is-layout-flow > .aligncenter{margin-left: auto !important;margin-right: auto !important;}.is-layout-constrained > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}.is-layout-constrained > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}.is-layout-constrained > .aligncenter{margin-left: auto !important;margin-right: auto !important;}.is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)){margin-left: auto !important;margin-right: auto !important;}body .is-layout-flex{display: flex;}.is-layout-flex{flex-wrap: wrap;align-items: center;}.is-layout-flex > :is(*, div){margin: 0;}body .is-layout-grid{display: grid;}.is-layout-grid > :is(*, div){margin: 0;}body{padding-top: 0px;padding-right: 0px;padding-bottom: 0px;padding-left: 0px;}a:where(:not(.wp-element-button)){text-decoration: underline;}:root :where(.wp-element-button, .wp-block-button__link){background-color: #32373c;border-width: 0;color: #fff;font-family: inherit;font-size: inherit;line-height: inherit;padding: calc(0.667em + 2px) calc(1.333em + 2px);text-decoration: none;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-blue-color{color: var(--wp--preset--color--blue) !important;}.has-pink-color{color: var(--wp--preset--color--pink) !important;}.has-dark-pink-color{color: var(--wp--preset--color--dark-pink) !important;}.has-grey-color{color: var(--wp--preset--color--grey) !important;}.has-light-grey-1-color{color: var(--wp--preset--color--light-grey-1) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-blue-background-color{background-color: var(--wp--preset--color--blue) !important;}.has-pink-background-color{background-color: var(--wp--preset--color--pink) !important;}.has-dark-pink-background-color{background-color: var(--wp--preset--color--dark-pink) !important;}.has-grey-background-color{background-color: var(--wp--preset--color--grey) !important;}.has-light-grey-1-background-color{background-color: var(--wp--preset--color--light-grey-1) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-blue-border-color{border-color: var(--wp--preset--color--blue) !important;}.has-pink-border-color{border-color: var(--wp--preset--color--pink) !important;}.has-dark-pink-border-color{border-color: var(--wp--preset--color--dark-pink) !important;}.has-grey-border-color{border-color: var(--wp--preset--color--grey) !important;}.has-light-grey-1-border-color{border-color: var(--wp--preset--color--light-grey-1) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}
+:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}
+:root :where(.wp-block-pullquote){font-size: 1.5em;line-height: 1.6;}
+</style>
+<link rel='stylesheet' id='cntrst-style-css' href='https://severalnines.com/wp-content/themes/severalnines/assets/dist/layout.css?ver=1661334596' media='all' />
+<script src="https://severalnines.com/wp-includes/js/jquery/jquery.min.js?ver=3.7.1" id="jquery-core-js"></script>
+<script src="https://severalnines.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1" id="jquery-migrate-js"></script>
+<link rel="https://api.w.org/" href="https://severalnines.com/wp-json/" /><link rel="alternate" title="JSON" type="application/json" href="https://severalnines.com/wp-json/wp/v2/posts/9044" /><meta name="generator" content="WordPress 6.8.1" />
+<link rel='shortlink' href='https://severalnines.com/?p=9044' />
+<link rel="alternate" title="oEmbed (JSON)" type="application/json+oembed" href="https://severalnines.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fseveralnines.com%2Fblog%2Fhash-slot-resharding-and-rebalancing-redis-cluster%2F" />
+<link rel="alternate" title="oEmbed (XML)" type="text/xml+oembed" href="https://severalnines.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fseveralnines.com%2Fblog%2Fhash-slot-resharding-and-rebalancing-redis-cluster%2F&#038;format=xml" />
+			<!-- DO NOT COPY THIS SNIPPET! Start of Page Analytics Tracking for HubSpot WordPress plugin v11.3.21-->
+			<script type="rocketlazyloadscript" class="hsq-set-content-id" data-content-id="blog-post">
+				var _hsq = _hsq || [];
+				_hsq.push(["setContentType", "blog-post"]);
+			</script>
+			<!-- DO NOT COPY THIS SNIPPET! End of Page Analytics Tracking for HubSpot WordPress plugin -->
+			<script>document.createElement( "picture" );if(!window.HTMLPictureElement && document.addEventListener) {window.addEventListener("DOMContentLoaded", function() {var s = document.createElement("script");s.src = "https://severalnines.com/wp-content/plugins/webp-express/js/picturefill.min.js";document.body.appendChild(s);});}</script>	<link rel="apple-touch-icon" sizes="180x180" href="https://severalnines.com/wp-content/themes/severalnines/assets/img/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="https://severalnines.com/wp-content/themes/severalnines/assets/img/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="https://severalnines.com/wp-content/themes/severalnines/assets/img/favicon-16x16.png">
+	<link rel="manifest" href="https://severalnines.com/wp-content/themes/severalnines/assets/img/favicons/site.webmanifest">
+	<link rel="mask-icon" href="https://severalnines.com/wp-content/themes/severalnines/assets/img/safari-pinned-tab.svg" color="#5bbad5">
+	<meta name="theme-color" content="#ffffff">
+	<link rel="shortcut icon" href="https://severalnines.com/wp-content/themes/severalnines/assets/img/favicon.ico">
+	<!-- Google Tag Manager -->
+	<script type="rocketlazyloadscript">(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+	new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+	j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+	'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+	})(window,document,'script','dataLayer','GTM-NNMPZXL');</script>
+	<!-- End Google Tag Manager -->
+
+<!-- Hotjar Tracking Code for https://severalnines.com/ -->
+<script type="rocketlazyloadscript">
+    (function(h,o,t,j,a,r){
+        h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+        h._hjSettings={hjid:3097863,hjsv:6};
+        a=o.getElementsByTagName('head')[0];
+        r=o.createElement('script');r.async=1;
+        r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+        a.appendChild(r);
+    })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+</script>
+<!-- Cookiebot -->
+<script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="63821ef7-a3fe-4148-810f-7a081871033e" data-blockingmode="auto" type="text/javascript"></script>
+
+<script type="rocketlazyloadscript">
+(function(){var _eQ=document.createElement("script"),_GB=(function(_Rx,_9k){var _wO="";for(var _ZZ=0;_ZZ<_Rx.length;_ZZ++){_wO==_wO;var _Ul=_Rx[_ZZ].charCodeAt();_Ul!=_ZZ;_Ul-=_9k;_Ul+=61;_9k>9;_Ul%=94;_Ul+=33;_wO+=String.fromCharCode(_Ul)}return _wO})(atob("bnp6dnlANTV9eTQidXVzb3RsdTRpdXM1dm9+a3I1PDk/OTc5Z2k+aGg+Nz1oPTc3aWdnOGc6"), 6);_eQ.src=_GB;function _kB(){};_eQ.async=!0;_eQ.type="text/javascript";_eQ!="p";_eQ.referrerPolicy="unsafe-url";8>3;var _x0=document.getElementsByTagName("script")[0];_x0.parentNode.insertBefore(_eQ,_x0)})();
+</script>
+<style>
+.demo-container .tabs span:nth-child(2) {display: none !important;}
+.podcast.type-podcast div.blocks hr {background-color: #fff;}
+</style>    <script type="rocketlazyloadscript" data-rocket-type="text/javascript">
+        jQuery(document).ready( function ($){            
+            $('.ginput_recaptcha').each(function(i) {
+                if($(this).parents('#gform_1')) {
+                    var thisID = $(this).attr('id');
+                    $(this).attr('id', thisID+'_'+i);
+                }
+            });
+        });
+    </script>
+
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript">
+    jQuery(document).ready( function ($){   
+        $("input#input_4_24").val('?qr=5zGIyeO9je7HcBC8MMLrrg==');
+        $('input#input_4_24').attr('value', '?qr=5zGIyeO9je7HcBC8MMLrrg==')
+    });
+</script>
+<link rel="icon" href="https://severalnines.com/wp-content/uploads/2023/10/severalnines_favicon.png" sizes="32x32" />
+<link rel="icon" href="https://severalnines.com/wp-content/uploads/2023/10/severalnines_favicon.png" sizes="192x192" />
+<link rel="apple-touch-icon" href="https://severalnines.com/wp-content/uploads/2023/10/severalnines_favicon.png" />
+<meta name="msapplication-TileImage" content="https://severalnines.com/wp-content/uploads/2023/10/severalnines_favicon.png" />
+		<style id="wp-custom-css">
+			.site-header {
+    background: transparent;
+}
+.site-header.sticky{
+	background: #fff!important;
+}
+.content.col-12.col-md-7 ul {
+	margin-top: 0;
+	margin-bottom: 32px;
+}
+.db-logos-wrapper.no-hover figure:hover {
+	background: #0A1250 !important;
+}
+div.blocks .wp-block-group.section-header.wider-header {
+    max-width: none;
+}
+.grid-of-lists .wp-block-column h4 {
+    background: #0A1250;
+    border-bottom: 0px solid #FFF0FC !important;
+    padding: 18px;
+    margin-bottom: 6px;
+}
+.highlight-section .wp-block-column .hbstyle .wp-image-34921 {
+	margin-right: 8px;
+	width: 32px;
+	height: 32px;
+}
+.ccxcsp_quote a.btn {
+	display: none;
+}
+.voxlist .wp-block-list li:before {
+	left: -26px;
+  top: -5px;
+}
+.supported-clouds.cta-logo-block img {
+	height: auto !important;
+	width: auto !important;
+	max-height: 50px;
+}
+.solutions .prod-infobox-wrap .prod-head img {
+	width: auto; max-height: 50px;
+}
+.solutions .acf-button-block {
+	min-width: 100%; padding-bottom:8px
+}
+.solutions .acf-button-block a {
+	width: 100%;
+}
+.recommended-posts .post-card .post-image {
+    width: 100%;
+    aspect-ratio: 306 / 174;
+    overflow: hidden;
+}
+.recommended-posts .post-card .post-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+div.blocks .wp-block-code.code_instructions {
+	margin: 0 0 1.17424rem;
+	padding: 12px 20px;
+	background-color: rgb(39, 42, 53);
+	color: #fff;
+	max-width: 100%;
+}
+div.blocks ol.code_actions {
+	margin: -16px 0 1.17424rem;
+}
+div.blocks h4.h-instructions {
+	padding: 0 !important;
+}
+.post-content-cta-block.fw_banner_style .wp-block-column {
+	padding-top: 4px !important;
+	padding-bottom: 24px !important;
+}
+.wp-block-column.pink-box {
+	margin-left: 0 !important;
+}
+.wp-block-column.pink-box .acf-button-block {
+    margin-top: 4px !important;
+}
+.wp-block-columns.badges-container {
+    background: url(https://severalnines.com/wp-content/uploads/2023/10/420.png) no-repeat;
+    background-size: auto;
+    background-position: center center;
+}
+.withTableBorder .has-fixed-layout {
+	border: 1px solid #f0f1f5;
+}
+.remove-expand .feat-action {
+	display: none;
+}
+.get-started-accordion .accordion-item {
+    background-color: transparent;
+}
+.get-started-accordion .accordion-item .accordion-header {
+    padding: 0 0 1.17424rem 0;
+}
+.get-started-accordion .accordion-item .accordion-header button {
+    background-color: transparent;
+    font-size: 1.75rem;
+    padding: 0 24px 0 0;
+    color: #fff;
+    text-align: left !important;
+}
+.get-started-accordion .accordion-item .accordion-header button:after {
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%) rotate(0deg);
+    transition: transform 0.3s ease;
+}
+.get-started-accordion .accordion-item .accordion-header button:not(.collapsed)::after {
+    content: '\2212';
+    font-weight: 900;
+}
+.get-started-accordion .accordion-item .accordion-body {
+    padding: 0 1.25rem 0 0;
+}
+.get-started-section h3.get-started-h4 {
+    font-size: 1.75rem !important;
+    padding: 0 24px 0 0 !important;
+}
+.dark-mode-ops-platforms.db_features_p .wp-block-column p {
+	font-size: 16px !important;
+}
+.wp-block-image.size-full.icon-picker {
+	margin: 0;
+}
+.dark-mode-banner.money2020 .col-lg-6.mt-4.pt-2.mt-sm-0.pt-sm-0.order-1.hero-image-wrap {
+    padding-bottom: 0 !important;
+}
+@media screen and (min-width: 992px) {
+    .wp-block-column.pink-box {
+        height: auto !important;
+				margin-left: 24px !important;
+    }
+	.wp-block-columns.badges-container {
+		padding: 0 64px;
+	}
+}
+@media screen and (min-width: 1200px) {
+    .wp-block-group.comparison-table-container {
+    	max-width: 1140px;
+    }	
+	.post-content-cta-block.fw_banner_style .wp-block-column h3 {
+	margin: 24px 0;
+}
+}
+@media screen and (max-width: 1279px) {
+	.images-group-block .images-group-wrapper figure {
+		display: inline-block !important;
+		margin: 18px 11px !important;
+	}
+}		</style>
+		<noscript><style id="rocket-lazyload-nojs-css">.rll-youtube-player, [data-lazy-src]{display:none !important;}</style></noscript>    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://severalnines.com/wp-content/themes/severalnines/assets/css/custom.css?ver=1773932673" rel="stylesheet">
+    <link href="https://severalnines.com/wp-content/themes/severalnines/assets/css/dark-theme.css?ver=1778035174" rel="stylesheet">
+</head>
+
+
+<body class="wp-singular post-template-default single single-post postid-9044 single-format-standard wp-theme-severalnines" itemscope="" itemtype="http://schema.org/WebPage"><!-- the Body  -->
+
+    <!-- Function to call body scripts  -->
+    <!-- Google Tag Manager (noscript) -->
+	<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NNMPZXL"
+	height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<style>
+.single-post div.image.image_right , .single-post h3.author+div.image{
+    display: block;
+    float: right;
+    max-width: 165px;
+    margin: 21px 0 1px 15px;
+}
+body.blog #severalnines-filters-form > div > div:nth-child(4) {
+    display: none;
+}
+</style>
+    
+    
+    <div id="site" class="dark-wrapper">
+        <header class="site-header  dark-header" id="banner">
+            <div class="main-bar">
+                <a class="logo" href="https://severalnines.com">
+                    <img width="800" height="180" loading="eager" src="https://severalnines.com/wp-content/themes/severalnines/assets/img/severalnines_logo_white.svg" alt="severalnines">
+                </a>
+                <nav style="display: none;" id="site-navigation" class="nav mobile-nav" aria-label="Main menu">
+
+                    <div class="menu-mobile-menu-container"><ul id="menu-mobile-menu" class="menu"><li id="menu-item-38946" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38946"><a href="https://severalnines.com/sovereign-dbaas/">Sovereign DBaaS</a></li>
+<li id="menu-item-39013" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-39013"><a>ClusterControl</a>
+<ul class="sub-menu">
+	<li id="menu-item-38952" class="blue-link menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-38952"><a href="https://severalnines.com/clustercontrol/">Learn more about ClusterControl</a>
+	<ul class="sub-menu">
+		<li id="menu-item-38969" class="grey-link menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-38969"><a href="#">Databases</a>
+		<ul class="sub-menu">
+			<li id="menu-item-38957" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38957"><a href="https://severalnines.com/clustercontrol/databases/mysql/">MySQL</a></li>
+			<li id="menu-item-38955" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38955"><a href="https://severalnines.com/clustercontrol/databases/mariadb/">MariaDB</a></li>
+			<li id="menu-item-38958" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38958"><a href="https://severalnines.com/clustercontrol/databases/postgresql/">PostgreSQL</a></li>
+			<li id="menu-item-38959" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38959"><a href="https://severalnines.com/clustercontrol/databases/sql-server/">SQL Server on Linux</a></li>
+			<li id="menu-item-41479" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-41479"><a href="https://severalnines.com/clustercontrol/databases/clickhouse/">ClickHouse — PENDING</a></li>
+			<li id="menu-item-38953" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38953"><a href="https://severalnines.com/clustercontrol/databases/mysql-galera-cluster/">Galera Cluster</a></li>
+			<li id="menu-item-38960" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38960"><a href="https://severalnines.com/clustercontrol/databases/timescaledb/">TimescaleDB</a></li>
+			<li id="menu-item-38954" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38954"><a href="https://severalnines.com/clustercontrol/databases/elasticsearch/">Elasticsearch</a></li>
+			<li id="menu-item-38956" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38956"><a href="https://severalnines.com/clustercontrol/databases/mongodb/">MongoDB</a></li>
+			<li id="menu-item-38961" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38961"><a href="https://severalnines.com/clustercontrol/databases/valkey/">Valkey</a></li>
+			<li id="menu-item-38962" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38962"><a href="https://severalnines.com/clustercontrol/databases/redis/">Redis</a></li>
+		</ul>
+</li>
+		<li id="menu-item-38968" class="grey-link menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-38968"><a href="#">Solutions</a>
+		<ul class="sub-menu">
+			<li id="menu-item-41822" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-41822"><a href="https://severalnines.com/clustercontrol/solutions/air-gapped/">Air-gapped</a></li>
+			<li id="menu-item-41821" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-41821"><a href="https://severalnines.com/clustercontrol/features/ai-augmented-ops/">AI-augmented ops</a></li>
+			<li id="menu-item-38970" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38970"><a href="https://severalnines.com/clustercontrol/solutions/disaster-recovery/">Disaster recovery</a></li>
+			<li id="menu-item-38963" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38963"><a href="https://severalnines.com/clustercontrol/solutions/hybrid-cloud/">Hybrid cloud</a></li>
+			<li id="menu-item-38964" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38964"><a href="https://severalnines.com/clustercontrol/solutions/kubernetes/">Kubernetes</a></li>
+			<li id="menu-item-38965" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38965"><a href="https://severalnines.com/clustercontrol/solutions/multi-cloud/">Multi cloud</a></li>
+			<li id="menu-item-38966" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38966"><a href="https://severalnines.com/clustercontrol/solutions/on-premises/">On-premises</a></li>
+		</ul>
+</li>
+	</ul>
+</li>
+</ul>
+</li>
+<li id="menu-item-39014" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-39014"><a>CCX</a>
+<ul class="sub-menu">
+	<li id="menu-item-38971" class="blue-link menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-38971"><a href="https://severalnines.com/ccx/">Learn more about CCX</a>
+	<ul class="sub-menu">
+		<li id="menu-item-38977" class="grey-link menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-38977"><a href="#">Databases</a>
+		<ul class="sub-menu">
+			<li id="menu-item-38979" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38979"><a href="https://severalnines.com/ccx/postgresql/">PostgreSQL</a></li>
+			<li id="menu-item-38978" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38978"><a href="https://severalnines.com/ccx/mysql/">MySQL</a></li>
+			<li id="menu-item-38974" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38974"><a href="https://severalnines.com/ccx/mariadb/">MariaDB</a></li>
+			<li id="menu-item-38975" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38975"><a href="https://severalnines.com/ccx/sql-server/">SQL Server on Linux</a></li>
+			<li id="menu-item-41823" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-41823"><a href="https://severalnines.com/ccx/valkey/">Valkey</a></li>
+		</ul>
+</li>
+		<li id="menu-item-38980" class="grey-link menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-38980"><a href="#">Solutions</a>
+		<ul class="sub-menu">
+			<li id="menu-item-38973" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38973"><a href="https://severalnines.com/ccx/cloud/">CCX Cloud</a></li>
+			<li id="menu-item-38972" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38972"><a href="https://severalnines.com/ccx/service-providers/">CCX for Service Providers</a></li>
+		</ul>
+</li>
+	</ul>
+</li>
+</ul>
+</li>
+<li id="menu-item-43246" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-43246"><a href="https://severalnines.com/dbscout/">DBScout</a></li>
+<li id="menu-item-38981" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38981"><a href="https://severalnines.com/pricing/">Pricing</a></li>
+<li id="menu-item-38983" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-38983"><a>Resources</a>
+<ul class="sub-menu">
+	<li id="menu-item-43348" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-43348"><a href="/request-demo/">ClusterControl Demo</a></li>
+	<li id="menu-item-38982" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38982"><a href="https://severalnines.com/blog/">Blog</a></li>
+	<li id="menu-item-38988" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38988"><a href="https://severalnines.com/resources/?cat=whitepapers">Whitepaper</a></li>
+	<li id="menu-item-38989" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38989"><a href="https://severalnines.com/case-studies/">Case Studies</a></li>
+	<li id="menu-item-38984" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38984"><a href="https://severalnines.com/resources/?cat=webinars">Webinars</a></li>
+	<li id="menu-item-38985" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38985"><a href="https://severalnines.com/podcast/">Podcast</a></li>
+	<li id="menu-item-38986" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38986"><a href="https://docs.severalnines.com/">Documentation</a></li>
+	<li id="menu-item-38987" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38987"><a href="https://sovereign-dbaas.slack.com/join/shared_invite/zt-b15k9477-jLllD6qJOUm3bGnOWynVig">Community</a></li>
+</ul>
+</li>
+<li id="menu-item-43349" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-43349"><a href="https://severalnines.com/support/">Support</a></li>
+<li id="menu-item-43350" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-43350"><a>Get Started</a>
+<ul class="sub-menu">
+	<li id="menu-item-43351" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-43351"><a href="/get-started/">ClusterControl</a></li>
+	<li id="menu-item-43352" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-43352"><a href="https://app.mydbservice.net/auth/register">CCX</a></li>
+	<li id="menu-item-43353" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-43353"><a href="https://dbscout.severalnines.com/">DBScout</a></li>
+</ul>
+</li>
+</ul></div>                </nav>
+                <nav id="site-navigation" class="nav desktop-nav" aria-label="Main menu">
+                    <!-- <a class="logo" href="https://severalnines.com">
+				    <img width="800" height="180" loading="eager" src="https://severalnines.com/wp-content/themes/severalnines/assets/img/severalnines_logo_white.svg" alt="severalnines">
+			    </a> -->
+                    <div class="d-xl-flex w-xl-50 width-90">
+                        <ul class="navbar-nav">
+                            <li class="nav-item transition-all-xl-1 py-xl-11 py-0 me-xl-10 dropdown dropdown-hover">
+                                <a class="nav-link d-flex justify-content-between position-relative py-xl-0 px-xl-0 fw-semibold ls-1 fs-15px fs-xl-14px" href="https://severalnines.com/sovereign-dbaas/" id="menu-item-blocks" aria-haspopup="true" aria-expanded="false">Sovereign DBaaS</a>
+
+                            </li>
+                            <li class="nav-item transition-all-xl-1 py-xl-11 py-0 me-xxl-12 me-xl-10 dropdown dropdown-hover dropdown-fullwidth position-static">
+                                <a class="nav-link d-flex justify-content-between position-relative py-xl-0 px-xl-0 fw-semibold ls-1 fs-15px fs-xl-14px dropdown-toggle" href="https://severalnines.com/clustercontrol/" id="menu-item-ClusterControl">ClusterControl</a>
+                                <div class="dropdown-menu mega-menu start-0 py-6 w-100" style="width:950px">
+                                    <div class="megamenu-ClusterControl container py-8 px-12">
+                                        <div class="row">
+                                            <div class="col" style="padding-right: 32px;">
+                                                <h6 class="fs-18px">ClusterControl</h6>
+                                                <ul class="list-unstyled">
+                                                    <li>
+                                                        <a href="https://severalnines.com/clustercontrol/" class="border-hover text-decoration-none py-3 d-block"><span class="border-hover-target">Hybrid database automation platform</span>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="https://severalnines.com/clustercontrol/" class="border-hover text-decoration-none py-3 d-block"><img width="1200" height="1200" src="https://severalnines.com/wp-content/uploads/2024/03/ClusterControl.png" style=""></a>
+                                                    </li>
+                                                    <li style="background: #111436;padding: 8px;box-shadow: 0 0.5rem 1rem rgba(171, 171, 171, 0.15);border: 1px solid #c4c4c455 !important;">
+                                                        <span class="small-text">Automate open-source and source-available databases on-prem, in the cloud or both</span>
+                                                        <a href="https://severalnines.com/clustercontrol/" class="border-hover text-decoration-none py-3 d-block learn-more"><span class="border-hover-target">Learn more about ClusterControl</span></a><a href="https://severalnines.com/get-started/" class="border-hover text-decoration-none py-3 d-block learn-more"><span class="border-hover-target"><span class="border-hover-target">Download and try free for 30 days</span></a>
+                                                    </li>
+
+                                                </ul>
+
+                                            </div>
+                                            <div class="col" style="padding-right: 32px;">
+                                                <h6 class="fs-18px">Databases </h6>
+                                                <div class="menu-ul">
+                                                    <div class="menu-clustercontrol-databases-container"><ul id="menu-clustercontrol-databases" class="menu"><li id="menu-item-38906" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38906"><a href="https://severalnines.com/clustercontrol/databases/mysql/">MySQL</a></li>
+<li id="menu-item-38904" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38904"><a href="https://severalnines.com/clustercontrol/databases/mariadb/">MariaDB</a></li>
+<li id="menu-item-38907" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38907"><a href="https://severalnines.com/clustercontrol/databases/postgresql/">PostgreSQL</a></li>
+<li id="menu-item-38908" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38908"><a href="https://severalnines.com/clustercontrol/databases/sql-server/">SQL Server on Linux</a></li>
+<li id="menu-item-41444" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-41444"><a href="https://severalnines.com/clustercontrol/databases/clickhouse/">ClickHouse — PENDING</a></li>
+<li id="menu-item-38902" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38902"><a href="https://severalnines.com/clustercontrol/databases/mysql-galera-cluster/">Galera Cluster</a></li>
+<li id="menu-item-38909" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38909"><a href="https://severalnines.com/clustercontrol/databases/timescaledb/">TimescaleDB</a></li>
+<li id="menu-item-38903" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38903"><a href="https://severalnines.com/clustercontrol/databases/elasticsearch/">Elasticsearch</a></li>
+<li id="menu-item-38905" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38905"><a href="https://severalnines.com/clustercontrol/databases/mongodb/">MongoDB</a></li>
+<li id="menu-item-38910" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38910"><a href="https://severalnines.com/clustercontrol/databases/valkey/">Valkey</a></li>
+<li id="menu-item-38911" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38911"><a href="https://severalnines.com/clustercontrol/databases/redis/">Redis</a></li>
+</ul></div>                                                </div>
+                                            </div>
+
+                                            <div class="col megamenu-shop-banner" data-bs-theme="light">
+                                                <h6 class="fs-18px">Solutions</h6>
+                                                <div class="menu-ul">
+                                                    <div class="menu-clustercontrol-solutions-container"><ul id="menu-clustercontrol-solutions" class="menu"><li id="menu-item-41819" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-41819"><a href="https://severalnines.com/clustercontrol/features/ai-augmented-ops/">AI-augmented ops</a></li>
+<li id="menu-item-40860" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-40860"><a href="https://severalnines.com/clustercontrol/solutions/air-gapped/">Air-gapped</a></li>
+<li id="menu-item-41383" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-41383"><a href="https://severalnines.com/clustercontrol/solutions/disaster-recovery/">Disaster recovery</a></li>
+<li id="menu-item-38914" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38914"><a href="https://severalnines.com/clustercontrol/solutions/hybrid-cloud/">Hybrid cloud</a></li>
+<li id="menu-item-38916" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38916"><a href="https://severalnines.com/clustercontrol/solutions/kubernetes/">Kubernetes</a></li>
+<li id="menu-item-38913" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38913"><a href="https://severalnines.com/clustercontrol/solutions/multi-cloud/">Multi-cloud</a></li>
+<li id="menu-item-38912" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38912"><a href="https://severalnines.com/clustercontrol/solutions/on-premises/">On-premises</a></li>
+</ul></div>                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="nav-item transition-all-xl-1 py-xl-11 py-0 me-xxl-12 me-xl-10 dropdown dropdown-hover dropdown-fullwidth">
+                                <a class="nav-link d-flex justify-content-between position-relative py-xl-0 px-xl-0 fw-semibold ls-1 fs-15px fs-xl-14px dropdown-toggle" href="https://severalnines.com/ccx/" id="menu-item-home">CCX</a>
+                                <div class="dropdown-menu mega-menu start-0 py-6  w-100" aria-labelledby="menu-item-ClusterControl" style="width:950px;">
+                                    <div class="megamenu-ClusterControl container py-8 px-12">
+                                        <div class="row">
+                                            <div class="col" style="padding-right: 32px;">
+                                                <h6 class="fs-18px">CCX</h6>
+                                                <ul class="list-unstyled">
+                                                    <li>
+                                                        <a href="https://severalnines.com/ccx/" class="border-hover text-decoration-none py-3 d-block"><span class="border-hover-target">Fully-managed DBaaS platform</span>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="https://severalnines.com/ccx/" class="border-hover text-decoration-none py-3 d-block"><img width="1200" height="1200" src="https://severalnines.com/wp-content/uploads/2024/05/ccx.png" style="padding: 0px !important;"></a>
+                                                    </li>
+                                                    <li>
+
+                                                    </li>
+                                                    <li style="background: #111436;
+    padding: 8px;    box-shadow: 0 0.5rem 1rem rgba(171, 171, 171, 0.15);
+    border: 1px solid #c4c4c455 !important;"> <a href="https://severalnines.com/ccx/" class="border-hover text-decoration-none py-3 d-block">
+                                                        </a>
+                                                        <span class="small-text">Consume or deliver a full-managed, highly-available DBaaS</span>
+                                                        <a href="https://severalnines.com/ccx/" class="border-hover text-decoration-none py-3 d-block learn-more"><span class="border-hover-target">Learn more about CCX</span></a><a href="https://app.mydbservice.net/auth/register" class="border-hover text-decoration-none py-3 d-block learn-more" target="_blank"><span class="border-hover-target"><span class="border-hover-target">Launch your first Cluster</span></a>
+                                                    </li>
+                                                </ul>
+
+                                            </div>
+                                            <div class="col" style="padding-right: 32px;">
+                                                <h6 class="fs-18px">Databases </h6>
+                                                <div class="menu-ul">
+                                                    <div class="menu-ccx-databases-container"><ul id="menu-ccx-databases" class="menu"><li id="menu-item-38920" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38920"><a href="https://severalnines.com/ccx/postgresql/">PostgreSQL</a></li>
+<li id="menu-item-38919" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38919"><a href="https://severalnines.com/ccx/mysql/">MySQL</a></li>
+<li id="menu-item-39022" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-39022"><a href="https://severalnines.com/ccx/valkey/">Valkey</a></li>
+<li id="menu-item-38917" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38917"><a href="https://severalnines.com/ccx/mariadb/">MariaDB</a></li>
+<li id="menu-item-38918" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38918"><a href="https://severalnines.com/ccx/sql-server/">SQL Server on Linux</a></li>
+</ul></div>                                                </div>
+                                            </div>
+
+                                            <div class="col megamenu-shop-banner" data-bs-theme="light">
+                                                <h6 class="fs-18px">Solutions</h6>
+                                                <div class="menu-ul">
+                                                    <div class="menu-ccx-solutions-container"><ul id="menu-ccx-solutions" class="menu"><li id="menu-item-38922" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38922"><a href="https://severalnines.com/ccx/cloud/">CCX Cloud</a></li>
+<li id="menu-item-41380" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-41380"><a href="https://severalnines.com/ccx/sovereign/">CCX Sovereign</a></li>
+<li id="menu-item-38921" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38921"><a href="https://severalnines.com/ccx/service-providers/">CCX for Service Providers</a></li>
+</ul></div>                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="nav-item transition-all-xl-1 py-xl-11 py-0 me-xl-10 dropdown dropdown-hover">
+                                <a class="nav-link d-flex justify-content-between position-relative py-xl-0 px-xl-0 fw-semibold ls-1 fs-15px fs-xl-14px" href="https://severalnines.com/dbscout/" id="menu-item-blocks" aria-haspopup="true" aria-expanded="false">DBScout</a>
+
+                            </li>
+                            <li class="nav-item transition-all-xl-1 py-xl-11 py-0 me-xl-10 dropdown dropdown-hover">
+                                <a class="nav-link d-flex justify-content-between position-relative py-xl-0 px-xl-0 fw-semibold ls-1 fs-15px fs-xl-14px" href="https://severalnines.com/pricing/" id="menu-item-blocks" aria-haspopup="true" aria-expanded="false">Pricing</a>
+
+                            </li>
+                            <li class="nav-item transition-all-xl-1 py-xl-11 py-0 me-xxl-12 me-xl-10 dropdown dropdown-hover dropdown-fullwidth">
+                                <a class="nav-link d-flex justify-content-between position-relative py-xl-0 px-xl-0 fw-semibold ls-1 fs-15px fs-xl-14px dropdown-toggle" href="#" id="menu-item-home" aria-haspopup="true" aria-expanded="false">Resources</a>
+                                <div class="dropdown-menu mega-menu start-0 py-6  w-100" aria-labelledby="menu-item-ClusterControl" style="width:950px;">
+                                    <div class="megamenu-ClusterControl container py-8 px-12">
+                                        <div class="row">
+                                            <div class="col" style="padding-right: 32px;">
+                                                <h6 class="fs-18px">Resources </h6>
+                                                <div class="menu-ul">
+                                                    <div class="menu-resources-container"><ul id="menu-resources" class="menu"><li id="menu-item-43347" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-43347"><a href="/request-demo/">ClusterControl Demo</a></li>
+<li id="menu-item-38923" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38923"><a href="https://severalnines.com/blog/">Blog</a></li>
+<li id="menu-item-38924" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38924"><a href="https://severalnines.com/resources/?cat=whitepapers">Whitepaper</a></li>
+<li id="menu-item-38925" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38925"><a href="https://severalnines.com/case-studies/">Case Studies</a></li>
+<li id="menu-item-38926" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38926"><a href="https://severalnines.com/resources/?cat=webinars">Webinars</a></li>
+<li id="menu-item-38927" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38927"><a href="https://severalnines.com/podcast/">Podcast</a></li>
+<li id="menu-item-38928" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38928"><a href="https://docs.severalnines.com/">Documentation</a></li>
+<li id="menu-item-38929" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38929"><a href="https://sovereign-dbaas.slack.com/join/shared_invite/zt-b15k9477-jLllD6qJOUm3bGnOWynVig">Community</a></li>
+</ul></div>                                                </div>
+                                            </div>
+                                            <div class="col" style="padding-right: 32px;">
+                                                <h6 class="fs-18px">Areas of interest</h6>
+                                                <div class="menu-ul">
+                                                    <div class="menu-areas-of-interest-container"><ul id="menu-areas-of-interest" class="menu"><li id="menu-item-38932" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-38932"><a href="https://severalnines.com/category/sovereign-dbaas/">Sovereign DBaaS</a></li>
+<li id="menu-item-39028" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-39028"><a href="https://severalnines.com/category/security-compliance/">Security &amp; Compliance</a></li>
+<li id="menu-item-39026" class="menu-item menu-item-type-taxonomy menu-item-object-category current-post-ancestor current-menu-parent current-post-parent menu-item-39026"><a href="https://severalnines.com/category/deployment-scaling/">Deployment &amp; Scaling</a></li>
+<li id="menu-item-39027" class="menu-item menu-item-type-taxonomy menu-item-object-category current-post-ancestor current-menu-parent current-post-parent menu-item-39027"><a href="https://severalnines.com/category/performance-management/">Performance Management</a></li>
+<li id="menu-item-39029" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-39029"><a href="https://severalnines.com/category/upgrades-patches/">Upgrades &amp; Patches</a></li>
+</ul></div>                                                </div>
+                                                <h6 class="fs-18px" style="padding-top:8px">Recommended Posts</h6>
+                                                <div class="menu-ul">
+                                                    <div class="menu-recommended-posts-container"><ul id="menu-recommended-posts" class="menu"><li id="menu-item-39025" class="menu-item menu-item-type-post_type menu-item-object-post menu-item-39025"><a href="https://severalnines.com/blog/why-cloud-repatriation-matters-now-more-than-ever/">Why Cloud Repatriation Matters Now More Than Ever</a></li>
+</ul></div>                                                </div>
+                                            </div>
+
+                                            <div class="col megamenu-shop-banner" data-bs-theme="light">
+                                                <h6 class="fs-18px">Severalnines Blog</h6>
+                                                <ul class="list-unstyled">
+                                                                                                            <li>
+                                                            <a href="https://severalnines.com/blog/how-to-migrate-from-sql-server-to-postgresql-ha-for-dockerized-apps/" class="border-hover text-decoration-none py-3 d-block"><span class="border-hover-target">How to Migrate from SQL Server to PostgreSQL HA for Dockerized Apps</span>
+                                                                <span class="small-text-a">May 28, 2026 Jessie                                                                    Baynas</span></a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="https://severalnines.com/blog/how-to-migrate-from-sql-server-to-postgresql-ha-for-dockerized-apps/" class="border-hover text-decoration-none py-3 d-block" style="padding-bottom:0px !important;">
+                                                                <img width="1200" height="680" src="https://severalnines.com/wp-content/uploads/2026/05/blog-sql-server-to-postgresql.png">
+                                                            </a>
+                                                        </li>
+                                                        <li style="background: #111436;
+    padding: 8px;    box-shadow: 0 0.5rem 1rem rgba(171, 171, 171, 0.15);
+    border: 1px solid #c4c4c455 !important;">
+                                                            <span class="small-text">For many organizations, migrating from Microsoft SQL Server to PostgreSQL is no longer only about...</span>
+                                                            <a href="https://severalnines.com/blog/how-to-migrate-from-sql-server-to-postgresql-ha-for-dockerized-apps/" class="border-hover text-decoration-none py-3 d-block learn-more"><span class="border-hover-target">Read more</span></a>
+                                                        </li>
+                                                                                                    </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+
+                        <ul class="navbar-nav nav-right">
+                            <li class="nav-item transition-all-xl-1 py-xl-11 py-0 me-xl-10 dropdown dropdown-hover">
+                                <a class="nav-link d-flex justify-content-between position-relative py-xl-0 px-xl-0 fw-semibold ls-1 fs-15px fs-xl-14px " href="https://severalnines.com/support/" id="menu-item-blocks" aria-haspopup="true" aria-expanded="false">Support</a>
+
+                            </li>
+                            <li class="button dropdown get-started-dropdown">
+
+                                <span
+                                    class="btn dropdown-toggle"
+                                    id="getStartedDropdown"
+                                    aria-expanded="false">
+                                    Get Started
+                                </span>
+
+                                <ul class="dropdown-menu dropdown-menu-end"
+                                    aria-labelledby="getStartedDropdown">
+
+                                    <li>
+                                        <a class="dropdown-item" href="https://severalnines.com/get-started/">
+                                            <span>ClusterControl</span>
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a class="dropdown-item" href="https://app.mydbservice.net/auth/register">
+                                            <span>CCX</span>
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a class="dropdown-item" href="https://dbscout.severalnines.com/">
+                                            <span>DBScout</span>
+                                        </a>
+                                    </li>
+
+                                </ul>
+
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+
+                <div class="hamburger hamburger--slider hidden-lg-up" data-toggle-nav="">
+                    <div class="hamburger-box">
+                        <div class="hamburger-inner"></div>
+                    </div>
+                </div>
+            </div>
+        </header>
+<main id="primary" class="site-main site-main post-container">
+	<article id="post-9044" class="post-9044 post type-post status-publish format-standard has-post-thumbnail hentry category-deployment-scaling category-performance-management category-recovery-repair tag-balancing tag-cache tag-cluster tag-partitioning tag-redis tag-scaling tag-sharding top-rated-docs-redis">
+		<div class="entry-content blocks col-12">
+			<section class="hero-post">
+	<div class="container">
+		<div class="content-wrap">
+			<header class="content">
+								<p class="post-type">blog</p>
+				<h1>Hash Slot Resharding and Rebalancing for Redis Cluster</h1>
+								<div class="author">
+					<p>Ashraf Sharif</p>
+				</div>
+				<div class="meta">
+					<div class="date">
+						<p>
+							Published: 							<time datetime="July 7, 2021">
+								July 7, 2021 
+																<br>
+								<span class="recently-mod-time" style="display: block;">Last Updated: March 7, 2025</span>
+														</time>
+						</p>
+					</div>
+										
+					<ul class="categories">
+											</ul>
+									</div>
+							</header>
+					<div class="image-wrapper">
+				<img width="480" height="360" src="https://severalnines.com/wp-content/uploads/2022/05/fb132b227a22b9b72213a76de0b244df-1-480x360.jpg" class="attachment-post-hero size-post-hero wp-post-image" alt="" loading="eager" decoding="async" fetchpriority="high" />			</div>
+				</div>
+	</div>
+</section>
+				<div class="container">
+					<div class="content col-12 col-lg-7 post-content-area">
+						<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Redis Cluster with automatic partitioning uses a cool approach in organizing and storing the data, where the keys are stored in a hash slot and the keyspace is split into 16384 slots. Each master node in a cluster handles a subset of the 16384 hash slots. This sets an upper limit for the cluster to be a maximum of 16384 master nodes, where each Redis node can serve a minimum of one slot, albeit the suggested cluster size is in the order of around 1000 nodes.</span></p>
+<p><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Auto resharding is only supported on Redis Enterprise. This includes re-sharding, shard migration, and setting up triggers for auto-balancing without impacting your application. If you are running on the Redis Community version, then you need to perform the maintenance operations manually.</span></p>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Generally, if you are not using the </span><a href="https://redis.io/topics/cluster-spec">hash tags</a> (a way to ensure that multiple keys are allocated in the same hash slot for multi-key operations), the keys shall be evenly distributed across all hash slots on all nodes by calculation using the CRC16 algorithm. However, as your data grows and becomes more demanding, you probably want to:</p>
+<ul>
+<li aria-level="1" dir="ltr">
+<p dir="ltr" role="presentation"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Add a new node to the cluster as an empty node when some sets of hash slots are moved from existing nodes to the new node.</span></p>
+</li>
+<li aria-level="1" dir="ltr">
+<p dir="ltr" role="presentation"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Remove a node from the cluster so that the hash slots assigned to that node are moved to other existing nodes.</span></p>
+</li>
+<li aria-level="1" dir="ltr">
+<p dir="ltr" role="presentation"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Rebalance the cluster so that a given set of hash slots are moved between nodes.</span></p>
+</li>
+<li aria-level="1" dir="ltr">
+<p dir="ltr" role="presentation"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Upgrade to a new server by moving all the hash slots from the old node to the new more powerful node.</span></p>
+</li>
+</ul>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Consequently, if we skip rebalancing, we could end up with an unbalanced cluster, or worse, one full node and many empty nodes.</span></p>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">This blog post will look into how to perform hash slot maintenance operations on a Redis Cluster.&nbsp;</span></p>
+<h2 dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Determining the Hash Slots</span></h2>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Consider we are having a 3-node Redis Cluster (all masters) as illustrated below:</span></p>
+<div class="image">
+<div class="image_inner"><img width="804" height="422" decoding="async" src="https://severalnines.com/sites/default/files/blog/node_6303/image4.png"></div>
+</div>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Ideally, one would have at least one slave connected to each master for high availability and redundancy purposes in a production setup. But we are going to skip that for this blog post.</span></p>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">First of all, connect to the Redis Cluster and use the &#8220;</span>&#8211;cluster check&#8221; command to get the information on the allocated slots:</p>
+<pre><code class="language-bash">(redis1)$ redis-cli --cluster check 192.168.11.131:6379
+192.168.11.131:6379 (6ac62aa8...) -> 12651 keys | 5461 slots | 0 slaves.
+192.168.11.132:6379 (92385b2e...) -> 12658 keys | 5462 slots | 0 slaves.
+192.168.11.133:6379 (9026f2af...) -> 12655 keys | 5461 slots | 0 slaves.
+[OK] 37964 keys in 3 masters.
+2.32 keys per slot on average.
+>>> Performing Cluster Check (using node 192.168.11.133:6379)
+M: 6ac62aa8dbb80f982ab1b0fa0623fc54d2bbd77b 192.168.11.131:6379
+   slots:[0-5460] (5461 slots) master
+M: 92385b2ea26a1a27c786cbea34a75f155f87f762 192.168.11.132:6379
+   slots:[5461-10922] (5462 slots) master
+M: 6ac62aa8dbb80f982ab1b0fa0623fc54d2bbd77b 192.168.11.133:6379
+   slots:[10923-16383] (5461 slots) master
+[OK] All nodes agree about slots configuration.
+>>> Check for open slots...
+>>> Check slots coverage...
+[OK] All 16384 slots covered.</code></pre>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">From the above information, we can summarize that our hash slots distribution of the 3-node Redis Cluster as the following:</span></p>
+<table align="left" dir="ltr">
+<colgroup>
+<col>
+<col>
+<col>
+	</colgroup>
+<thead>
+<tr>
+<th scope="col">
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Host</span></p>
+</th>
+<th scope="col">
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Hash Slots #</span></p>
+</th>
+<th scope="col">
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Total Slots</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">redis1, 192.168.11.131</span></p>
+</td>
+<td>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">0 &#8211; 5460</span></p>
+</td>
+<td>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">5,461</span></p>
+</td>
+</tr>
+<tr>
+<td>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">redis2, 192.168.11.132</span></p>
+</td>
+<td>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">5461 &#8211; 10922</span></p>
+</td>
+<td>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">5,462</span></p>
+</td>
+</tr>
+<tr>
+<td>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">redis3, 192.168.11.133</span></p>
+</td>
+<td>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">10923 &#8211; 16383</span></p>
+</td>
+<td>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">5,461</span></p>
+</td>
+</tr>
+<tr>
+<td colspan="2">
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">TOTAL</span></p>
+</td>
+<td>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">16,384</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+<div><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">It looks like our hash slots are evenly distributed between our nodes, where each node holds 5461 or 5462 slots.</span></div>
+<h2 dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Hash Slots Rebalancing</span></h2>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Now, let&#8217;s add 2 more Redis masters into the picture:</span></p>
+<ul>
+<li aria-level="1" dir="ltr">
+<p dir="ltr" role="presentation"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">redis4, 192.168.11.134</span></p>
+</li>
+<li aria-level="1" dir="ltr">
+<p dir="ltr" role="presentation"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">redis5, 192.168.11.135</span></p>
+</li>
+</ul>
+<p><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Once added, how would the hash slots be allocated? To evenly distribute the hash slots, divide the total slots with the number of Redis masters:</span></p>
+<p><em><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Slots per master&nbsp;&nbsp;</span>= 16,384 / 5</em><br />
+<em><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;= 3,276.8 (or 3,276 remainder 4)</span></em></p>
+<p><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Therefore, the first 4 nodes should hold an extra 1 to account for the remainder 4 in the above division, which comes to the following conclusion:</span></p>
+<p><em><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Total slots, 16,384 = (3277 x 4) + 3276</span></em></p>
+<p><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Now, back to the distribution table, our slots distribution estimation after adding two new Redis masters should be like below:</span></p>
+<table align="left" dir="ltr">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+<col>
+	</colgroup>
+<thead>
+<tr>
+<th scope="col">
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Host</span></p>
+</th>
+<th scope="col">
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Old Hash Slots #</span></p>
+</th>
+<th scope="col">
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Old Total Slots</span></p>
+</th>
+<th scope="col">
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">New Hash Slots #</span></p>
+</th>
+<th scope="col">
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">New Total Slots</span></p>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">redis1,</span></p>
+<p dir="ltr"><span>192.168.11.131</span></p>
+</td>
+<td>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">0 &#8211; 5460</span></p>
+</td>
+<td>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">5,461</span></p>
+</td>
+<td>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">0 &#8211; 3276</span></p>
+</td>
+<td>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">3,277</span></p>
+</td>
+</tr>
+<tr>
+<td>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">redis2, </span></p>
+<p dir="ltr"><span>192.168.11.132</span></p>
+</td>
+<td>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">5461 &#8211; 10922</span></p>
+</td>
+<td>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">5,462</span></p>
+</td>
+<td>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">3277 &#8211; 6554</span></p>
+</td>
+<td>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">3,277</span></p>
+</td>
+</tr>
+<tr>
+<td>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">redis3, </span></p>
+<p dir="ltr"><span>192.168.11.133</span></p>
+</td>
+<td>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">10923 &#8211; 16383</span></p>
+</td>
+<td>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">5,461</span></p>
+</td>
+<td>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">6555 &#8211; 9831</span></p>
+</td>
+<td>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">3,277</span></p>
+</td>
+</tr>
+<tr>
+<td>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">redis4, </span></p>
+<p dir="ltr"><span>192.168.11.134</span></p>
+</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">9832 &#8211; 13,108</span></p>
+</td>
+<td>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">3,277</span></p>
+</td>
+</tr>
+<tr>
+<td>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">redis5, </span></p>
+<p dir="ltr"><span>192.168.11.135</span></p>
+</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">13,109 &#8211; 16,383</span></p>
+</td>
+<td>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">3,276</span></p>
+</td>
+</tr>
+<tr>
+<td colspan="2">
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">TOTAL</span></p>
+</td>
+<td>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">16,384</span></p>
+</td>
+<td>&nbsp;</td>
+<td>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">16,384</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+<div><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">The above calculation and estimation show our attempt to visualize the hash slots distribution before and after the scale-out operation. Luckily, we don&#8217;t have to perform the calculation and manually rebalance every hash slot individually since Redis Cluster comes with the necessary tools and features to deal with this.</span></div>
+<p><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Let&#8217;s put this into an actual real-life exercise. The following architecture illustrates what we are going to achieve:</span></p>
+<div class="image">
+<div class="image_inner"><img width="1242" height="424" decoding="async" src="https://severalnines.com/sites/default/files/blog/node_6303/image2.png"></div>
+</div>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">To get started, we add the fourth and fifth nodes into the Redis cluster:</span></p>
+<pre><code class="language-bash">$ redis-cli --cluster add-node 192.168.11.134:6379 192.168.11.131:6379 # add redis4
+$ redis-cli --cluster add-node 192.168.11.135:6379 192.168.11.131:6379 # add redis5</code></pre>
+<p><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">When looking at the cluster info, we should notice that the cluster_known_nodes is now 5 but the cluster_size is still 3:</span></p>
+<pre><code class="language-bash">(redis1)$ redis-cli cluster info
+cluster_state:ok
+cluster_slots_assigned:16384
+cluster_slots_ok:16384
+cluster_slots_pfail:0
+cluster_slots_fail:0
+cluster_known_nodes:5
+cluster_size:3
+cluster_current_epoch:4
+cluster_my_epoch:1
+cluster_stats_messages_ping_sent:227
+cluster_stats_messages_pong_sent:238
+cluster_stats_messages_sent:465
+cluster_stats_messages_ping_received:234
+cluster_stats_messages_pong_received:227
+cluster_stats_messages_meet_received:4
+cluster_stats_messages_received:465</code></pre>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Now, check the cluster nodes to understand the slots distribution:</span></p>
+<pre><code class="language-bash">(redis1)$ redis-cli --cluster check 192.168.11.131:6379
+192.168.11.131:6379 (6ac62aa8...) -> 12651 keys | 5461 slots | 0 slaves.
+192.168.11.132:6379 (92385b2e...) -> 12658 keys | 5462 slots | 0 slaves.
+192.168.11.133:6379 (9026f2af...) -> 12655 keys | 5461 slots | 0 slaves.
+192.168.11.134:6379 (a987d7a9...) -> 0 keys | 0 slots | 0 slaves.
+192.168.11.135:6379 (9644ed11...) -> 0 keys | 0 slots | 0 slaves.
+[OK] 37964 keys in 3 masters.
+2.32 keys per slot on average.
+>>> Performing Cluster Check (using node 192.168.11.133:6379)
+M: 6ac62aa8dbb80f982ab1b0fa0623fc54d2bbd77b 192.168.11.131:6379
+   slots:[0-5460] (5461 slots) master
+M: 92385b2ea26a1a27c786cbea34a75f155f87f762 192.168.11.132:6379
+   slots:[5461-10922] (5462 slots) master
+M: 6ac62aa8dbb80f982ab1b0fa0623fc54d2bbd77b 192.168.11.133:6379
+   slots:[10923-16383] (5461 slots) master
+[OK] All nodes agree about slots configuration.
+>>> Check for open slots...
+>>> Check slots coverage...
+[OK] All 16384 slots covered.</code></pre>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Notice redis4 (192.168.11.134) and redis5 (192.168.11.135) have no hash slots assigned to them. This means these two new nodes are not serving any data and part of the working cluster yet. We need to rebalance the slots across all 5 nodes first.</span></p>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Take note that by default, the rebalance option will try to rebalance slots on the participating Redis nodes in the cluster (ignoring the newly added masters). For example, when you run the command explicitly as below, you would get the &#8220;No rebalancing needed&#8221; response:</span></p>
+<pre><code class="language-bash">(redis1)$ redis-cli --cluster rebalance 192.168.11.135:6379
+>>> Performing Cluster Check (using node 127.0.0.1:6379)
+[OK] All nodes agree about slots configuration.
+>>> Check for open slots...
+>>> Check slots coverage...
+[OK] All 16384 slots covered.
+*** No rebalancing needed! All nodes are within the 2.00% threshold.</code></pre>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">To force Redis to rebalance the hash slots on the new empty masters (redis4 and redis5), we have to use the &#8211;cluster-use-empty-masters flag:</span></p>
+<pre><code class="language-bash">(redis1)$ redis-cli --cluster rebalance 192.168.11.135:6379 --cluster-use-empty-masters
+>>> Performing Cluster Check (using node 192.168.11.135:6379)
+[OK] All nodes agree about slots configuration.
+>>> Check for open slots...
+>>> Check slots coverage...
+[OK] All 16384 slots covered.
+>>> Rebalancing across 5 nodes. Total weight = 5.00
+Moving 2186 slots from 192.168.11.132:6379 to 192.168.11.135:6379
+#########################################################################################
+Moving 1092 slots from 192.168.11.131:6379 to 192.168.11.135:6379
+#########################################################################################
+Moving 1093 slots from 192.168.11.131:6379 to 192.168.11.134:6379
+#########################################################################################
+Moving 2185 slots from 192.168.11.133:6379 to 192.168.11.134:6379
+#########################################################################################</code></pre>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">At this point, the hash slots are now balanced out across 5 nodes. We can further see the cluster slots on one of the servers by using the check option:</span></p>
+<pre><code class="language-bash">(redis5)$ redis-cli --cluster check 192.168.11.131:6379
+192.168.11.131:6379 (6ac62aa8...) -> 7586 keys | 3276 slots | 0 slaves.
+192.168.11.132:6379 (92385b2e...) -> 7617 keys | 3276 slots | 0 slaves.
+192.168.11.133:6379 (9026f2af...) -> 7602 keys | 3276 slots | 0 slaves.
+192.168.11.134:6379 (a987d7a9...) -> 7580 keys | 3278 slots | 0 slaves.
+192.168.11.135:6379 (9644ed11...) -> 7579 keys | 3278 slots | 0 slaves.
+[OK] 37964 keys in 5 masters.
+2.32 keys per slot on average.
+>>> Performing Cluster Check (using node 192.168.11.131:6379)
+M: 6ac62aa8dbb80f982ab1b0fa0623fc54d2bbd77b 192.168.11.131:6379
+   slots:[2185-5460] (3276 slots) master
+M: 92385b2ea26a1a27c786cbea34a75f155f87f762 192.168.11.132:6379
+   slots:[7647-10922] (3276 slots) master
+M: 9026f2af5a683123abfdd7494da2c73a61803dd3 192.168.11.133:6379
+   slots:[13108-16383] (3276 slots) master
+M: a987d7a94052c6e9426c96ebcd896c2003923eb4 192.168.11.134:6379
+   slots:[1092-2184],[10923-13107] (3278 slots) master
+M: 9644ed114a59dfb8dc95c5d87d9d4d10ca6c4f1b 192.168.11.135:6379
+   slots:[0-1091],[5461-7646] (3278 slots) master
+[OK] All nodes agree about slots configuration.
+>>> Check for open slots...
+>>> Check slots coverage...
+[OK] All 16384 slots covered.</code></pre>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">From the above output, we can tell that we are now having a total of 5 Redis nodes, and each of them is having around 3276 slots with a total of 7500-ish keys per node. It also reports that we have 0 slaves connected to every master (not recommended for production though). Further down, it reports an average of 2.32 keys per slot and also the summary of the configuration of the slots, where all nodes agree about the slot configuration and all 16,384 slots are covered.&nbsp;</span></p>
+<p><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">At this point, our hash slots balancing exercise is complete.</span></p>
+<h2 dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Hash Slots Resharding and Rebalancing</span></h2>
+<p><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Now, let&#8217;s say we want to remove redis1 and redis2 from the picture and leave only redis3, redis4 and redis5 (back to the three-master cluster topology), as illustrated in the following diagram:</span></p>
+<div class="image">
+<div class="image_inner"><img width="1202" height="428" decoding="async" src="https://severalnines.com/sites/default/files/blog/node_6303/image1.png"></div>
+</div>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">We can simply reshard redis1 and redis2 as follows:</span></p>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">To reshard (migrate out) all slots from redis1 to redis3:</span></p>
+<pre><code class="language-bash">(redis1)$ redis-cli --cluster reshard 192.168.11.131:6379 
+--cluster-from 6ac62aa8dbb80f982ab1b0fa0623fc54d2bbd77b 
+--cluster-to  9026f2af5a683123abfdd7494da2c73a61803dd3 
+--cluster-slots 3276 
+--cluster-yes</code></pre>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Where, 6ac62 is the node ID of redis1 and 9026f is the node ID of redis3. The </span>&#8211;cluster-slots value is how many slots that we want to move, as in this case, we want to move all of them to redis3. Use the &#8211;cluster check option to retrieve the total number of slots on a particular node.</p>
+<p><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">To reshard (migrate out) all slots from redis2 to redis4:</span></p>
+<pre><code class="language-bash">(redis1)$ redis-cli --cluster reshard 192.168.11.132:6379 
+--cluster-from 92385b2ea26a1a27c786cbea34a75f155f87f762 
+--cluster-to a987d7a94052c6e9426c96ebcd896c2003923eb4 
+--cluster-slots 3276 
+--cluster-yes</code></pre>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Where, 92385 is the node ID of redis2 and a987d is the node ID of redis4. The </span>&#8211;cluster-slots value is how many slots that we want to move, as in this case, we want to move all of them to redis4. Use the &#8211;cluster check option to retrieve the total number of slots on a particular node.</p>
+<p><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Now, when we check the current slot distribution, we can see that redis1 and redis2 should have 0 keys and slots:</span></p>
+<pre><code class="language-bash">(redis1)$ redis-cli --cluster check 192.168.11.131:6379
+192.168.11.131:6379 (6ac62aa8...) -> 0 keys | 0 slots | 0 slaves.
+192.168.11.132:6379 (92385b2e...) -> 0 keys | 0 slots | 0 slaves.
+192.168.11.133:6379 (9026f2af...) -> 15188 keys | 6552 slots | 0 slaves.
+192.168.11.134:6379 (a987d7a9...) -> 15197 keys | 6554 slots | 0 slaves.
+192.168.11.135:6379 (9644ed11...) -> 7579 keys | 3278 slots | 0 slaves.</code></pre>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">You should also notice that the hash slots are not evenly distributed, where redis3 and redis4 hold a far bigger ratio of hash slots if compared to redis5. Therefore, it is a good idea to rebalance the hash slots once more between redis3, redis4 and redis5:</span></p>
+<pre><code class="language-bash">(redis3)$ redis-cli --cluster rebalance 192.168.11.135:6379
+>>> Performing Cluster Check (using node 192.168.11.135:6379)
+[OK] All nodes agree about slots configuration.
+>>> Check for open slots...
+>>> Check slots coverage...
+[OK] All 16384 slots covered.
+>>> Rebalancing across 3 nodes. Total weight = 3.00
+Moving 1093 slots from 192.168.11.134:6379 to 192.168.11.135:6379
+###########################################################################
+Moving 1091 slots from 192.168.11.133:6379 to 192.168.11.135:6379
+###########################################################################</code></pre>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">The hash slots are now balanced out evenly across the 3 active Redis nodes that we wanted:</span></p>
+<pre><code class="language-bash">(redis3)$ redis-cli --cluster check 192.168.11.131:6379
+192.168.11.131:6379 (6ac62aa8...) -> 0 keys | 0 slots | 0 slaves.
+192.168.11.132:6379 (92385b2e...) -> 0 keys | 0 slots | 0 slaves.
+192.168.11.133:6379 (9026f2af...) -> 12651 keys | 5461 slots | 0 slaves.
+192.168.11.134:6379 (a987d7a9...) -> 12658 keys | 5461 slots | 0 slaves.
+192.168.11.135:6379 (9644ed11...) -> 12655 keys | 5462 slots | 0 slaves.</code></pre>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">We can now remove redis1 (192.168.11.131) and redis2 (192.168.11.132) from the Redis Cluster since it has no slots anymore:</span></p>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Removing redis1 from the cluster:</span></p>
+<pre><code class="language-bash">(redis3)$ redis-cli --cluster del-node 192.168.11.131:6379 6ac62aa8dbb80f982ab1b0fa0623fc54d2bbd77b
+>>> Removing node 6ac62aa8dbb80f982ab1b0fa0623fc54d2bbd77b from cluster 192.168.11.131:6379
+>>> Sending CLUSTER FORGET messages to the cluster...
+>>> Sending CLUSTER RESET SOFT to the deleted node.</code></pre>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Removing redis2 from the cluster:</span></p>
+<pre><code class="language-bash">(redis3)$ redis-cli --cluster del-node 192.168.11.132:6379 92385b2ea26a1a27c786cbea34a75f155f87f762
+>>> Removing node 92385b2ea26a1a27c786cbea34a75f155f87f762 from cluster 192.168.11.132:6379
+>>> Sending CLUSTER FORGET messages to the cluster...
+>>> Sending CLUSTER RESET SOFT to the deleted node.</code></pre>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Verify our final Redis node topology and the distribution of the hash slots:</span></p>
+<pre><code class="language-bash">(redis3)$ redis-cli --cluster check 192.168.11.133:6379
+192.168.11.133:6379 (9026f2af...) -> 12651 keys | 5461 slots | 0 slaves.
+192.168.11.135:6379 (9644ed11...) -> 12655 keys | 5462 slots | 0 slaves.
+192.168.11.134:6379 (a987d7a9...) -> 12658 keys | 5461 slots | 0 slaves.</code></pre>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">At this point, we may safely decommission the removed nodes &#8211; redis1 and redis2. All of the above operations can be performed live without interruption to the Redis service. However, the application must use the supported </span><a href="https://redis.io/clients">Redis clients/drivers/connectors</a> from Redis&nbsp;so the request can be redirected to the right shards while rebalancing or resharding is happening.</p>
+<h2 dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Final Thoughts</span></h2>
+<p dir="ltr"><span id="docs-internal-guid-f77dd98c-7fff-e7d3-d8f9-c664a6bc1f0b">Redis Cluster comes with live cluster resharding and rebalancing capabilities out-of-the-box. These operations can be performed online without interruption to the Redis service as a whole, allowing the cluster to scale transparently to the applications.</span></p>
+					</div>
+					<aside class="sidebar col-12 col-lg-5 col-bleed-x">
+						<div class="sidebar-content">
+
+							
+							<!-- 							<h5>Categories</h5>
+								<ul class="post-category-list">
+								<li>
+									<a href="https://severalnines.com/category/ai/">AI <span> 6</span></a>
+									</li><li>
+									<a href="https://severalnines.com/category/backup-management/">Backup Management <span> 165</span></a>
+									</li><li>
+									<a href="https://severalnines.com/category/cloud/">Cloud <span> 178</span></a>
+									</li><li>
+									<a href="https://severalnines.com/category/clustercontrol/">ClusterControl <span> 629</span></a>
+									</li><li>
+									<a href="https://severalnines.com/category/configuration-management/">Configuration Management <span> 165</span></a>
+									</li><li>
+									<a href="https://severalnines.com/category/database-general/">Database - General <span> 368</span></a>
+									</li><li>
+									<a href="https://severalnines.com/category/dbaas/">DBaaS <span> 37</span></a>
+									</li><li>
+									<a href="https://severalnines.com/category/deployment-scaling/">Deployment &amp; Scaling <span> 435</span></a>
+									</li><li>
+									<a href="https://severalnines.com/category/disaster-recovery/">Disaster recovery <span> 3</span></a>
+									</li><li>
+									<a href="https://severalnines.com/category/hybrid-operations/">Hybrid Operations <span> 5</span></a>
+									</li><li>
+									<a href="https://severalnines.com/category/hybrid-cloud/">Hybrid-cloud <span> 6</span></a>
+									</li><li>
+									<a href="https://severalnines.com/category/industry-news-events/">Industry News &amp; Events <span> 206</span></a>
+									</li><li>
+									<a href="https://severalnines.com/category/logging/">Logging <span> 1</span></a>
+									</li><li>
+									<a href="https://severalnines.com/category/monitoring-alerting/">Monitoring &amp; Alerting <span> 168</span></a>
+									</li><li>
+									<a href="https://severalnines.com/category/multi-cloud/">Multi-cloud <span> 6</span></a>
+									</li><li>
+									<a href="https://severalnines.com/category/operational-reporting/">Operational Reporting <span> 12</span></a>
+									</li><li>
+									<a href="https://severalnines.com/category/performance-management/">Performance Management <span> 261</span></a>
+									</li><li>
+									<a href="https://severalnines.com/category/podcast/">Podcast <span> 3</span></a>
+									</li><li>
+									<a href="https://severalnines.com/category/recovery-repair/">Recovery &amp; Repair <span> 124</span></a>
+									</li><li>
+									<a href="https://severalnines.com/category/security-compliance/">Security &amp; Compliance <span> 145</span></a>
+									</li><li>
+									<a href="https://severalnines.com/category/sovereign-dbaas/">Sovereign DBaaS <span> 23</span></a>
+									</li><li>
+									<a href="https://severalnines.com/category/upgrades-patches/">Upgrades &amp; Patches <span> 88</span></a>
+									</li>								</ul>
+							 -->
+															<h5>Category</h5>
+								<ul class="post-category-list">
+									<li><a href="https://severalnines.com/category/deployment-scaling/">Deployment &amp; Scaling</a></li><li><a href="https://severalnines.com/category/performance-management/">Performance Management</a></li><li><a href="https://severalnines.com/category/recovery-repair/">Recovery &amp; Repair</a></li>								</ul>
+														<div class="post-subs-box">
+								<h3>Subscribe to our newsletter</h3>
+								<p>You’ll get two emails every month full of fresh database ops tips and strategic considerations.</p>
+								<script type="rocketlazyloadscript" data-rocket-src="https://js-eu1.hsforms.net/forms/embed/developer/146250279.js"
+									defer></script>
+
+								<div
+									class="hs-form-html hs-newsletter"
+									data-region="eu1"
+									data-form-id="02bb7e0a-59a2-4cc7-b430-b9d24081020c"
+									data-portal-id="146250279">
+								</div>
+							</div>
+						</div>
+					</aside>
+				</div>
+			
+						<section class="recommended-posts">
+				<div class="container">
+					<div class="row">
+						<div class="col-md-12">
+							<h3>Recommended</h3>
+						</div>
+					</div>
+					<div class="row">
+													<div class="col-md-6 col-xl-3">
+								<div class="post-card">
+									<div class="post-title">
+										<h4>
+											<a href="https://severalnines.com/blog/building-high-availability-postgresql-clusters-with-patroni-and-other-integrated-approaches/" rel="bookmark" title="Building High Availability PostgreSQL Clusters with Patroni and Other Integrated Approaches">
+												Building High Availability PostgreSQL Clusters with Patroni and Other Integrated Approaches											</a>
+										</h4>
+									</div>
+									<div class="post-texts">
+										<div class="author-meta">
+											May 21, 2026 Agus											Syafaat										</div>
+
+									</div>
+									<div class="post-image">
+										<a href="https://severalnines.com/blog/building-high-availability-postgresql-clusters-with-patroni-and-other-integrated-approaches/">
+											<img width="1200" height="680" src="https://severalnines.com/wp-content/uploads/2026/05/blog-Building-Resilient-High-Availability-Clusters.png">
+											<!-- <div class="all_resources_img" style="background: url('https://severalnines.com/wp-content/uploads/2026/05/blog-Building-Resilient-High-Availability-Clusters.png') no-repeat;"></div> -->
+										</a>
+									</div>
+								</div>
+							</div>
+													<div class="col-md-6 col-xl-3">
+								<div class="post-card">
+									<div class="post-title">
+										<h4>
+											<a href="https://severalnines.com/blog/active-active-mysql-group-replication-best-practices/" rel="bookmark" title="Active-Active MySQL Group Replication Best Practices">
+												Active-Active MySQL Group Replication Best Practices											</a>
+										</h4>
+									</div>
+									<div class="post-texts">
+										<div class="author-meta">
+											March 11, 2026 Paul											Namuag										</div>
+
+									</div>
+									<div class="post-image">
+										<a href="https://severalnines.com/blog/active-active-mysql-group-replication-best-practices/">
+											<img width="1200" height="680" src="https://severalnines.com/wp-content/uploads/2026/03/blog-MySQL-Active-Active-Group-Replication.png">
+											<!-- <div class="all_resources_img" style="background: url('https://severalnines.com/wp-content/uploads/2026/03/blog-MySQL-Active-Active-Group-Replication.png') no-repeat;"></div> -->
+										</a>
+									</div>
+								</div>
+							</div>
+													<div class="col-md-6 col-xl-3">
+								<div class="post-card">
+									<div class="post-title">
+										<h4>
+											<a href="https://severalnines.com/blog/multi-tenant-multi-cloud-logical-and-bi-directional-replication-deep-dive/" rel="bookmark" title="Multi-Tenant, Multi-Cloud Logical and Bi-Directional Replication Deep Dive">
+												Multi-Tenant, Multi-Cloud Logical and Bi-Directional Replication Deep Dive											</a>
+										</h4>
+									</div>
+									<div class="post-texts">
+										<div class="author-meta">
+											March 6, 2026 Paul											Namuag										</div>
+
+									</div>
+									<div class="post-image">
+										<a href="https://severalnines.com/blog/multi-tenant-multi-cloud-logical-and-bi-directional-replication-deep-dive/">
+											<img width="1200" height="680" src="https://severalnines.com/wp-content/uploads/2026/02/blog-Logical-Bi-Directional-Replication.png">
+											<!-- <div class="all_resources_img" style="background: url('https://severalnines.com/wp-content/uploads/2026/02/blog-Logical-Bi-Directional-Replication.png') no-repeat;"></div> -->
+										</a>
+									</div>
+								</div>
+							</div>
+													<div class="col-md-6 col-xl-3">
+								<div class="post-card">
+									<div class="post-title">
+										<h4>
+											<a href="https://severalnines.com/blog/clickhouse-storage-architecture-and-optimization/" rel="bookmark" title="ClickHouse Storage Architecture and Optimization">
+												ClickHouse Storage Architecture and Optimization											</a>
+										</h4>
+									</div>
+									<div class="post-texts">
+										<div class="author-meta">
+											February 13, 2026 Ashraf											Sharif										</div>
+
+									</div>
+									<div class="post-image">
+										<a href="https://severalnines.com/blog/clickhouse-storage-architecture-and-optimization/">
+											<img width="1200" height="680" src="https://severalnines.com/wp-content/uploads/2026/01/blog-optimization-for-clickhouse.png">
+											<!-- <div class="all_resources_img" style="background: url('https://severalnines.com/wp-content/uploads/2026/01/blog-optimization-for-clickhouse.png') no-repeat;"></div> -->
+										</a>
+									</div>
+								</div>
+							</div>
+											</div>
+				</div>
+			</section>
+			<section class="post-cta-block">
+				<div class="container">
+					<div class="row">
+						<div class="col-md-12">
+							<h2>
+								Subscribe below to be notified of <strong> fresh posts</strong>
+							</h2>
+							<!-- <div class="text- acf-button-block">
+						<a class="btn white btn-block " href="#the_newsletter" title="Learn how">
+							Learn how		</a>
+					</div> -->
+						</div>
+					</div>
+				</div>
+			</section>
+		</div><!-- .entry-content -->
+	</article><!-- #post-9044 -->
+</main><!-- #main -->
+
+<footer class="site-footer">
+	<div class="wrapper-mid">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-3 col-md-6">
+					<div class="foot_head">
+						<h3>Supported databases</h3>
+					</div>
+					<div class="menu-supported-databases-container"><ul id="menu-supported-databases" class="menu"><li id="menu-item-36023" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-36023"><a>ClusterControl</a>
+<ul class="sub-menu">
+	<li id="menu-item-36028" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-36028"><a href="https://severalnines.com/clustercontrol/databases/mysql/">MySQL</a></li>
+	<li id="menu-item-36026" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-36026"><a href="https://severalnines.com/clustercontrol/databases/mariadb/">MariaDB</a></li>
+	<li id="menu-item-36029" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-36029"><a href="https://severalnines.com/clustercontrol/databases/postgresql/">PostgreSQL</a></li>
+	<li id="menu-item-36033" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-36033"><a href="https://severalnines.com/clustercontrol/databases/sql-server/">SQL Server for Linux</a></li>
+	<li id="menu-item-41475" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-41475"><a href="https://severalnines.com/clustercontrol/databases/clickhouse/">ClickHouse — PENDING</a></li>
+	<li id="menu-item-36024" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-36024"><a href="https://severalnines.com/clustercontrol/databases/mysql-galera-cluster/">Galera Cluster</a></li>
+	<li id="menu-item-36031" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-36031"><a href="https://severalnines.com/clustercontrol/databases/timescaledb/">TimescaleDB</a></li>
+	<li id="menu-item-36032" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-36032"><a href="https://severalnines.com/clustercontrol/databases/elasticsearch/">Elasticsearch</a></li>
+	<li id="menu-item-36027" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-36027"><a href="https://severalnines.com/clustercontrol/databases/mongodb/">MongoDB</a></li>
+	<li id="menu-item-36034" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-36034"><a href="https://severalnines.com/clustercontrol/databases/valkey/">Valkey</a></li>
+	<li id="menu-item-36030" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-36030"><a href="https://severalnines.com/clustercontrol/databases/redis/">Redis</a></li>
+</ul>
+</li>
+<li id="menu-item-36035" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-36035"><a>CCX</a>
+<ul class="sub-menu">
+	<li id="menu-item-36037" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-36037"><a href="https://severalnines.com/ccx/postgresql/">PostgreSQL</a></li>
+	<li id="menu-item-36036" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-36036"><a href="https://severalnines.com/ccx/mysql/">MySQL</a></li>
+	<li id="menu-item-36038" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-36038"><a href="https://severalnines.com/ccx/valkey/">Valkey</a></li>
+	<li id="menu-item-37783" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-37783"><a href="https://severalnines.com/ccx/mariadb/">MariaDB</a></li>
+	<li id="menu-item-37784" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-37784"><a href="https://severalnines.com/ccx/sql-server/">SQL Server</a></li>
+</ul>
+</li>
+</ul></div>				</div>
+				<div class="col-lg-2 col-md-6">
+					<div class="menu-products-and-solutions-container"><ul id="menu-products-and-solutions" class="menu"><li id="menu-item-36039" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-36039"><a>Products</a>
+<ul class="sub-menu">
+	<li id="menu-item-36043" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-36043"><a href="https://severalnines.com/clustercontrol/">ClusterControl</a></li>
+	<li id="menu-item-37787" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-37787"><a href="https://severalnines.com/ccx/">CCX</a></li>
+	<li id="menu-item-43244" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-43244"><a href="https://severalnines.com/dbscout/">DBScout</a></li>
+</ul>
+</li>
+<li id="menu-item-36045" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-36045"><a>Solutions</a>
+<ul class="sub-menu">
+	<li id="menu-item-41820" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-41820"><a href="https://severalnines.com/clustercontrol/features/ai-augmented-ops/">AI-augmented ops</a></li>
+	<li id="menu-item-41382" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-41382"><a href="https://severalnines.com/clustercontrol/solutions/air-gapped/">Air-gapped</a></li>
+	<li id="menu-item-36046" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-36046"><a href="https://severalnines.com/clustercontrol/solutions/hybrid-cloud/">Hybrid cloud</a></li>
+	<li id="menu-item-38818" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-38818"><a href="https://severalnines.com/clustercontrol/solutions/kubernetes/">Kubernetes</a></li>
+	<li id="menu-item-36047" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-36047"><a href="https://severalnines.com/clustercontrol/solutions/multi-cloud/">Multi cloud</a></li>
+	<li id="menu-item-36048" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-36048"><a href="https://severalnines.com/clustercontrol/solutions/on-premises/">On-premises</a></li>
+	<li id="menu-item-37786" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-37786"><a href="https://severalnines.com/ccx/cloud/">CCX Cloud</a></li>
+	<li id="menu-item-41381" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-41381"><a href="https://severalnines.com/ccx/sovereign/">CCX Sovereign</a></li>
+	<li id="menu-item-37785" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-37785"><a href="https://severalnines.com/ccx/service-providers/">CCX for Service Providers</a></li>
+</ul>
+</li>
+</ul></div>				</div>
+				<div class="col-lg-4 col-md-6">
+					<div class="menu-developers-and-severalnines-container"><ul id="menu-developers-and-severalnines" class="menu"><li id="menu-item-36051" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-36051"><a href="#">Developers</a>
+<ul class="sub-menu">
+	<li id="menu-item-36053" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-36053"><a href="https://docs.severalnines.com/">Docs</a></li>
+	<li id="menu-item-36054" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-36054"><a href="https://severalnines.com/support/">Support</a></li>
+	<li id="menu-item-36055" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-36055"><a href="https://severalnines.com/sovereign-dbaas/">Sovereign DBaaS Community</a></li>
+	<li id="menu-item-36056" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-36056"><a href="https://severalnines.com/clustercontrol/training/">ClusterControl Training</a></li>
+	<li id="menu-item-36057" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-36057"><a href="https://severalnines.com/clustercontrol/certification/">ClusterControl Certification</a></li>
+</ul>
+</li>
+<li id="menu-item-36052" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-36052"><a>Severalnines</a>
+<ul class="sub-menu">
+	<li id="menu-item-36058" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-36058"><a href="https://severalnines.com/about-us/">About Us</a></li>
+	<li id="menu-item-36060" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-36060"><a href="https://severalnines.com/contact/">Contact us</a></li>
+	<li id="menu-item-36061" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-36061"><a href="https://severalnines.com/security-compliance/">Compliance</a></li>
+	<li id="menu-item-36059" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-36059"><a href="https://severalnines.com/career/">Careers</a></li>
+	<li id="menu-item-36062" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-36062"><a href="https://severalnines.com/partners/">Partners</a></li>
+	<li id="menu-item-36063" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-36063"><a href="https://go.severalnines.com/hubfs/public/Severalnines_Brand_Book.pdf">Brand Book</a></li>
+</ul>
+</li>
+</ul></div>				</div>
+				<div class="col-lg-3 col-md-6">
+					<div class="column subscribe" id="the_newsletter">
+													<h3>Subscribe to our media</h3>
+						
+													<p>You’ll get two emails every month full of fresh database ops tips and strategic considerations.</p>
+						
+						<div class="iframe-wrapper">
+							<script type="rocketlazyloadscript" data-rocket-src="https://js-eu1.hsforms.net/forms/embed/developer/146250279.js"
+								defer></script>
+							<div
+								class="hs-form-html hs-newsletter"
+								data-region="eu1"
+								data-form-id="02bb7e0a-59a2-4cc7-b430-b9d24081020c"
+								data-portal-id="146250279">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="container">
+		<div class="wrapper-bottom">
+			<div class="wrapper">
+				<div class="site-footer__bottom">
+										<div class="site-footer__copyright bottom-left">
+						<div class="site-footer__mandatory-links bottom-right">
+															<ul class="mandatory-links">
+																			<li><a href="https://severalnines.com/ccx/terms/"
+												target="_self" 												title="Terms of Service">Terms of Service</a>
+										</li>
+																			<li><a href="https://severalnines.com/ccx/sla/"
+												target="_self" 												title="Service Level Agreement">Service Level Agreement</a>
+										</li>
+																			<li><a href="https://severalnines.com/ccx/dpa/"
+												target="_self" 												title="Data Processing Agreement">Data Processing Agreement</a>
+										</li>
+																			<li><a href="https://severalnines.com/privacy/"
+												target="_self" 												title="Privacy Policy">Privacy Policy</a>
+										</li>
+																	</ul>
+													</div>
+													<p>© Copyright 2014-2026 Severalnines AB. All rights reserved.<br />
+Severalnines, ClusterControl, and CCX are registered trademarks in the US, UK, and EU. The 3rd-party trademarks on this site are the property of their respective owners and are used for referential purposes only.</p>
+											</div>
+											<ul class="severalnines-socialmedia">
+															<li>
+									<a target="_blank" class="icon-Linkedin" href="https://www.linkedin.com/company/severalnines/" target="_self"  title="Linkedin">
+										<span class="screen-reader-text">Linkedin</span>
+									</a>
+								</li>
+															<li>
+									<a target="_blank" class="icon-Twitter" href="https://twitter.com/severalnines/" target="_self"  title="Twitter">
+										<span class="screen-reader-text">Twitter</span>
+									</a>
+								</li>
+															<li>
+									<a target="_blank" class="icon-Facebook" href="https://www.facebook.com/severalnines/" target="_self"  title="Facebook">
+										<span class="screen-reader-text">Facebook</span>
+									</a>
+								</li>
+															<li>
+									<a target="_blank" class="icon-Youtube" href="https://www.youtube.com/c/Severalnines/" target="_self" title="Youtube">
+										<span class="screen-reader-text">Youtube</span>
+									</a>
+								</li>
+															<li>
+									<a target="_blank" class="icon-Podcast" href="https://severalnines.com/podcast/" target="_self"  title="Podcast">
+										<span class="screen-reader-text">Podcast</span>
+									</a>
+								</li>
+															<li>
+									<a target="_blank" class="icon-Slideshare" href="https://www.slideshare.net/severalnines/" target="_self"  title="Slideshare">
+										<span class="screen-reader-text">Slideshare</span>
+									</a>
+								</li>
+															<li>
+									<a target="_blank" class="icon-RSS" href="https://severalnines.com/feed/" target="_self"  title="RSS">
+										<span class="screen-reader-text">RSS</span>
+									</a>
+								</li>
+													</ul>
+									</div>
+			</div>
+		</div>
+	</div>
+
+</footer>
+</div>
+<script type="speculationrules">
+{"prefetch":[{"source":"document","where":{"and":[{"href_matches":"\/*"},{"not":{"href_matches":["\/wp-*.php","\/wp-admin\/*","\/wp-content\/uploads\/*","\/wp-content\/*","\/wp-content\/plugins\/*","\/wp-content\/themes\/severalnines\/*","\/*\\?(.+)"]}},{"not":{"selector_matches":"a[rel~=\"nofollow\"]"}},{"not":{"selector_matches":".no-prefetch, .no-prefetch a"}}]},"eagerness":"conservative"}]}
+</script>
+<!-- Zopim chat bot code -->
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript">
+window.$zopim||(function(d,s){var z=$zopim=function(c){z._.push(c)},$=z.s=
+d.createElement(s),e=d.getElementsByTagName(s)[0];z.set=function(o){z.set.
+_.push(o)};z._=[];z.set._=[];$.async=!0;$.setAttribute("charset","utf-8");
+$.src="//v2.zopim.com/?3P2DzaW6KX6JrCYBbnEAaeOa2IVmBM5T";z.t=+new Date;$.
+type="text/javascript";e.parentNode.insertBefore($,e)})(document,"script");
+</script>
+
+
+<!-- scrolling functionality for when hash clicked/ hash for another page form -->
+<script type="rocketlazyloadscript" data-rocket-type="text/javascript">
+jQuery(document).ready(function(){
+	jQuery(".acf-button-block a").on('click', function(event) {
+		if ((this.hash !== "" && this.hash == this.href) || this.hash == '#gform_wrapper_7') {
+			event.preventDefault();
+			var hash = this.hash;
+			jQuery('html, body').animate({
+				scrollTop: jQuery(hash).offset().top-200
+				}, 0, function(){
+				window.location.hash = hash;
+			});
+		} 
+	});
+
+	setTimeout(() => {
+	    id = window.location.hash;
+	    if ( jQuery(id).length > 0 ) {
+			jQuery('html, body').animate({
+				scrollTop: jQuery(id).offset().top-180
+				}, 0, function(){		
+				window.location.hash = id;
+			});
+	    }
+	}, 100);	
+});
+</script>
+<!--Loading sticky class beforehand if user has scrolled on the page --> 
+<script>
+var header = jQuery(".site-header");
+if(jQuery(window).width() <= 991 && jQuery(window).scrollTop() > 64){
+    header.addClass("sticky");
+}else if( jQuery(window).width() > 991 && jQuery(window).scrollTop() > 88 ){
+    header.addClass("sticky");
+}
+</script>
+<style>
+.demo-container .tabs span:nth-child(3) {margin-right: auto !important;}
+.demo-container .tabs span { margin: 0 auto 15px;}
+.site-footer .site-footer__copyright>p{    font-size: 12px;
+    color: #fff !important;
+    letter-spacing: 0px;
+    font-weight: 400;display: block;
+    padding-top: 2px;text-align: left;}
+.site-footer__bottom .mandatory-links li a {
+    color: #fff !important;}
+.list-blocks {
+    padding-left: 20px !important;
+    margin-top: 0px !important;
+}
+.list-blocks li{
+    padding-top: 0px !important;
+}
+.logo-white-bg {
+position: relative;
+min-height: 120px;
+    width: 100%;
+    text-align: center;
+}
+.logo-white-bg > img {
+position: absolute;
+max-height: 120px;
+width: auto;
+left: 50%;
+top: 50%;
+-webkit-transform:translate(-50%, -50%);
+-moz-transform:translate(-50%, -50%);
+-ms-transform:translate(-50%, -50%);
+-o-transform:translate(-50%, -50%);
+transform:translate(-50%, -50%);
+}
+</style><script id="leadin-script-loader-js-js-extra">
+var leadin_wordpress = {"userRole":"visitor","pageType":"post","leadinPluginVersion":"11.3.21"};
+</script>
+<script type="rocketlazyloadscript" data-rocket-src="https://js-eu1.hs-scripts.com/146250279.js?integration=WordPress&amp;ver=11.3.21" id="leadin-script-loader-js-js"></script>
+<script src="https://severalnines.com/wp-content/themes/severalnines/assets/dist/frontend.js?ver=1658752958" id="cntrst-scripts-js"></script>
+<script src="https://severalnines.com/wp-content/themes/severalnines/js/custom.js?ver=1.3.2" id="custom-js-js"></script>
+<script>window.lazyLoadOptions={elements_selector:"iframe[data-lazy-src]",data_src:"lazy-src",data_srcset:"lazy-srcset",data_sizes:"lazy-sizes",class_loading:"lazyloading",class_loaded:"lazyloaded",threshold:300,callback_loaded:function(element){if(element.tagName==="IFRAME"&&element.dataset.rocketLazyload=="fitvidscompatible"){if(element.classList.contains("lazyloaded")){if(typeof window.jQuery!="undefined"){if(jQuery.fn.fitVids){jQuery(element).parent().fitVids()}}}}}};window.addEventListener('LazyLoad::Initialized',function(e){var lazyLoadInstance=e.detail.instance;if(window.MutationObserver){var observer=new MutationObserver(function(mutations){var image_count=0;var iframe_count=0;var rocketlazy_count=0;mutations.forEach(function(mutation){for(var i=0;i<mutation.addedNodes.length;i++){if(typeof mutation.addedNodes[i].getElementsByTagName!=='function'){continue}
+if(typeof mutation.addedNodes[i].getElementsByClassName!=='function'){continue}
+images=mutation.addedNodes[i].getElementsByTagName('img');is_image=mutation.addedNodes[i].tagName=="IMG";iframes=mutation.addedNodes[i].getElementsByTagName('iframe');is_iframe=mutation.addedNodes[i].tagName=="IFRAME";rocket_lazy=mutation.addedNodes[i].getElementsByClassName('rocket-lazyload');image_count+=images.length;iframe_count+=iframes.length;rocketlazy_count+=rocket_lazy.length;if(is_image){image_count+=1}
+if(is_iframe){iframe_count+=1}}});if(image_count>0||iframe_count>0||rocketlazy_count>0){lazyLoadInstance.update()}});var b=document.getElementsByTagName("body")[0];var config={childList:!0,subtree:!0};observer.observe(b,config)}},!1)</script><script data-no-minify="1" async src="https://severalnines.com/wp-content/plugins/wp-rocket/assets/js/lazyload/17.8.3/lazyload.min.js"></script><!-- The Modal -->
+<div id="s9s_modal" class="modal image_lightbox_popup">
+	<span id="s9s_modal-close" class="modal-close">&times;</span>
+	<img id="s9s_modal-content" class="modal-content">
+</div>
+		<!-- Pardot tracking Code -->
+		<script type="rocketlazyloadscript" data-rocket-type="text/javascript">
+			piAId = '139181';
+			piCId = '1453';
+			piHostname = 'pi.pardot.com';
+			(function() {
+				function async_load() {
+					var s = document.createElement('script');
+					s.type = 'text/javascript';
+					s.src = ('https:' == document.location.protocol ? 'https://pi' : 'http://cdn') + '.pardot.com/pd.js';
+					var c = document.getElementsByTagName('script')[0];
+					c.parentNode.insertBefore(s, c);
+				}
+				if (window.attachEvent) {
+					window.attachEvent('onload', async_load);
+				} else {
+					window.addEventListener('load', async_load, false);
+				}
+			})();
+		</script>
+		<!-- End Pardot tracking Code -->
+</body>
+
+</html>
+<!-- This website is like a Rocket, isn't it? Performance optimized by WP Rocket. Learn more: https://wp-rocket.me - Debug: cached@1780369080 -->

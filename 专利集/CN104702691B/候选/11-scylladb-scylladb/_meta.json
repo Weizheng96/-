@@ -1,0 +1,10 @@
+{
+  "nn": "11",
+  "slug": "11-scylladb-scylladb",
+  "type": "产品",
+  "name": "ScyllaDB（vnode/tablet + 拓扑副本 + 动态均衡）",
+  "organization": "ScyllaDB Inc",
+  "hit_features_initial": "F0,F1,F2,F3",
+  "publicity": "高",
+  "blurb": "- 类型：产品\n- 名称：ScyllaDB\n- vendor：ScyllaDB Inc\n- 命中 F#（初判）：F0,F1,F2,F3\n- 公开度：高\n- 一句话定位：Cassandra 兼容高性能 NoSQL，vnode/tablet + 拓扑感知副本（F2），tablet 动态负载均衡（F1/F3）。"
+}

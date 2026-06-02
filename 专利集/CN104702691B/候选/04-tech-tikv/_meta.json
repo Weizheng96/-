@@ -1,0 +1,10 @@
+{
+  "nn": "04",
+  "slug": "04-tech-tikv",
+  "type": "技术",
+  "name": "TiKV / TiDB（Region 多副本 + PD 调度）",
+  "organization": "PingCAP",
+  "hit_features_initial": "F0,F1,F2,F3",
+  "publicity": "高",
+  "blurb": "- 类型：技术\n- 名称：TiKV / TiDB（Region 多副本 + Placement Driver 调度）\n- 组织：PingCAP（独角兽）\n- 命中 F#（初判）：F0,F1,F2,F3\n- 公开度：高（开源 + 设计文档）\n- 一句话定位：分布式 SQL，Region 为分区单位含多 Raft 副本，PD 按 label/zone 约束放置副本（F2）并自动调度热点 Region 实现负载均衡（F1/F3）。\n- 应用案例（技术类）：TiDB Cloud、各行业自建 TiDB"
+}

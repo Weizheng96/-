@@ -1,0 +1,10 @@
+{
+  "nn": "18",
+  "slug": "18-cloudera-hbase",
+  "type": "产品",
+  "name": "Apache HBase（Region Balancer + region replica）",
+  "organization": "Cloudera",
+  "hit_features_initial": "F0,F1,F3",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：Apache HBase\n- vendor：Cloudera\n- 命中 F#（初判）：F0,F1,F3\n- 公开度：中\n- 一句话定位：宽列存储，Region 由 RegionServer Balancer 均匀分布（F1/F3）；底层副本由 HDFS 处理、HBase region replica 为可选读副本——F0/F2 较弱，Step 6 核是否同抽象层。"
+}

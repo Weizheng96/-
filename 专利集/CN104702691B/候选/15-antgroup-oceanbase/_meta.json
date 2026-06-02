@@ -1,0 +1,10 @@
+{
+  "nn": "15",
+  "slug": "15-antgroup-oceanbase",
+  "type": "产品",
+  "name": "OceanBase（partition Paxos 副本 + RootService 均衡 + Zone）",
+  "organization": "Ant Group",
+  "hit_features_initial": "F0,F1,F2,F3",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：OceanBase\n- vendor：Ant Group（蚂蚁集团）\n- 命中 F#（初判）：F0,F1,F2,F3\n- 公开度：中（已开源 + 官方文档\"数据分区和分区副本\"）\n- 一句话定位：分布式关系数据库，partition + 多副本 Paxos 组，RootService 负载均衡，Zone 级副本分散（F2）与均衡（F1/F3）。"
+}

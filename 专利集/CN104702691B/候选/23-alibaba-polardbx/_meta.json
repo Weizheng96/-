@@ -1,0 +1,10 @@
+{
+  "nn": "23",
+  "slug": "23-alibaba-polardbx",
+  "type": "产品",
+  "name": "PolarDB-X / Tablestore（分区 + 副本 + 均衡）",
+  "organization": "Alibaba Cloud",
+  "hit_features_initial": "F0,F1,F2,F3",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：PolarDB-X / Tablestore\n- vendor：Alibaba Cloud（阿里云）\n- 命中 F#（初判）：F0,F1,F2,F3\n- 公开度：低（PolarDB-X 部分开源，调度细节披露有限）\n- 一句话定位：分布式数据库/表格存储，分区 + 副本 + 负载均衡调度。"
+}

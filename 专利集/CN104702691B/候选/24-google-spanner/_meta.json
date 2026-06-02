@@ -1,0 +1,10 @@
+{
+  "nn": "24",
+  "slug": "24-google-spanner",
+  "type": "产品",
+  "name": "Google Spanner / Bigtable（split/tablet + 副本）",
+  "organization": "Google",
+  "hit_features_initial": "F0,F1,F3",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：Google Spanner / Bigtable\n- vendor：Google\n- 命中 F#（初判）：F0,F1,F3\n- 公开度：低（闭源，仅论文）\n- 一句话定位：全球分布式数据库，directory/split + 副本（Paxos 组），自动 rebalance；实现闭源。"
+}

@@ -1,0 +1,10 @@
+{
+  "nn": "20",
+  "slug": "20-aws-dynamodb",
+  "type": "产品",
+  "name": "Amazon DynamoDB（partition + replica，多 AZ）",
+  "organization": "Amazon (AWS)",
+  "hit_features_initial": "F0,F1,F2,F3",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：Amazon DynamoDB\n- vendor：Amazon (AWS)\n- 命中 F#（初判）：F0,F1,F2,F3\n- 公开度：低（闭源托管，仅论文/博客披露分区+副本+自动再分区机制）\n- 一句话定位：托管 KV/文档库，自动分区 + 多 AZ 副本，自动 split/rebalance；实现闭源，公开取证难。"
+}

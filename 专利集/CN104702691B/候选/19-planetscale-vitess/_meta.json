@@ -1,0 +1,10 @@
+{
+  "nn": "19",
+  "slug": "19-planetscale-vitess",
+  "type": "产品",
+  "name": "Vitess（sharding + MySQL 副本 + resharding）",
+  "organization": "PlanetScale",
+  "hit_features_initial": "F0,F1,F3",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：Vitess\n- vendor：PlanetScale（独角兽，Vitess 商业主体）\n- 命中 F#（初判）：F0,F1,F3\n- 公开度：中\n- 一句话定位：MySQL 分片中间件，shard 含 primary/replica tablet，resharding 重分布（F1/F3）；副本反亲和（F2）依赖部署拓扑，Step 6 核。"
+}

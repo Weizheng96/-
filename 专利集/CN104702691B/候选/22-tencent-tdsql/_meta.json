@@ -1,0 +1,10 @@
+{
+  "nn": "22",
+  "slug": "22-tencent-tdsql",
+  "type": "产品",
+  "name": "TDSQL（分布式分片 + 副本均衡）",
+  "organization": "Tencent",
+  "hit_features_initial": "F0,F1,F2,F3",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：TDSQL\n- vendor：Tencent（腾讯）\n- 命中 F#（初判）：F0,F1,F2,F3\n- 公开度：低（闭源商用）\n- 一句话定位：金融级分布式数据库，分片 + 副本 + 自动均衡；实现闭源。"
+}

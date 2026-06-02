@@ -1,0 +1,163 @@
+<!DOCTYPE html
+  SYSTEM "about:legacy-compat">
+<html xml:lang="en-us" lang="en-us">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <meta name="DC.Type" content="task">
+      <meta name="DC.Title" content="Enabling Raft Replication">
+      <meta name="abstract" content="You enable Raft replication when you configure the shard catalog.">
+      <meta name="description" content="You enable Raft replication when you configure the shard catalog.">
+      <meta name="DC.Creator" content="Sravya Balagala">
+      <meta name="DC.Creator" content="Steve Ball">
+      <meta name="DC.Creator" content="Nourdine Benadjaoud">
+      <meta name="DC.Creator" content="Sebastian Binek">
+      <meta name="DC.Creator" content="Prasad Budithi">
+      <meta name="DC.Creator" content="Pankaj Chandiramani">
+      <meta name="DC.Creator" content="David Colello">
+      <meta name="DC.Creator" content="Richard Delval">
+      <meta name="DC.Creator" content="Mark Dilman">
+      <meta name="DC.Creator" content="Shailesh Dwivedi">
+      <meta name="DC.Creator" content="Shahab Hamid">
+      <meta name="DC.Creator" content="Prakash Jashnani">
+      <meta name="DC.Creator" content="Nitin Karkhanis">
+      <meta name="DC.Creator" content="Aman Kumar">
+      <meta name="DC.Creator" content="Rupesh Kumar">
+      <meta name="DC.Creator" content="Rennie Sreekumar Ranjit Kumar">
+      <meta name="DC.Creator" content="Lin Lu">
+      <meta name="DC.Creator" content="Darshan Maniyani">
+      <meta name="DC.Creator" content="Vikas Mehta">
+      <meta name="DC.Creator" content="Sathis Muniyasamy">
+      <meta name="DC.Creator" content="Leo Novak">
+      <meta name="DC.Creator" content="Kehinde Otubamowo">
+      <meta name="DC.Creator" content="Dinesh Putchala">
+      <meta name="DC.Creator" content="Sachin Rathod">
+      <meta name="DC.Creator" content="Sampanna Salunke">
+      <meta name="DC.Creator" content="Vijaya Sarode">
+      <meta name="DC.Creator" content="Abhishek Srivastava">
+      <meta name="DC.Creator" content="Jean-Francois Verrier">
+      <meta name="DC.Creator" content="Lik Wong">
+      <meta name="DC.Creator" content="Zaixian Xie">
+      <meta name="DC.Creator" content="Jean Zeng">
+      <meta name="DC.Creator" content="Virginia Beecher">
+      <meta name="DC.Publisher" content="November2025">
+      <meta name="template" content="Task">
+      <meta name="DC.Format" content="XHTML">
+      <meta name="DC.Identifier" content="GUID-F4568AD4-321C-4549-96A3-E6EF695C9592">
+      <meta name="DC.Language" content="en-US">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="abstract" content="You enable Raft replication when you configure the shard catalog.">
+      <meta name="description" content="You enable Raft replication when you configure the shard catalog.">
+      <title>Enabling Raft Replication</title>
+      <meta property="og:site_name" content="Oracle Help Center">
+      <meta property="og:title" content="Oracle Globally Distributed AI Database Guide">
+      <meta property="og:description" content="You enable Raft replication when you configure the shard catalog.">
+      <link rel="stylesheet" href="/sp_common/book-template/ohc-book-template/css/book.css">
+      <link rel="shortcut icon" href="/sp_common/book-template/ohc-common/img/favicon.ico">
+      <meta name="application-name" content="Oracle Globally Distributed AI Database Guide">
+      <meta name="generator" content="DITA Open Toolkit version 1.8.5 (Mode = doc)">
+      <meta name="plugin" content="SP_docbuilder HTML plugin release 18.2.2">
+      <link rel="alternate" href="oracle-globally-distributed-ai-database-guide.pdf" title="PDF File" type="application/pdf">
+      <link rel="schema.dcterms" href="http://purl.org/dc/terms/">
+      <meta name="dcterms.created" content="2025-11-26T13:55:19-08:00">
+      <meta name="dcterms.title" content="Oracle Globally Distributed AI Database Guide">
+      <meta name="dcterms.dateCopyrighted" content="2018, 2025">
+      <meta name="dcterms.category" content="database">
+      <meta name="dcterms.identifier" content="F56768-03">
+      
+      <meta name="dcterms.product" content="en/database/oracle/oracle-database/26">
+      
+      <link rel="prev" href="raft-replication-concepts.html" title="Previous" type="text/html">
+      <link rel="next" href="raft-replication-operations.html" title="Next" type="text/html">
+      <script>
+        document.write('<style type="text/css">');
+        document.write('body > .noscript, body > .noscript ~ * { visibility: hidden; }');
+        document.write('</style>');
+     </script>
+      <script data-main="/sp_common/book-template/ohc-book-template/js/book-config" src="/sp_common/book-template/requirejs/require.js"></script>
+      <script>
+            if (window.require === undefined) {
+                document.write('<script data-main="sp_common/book-template/ohc-book-template/js/book-config" src="sp_common/book-template/requirejs/require.js"><\/script>');
+                document.write('<link href="sp_common/book-template/ohc-book-template/css/book.css" rel="stylesheet"/>');
+            }
+        </script>
+      <script type="application/json" id="ssot-metadata">{"primary":{"category":{"short_name":"database","element_name":"Database","display_in_url":true},"suite":{"short_name":"oracle","element_name":"Oracle","display_in_url":true},"product_group":{"short_name":"not-applicable","element_name":"Not applicable","display_in_url":false},"product":{"short_name":"oracle-database","element_name":"Oracle Database","display_in_url":true},"release":{"short_name":"26","element_name":"Release 26","display_in_url":true}}}</script>
+      
+    <meta name="dcterms.release" content="Release 26">
+    <meta name="dcterms.isVersionOf" content="SHARD">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Enabling Raft Replication","description":"You enable Raft replication when you configure the shard catalog.","datePublished":"2025-11-26 CST","dateModified":"2025-11-26 CST"}</script>
+    <script>window.ohcglobal || document.write('<script src="/en/dcommon/js/global.js">\x3C/script>')</script></head>
+   <body>
+      <div class="noscript alert alert-danger text-center" role="alert">
+         <a href="raft-replication-concepts.html" class="pull-left"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>Previous</a>
+         <a href="raft-replication-operations.html" class="pull-right">Next<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
+         <span class="fa fa-exclamation-triangle" aria-hidden="true"></span> JavaScript must be enabled to correctly display this content
+        
+      </div>
+      <article class>
+         <a id="GUID-F4568AD4-321C-4549-96A3-E6EF695C9592" name="GUID-F4568AD4-321C-4549-96A3-E6EF695C9592"></a>
+         
+         <h2 id="SHARD-GUID-F4568AD4-321C-4549-96A3-E6EF695C9592" class="sect2">Enabling Raft Replication</h2>
+         <div class="ind">
+            <div>
+               <p>You enable Raft replication when you configure the shard
+        catalog.</p>
+               <div class="section">
+                  
+                  <p>To enable Raft replication, specify the <span class="bold">native</span> replication option
+                in the <code class="codeph">create shardcatalog</code> command when you create the shard
+                catalog.
+                  </p>
+                  
+                  <pre class="pre codeblock"><code>gdsctl&gt; create shardcatalog ... <span class="bold">-repl native</span></code></pre>
+                  <p>For example</p>
+                  <pre class="pre codeblock"><code>GDSCTL&gt; create shardcatalog -database catalog_connect_string
+ -user mysdbadmin/mysdbadmin_password <span class="bold">-repl native</span> -region region1,region2
+</code></pre>
+                  <p>See <a href="configure-topology.html#GUID-323F1808-3FD4-48AC-B4F6-961D0CF8B820" title="Use the GDSCTL CREATE SHARDCATALOG command to create metadata describing the distributed database topology in the shard catalog database.">Create the Shard Catalog</a> for shard catalog configuration details.
+                  </p>
+                  
+                  <p>After the shard catalog is created, you can add shards to the
+                configuration and run the <code class="codeph">DEPLOY</code> command.
+                  </p>
+                  
+                  <div class="infoboxnote" id="GUID-F4568AD4-321C-4549-96A3-E6EF695C9592__GUID-13E2AF7C-89F0-434D-88EF-B5D977E1B14B">
+                     <p class="notep1">Note:</p>You must have at least 3 shards in
+                your <span>distributed database</span> to use Raft replication.
+                  </div>
+                  
+               </div>
+            </div>
+            <div class="sect2"><a id="GUID-A72E7F30-B67B-4A76-AEF3-C09E87DE9F26" name="GUID-A72E7F30-B67B-4A76-AEF3-C09E87DE9F26"></a><h3 id="SHARD-GUID-A72E7F30-B67B-4A76-AEF3-C09E87DE9F26" class="sect3">Specifying Replication Unit Attributes</h3>
+               <div>
+                  <p>By default, <span>Oracle Globally Distributed AI Database</span> determines the number of replication units (RUs) in a shardspace and the number of chunks
+        in an RU. 
+                  </p>
+                  <div class="section">
+                     
+                     <p>You can specify the number of primary RUs using the
+                    <code class="codeph">-repunit</code> option when you create the shard catalog. Specify a
+                value greater than zero (0).
+                     </p>
+                     <pre class="pre codeblock"><code>gdsctl&gt; create shardcatalog ... <span class="bold">-repunit <span class="variable" translate="no">number</span></span></code></pre>
+                     <p>The RU value cannot be modified after the first <code class="codeph">DEPLOY</code>
+                command is run on the <span>distributed database</span> configuration. Before you run <code class="codeph">DEPLOY</code>, you can modify the number
+                of RUs using the <code class="codeph">MODIFY SHARDSPACE</code> command.
+                     </p>
+                     <pre class="pre codeblock"><code>gdsctl&gt; modify shardspace -shardspace shardspaceora -repunit <span class="variable" translate="no">number</span></code></pre>
+                     <p>Note that in system-managed sharding there is one shardspace named
+                    <code class="codeph">shardspaceora</code>.
+                     </p>
+                     
+                     <p>If the <code class="codeph">-repunit</code> parameter is not specified, the default
+                number of RUs is determined at the time of execution of the first
+                    <code class="codeph">DEPLOY</code> command.
+                     </p>
+                     
+                  </div>
+               </div>
+            </div>
+         </div>
+      </article>
+   </body>
+</html>

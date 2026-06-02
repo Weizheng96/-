@@ -1,0 +1,10 @@
+{
+  "nn": "21",
+  "slug": "21-microsoft-cosmosdb",
+  "type": "产品",
+  "name": "Azure Cosmos DB（physical partition + 多副本）",
+  "organization": "Microsoft",
+  "hit_features_initial": "F0,F1,F2,F3",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：Azure Cosmos DB\n- vendor：Microsoft\n- 命中 F#（初判）：F0,F1,F2,F3\n- 公开度：低（闭源托管）\n- 一句话定位：全球分布式多模数据库，physical partition + 多副本、多区域；实现闭源。"
+}

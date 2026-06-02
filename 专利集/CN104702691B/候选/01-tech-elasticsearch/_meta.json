@@ -1,0 +1,10 @@
+{
+  "nn": "01",
+  "slug": "01-tech-elasticsearch",
+  "type": "技术",
+  "name": "Elasticsearch（primary/replica shard + allocation awareness）",
+  "organization": "Elastic NV",
+  "hit_features_initial": "F0,F1,F2,F3",
+  "publicity": "高",
+  "blurb": "- 类型：技术\n- 名称：Elasticsearch（primary/replica shard 分配与 allocation awareness）\n- 组织：Elastic NV（NYSE: ESTC）\n- 命中 F#（初判）：F0,F1,F2,F3\n- 公开度：高（官方文档详述 shard allocation awareness / forced awareness）\n- 一句话定位：搜索分析引擎，分片含 primary+replica，shard allocation awareness 实现机架/可用区反亲和（F2），cluster rebalance 自动均衡（F1/F3）。\n- 应用案例（技术类）：Elastic Cloud、AWS OpenSearch（fork）、各类自建 ES 集群"
+}

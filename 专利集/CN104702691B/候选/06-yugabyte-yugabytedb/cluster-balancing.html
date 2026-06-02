@@ -1,0 +1,1605 @@
+<!doctype html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="en" class="no-js">
+  <head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<meta name="robots" content="index, follow">
+
+
+<link rel="shortcut icon" href="/favicons/favicon.ico" >
+<link rel="apple-touch-icon" href="/favicons/apple-touch-icon-180x180.png" sizes="180x180">
+<link rel="icon" type="image/png" href="/favicons/favicon-16x16.png" sizes="16x16">
+<link rel="icon" type="image/png" href="/favicons/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/favicons/android-36x36.png" sizes="36x36">
+<link rel="icon" type="image/png" href="/favicons/android-48x48.png" sizes="48x48">
+<link rel="icon" type="image/png" href="/favicons/android-72x72.png" sizes="72x72">
+<link rel="icon" type="image/png" href="/favicons/android-96x96.png" sizes="96x96">
+<link rel="icon" type="image/png" href="/favicons/android-144x144.png" sizes="144x144">
+<link rel="icon" type="image/png" href="/favicons/android-192x192.png" sizes="192x192">
+
+<title>Cluster balancing | YugabyteDB Docs</title>
+<meta name="description" content="Learn how YugabyteDB balances data and queries across nodes">
+<meta property="og:url" content="https://docs.yugabyte.com/stable/architecture/docdb-sharding/cluster-balancing/">
+  <meta property="og:site_name" content="YugabyteDB Docs">
+  <meta property="og:title" content="Cluster balancing">
+  <meta property="og:description" content="Learn how YugabyteDB balances data and queries across nodes">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="stable">
+    <meta property="article:modified_time" content="2025-12-10T18:33:02-05:00">
+
+  <meta itemprop="name" content="Cluster balancing">
+  <meta itemprop="description" content="Learn how YugabyteDB balances data and queries across nodes">
+  <meta itemprop="dateModified" content="2025-12-10T18:33:02-05:00">
+  <meta itemprop="wordCount" content="1742">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Cluster balancing">
+  <meta name="twitter:description" content="Learn how YugabyteDB balances data and queries across nodes">
+<link rel="preload" href="/scss/main.min.bf75d7b5b3911cc0561ba391d5209fcd87eca316255d3830c9469f512bc0b1dc.css" as="style" integrity="sha256-v3XXtbORHMBWG6OR1SCfzYfsoxYlXTgwyUafUSvAsdw=" crossorigin="anonymous">
+<link href="/scss/main.min.bf75d7b5b3911cc0561ba391d5209fcd87eca316255d3830c9469f512bc0b1dc.css" rel="stylesheet" integrity="sha256-v3XXtbORHMBWG6OR1SCfzYfsoxYlXTgwyUafUSvAsdw=" crossorigin="anonymous">
+<script
+  src="https://code.jquery.com/jquery-3.7.1.min.js"
+  integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+  crossorigin="anonymous"></script>
+
+
+
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-5GH7JQS');</script>
+
+
+<script type="text/javascript">
+  !function(){"use strict";window.RudderSnippetVersion="3.0.14";var e="rudderanalytics";window[e]||(window[e]=[])
+  ;var rudderanalytics=window[e];if(Array.isArray(rudderanalytics)){
+  if(true===rudderanalytics.snippetExecuted&&window.console&&console.error){
+  console.error("RudderStack JavaScript SDK snippet included more than once.")}else{rudderanalytics.snippetExecuted=true,
+  window.rudderAnalyticsBuildType="legacy";var sdkBaseUrl="https://cdn.rudderlabs.com/v3";var sdkName="rsa.min.js"
+  ;var scriptLoadingMode="async"
+  ;var t=["setDefaultInstanceKey","load","ready","page","track","identify","alias","group","reset","setAnonymousId","startSession","endSession","consent"]
+  ;for(var r=0;r<t.length;r++){var n=t[r];rudderanalytics[n]=function(t){return function(){var r
+  ;Array.isArray(window[e])?rudderanalytics.push([t].concat(Array.prototype.slice.call(arguments))):null===(r=window[e][t])||void 0===r||r.apply(window[e],arguments)
+  }}(n)}try{new Function('return import("")'),window.rudderAnalyticsBuildType="modern"}catch(a){}
+  var i=document.head||document.getElementsByTagName("head")[0]
+  ;var d=document.body||document.getElementsByTagName("body")[0];window.rudderAnalyticsAddScript=function(e,t,r){
+  var n=document.createElement("script");n.src=e,n.setAttribute("data-loader","RS_JS_SDK"),t&&r&&n.setAttribute(t,r),
+  "async"===scriptLoadingMode?n.async=true:"defer"===scriptLoadingMode&&(n.defer=true),
+  i?i.insertBefore(n,i.firstChild):d.insertBefore(n,d.firstChild)},window.rudderAnalyticsMount=function(){
+  "undefined"==typeof globalThis&&(Object.defineProperty(Object.prototype,"__globalThis_magic__",{get:function get(){
+  return this},configurable:true}),__globalThis_magic__.globalThis=__globalThis_magic__,
+  delete Object.prototype.__globalThis_magic__),
+  window.rudderAnalyticsAddScript("".concat(sdkBaseUrl,"/").concat(window.rudderAnalyticsBuildType,"/").concat(sdkName),"data-rsa-write-key",window.atob("Mmo5Y252MjZ6R290ZjhPa3BROUx4cFl6VFVK"))
+  },
+  "undefined"==typeof Promise||"undefined"==typeof globalThis?window.rudderAnalyticsAddScript("https://polyfill-fastly.io/v3/polyfill.min.js?version=3.111.0&features=Symbol%2CPromise&callback=rudderAnalyticsMount"):window.rudderAnalyticsMount()
+  ;var loadOptions={}
+  ;rudderanalytics.load(window.atob("Mmo5Y252MjZ6R290ZjhPa3BROUx4cFl6VFVK"),"https://yugabyteklhgka.dataplane.rudderstack.com",loadOptions)}}
+  }();
+
+  rudderanalytics.page("Docs", "Docs Viewed");
+</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-mfizz/2.4.1/font-mfizz.min.css">
+
+<script src="https://cdn.jsdelivr.net/npm/browser-cookie-utils/dist/browser-cookie-utils.umd.js"></script>
+</head>
+  <body class="td-docs">
+    <header>
+
+
+  
+
+
+<nav id="nav_bar" class="js-navbar-scroll navbar navbar-expand navbar-dark flex-column td-navbar" data-file="stable/architecture/docdb-sharding/cluster-balancing.md">
+  <div class="container-fluid top-nav"><a class="navbar-brand" href="/" title="YugabyteDB"><span class="navbar-logo">
+        <img src="/images/yugabytedb-logo.svg" alt="YugabyteDB" title="YugabyteDB" width="148" height="20">
+      </span></a><div class="navbar-nav search-container-wrap">
+			<form action="/search" method="GET" id="search-form"><div class="search-area">
+  <i class="search-icon"></i>
+  <input type="search" id="search-query" name="query"  class="td-search-input" placeholder="Search documentation" aria-label="Search documentation"
+  autocomplete="off">
+  <div class="reset-input"></div>
+  
+  <div class="search-result" style="display:none">
+    <div class="algolia-data" id="docs">
+      <div class="yb-kapa-button">
+        <div class="ask-ai-about">
+          <a role="button" id="yb-ask-ai"><img width="24" height="24" src="/icons/ai-icon.svg" alt="Ask AI"> <span class="text">Ask AI about</span><span class="comma">"</span><span class="search-val"></span><span class="comma">"</span></a>
+        </div>
+      </div>
+      <ul id="doc-hit" class="content-panel"></ul>
+      <div id="pagination-docs" class="pager"></div>
+    </div>
+  </div>
+  
+</div>
+</form>
+		</div><div class="ask-ai-top">OR <span class="tritiery-btn" title="Ask AI"><span>Ask AI</span><img width="24" height="24" src="/icons/ai-icon.svg" alt="Ask AI"></span></div><div class="td-navbar-nav-scroll ms-md-auto" id="main_navbar">
+      <ul class="navbar-nav right-nav"><li class="nav-item">
+            <a class="tritiery-btn" href="https://github.com/yugabyte/yugabyte-db" target="_blank" rel="noopener" title="Star us on Github">
+              <span>Star us on Github</span>
+              <img width='24' height='24' src='/icons/github.svg' alt='YugabyteDB Github'>
+            </a></li><li class="nav-item">
+            <a class="tritiery-btn" href="https://inviter.co/yugabytedb" target="_blank" rel="noopener" title="Join us on Slack">
+              <span>Join us on Slack</span>
+              <img width='24' height='24' src='/icons/slack.svg' alt='YugabyteDB Community Slack'>
+            </a></li><li class="nav-item">
+            <a class="primary-btn start-now-popup" role="button" title="Start Now">
+              <span>Start Now</span>
+              
+            </a><ul class="header-submenu"><li>
+                    <a href="https://cloud.yugabyte.com/signup?utm_medium=direct&amp;utm_source=docs&amp;utm_campaign=YBM_signup" title="YugabyteDB Aeon" target="_blank" rel="noopener"><div class="icon">
+                        <img src="/icons/cloud.svg" alt="YugabyteDB Aeon" title="YugabyteDB Aeon">
+                      </div><div class="title">
+                        <span>YugabyteDB Aeon</span><span class="desc">Try our fully-managed cloud DBaaS for free.</span><span class="tag-line">No credit card required</span><span class="primary-btn sm-btn" >Sign up</span>
+                      </div>
+                    </a>
+                  </li><li>
+                    <a href="https://download.yugabyte.com/#/" title="YugabyteDB" target="_blank" rel="noopener"><div class="icon">
+                        <img src="/icons/database.svg" alt="YugabyteDB" title="YugabyteDB">
+                      </div><div class="title">
+                        <span>YugabyteDB</span><span class="desc">Try our open source distributed SQL database on your laptop.</span><span class="secondary-btn sm-btn" >Download</span>
+                      </div>
+                    </a>
+                  </li></ul></li></ul>
+
+	  	<div class="mobile-search desktop-hide fas fa-search search-icon"></div>
+      <div class="mobile-menu desktop-hide"></div>
+    </div>
+  </div>
+
+  <div class="page-header sticky container-fluid">
+    <ul class="header-menu ds-flex hide-mobile" id="header-menu-list"><li class="header-link dropdown">
+          <a class="hover-label" href="/" title="Products">
+            <span class="header-menu-text">Products</span>
+          </a>
+  
+  <ul class="header-submenu"><li><a href="/stable/" title="YugabyteDB"><div class="icon">
+                <img src="/icons/database.svg" alt="YugabyteDB" title="YugabyteDB" width="24" height="24">
+              </div><div class="title">
+              <span>YugabyteDB</span><span class="desc">The open source distributed SQL database</span></div>
+          </a></li><li><a href="/stable/yugabyte-platform/" title="YugabyteDB Anywhere"><div class="icon">
+                <img src="/icons/server.svg" alt="YugabyteDB Anywhere" title="YugabyteDB Anywhere" width="24" height="24">
+              </div><div class="title">
+              <span>YugabyteDB Anywhere</span><span class="desc">Self-managed cloud DBaaS</span></div>
+          </a></li><li><a href="/stable/yugabyte-cloud/" title="YugabyteDB Aeon"><div class="icon">
+                <img src="/icons/cloud.svg" alt="YugabyteDB Aeon" title="YugabyteDB Aeon" width="24" height="24">
+              </div><div class="title">
+              <span>YugabyteDB Aeon</span><span class="desc">Fully-managed cloud DBaaS</span></div>
+          </a></li><li><a href="/stable/yugabyte-voyager/" title="YugabyteDB Voyager"><div class="icon">
+                <img src="/images/migrate/migration-icon.svg" alt="YugabyteDB Voyager" title="YugabyteDB Voyager" width="24" height="24">
+              </div><div class="title">
+              <span>YugabyteDB Voyager</span><span class="desc">Database migration service</span></div>
+          </a></li></ul></li><li class="header-link">
+          <a class="hover-label" href="/stable/develop/" title="Develop">
+            <span class="header-menu-text">Develop</span>
+          </a></li><li class="header-link">
+          <a class="hover-label" href="/stable/integrations/" title="Integrations">
+            <span class="header-menu-text">Integrations</span>
+          </a></li><li class="header-link dropdown">
+          <a class="hover-label" href="/stable/api/" title="API">
+            <span class="header-menu-text">API</span>
+          </a>
+  
+  <ul class="header-submenu"><li class="label"><span>SQL APIs</span></li><li><a href="/stable/api/ysql/" title="YSQL"><div class="icon">
+                <img src="/icons/api.svg" alt="YSQL" title="YSQL" width="24" height="24">
+              </div><div class="title">
+              <span>YSQL</span></div>
+          </a></li><li><a href="/stable/api/ycql/" title="YCQL"><div class="icon">
+                <img src="/icons/api.svg" alt="YCQL" title="YCQL" width="24" height="24">
+              </div><div class="title">
+              <span>YCQL</span></div>
+          </a></li><li class="label"><span>Clients</span></li><li><a href="/stable/api/ysqlsh/" title="ysqlsh"><div class="icon">
+                <img src="/icons/api.svg" alt="ysqlsh" title="ysqlsh" width="24" height="24">
+              </div><div class="title">
+              <span>ysqlsh</span></div>
+          </a></li><li><a href="/stable/api/ycqlsh/" title="ycqlsh"><div class="icon">
+                <img src="/icons/api.svg" alt="ycqlsh" title="ycqlsh" width="24" height="24">
+              </div><div class="title">
+              <span>ycqlsh</span></div>
+          </a></li><li class="label"><span>Management APIs</span></li><li><a href="/stable/yugabyte-platform/anywhere-automation/anywhere-api/" title="YugabyteDB Anywhere API"><div class="icon">
+                <img src="/icons/server.svg" alt="YugabyteDB Anywhere API" title="YugabyteDB Anywhere API" width="24" height="24">
+              </div><div class="title">
+              <span>YugabyteDB Anywhere API</span></div>
+          </a></li><li><a href="/stable/yugabyte-cloud/managed-automation/managed-api/" title="YugabyteDB Aeon API"><div class="icon">
+                <img src="/icons/cloud.svg" alt="YugabyteDB Aeon API" title="YugabyteDB Aeon API" width="24" height="24">
+              </div><div class="title">
+              <span>YugabyteDB Aeon API</span></div>
+          </a></li></ul></li><li class="header-link">
+          <a class="hover-label" href="/stable/faq/general/" title="FAQ">
+            <span class="header-menu-text">FAQ</span>
+          </a></li><li class="header-link dropdown">
+          <a class="hover-label" href="/stable/releases/" title="Releases">
+            <span class="header-menu-text">Releases</span>
+          </a>
+  
+  <ul class="header-submenu"><li><a href="/stable/releases/ybdb-releases/" title="YugabyteDB"><div class="icon">
+                <img src="/icons/database.svg" alt="YugabyteDB" title="YugabyteDB" width="24" height="24">
+              </div><div class="title">
+              <span>YugabyteDB</span></div>
+          </a></li><li><a href="/stable/releases/yba-releases/" title="YugabyteDB Anywhere"><div class="icon">
+                <img src="/icons/server.svg" alt="YugabyteDB Anywhere" title="YugabyteDB Anywhere" width="24" height="24">
+              </div><div class="title">
+              <span>YugabyteDB Anywhere</span></div>
+          </a></li><li><a href="/stable/yugabyte-cloud/release-notes/" title="YugabyteDB Aeon"><div class="icon">
+                <img src="/icons/cloud.svg" alt="YugabyteDB Aeon" title="YugabyteDB Aeon" width="24" height="24">
+              </div><div class="title">
+              <span>YugabyteDB Aeon</span></div>
+          </a></li><li><a href="/stable/yugabyte-voyager/release-notes/" title="YugabyteDB Voyager"><div class="icon">
+                <img src="/images/migrate/migration-icon.svg" alt="YugabyteDB Voyager" title="YugabyteDB Voyager" width="24" height="24">
+              </div><div class="title">
+              <span>YugabyteDB Voyager</span></div>
+          </a></li><li><a href="/stable/releases/yugabyte-clients/" title="YugabyteDB Clients"><div class="icon">
+                <img src="/icons/api.svg" alt="YugabyteDB Clients" title="YugabyteDB Clients" width="24" height="24">
+              </div><div class="title">
+              <span>YugabyteDB Clients</span></div>
+          </a></li><li><a href="/stable/releases/techadvisories/" title="Tech Advisories"><div class="icon">
+                <img src="/icons/triangle-exclamation-thin.svg" alt="Tech Advisories" title="Tech Advisories" width="24" height="24">
+              </div><div class="title">
+              <span>Tech Advisories</span></div>
+          </a></li></ul></li></ul>
+  </div>
+</nav></header>
+    <div class="container-fluid td-outer">
+      <div class="td-main">
+        <aside class="td-sidebar d-print-none">
+
+
+
+
+
+
+  
+
+
+<div class="docs-menu desktop-hide">Docs Menu</div>
+<div class="left-sidebar-wrap stable">
+  <div class="left-sidebar-wrap-inner">
+    <nav><div class="products-dropdown">
+          <div class="selected">
+          <div><div class="icon">
+                <img src="/icons/database.svg" alt="YugabyteDB" title="YugabyteDB" width="24" height="24">
+              </div><div class="title">
+              <span>YugabyteDB</span><span class="desc">The open source distributed SQL database</span></div>
+            <span class="drop-down"></span>
+          </div>
+        </div><ul class="dropdown-submenu">
+            <li>
+          <a href="/stable/" title="YugabyteDB"><div class="icon">
+                <img src="/icons/database.svg" alt="YugabyteDB" title="YugabyteDB" width="24" height="24">
+              </div><div class="title">
+              <span>YugabyteDB</span><span class="desc">The open source distributed SQL database</span></div>
+          </a>
+        </li><li>
+          <a href="/stable/yugabyte-platform/" title="YugabyteDB Anywhere"><div class="icon">
+                <img src="/icons/server.svg" alt="YugabyteDB Anywhere" title="YugabyteDB Anywhere" width="24" height="24">
+              </div><div class="title">
+              <span>YugabyteDB Anywhere</span><span class="desc">Self-managed cloud DBaaS</span></div>
+          </a>
+        </li><li>
+          <a href="/stable/yugabyte-cloud/" title="YugabyteDB Aeon"><div class="icon">
+                <img src="/icons/cloud.svg" alt="YugabyteDB Aeon" title="YugabyteDB Aeon" width="24" height="24">
+              </div><div class="title">
+              <span>YugabyteDB Aeon</span><span class="desc">Fully-managed cloud DBaaS</span></div>
+          </a>
+        </li><li>
+          <a href="/stable/yugabyte-voyager/" title="YugabyteDB Voyager"><div class="icon">
+                <img src="/images/migrate/migration-icon.svg" alt="YugabyteDB Voyager" title="YugabyteDB Voyager" width="24" height="24">
+              </div><div class="title">
+              <span>YugabyteDB Voyager</span><span class="desc">Database migration service</span></div>
+          </a>
+        </li></ul>
+  </div><ul class="list pa0 nl2"><li class="section">
+                <a href="/stable/" title="Overview" data-identifier="yugabytedb">Overview</a></li><li class="section submenu parent-menu">
+                <a href="/stable/quick-start/macos/" title="Quick Start" data-identifier="quick-start">Quick Start</a></li><li class="section submenu parent-menu separator">
+                <a href="/stable/explore/" title="Explore" data-identifier="explore">Explore</a><i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="explore"><li class="">
+          <a href="/stable/explore/cluster-setup-local/" title="Set up clusters for running Explore examples">Run the examples</a></li><li class="submenu">
+          <a href="/stable/explore/ysql-language-features/" title="SQL features">SQL features</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="explore-ysql-language-features"><li class="">
+          <a href="/stable/explore/ysql-language-features/databases-schemas-tables/" title="Databases, schemas, and tables">Schemas and tables</a></li><li class="">
+          <a href="/stable/explore/ysql-language-features/data-types/" title="YSQL data types">Data types</a></li><li class="">
+          <a href="/stable/explore/ysql-language-features/queries/" title="Reading data">Read data</a></li><li class="">
+          <a href="/stable/explore/ysql-language-features/data-manipulation/" title="Writing data">Write data</a></li><li class="">
+          <a href="/stable/explore/ysql-language-features/expressions-operators/" title="Expressions and operators">Expressions and operators</a></li><li class="">
+          <a href="/stable/explore/ysql-language-features/jsonb-ysql/" title="JSON support in YSQL">JSON support</a></li><li class="submenu">
+          <a href="/stable/explore/ysql-language-features/indexes-constraints/" title="Indexes">Indexes</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="explore-indexes-constraints-ysql"><li class="">
+          <a href="/stable/explore/ysql-language-features/indexes-constraints/primary-key-ysql/" title="Primary keys in YugabyteDB YSQL">Primary keys</a></li><li class="">
+          <a href="/stable/explore/ysql-language-features/indexes-constraints/secondary-indexes-ysql/" title="Secondary indexes in YugabyteDB YSQL">Secondary indexes</a></li><li class="">
+          <a href="/stable/explore/ysql-language-features/indexes-constraints/unique-index-ysql/" title="Unique indexes in YugabyteDB YSQL">Unique indexes</a></li><li class="">
+          <a href="/stable/explore/ysql-language-features/indexes-constraints/partial-index-ysql/" title="Partial indexes in YugabyteDB YSQL">Partial indexes</a></li><li class="">
+          <a href="/stable/explore/ysql-language-features/indexes-constraints/covering-index-ysql/" title="Covering indexes in YugabyteDB YSQL">Covering indexes</a></li><li class="">
+          <a href="/stable/explore/ysql-language-features/indexes-constraints/expression-index-ysql/" title="Expression indexes in YugabyteDB YSQL">Expression indexes</a></li><li class="">
+          <a href="/stable/explore/ysql-language-features/indexes-constraints/gin/" title="GIN indexes in YugabyteDB YSQL">GIN indexes</a></li><li class="">
+          <a href="/stable/explore/ysql-language-features/indexes-constraints/index-backfill/" title="Online index backfilling">Index backfill</a></li></ul></li><li class="submenu">
+          <a href="/stable/explore/ysql-language-features/advanced-features/" title="Advanced features">Advanced features</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="advanced-features"><li class="">
+          <a href="/stable/explore/ysql-language-features/advanced-features/collations/" title="Collations">Collations</a></li><li class="">
+          <a href="/stable/explore/ysql-language-features/advanced-features/cursor/" title="Cursors">Cursors</a></li><li class="">
+          <a href="/stable/explore/ysql-language-features/advanced-features/foreign-data-wrappers/" title="Foreign data wrappers">Foreign data wrappers</a></li><li class="">
+          <a href="/stable/explore/ysql-language-features/advanced-features/savepoints/" title="Savepoints">Savepoints</a></li><li class="">
+          <a href="/stable/explore/ysql-language-features/advanced-features/stored-procedures/" title="Stored procedures">Stored procedures</a></li><li class="">
+          <a href="/stable/explore/ysql-language-features/advanced-features/partitions/" title="Table partitioning">Table partitioning</a></li><li class="">
+          <a href="/stable/explore/ysql-language-features/advanced-features/triggers/" title="Triggers">Triggers</a></li><li class="">
+          <a href="/stable/explore/ysql-language-features/advanced-features/parallel-index-scan/" title="Parallel index scans for temporal joins">Parallel index scans</a></li><li class="">
+          <a href="/stable/explore/ysql-language-features/advanced-features/snapshot-synchronization/" title="Synchronize snapshots">Synchronize snapshots</a></li><li class="">
+          <a href="/stable/explore/ysql-language-features/advanced-features/views/" title="Views">Views</a></li><li class="">
+          <a href="/stable/explore/ysql-language-features/advanced-features/inheritance/" title="Table inheritance">Table inheritance</a></li></ul></li><li class="">
+          <a href="/stable/explore/ysql-language-features/pg-extensions/" title="PostgreSQL extensions">PostgreSQL extensions</a></li></ul></li><li class="submenu">
+          <a href="/stable/explore/going-beyond-sql/" title="Going beyond PostgreSQL">Beyond PostgreSQL</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="going-beyond-sql"><li class="">
+          <a href="/stable/explore/going-beyond-sql/follower-reads-ysql/" title="Explore follower reads - YSQL">Follower reads</a></li><li class="">
+          <a href="/stable/explore/going-beyond-sql/tablespaces/" title="Tablespaces">Geo-placement</a></li><li class="">
+          <a href="/stable/explore/going-beyond-sql/data-sharding/" title="Configurable data sharding">Configurable data sharding</a></li><li class="">
+          <a href="/stable/explore/going-beyond-sql/asynchronous-replication-ysql/" title="xCluster replication (2&#43; regions) in YugabyteDB">xCluster - Asynchronous replication</a></li><li class="">
+          <a href="/stable/explore/going-beyond-sql/cluster-topology/" title="Cluster topology">Cluster topology</a></li><li class="">
+          <a href="/stable/explore/going-beyond-sql/cluster-aware-drivers/" title="Cluster aware client drivers">Cluster-aware drivers</a></li><li class="">
+          <a href="/stable/explore/going-beyond-sql/topology-aware-drivers/" title="Topology aware client drivers">Topology-aware drivers</a></li><li class="">
+          <a href="/stable/explore/going-beyond-sql/connection-mgr-ysql/" title="Built-in connection pooling in YSQL">Built-in connection pooling</a></li><li class="">
+          <a href="/stable/explore/going-beyond-sql/decoupling-compute-storage/" title="Separating storage and compute">Decouple storage and compute</a></li></ul></li><li class="submenu">
+          <a href="/stable/explore/ycql-language/" title="YCQL features">YCQL features</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="explore-ycql-language"><li class="">
+          <a href="/stable/explore/ycql-language/cassandra-feature-support/" title="Cassandra feature support">Cassandra feature support</a></li><li class="">
+          <a href="/stable/explore/ycql-language/keyspaces-tables/" title="Keyspaces and tables">Keyspaces and tables</a></li><li class="">
+          <a href="/stable/explore/ycql-language/data-types/" title="YCQL data types">Data types</a></li><li class="submenu">
+          <a href="/stable/explore/ycql-language/indexes-constraints/" title="Indexes and constraints in YugabyteDB YCQL">Indexes and constraints</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="explore-indexes-constraints-ycql"><li class="">
+          <a href="/stable/explore/ycql-language/indexes-constraints/primary-key-ycql/" title="Primary keys in YugabyteDB YCQL">Primary keys</a></li><li class="">
+          <a href="/stable/explore/ycql-language/indexes-constraints/secondary-indexes-ycql/" title="Secondary indexes in YugabyteDB YCQL">Secondary indexes</a></li><li class="">
+          <a href="/stable/explore/ycql-language/indexes-constraints/unique-index-ycql/" title="Unique indexes in YugabyteDB YCQL">Unique indexes</a></li><li class="">
+          <a href="/stable/explore/ycql-language/indexes-constraints/partial-index-ycql/" title="Partial indexes in YugabyteDB YCQL">Partial indexes</a></li><li class="">
+          <a href="/stable/explore/ycql-language/indexes-constraints/covering-index-ycql/" title="Covering indexes in YugabyteDB YCQL">Covering indexes</a></li><li class="">
+          <a href="/stable/explore/ycql-language/indexes-constraints/secondary-indexes-with-jsonb-ycql/" title="Secondary indexes with JSONB in YugabyteDB YCQL">Secondary indexes with JSONB</a></li></ul></li><li class="">
+          <a href="/stable/explore/ycql-language/jsonb-ycql/" title="JSON Support in YCQL">JSON support</a></li></ul></li><li class="">
+          <a href="/stable/explore/gen-ai-apps/" title="Building Gen-AI applications on top of YugabyteDB">Gen-AI apps</a></li><li class="submenu">
+          <a href="/stable/explore/linear-scalability/" title="Horizontal scalability">Horizontal scalability</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="explore-scalability"><li class="">
+          <a href="/stable/explore/linear-scalability/horizontal-vs-vertical-scaling/" title="Horizontal vs Vertical Scaling">Horizontal vs vertical</a></li><li class="">
+          <a href="/stable/explore/linear-scalability/data-distribution/" title="Data distribution">Data distribution</a></li><li class="">
+          <a href="/stable/explore/linear-scalability/node-addition/" title="Horizontal scaling by adding new nodes">Adding nodes</a></li><li class="">
+          <a href="/stable/explore/linear-scalability/scaling-reads/" title="Scaling reads">Scaling reads</a></li><li class="">
+          <a href="/stable/explore/linear-scalability/scaling-writes/" title="Scaling writes">Scaling writes</a></li><li class="">
+          <a href="/stable/explore/linear-scalability/scaling-transactions/" title="Scaling Transactions">Scaling transactions</a></li><li class="">
+          <a href="/stable/explore/linear-scalability/scaling-large-datasets/" title="Large datasets">Large datasets</a></li><li class="">
+          <a href="/stable/explore/linear-scalability/scaling-universe/" title="Scale out a universe">Scale out a universe</a></li></ul></li><li class="submenu">
+          <a href="/stable/explore/fault-tolerance/" title="Resiliency, high availability, and fault tolerance">Resiliency</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="fault-tolerance"><li class="">
+          <a href="/stable/explore/fault-tolerance/macos/" title="High availability during failures in a local universe">Node failures</a></li><li class="">
+          <a href="/stable/explore/fault-tolerance/handling-rack-failures/" title="Handling rack failures">Rack failures</a></li><li class="">
+          <a href="/stable/explore/fault-tolerance/handling-zone-failures/" title="Handling zone failures">Zone failures</a></li><li class="">
+          <a href="/stable/explore/fault-tolerance/handling-region-failures/" title="Handling region failures">Region failures</a></li><li class="">
+          <a href="/stable/explore/fault-tolerance/handling-gray-failures/" title="Handle gray failures">Gray failures</a></li><li class="">
+          <a href="/stable/explore/fault-tolerance/handling-node-upgrades/" title="Handling node upgrades">Periodic maintenance</a></li><li class="">
+          <a href="/stable/explore/fault-tolerance/transaction-availability/" title="High availability of transactions">Transactions</a></li></ul></li><li class="submenu">
+          <a href="/stable/explore/transactions/" title="Transactions">Transactions</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="explore-transactions"><li class="">
+          <a href="/stable/explore/transactions/distributed-transactions-ysql/" title="Distributed transactions in YSQL">Distributed transactions</a></li><li class="">
+          <a href="/stable/explore/transactions/isolation-levels/" title="Isolation levels">Isolation levels</a></li><li class="">
+          <a href="/stable/explore/transactions/explicit-locking/" title="Explicit locking">Explicit locking</a></li><li class="">
+          <a href="/stable/explore/transactions/transactional-ddl/" title="Transactional DDL">Transactional DDL</a></li></ul></li><li class="submenu">
+          <a href="/stable/explore/multi-region-deployments/" title="Multi-Region Deployments">Multi-region deployments</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="explore-multi-region-deployments"><li class="">
+          <a href="/stable/explore/multi-region-deployments/synchronous-replication-ysql/" title="Synchronous multi region (3&#43; regions)">Synchronous (3&#43; regions)</a></li><li class="">
+          <a href="/stable/explore/multi-region-deployments/row-level-geo-partitioning/" title="Row-level geo-partitioning">Row-level geo-partitioning</a></li><li class="">
+          <a href="/stable/explore/multi-region-deployments/read-replicas-ysql/" title="Read replicas and follower reads in YugabyteDB YSQL">Read replicas</a></li></ul></li><li class="">
+          <a href="/stable/explore/change-data-capture/" title="Change data capture in YugabyteDB">Change data capture</a></li><li class="submenu">
+          <a href="/stable/explore/cluster-management/" title="Cluster management">Cluster management</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="explore-cluster-management"><li class="">
+          <a href="/stable/explore/cluster-management/point-in-time-recovery-ysql/" title="Point-in-Time Recovery for YSQL">Point-in-time recovery</a></li></ul></li><li class="submenu">
+          <a href="/stable/explore/observability/" title="Observability in YugabyteDB">Observability</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="explore-observability"><li class="">
+          <a href="/stable/explore/observability/prometheus-integration/" title="Prometheus integration">Prometheus integration</a></li><li class="">
+          <a href="/stable/explore/observability/grafana-dashboard/grafana/" title="Grafana dashboard">Grafana dashboard</a></li><li class="">
+          <a href="/stable/explore/observability/pg-stat-activity/" title="View live queries with pg_stat_activity">Live queries</a></li><li class="">
+          <a href="/stable/explore/observability/yb-local-tablets/" title="View metadata for YSQL/YCQL/system tablets on a server">Local tablet metadata</a></li><li class="">
+          <a href="/stable/explore/observability/yb-tablet-metadata/" title="View cluster-wide tablet metadata and leadership">Cluster tablet metadata</a></li><li class="">
+          <a href="/stable/explore/observability/yb-pg-stat-get-queries/" title="View terminated queries with yb_terminated_queries">Terminated queries</a></li><li class="">
+          <a href="/stable/explore/observability/pg-stat-progress-copy/" title="View COPY status with pg_stat_progress_copy">Data transfer status</a></li><li class="">
+          <a href="/stable/explore/observability/pg-locks/" title="Get lock information insights with pg_locks">Lock insights</a></li><li class="">
+          <a href="/stable/explore/observability/active-session-history/" title="Active Session History capability in YugabyteDB">Active Session History</a></li><li class="">
+          <a href="/stable/explore/observability/logging/" title="Logging">Logs</a></li></ul></li><li class="">
+          <a href="/stable/explore/security/security/" title="Explore Security">Security</a></li></ul></li><li class="section submenu parent-menu">
+                <a href="/stable/secure/" title="Secure" data-identifier="secure">Secure</a><i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="secure"><li class="">
+          <a href="/stable/secure/security-checklist/" title="Security checklist">Security checklist</a></li><li class="submenu">
+          <a href="/stable/secure/enable-authentication/" title="Enable authentication">Enable authentication</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="enable-authentication"><li class="">
+          <a href="/stable/secure/enable-authentication/authentication-ysql/" title="Enable users in YSQL">Enable users</a></li><li class="">
+          <a href="/stable/secure/enable-authentication/ysql-login-profiles/" title="Create login profiles">Create login profiles</a></li><li class="">
+          <a href="/stable/secure/enable-authentication/ysql_hba_conf-configuration/" title="Configure client authentication in YSQL">Configure client authentication</a></li></ul></li><li class="submenu">
+          <a href="/stable/secure/authentication/" title="Authentication methods in YugabyteDB">Authentication methods</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="authentication"><li class="">
+          <a href="/stable/secure/authentication/password-authentication/" title="Password authentication">Password authentication</a></li><li class="">
+          <a href="/stable/secure/authentication/ldap-authentication-ysql/" title="LDAP authentication in YSQL">LDAP authentication</a></li><li class="">
+          <a href="/stable/secure/authentication/host-based-authentication/" title="Host-based authentication">Host-based authentication</a></li><li class="">
+          <a href="/stable/secure/authentication/trust-authentication/" title="Trust authentication">Trust authentication</a></li></ul></li><li class="submenu">
+          <a href="/stable/secure/authorization/" title="Role-based access control in YugabyteDB">Role-based access control</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="authorization"><li class="">
+          <a href="/stable/secure/authorization/rbac-model/" title="Role-based access control (RBAC) model in YSQL">Overview</a></li><li class="">
+          <a href="/stable/secure/authorization/create-roles/" title="Manage users and roles - YSQL">Manage users and roles</a></li><li class="">
+          <a href="/stable/secure/authorization/ysql-grant-permissions/" title="Grant YSQL privileges in YugabyteDB">Grant privileges</a></li><li class="">
+          <a href="/stable/secure/authorization/row-level-security/" title="Row-level security (RLS)">Row-level security</a></li><li class="">
+          <a href="/stable/secure/authorization/column-level-security/" title="Column-level security">Column-level security</a></li></ul></li><li class="submenu">
+          <a href="/stable/secure/tls-encryption/" title="Encryption in transit on YugabyteDB Clusters">Encryption in transit</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="tls-encryption"><li class="">
+          <a href="/stable/secure/tls-encryption/server-certificates/" title="Create server certificates">Create server certificates</a></li><li class="">
+          <a href="/stable/secure/tls-encryption/server-to-server/" title="Enable encryption in transit">Enable encryption in transit</a></li><li class="">
+          <a href="/stable/secure/tls-encryption/connect-to-cluster/" title="Connect clients to YugabyteDB clusters">Connect to clusters</a></li><li class="">
+          <a href="/stable/secure/tls-encryption/tls-authentication/" title="TLS and authentication">TLS and authentication</a></li></ul></li><li class="">
+          <a href="/stable/secure/encryption-at-rest/" title="Enable encryption at rest in YugabyteDB clusters">Encryption at rest</a></li><li class="">
+          <a href="/stable/secure/column-level-encryption/" title="Column-level encryption">Column-level encryption</a></li><li class="submenu">
+          <a href="/stable/secure/audit-logging/" title="Audit logging in YugabyteDB">Audit logging</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="audit-logging"><li class="">
+          <a href="/stable/secure/audit-logging/trace-statements-ysql/" title="Trace executed statements in YSQL">Trace statements</a></li><li class="">
+          <a href="/stable/secure/audit-logging/audit-logging-ysql/" title="Configure audit logging in YSQL">Configure audit logging</a></li><li class="">
+          <a href="/stable/secure/audit-logging/session-audit-logging-ysql/" title="Session-level audit logging in YSQL">Session-level audit logging</a></li><li class="">
+          <a href="/stable/secure/audit-logging/object-audit-logging-ysql/" title="Object-level audit logging in YSQL">Object-level audit logging</a></li></ul></li><li class="">
+          <a href="/stable/secure/vulnerability-disclosure-policy/" title="Vulnerability disclosure policy">Vulnerability disclosure policy</a></li></ul></li><li class="section submenu parent-menu">
+                <a href="/stable/launch-and-manage/" title="Launch and Manage" data-identifier="launch-and-manage">Launch and Manage</a><i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="launch-and-manage"><li class="submenu">
+          <a href="/stable/deploy/" title="Deploy">Deploy</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="deploy"><li class="">
+          <a href="/stable/deploy/checklist/" title="Deployment checklist for YugabyteDB clusters">Deployment checklist</a></li><li class="submenu">
+          <a href="/stable/deploy/manual-deployment/" title="Manual deployment of YugabyteDB clusters">Single-DC deployments</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="deploy-manual-deployment"><li class="">
+          <a href="/stable/deploy/manual-deployment/system-config/" title="System configuration">1. System configuration</a></li><li class="">
+          <a href="/stable/deploy/manual-deployment/install-software/" title="Manual software installation">2. Install software</a></li><li class="">
+          <a href="/stable/deploy/manual-deployment/start-yugabyted/" title="Deploy YugabyteDB">3. Deploy</a></li><li class="">
+          <a href="/stable/deploy/manual-deployment/verify-deployment-yugabyted/" title="Verify deployment">4. Verify deployment</a></li></ul></li><li class="submenu">
+          <a href="/stable/deploy/multi-dc/" title="Multi-DC deployments">Multi-DC deployments</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="multi-dc"><li class="">
+          <a href="/stable/deploy/multi-dc/3dc-deployment/" title="Deploy to three or more data centers">Three&#43; data center (3DC)</a></li><li class="submenu">
+          <a href="/stable/deploy/multi-dc/async-replication/" title="xCluster deployments">xCluster</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="async-replication"><li class="submenu">
+          <a href="/stable/deploy/multi-dc/async-replication/async-replication-transactional/" title="Deploy transactional xCluster replication">Transactional</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="async-replication-transactional"><li class="">
+          <a href="/stable/deploy/multi-dc/async-replication/async-transactional-setup-automatic/" title="Set up transactional xCluster (Automatic)">Setup</a></li><li class="">
+          <a href="/stable/deploy/multi-dc/async-replication/async-transactional-failover/" title="Unplanned failover with transactional xCluster replication">Failover</a></li><li class="">
+          <a href="/stable/deploy/multi-dc/async-replication/async-transactional-switchover/" title="Planned Switchover with transactional xCluster replication">Switchover</a></li><li class="">
+          <a href="/stable/deploy/multi-dc/async-replication/async-transactional-tables/" title="Handling DDLs for Manual mode transactional xCluster">Manual DDL changes</a></li></ul></li><li class="">
+          <a href="/stable/deploy/multi-dc/async-replication/async-deployment/" title="Deploy non-transactional xCluster replication">Non-transactional</a></li></ul></li><li class="">
+          <a href="/stable/deploy/multi-dc/read-replica-clusters/" title="Deploy read replica clusters">Read replicas</a></li></ul></li><li class="submenu">
+          <a href="/stable/deploy/public-clouds/" title="Deploy YugabyteDB clusters in public clouds">Public clouds</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="public-clouds"><li class="">
+          <a href="/stable/deploy/public-clouds/aws/cloudformation/" title="Deploy on Amazon Web Services using AWS CloudFormation">Amazon Web Services</a></li><li class="">
+          <a href="/stable/deploy/public-clouds/gcp/gcp-deployment-manager/" title="Deploy YugabyteDB in Google Cloud Platform with GCP Deployment Manager">Google Cloud Platform</a></li><li class="">
+          <a href="/stable/deploy/public-clouds/azure/azure-arm/" title="Deploy on Microsoft Azure using Azure Resource Manager (ARM)">Microsoft Azure</a></li></ul></li><li class="submenu">
+          <a href="/stable/deploy/kubernetes/" title="Deploy YugabyteDB clusters on Kubernetes">Kubernetes</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="deploy-kubernetes"><li class="submenu">
+          <a href="/stable/deploy/kubernetes/single-zone/" title="Deploy YugabyteDB on a single-zone Kubernetes cluster">Single-zone</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="deploy-kubernetes-sz"><li class="">
+          <a href="/stable/deploy/kubernetes/single-zone/oss/helm-chart/" title="Deploy on OSS Kubernetes using Helm Chart">Open Source</a></li><li class="">
+          <a href="/stable/deploy/kubernetes/single-zone/eks/helm-chart/" title="Deploy single zone on EKS using Helm Chart">Amazon EKS</a></li><li class="">
+          <a href="/stable/deploy/kubernetes/single-zone/gke/helm-chart/" title="Use Helm Chart to deploy on Google Kubernetes Engine (GKE)">Google Kubernetes Engine</a></li><li class="">
+          <a href="/stable/deploy/kubernetes/single-zone/aks/helm-chart/" title="Deploy on Azure Kubernetes Service (AKS) using Helm chart">Azure Kubernetes Service</a></li></ul></li><li class="submenu">
+          <a href="/stable/deploy/kubernetes/multi-zone/" title="Deploy YugabyteDB on a multi-zone Kubernetes cluster">Multi-zone</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="deploy-kubernetes-mz"><li class="">
+          <a href="/stable/deploy/kubernetes/multi-zone/eks/helm-chart/" title="Deploy multi zone on EKS using Helm Chart">Amazon EKS</a></li><li class="">
+          <a href="/stable/deploy/kubernetes/multi-zone/gke/helm-chart/" title="Deploy on Google Kubernetes Engine (GKE) using Helm Chart">Google Kubernetes Engine</a></li></ul></li><li class="submenu">
+          <a href="/stable/deploy/kubernetes/multi-cluster/" title="Deploy on multiple geo-distributed Kubernetes clusters">Multi-cluster</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="deploy-kubernetes-mc"><li class="">
+          <a href="/stable/deploy/kubernetes/multi-cluster/gke/helm-chart/" title="Deploy a multi-region cluster on Google Kubernetes Engine (GKE) using Helm chart">Google Kubernetes Engine</a></li></ul></li><li class="">
+          <a href="/stable/deploy/kubernetes/best-practices/" title="Kubernetes best practices">Best practices</a></li><li class="">
+          <a href="/stable/deploy/kubernetes/clients/" title="Connect Remote Clients to Kubernetes Clusters">Connect Clients</a></li></ul></li></ul></li><li class="submenu">
+          <a href="/stable/additional-features/" title="Advanced capabilities">Advanced capabilities</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="additional-features"><li class="submenu">
+          <a href="/stable/additional-features/connection-manager-ysql/" title="YSQL Connection Manager">YSQL Connection Manager</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="connection-manager"><li class="">
+          <a href="/stable/additional-features/connection-manager-ysql/ycm-setup/" title="Set up YSQL Connection Manager">Setup</a></li><li class="">
+          <a href="/stable/additional-features/connection-manager-ysql/ycm-best-practices/" title="YSQL Connection Manager best practices">Best practices</a></li><li class="">
+          <a href="/stable/additional-features/connection-manager-ysql/ycm-monitor/" title="YSQL Connection Manager metrics">Observability</a></li><li class="">
+          <a href="/stable/additional-features/connection-manager-ysql/ycm-migrate/" title="Migrate to YSQL Connection Manager">Migrate</a></li><li class="">
+          <a href="/stable/additional-features/connection-manager-ysql/ycm-troubleshoot/" title="YSQL Connection Manager Troubleshooting">Troubleshoot</a></li></ul></li><li class="submenu">
+          <a href="/stable/additional-features/change-data-capture/" title="Change data capture (CDC)">Change data capture</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="explore-change-data-capture"><li class="submenu">
+          <a href="/stable/additional-features/change-data-capture/using-logical-replication/" title="CDC using PostgreSQL replication protocol">PostgreSQL protocol</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="explore-change-data-capture-logical-replication"><li class="">
+          <a href="/stable/additional-features/change-data-capture/using-logical-replication/key-concepts/" title="Key concepts - logical replication">Key concepts</a></li><li class="">
+          <a href="/stable/additional-features/change-data-capture/using-logical-replication/get-started/" title="Get started with CDC logical replication in YugabyteDB">Get started</a></li><li class="">
+          <a href="/stable/additional-features/change-data-capture/using-logical-replication/monitor/" title="Monitor CDC (logical replication) in YugabyteDB">Monitor</a></li><li class="">
+          <a href="/stable/additional-features/change-data-capture/using-logical-replication/advanced-configuration/" title="Advanced configurations for CDC using Logical Replication">Advanced configuration</a></li><li class="">
+          <a href="/stable/additional-features/change-data-capture/using-logical-replication/advanced-topic/" title="Advanced topics">Advanced topics</a></li><li class="">
+          <a href="/stable/additional-features/change-data-capture/using-logical-replication/best-practices/" title="Best Practices for logical replication">Best practices</a></li><li class="submenu">
+          <a href="/stable/additional-features/change-data-capture/using-logical-replication/yugabytedb-connector/" title="YugabyteDB connector">YugabyteDB connector</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="yugabytedb-connector"><li class="">
+          <a href="/stable/additional-features/change-data-capture/using-logical-replication/yugabytedb-connector-properties/" title="YugabyteDB connector properties">Connector properties</a></li><li class="">
+          <a href="/stable/additional-features/change-data-capture/using-logical-replication/transformers/" title="YugabyteDB connector transformers">Connector transformers</a></li></ul></li></ul></li><li class="submenu">
+          <a href="/stable/additional-features/change-data-capture/using-yugabytedb-grpc-replication/" title="CDC using YugabyteDB gRPC replication protocol">gRPC protocol</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="explore-change-data-capture-grpc-replication"><li class="">
+          <a href="/stable/additional-features/change-data-capture/using-yugabytedb-grpc-replication/cdc-get-started/" title="Get started with CDC in YugabyteDB">Get started</a></li><li class="">
+          <a href="/stable/additional-features/change-data-capture/using-yugabytedb-grpc-replication/cdc-monitor/" title="Monitor CDC (gRPC replication) in YugabyteDB">Monitor</a></li><li class="submenu">
+          <a href="/stable/additional-features/change-data-capture/using-yugabytedb-grpc-replication/debezium-connector-yugabytedb/" title="YugabyteDB gRPC Connector (Debezium)">YugabyteDB gRPC Connector</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="debezium-connector-yugabytedb"><li class="">
+          <a href="/stable/additional-features/change-data-capture/using-yugabytedb-grpc-replication/yugabytedb-grpc-transformers/" title="YugabyteDB gRPC connector transformers">Connector transformers</a></li></ul></li></ul></li></ul></li><li class="">
+          <a href="/stable/additional-features/colocation/" title="Colocating tables and databases">Colocation</a></li><li class="">
+          <a href="/stable/additional-features/parallel-query/" title="Parallel queries">Parallel queries</a></li><li class="submenu">
+          <a href="/stable/additional-features/pg-extensions/" title="PostgreSQL extensions reference">PostgreSQL extensions</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="pg-extensions"><li class="">
+          <a href="/stable/additional-features/pg-extensions/install-extensions/" title="Install PostgreSQL extensions">Install extensions</a></li><li class="">
+          <a href="/stable/additional-features/pg-extensions/extension-pganon/" title="PostgreSQL Anonymizer extension">Anonymizer</a></li><li class="">
+          <a href="/stable/additional-features/pg-extensions/extension-auto-explain/" title="auto_explain extension">auto_explain</a></li><li class="">
+          <a href="/stable/additional-features/pg-extensions/extension-documentdb/" title="DocumentDB extension">DocumentDB</a></li><li class="">
+          <a href="/stable/additional-features/pg-extensions/extension-file-fdw/" title="file_fdw extension">file_fdw</a></li><li class="">
+          <a href="/stable/additional-features/pg-extensions/extension-fuzzystrmatch/" title="fuzzystrmatch extension">fuzzystrmatch</a></li><li class="">
+          <a href="/stable/additional-features/pg-extensions/extension-hypopg/" title="HypoPG extension">HypoPG</a></li><li class="">
+          <a href="/stable/additional-features/pg-extensions/extension-passwordcheck/" title="passwordcheck extension">passwordcheck</a></li><li class="">
+          <a href="/stable/additional-features/pg-extensions/extension-pgcron/" title="pg_cron extension">pg_cron</a></li><li class="">
+          <a href="/stable/additional-features/pg-extensions/extension-pgparquet/" title="pg_parquet extension">pg_parquet</a></li><li class="">
+          <a href="/stable/additional-features/pg-extensions/extension-pgpartman/" title="pg_partman extension">pg_partman</a></li><li class="">
+          <a href="/stable/additional-features/pg-extensions/extension-pgstatstatements/" title="pg_stat_statements extension">pg_stat_statements</a></li><li class="">
+          <a href="/stable/additional-features/pg-extensions/extension-pgcrypto/" title="pgcrypto extension">pgcrypto</a></li><li class="">
+          <a href="/stable/additional-features/pg-extensions/extension-pgvector/" title="pgvector extension">pgvector</a></li><li class="">
+          <a href="/stable/additional-features/pg-extensions/extension-postgres-fdw/" title="postgres_fdw extension">postgres_fdw</a></li><li class="">
+          <a href="/stable/additional-features/pg-extensions/extension-postgresql-hll/" title="postgresql-hll extension">postgresql-hll</a></li><li class="">
+          <a href="/stable/additional-features/pg-extensions/extension-spi/" title="spi extension">spi</a></li><li class="">
+          <a href="/stable/additional-features/pg-extensions/extension-tablefunc/" title="tablefunc extension">tablefunc</a></li><li class="">
+          <a href="/stable/additional-features/pg-extensions/extension-uuid-ossp/" title="uuid-ossp extension">uuid-ossp</a></li></ul></li><li class="">
+          <a href="/stable/additional-features/auto-analyze/" title="Auto Analyze service">Auto Analyze</a></li></ul></li><li class="submenu">
+          <a href="/stable/manage/" title="Manage YugabyteDB">Manage</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="manage"><li class="submenu">
+          <a href="/stable/manage/backup-restore/" title="Back up and restore data">Backup and restore</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="backup-restore"><li class="">
+          <a href="/stable/manage/backup-restore/export-import-data/" title="Export and import for YSQL">Export and import</a></li><li class="">
+          <a href="/stable/manage/backup-restore/snapshot-ysql/" title="Distributed snapshots for YSQL">Distributed snapshots</a></li><li class="">
+          <a href="/stable/manage/backup-restore/point-in-time-recovery/" title="Point-in-time recovery">Point-in-time recovery</a></li><li class="">
+          <a href="/stable/manage/backup-restore/instant-db-cloning/" title="Instant database cloning">Instant database cloning</a></li><li class="">
+          <a href="/stable/manage/backup-restore/time-travel-query/" title="Time travel queries">Time travel query</a></li></ul></li><li class="submenu">
+          <a href="/stable/manage/data-migration/" title="Migrate data">Migrate</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="manage-bulk-import-export"><li class="">
+          <a href="/stable/manage/data-migration/bulk-export-ysql/" title="Bulk export YSQL">Export data</a></li><li class="">
+          <a href="/stable/manage/data-migration/bulk-import-ysql/" title="Bulk import YSQL">Import data</a></li><li class="">
+          <a href="/stable/manage/data-migration/verify-migration-ysql/" title="Verify migration for YSQL">Verify migration</a></li><li class="">
+          <a href="/stable/manage/data-migration/migrate-from-postgres/" title="Migrate from PostgreSQL">Migrate from PostgreSQL</a></li></ul></li><li class="">
+          <a href="/stable/manage/change-cluster-config/" title="Change cluster configuration">Change cluster configuration</a></li><li class="">
+          <a href="/stable/manage/diagnostics-reporting/" title="Diagnostics reporting in YugabyteDB">Diagnostics reporting</a></li><li class="submenu">
+          <a href="/stable/manage/upgrade-deployment/" title="Upgrade YugabyteDB">Upgrade YugabyteDB</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="manage-upgrade-deployment"><li class="">
+          <a href="/stable/manage/ysql-major-upgrade-yugabyted/" title="YSQL major upgrade using yugabyted">YSQL major upgrade</a></li><li class="">
+          <a href="/stable/manage/upgrade-deployment-kubernetes/" title="Upgrade YugabyteDB on Kubernetes">Kubernetes</a></li></ul></li></ul></li><li class="submenu">
+          <a href="/stable/launch-and-manage/monitor-and-alert/" title="Monitor YugabyteDB">Monitor</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="monitor-and-alert"><li class="submenu">
+          <a href="/stable/launch-and-manage/monitor-and-alert/metrics/" title="YugabyteDB metrics">Metrics</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="metrics-overview"><li class="">
+          <a href="/stable/launch-and-manage/monitor-and-alert/metrics/throughput/" title="Throughput and latency metrics">Throughput&#43;latency metrics</a></li><li class="">
+          <a href="/stable/launch-and-manage/monitor-and-alert/metrics/connections/" title="Connection metrics">Connection metrics</a></li><li class="">
+          <a href="/stable/launch-and-manage/monitor-and-alert/metrics/cache-storage/" title="Cache and storage subsystem metrics">Cache and storage metrics</a></li><li class="">
+          <a href="/stable/launch-and-manage/monitor-and-alert/metrics/raft-dst/" title="Raft and distributed system metrics">Raft metrics</a></li><li class="">
+          <a href="/stable/launch-and-manage/monitor-and-alert/metrics/ybmaster/" title="YB-Master metrics">YB-Master metrics</a></li><li class="">
+          <a href="/stable/launch-and-manage/monitor-and-alert/metrics/replication/" title="xCluster metrics">xCluster</a></li></ul></li><li class="">
+          <a href="/stable/launch-and-manage/monitor-and-alert/xcluster-monitor/" title="Monitor xCluster">xCluster</a></li><li class="">
+          <a href="/stable/launch-and-manage/monitor-and-alert/active-session-history-monitor/" title="Monitor with Active Session History">Active Session History</a></li><li class="submenu">
+          <a href="/stable/launch-and-manage/monitor-and-alert/query-tuning/" title="Query Tuning">Query tuning</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="query-tuning"><li class="">
+          <a href="/stable/launch-and-manage/monitor-and-alert/query-tuning/pg-stat-statements/" title="Get query statistics using pg_stat_statements">Get query statistics</a></li><li class="">
+          <a href="/stable/launch-and-manage/monitor-and-alert/query-tuning/pg-stats/" title="Get column statistics using pg_stats">Column statistics</a></li><li class="">
+          <a href="/stable/launch-and-manage/monitor-and-alert/query-tuning/explain-analyze/" title="Analyze queries with EXPLAIN">Analyze queries</a></li><li class="">
+          <a href="/stable/launch-and-manage/monitor-and-alert/query-tuning/query-diagnostics/" title="Query diagnostics">Query diagnostics</a></li><li class="">
+          <a href="/stable/launch-and-manage/monitor-and-alert/query-tuning/pg-hint-plan/" title="Optimize YSQL queries using pg_hint_plan">Optimize YSQL queries</a></li><li class="">
+          <a href="/stable/launch-and-manage/monitor-and-alert/query-tuning/query-plan-manage/" title="Query plan management">Query plan management</a></li></ul></li></ul></li><li class="submenu">
+          <a href="/stable/best-practices-operations/" title="Best practices for operations">Best practices</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="best-practices-operations"><li class="">
+          <a href="/stable/best-practices-operations/administration/" title="Best practices for YSQL database administrators">YSQL database administrators</a></li><li class="">
+          <a href="/stable/best-practices-operations/ysql-catalog-cache-tuning-guide/" title="Customizing the preloading of YSQL catalog caches">YSQL catalog cache tuning</a></li><li class="">
+          <a href="/stable/best-practices-operations/ysql-yb-enable-cbo/" title="Enable cost-based optimizer">YSQL cost-based optimizer</a></li></ul></li><li class="submenu">
+          <a href="/stable/troubleshoot/" title="Troubleshoot YugabyteDB">Troubleshoot</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="troubleshoot"><li class="submenu">
+          <a href="/stable/troubleshoot/cluster/" title="Cluster-level issues">Cluster-level issues</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="troubleshoot-cluster"><li class="">
+          <a href="/stable/troubleshoot/cluster/connect-ycql/" title="YCQL API connection issues">YCQL API connection issues</a></li><li class="">
+          <a href="/stable/troubleshoot/cluster/recover_server/" title="Recover failed YB-TServer and YB-Master">Recover YB-TServer and YB-Master</a></li><li class="">
+          <a href="/stable/troubleshoot/cluster/replace_tserver/" title="Replace a failed YB-TServer">Replace a failed YB-TServer</a></li><li class="">
+          <a href="/stable/troubleshoot/cluster/replace_master/" title="Replace a failed YB-Master">Replace a failed YB-Master</a></li><li class="">
+          <a href="/stable/troubleshoot/cluster/replace_failed_peers/" title="Manual remote bootstrap of failed peer">Manual remote bootstrap of failed peer</a></li><li class="">
+          <a href="/stable/troubleshoot/cluster/failed_tablets/" title="Recover YB-TServer from crash loop">Recover YB-TServer from crash loop</a></li><li class="">
+          <a href="/stable/troubleshoot/cluster/performance-troubleshooting/" title="Troubleshoot performance issues">Performance issues</a></li></ul></li><li class="submenu">
+          <a href="/stable/troubleshoot/nodes/" title="Troubleshoot node-level issues">Node-level issues</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="troubleshoot-nodes"><li class="">
+          <a href="/stable/troubleshoot/nodes/check-processes/" title="Check servers">Check servers</a></li><li class="">
+          <a href="/stable/troubleshoot/nodes/check-stats/" title="System statistics">System statistics</a></li><li class="">
+          <a href="/stable/troubleshoot/nodes/recover-disk/" title="Disk failure">Disk failure</a></li><li class="">
+          <a href="/stable/troubleshoot/nodes/disk-full/" title="Disk full">Disk full</a></li><li class="">
+          <a href="/stable/troubleshoot/nodes/trouble-common/" title="Common error messages">Common error messages</a></li></ul></li><li class="">
+          <a href="/stable/troubleshoot/ysql-issues/" title="YSQL issues">YSQL issues</a></li><li class="">
+          <a href="/stable/troubleshoot/other-issues/" title="Troubleshoot miscellaneous issues">Other issues</a></li></ul></li></ul></li><li class="section submenu parent-menu open">
+                <a role="button" title="Reference" data-identifier="reference">Reference</a><i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="reference"><li class="submenu open">
+          <a href="/stable/architecture/" title="Architecture">Architecture</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="architecture"><li class="">
+          <a href="/stable/architecture/key-concepts/" title="Key concepts">Key concepts</a></li><li class="">
+          <a href="/stable/architecture/design-goals/" title="Design goals">Design goals</a></li><li class="submenu">
+          <a href="/stable/architecture/query-layer/" title="YugabyteDB Query Layer (YQL)">YQL - Query layer</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="architecture-query-layer"><li class="">
+          <a href="/stable/architecture/query-layer/planner-optimizer/" title="Query Planner">Query Planner</a></li><li class="">
+          <a href="/stable/architecture/query-layer/join-strategies/" title="Table join methodologies in YSQL">Join Strategies</a></li></ul></li><li class="">
+          <a href="/stable/architecture/system-catalog/" title="System catalog tables and views">System catalog</a></li><li class="submenu">
+          <a href="/stable/architecture/docdb/" title="DocDB storage layer">DocDB - Storage layer</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="docdb"><li class="">
+          <a href="/stable/architecture/docdb/data-model/" title="DocDB data model">Data model</a></li><li class="">
+          <a href="/stable/architecture/docdb/packed-rows/" title="Packed rows in DocDB">Packed rows</a></li><li class="">
+          <a href="/stable/architecture/docdb/lsm-sst/" title="Log structured merge (LSM) tree and Sorted string table (SST)">LSM &amp; SST</a></li><li class="">
+          <a href="/stable/architecture/docdb/performance/" title="DocDB performance enhancements to RocksDB">Performance</a></li></ul></li><li class="submenu open">
+          <a href="/stable/architecture/docdb-sharding/" title="DocDB sharding layer">Sharding</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="architecture-docdb-sharding"><li class="">
+          <a href="/stable/architecture/docdb-sharding/sharding/" title="Hash and range sharding">Hash and range sharding</a></li><li class="">
+          <a href="/stable/architecture/docdb-sharding/tablet-splitting/" title="Tablet splitting">Tablet splitting</a></li><li class="">
+          <a href="/stable/architecture/docdb-sharding/cluster-balancing/" class="current" title="Cluster balancing">Cluster balancing</a></li></ul></li><li class="submenu">
+          <a href="/stable/architecture/docdb-replication/" title="DocDB replication layer">Replication</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="architecture-docdb-replication"><li class="">
+          <a href="/stable/architecture/docdb-replication/raft/" title="Raft">Raft</a></li><li class="">
+          <a href="/stable/architecture/docdb-replication/replication/" title="Replication in DocDB">Synchronous</a></li><li class="">
+          <a href="/stable/architecture/docdb-replication/async-replication/" title="xCluster">xCluster</a></li><li class="">
+          <a href="/stable/architecture/docdb-replication/read-replicas/" title="Read replicas in YugabyteDB">Read replicas</a></li><li class="">
+          <a href="/stable/architecture/docdb-replication/cdc-logical-replication/" title="Architecture for CDC using PostgreSQL protocol">CDC using PostgreSQL protocol</a></li><li class="">
+          <a href="/stable/architecture/docdb-replication/change-data-capture/" title="Architecture for CDC using gRPC protocol">CDC using gRPC protocol</a></li></ul></li><li class="submenu">
+          <a href="/stable/architecture/transactions/" title="DocDB transactions layer">Transactions</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="architecture-acid-transactions"><li class="">
+          <a href="/stable/architecture/transactions/transactions-overview/" title="Fundamentals of Distributed Transactions">Fundamentals</a></li><li class="">
+          <a href="/stable/architecture/transactions/distributed-txns/" title="Distributed transactions">Distributed transactions</a></li><li class="">
+          <a href="/stable/architecture/transactions/transactional-io-path/" title="Transactional I/O path">Transactional I/O path</a></li><li class="">
+          <a href="/stable/architecture/transactions/single-row-transactions/" title="Single-row transactions">Single-row transactions</a></li><li class="">
+          <a href="/stable/architecture/transactions/isolation-levels/" title="Transaction isolation levels">Isolation levels</a></li><li class="">
+          <a href="/stable/architecture/transactions/concurrency-control/" title="Concurrency control">Concurrency control</a></li><li class="">
+          <a href="/stable/architecture/transactions/transaction-priorities/" title="Transaction priorities in YugabyteDB YSQL">Transaction priorities</a></li><li class="">
+          <a href="/stable/architecture/transactions/read-committed/" title="Read Committed isolation level">Read Committed</a></li><li class="">
+          <a href="/stable/architecture/transactions/read-restart-error/" title="Read Restart error">Read Restart error</a></li></ul></li><li class="">
+          <a href="/stable/architecture/yb-master/" title="YB-Master service">YB-Master</a></li><li class="">
+          <a href="/stable/architecture/yb-tserver/" title="YB-TServer service">YB-TServer</a></li></ul></li><li class="submenu">
+          <a href="/stable/reference/configuration/" title="YugabyteDB configuration reference">Configuration</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="configuration"><li class="">
+          <a href="/stable/reference/configuration/yugabyted/" title="yugabyted reference">yugabyted</a></li><li class="">
+          <a href="/stable/reference/configuration/yb-master/" title="yb-master configuration reference">yb-master</a></li><li class="">
+          <a href="/stable/reference/configuration/yb-tserver/" title="yb-tserver configuration reference">yb-tserver</a></li><li class="">
+          <a href="/stable/reference/configuration/operating-systems/" title="Operating system support">Operating systems</a></li><li class="">
+          <a href="/stable/reference/configuration/default-ports/" title="Default ports reference">Default ports</a></li><li class="">
+          <a href="/stable/reference/configuration/smart-defaults/" title="Smart defaults">Smart defaults</a></li><li class="">
+          <a href="/stable/reference/configuration/postgresql-compatibility/" title="Enhanced PostgreSQL Compatibility Mode">Enhanced PG compatibility</a></li></ul></li><li class="submenu">
+          <a href="/stable/admin/" title="CLIs and command line tools">CLIs</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="admin"><li class="">
+          <a href="/stable/admin/yb-admin/" title="yb-admin - command line tool for advanced YugabyteDB administration">yb-admin</a></li><li class="">
+          <a href="/stable/admin/yb-ts-cli/" title="yb-ts-cli - command line tool for advanced yb-tserver operations">yb-ts-cli</a></li><li class="">
+          <a href="/stable/admin/ysql-dump/" title="ysql_dump">ysql_dump</a></li><li class="">
+          <a href="/stable/admin/ysql-dumpall/" title="ysql_dumpall">ysql_dumpall</a></li><li class="">
+          <a href="/stable/admin/yb-ctl/" title="yb-ctl - command line tool for administering local YugabyteDB clusters">yb-ctl</a></li><li class="">
+          <a href="/stable/admin/yb-docker-ctl/" title="yb-docker-ctl - command line tool for administering local Docker-based clusters">yb-docker-ctl</a></li></ul></li><li class="">
+          <a href="/stable/reference/docs-mcp-server/" title="YugabyteDB Docs MCP Server">Docs MCP Server</a></li><li class="">
+          <a href="/stable/reference/get-started-guide/" title="How to get started with YugabyteDB">Resource guide</a></li><li class="submenu">
+          <a role="button" title="Misc">Misc</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="misc"><li class="submenu">
+          <a href="/stable/yedis/" title="YEDIS">YEDIS</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="yedis"><li class="">
+          <a href="/stable/yedis/quick-start/" title="Quick start for YEDIS">Quick start</a></li><li class="submenu">
+          <a href="/stable/yedis/develop/" title="Develop">Develop</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="develop-yedis"><li class="">
+          <a href="/stable/yedis/develop/client-drivers/" title="Build a YugabyteDB application using YEDIS">Build an application</a></li><li class="">
+          <a href="/stable/yedis/develop/client-drivers/yedis/csharp/" title="Build a YugabyteDB YEDIS application using C#">C#</a></li><li class="">
+          <a href="/stable/yedis/develop/client-drivers/yedis/cpp/" title="Build a YugabyteDB application using C&#43;&#43; and YEDIS">C&#43;&#43;</a></li><li class="">
+          <a href="/stable/yedis/develop/client-drivers/yedis/go/" title="Build a YugabyteDB YEDIS application using Go">Go</a></li><li class="">
+          <a href="/stable/yedis/develop/client-drivers/yedis/java/" title="Build a YugabyteDB application using Java and YEDIS">Java</a></li><li class="">
+          <a href="/stable/yedis/develop/client-drivers/yedis/nodejs/" title="Build a YugabyteDB application using NodeJS and YEDIS">NodeJS</a></li><li class="">
+          <a href="/stable/yedis/develop/client-drivers/yedis/python/" title="Build a YugabyteDB application using Python and YEDIS">Python</a></li></ul></li><li class="submenu">
+          <a href="/stable/yedis/api/" title="YEDIS API reference">API reference</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="api-yedis"><li class="">
+          <a href="/stable/yedis/api/append/" title="APPEND">APPEND</a></li><li class="">
+          <a href="/stable/yedis/api/auth/" title="AUTH">AUTH</a></li><li class="">
+          <a href="/stable/yedis/api/config/" title="CONFIG">CONFIG</a></li><li class="">
+          <a href="/stable/yedis/api/createdb/" title="CREATEDB">CREATEDB</a></li><li class="">
+          <a href="/stable/yedis/api/deletedb/" title="DELETEDB">DELETEDB</a></li><li class="">
+          <a href="/stable/yedis/api/listdb/" title="LISTDB">LISTDB</a></li><li class="">
+          <a href="/stable/yedis/api/select/" title="SELECT">SELECT </a></li><li class="">
+          <a href="/stable/yedis/api/del/" title="DEL">DEL</a></li><li class="">
+          <a href="/stable/yedis/api/echo/" title="ECHO">ECHO</a></li><li class="">
+          <a href="/stable/yedis/api/exists/" title="EXISTS">EXISTS</a></li><li class="">
+          <a href="/stable/yedis/api/expire/" title="EXPIRE">EXPIRE</a></li><li class="">
+          <a href="/stable/yedis/api/expireat/" title="EXPIREAT">EXPIREAT</a></li><li class="">
+          <a href="/stable/yedis/api/flushall/" title="FLUSHALL">FLUSHALL</a></li><li class="">
+          <a href="/stable/yedis/api/flushdb/" title="FLUSHDB">FLUSHDB</a></li><li class="">
+          <a href="/stable/yedis/api/get/" title="GET">GET</a></li><li class="">
+          <a href="/stable/yedis/api/getrange/" title="GETRANGE">GETRANGE</a></li><li class="">
+          <a href="/stable/yedis/api/getset/" title="GETSET">GETSET</a></li><li class="">
+          <a href="/stable/yedis/api/hdel/" title="HDEL">HDEL</a></li><li class="">
+          <a href="/stable/yedis/api/hexists/" title="HEXISTS">HEXISTS</a></li><li class="">
+          <a href="/stable/yedis/api/hget/" title="HGET">HGET</a></li><li class="">
+          <a href="/stable/yedis/api/hgetall/" title="HGETALL">HGETALL</a></li><li class="">
+          <a href="/stable/yedis/api/hincrby/" title="HINCRBY">HINCRBY</a></li><li class="">
+          <a href="/stable/yedis/api/hkeys/" title="HKEYS">HKEYS</a></li><li class="">
+          <a href="/stable/yedis/api/hlen/" title="HLEN">HLEN</a></li><li class="">
+          <a href="/stable/yedis/api/hmget/" title="HMGET">HMGET</a></li><li class="">
+          <a href="/stable/yedis/api/hmset/" title="HMSET">HMSET</a></li><li class="">
+          <a href="/stable/yedis/api/hset/" title="HSET">HSET</a></li><li class="">
+          <a href="/stable/yedis/api/hstrlen/" title="HSTRLEN">HSTRLEN</a></li><li class="">
+          <a href="/stable/yedis/api/hvals/" title="HVALS">HVALS</a></li><li class="">
+          <a href="/stable/yedis/api/incr/" title="INCR">INCR</a></li><li class="">
+          <a href="/stable/yedis/api/incrby/" title="INCRBY">INCRBY</a></li><li class="">
+          <a href="/stable/yedis/api/keys/" title="KEYS">KEYS</a></li><li class="">
+          <a href="/stable/yedis/api/monitor/" title="MONITOR">MONITOR</a></li><li class="">
+          <a href="/stable/yedis/api/pexpire/" title="PEXPIRE">PEXPIRE</a></li><li class="">
+          <a href="/stable/yedis/api/pexpireat/" title="PEXPIREAT">PEXPIREAT</a></li><li class="">
+          <a href="/stable/yedis/api/pttl/" title="PTTL">PTTL</a></li><li class="">
+          <a href="/stable/yedis/api/role/" title="ROLE">ROLE</a></li><li class="">
+          <a href="/stable/yedis/api/sadd/" title="SADD">SADD</a></li><li class="">
+          <a href="/stable/yedis/api/scard/" title="SCARD">SCARD</a></li><li class="">
+          <a href="/stable/yedis/api/rename/" title="RENAME">RENAME</a></li><li class="">
+          <a href="/stable/yedis/api/set/" title="SET">SET</a></li><li class="">
+          <a href="/stable/yedis/api/setex/" title="SETEX">SETEX</a></li><li class="">
+          <a href="/stable/yedis/api/psetex/" title="PSETEX">PSETEX</a></li><li class="">
+          <a href="/stable/yedis/api/setrange/" title="SETRANGE">SETRANGE</a></li><li class="">
+          <a href="/stable/yedis/api/sismember/" title="SISMEMBER">SISMEMBER</a></li><li class="">
+          <a href="/stable/yedis/api/smembers/" title="SMEMBERS">SMEMBERS</a></li><li class="">
+          <a href="/stable/yedis/api/srem/" title="SREM">SREM</a></li><li class="">
+          <a href="/stable/yedis/api/strlen/" title="STRLEN">STRLEN</a></li><li class="">
+          <a href="/stable/yedis/api/zrange/" title="ZRANGE">ZRANGE</a></li><li class="">
+          <a href="/stable/yedis/api/tsadd/" title="TSADD">TSADD</a></li><li class="">
+          <a href="/stable/yedis/api/tscard/" title="TSCARD">TSCARD</a></li><li class="">
+          <a href="/stable/yedis/api/tsget/" title="TSGET">TSGET</a></li><li class="">
+          <a href="/stable/yedis/api/tslastn/" title="TSLASTN">TSLASTN</a></li><li class="">
+          <a href="/stable/yedis/api/tsrangebytime/" title="TSRANGEBYTIME">TSRANGEBYTIME</a></li><li class="">
+          <a href="/stable/yedis/api/tsrem/" title="TSREM">TSREM</a></li><li class="">
+          <a href="/stable/yedis/api/tsrevrangebytime/" title="TSREVRANGEBYTIME">TSREVRANGEBYTIME</a></li><li class="">
+          <a href="/stable/yedis/api/ttl/" title="TTL">TTL</a></li><li class="">
+          <a href="/stable/yedis/api/zadd/" title="ZADD">ZADD</a></li><li class="">
+          <a href="/stable/yedis/api/zcard/" title="ZCARD">ZCARD</a></li><li class="">
+          <a href="/stable/yedis/api/zrangebyscore/" title="ZRANGEBYSCORE">ZRANGEBYSCORE</a></li><li class="">
+          <a href="/stable/yedis/api/zrem/" title="ZREM">ZREM</a></li><li class="">
+          <a href="/stable/yedis/api/zrevrange/" title="ZREVRANGE">ZREVRANGE</a></li><li class="">
+          <a href="/stable/yedis/api/zscore/" title="ZSCORE">ZSCORE</a></li><li class="">
+          <a href="/stable/yedis/api/pubsub/" title="PUBSUB">PUBSUB</a></li><li class="">
+          <a href="/stable/yedis/api/publish/" title="PUBLISH">PUBLISH</a></li><li class="">
+          <a href="/stable/yedis/api/subscribe/" title="SUBSCRIBE">SUBSCRIBE</a></li><li class="">
+          <a href="/stable/yedis/api/unsubscribe/" title="UNSUBSCRIBE">UNSUBSCRIBE</a></li><li class="">
+          <a href="/stable/yedis/api/psubscribe/" title="PSUBSCRIBE">PSUBSCRIBE</a></li><li class="">
+          <a href="/stable/yedis/api/punsubscribe/" title="PUNSUBSCRIBE">PUNSUBSCRIBE</a></li></ul></li></ul></li><li class="submenu">
+          <a href="/stable/legal/" title="Legal information">Legal</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="legal"><li class="">
+          <a href="/stable/legal/third-party-software/" title="Third-party software">Third-party software</a></li></ul></li></ul></li></ul></li><li class="section submenu parent-menu separator">
+                <a href="/stable/benchmark/" title="Benchmark" data-identifier="benchmark">Benchmark</a><i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="benchmark"><li class="submenu">
+          <a href="/stable/benchmark/tpcc/" title="TPC-C Benchmark on YugabyteDB">TPC-C</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="tpcc"><li class="">
+          <a href="/stable/benchmark/tpcc/running-tpcc/" title="Running the TPC-C performance benchmark">Run benchmark</a></li><li class="">
+          <a href="/stable/benchmark/tpcc/horizontal-scaling/" title="Testing horizontal scalability with TPC-C">Testing horizontal scalability</a></li><li class="">
+          <a href="/stable/benchmark/tpcc/high-scale-workloads/" title="Testing high scale workloads of TPC-C benchmark">Testing high scale workloads</a></li></ul></li><li class="">
+          <a href="/stable/benchmark/sysbench-ysql/" title="Benchmark YSQL performance using sysbench">sysbench</a></li><li class="">
+          <a href="/stable/benchmark/ycsb-jdbc/" title="Benchmark YSQL performance using YCSB and JDBC">YCSB</a></li><li class="">
+          <a href="/stable/benchmark/key-value-workload-ycql/" title="Benchmark YCQL performance with key-value workloads">Key-value workload</a></li><li class="">
+          <a href="/stable/benchmark/large-datasets-ycql/" title="Benchmark YCQL performance with large datasets">Large datasets</a></li><li class="submenu">
+          <a href="/stable/benchmark/scalability/" title="Benchmark scalability">Scalability</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="scalability"><li class="">
+          <a href="/stable/benchmark/scalability/scaling-queries-ysql/" title="Benchmark scaling YSQL queries">Scaling queries</a></li></ul></li><li class="submenu">
+          <a href="/stable/benchmark/resilience/" title="Benchmark resilience (fault tolerance)">Resilience</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="resilience"><li class="">
+          <a href="/stable/benchmark/resilience/jepsen-testing/" title="Jepsen testing">Jepsen testing</a></li></ul></li></ul></li><li class="section submenu parent-menu">
+                <a href="/stable/contribute/" title="Contribute" data-identifier="contribute">Contribute</a><i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="contribute"><li class="submenu">
+          <a href="/stable/contribute/core-database/" title="Contribute to the core database">Core database</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="core-database"><li class="">
+          <a href="/stable/contribute/core-database/checklist/" title="Contribution checklist">Contribution checklist</a></li><li class="">
+          <a href="/stable/contribute/core-database/build-from-src-almalinux/" title="Build from source code on AlmaLinux">Build the source</a></li><li class="">
+          <a href="/stable/contribute/core-database/clion-setup/" title="Configure a CLion project">Configure a CLion project</a></li><li class="">
+          <a href="/stable/contribute/core-database/build-and-test/" title="Build and test">Build and test</a></li><li class="">
+          <a href="/stable/contribute/core-database/coding-style/" title="YugabyteDB coding style">Coding style</a></li><li class="">
+          <a href="/stable/contribute/core-database/merge-with-upstream-repositories/" title="How to merge upstream repositories into YugabyteDB">Merge with upstream repositories</a></li></ul></li><li class="submenu">
+          <a href="/stable/contribute/docs/" title="Contribute to the documentation">Documentation</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="docs"><li class="">
+          <a href="/stable/contribute/docs/docs-checklist/" title="Docs contribution checklist">Docs checklist</a></li><li class="">
+          <a href="/stable/contribute/docs/docs-layout/" title="Find the right page or section">Docs layout</a></li><li class="submenu">
+          <a href="/stable/contribute/docs/docs-build/" title="Build the YugabyteDB docs locally">Build the docs</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="docs-build"><li class="">
+          <a href="/stable/contribute/docs/docs-editor-setup/" title="Set up your editor">Editor setup</a></li></ul></li><li class="submenu">
+          <a href="/stable/contribute/docs/docs-edit/" title="Edit the YugabyteDB docs">Edit the docs</a>
+            <i></i>
+	
+  
+  
+	<ul class="animated list" data-identifier="docs-edit"><li class="">
+          <a href="/stable/contribute/docs/docs-page-structure/" title="Docs page structure">Docs page structure</a></li><li class="">
+          <a href="/stable/contribute/docs/widgets-and-shortcodes/" title="Widgets and shortcodes">Widgets and shortcodes</a></li><li class="">
+          <a href="/stable/contribute/docs/syntax-diagrams/" title="Edit syntax diagrams">Syntax diagrams</a></li><li class="">
+          <a href="/stable/contribute/docs/all-page-elements/" title="Contribute - page with elements">Page with elements</a></li></ul></li><li class="">
+          <a href="/stable/contribute/docs/docs-style/" title="YugabyteDB documentation style guide">Style guide</a></li></ul></li></ul></li></ul>
+    </nav>
+    <nav class="fixed-nav">
+      <ul class="left-bottom-nav"><li class="bottom-link">
+          <a href="https://download.yugabyte.com/" title="Download" target="_blank" rel="noopener"><i class='icon-download'></i>Download</a></li><li class="bottom-link section submenu parent-menu arrow-menu">
+          <a role="button" title="Join our community"><i class='icon-join'></i>Join our community</a><i></i>
+          <ul class="internal animated list"><li class="bottom-link">
+              <a href="https://inviter.co/yugabytedb" title="Slack" target="_blank" rel="noopener"><i class='icon-slack'></i>Slack</a>
+            </li><li class="bottom-link">
+              <a href="https://university.yugabyte.com/" title="Yugabyte University" target="_blank" rel="noopener"><i class='icon-university'></i>Yugabyte University</a>
+            </li><li class="bottom-link">
+              <a href="https://github.com/yugabyte/yugabyte-db" title="GitHub" target="_blank" rel="noopener"><i class='icon-github'></i>GitHub</a>
+            </li><li class="bottom-link">
+              <a href="https://www.yugabyte.com/yftt/" title="Yugabyte Friday Tech Talks" target="_blank" rel="noopener"><i class='icon-yftt'></i>Yugabyte Friday Tech Talks</a>
+            </li><li class="bottom-link">
+              <a href="https://forum.yugabyte.com/" title="Forum" target="_blank" rel="noopener"><i class='icon-forum'></i>Forum</a>
+            </li></ul></li><li class="bottom-link">
+          <a href="https://support.yugabyte.com/hc/en-us" title="Contact Support" target="_blank" rel="noopener"><i class='icon-support'></i>Contact Support</a></li></ul>
+    </nav>
+  </div>
+
+  <div class="side-nav-collapse-toggle-2"></div>
+</div>
+
+<script>!function(){function e(e){var t=document.querySelector("aside.td-sidebar"),i=300;if("hide"===e){var a=t.style.width;(a<300||a>500)&&(a=300),t.setAttribute("data-pwidth",a),jQuery(".left-sidebar-wrap-inner").animate({opacity:"0"}),jQuery("aside.td-sidebar").animate({minWidth:"0px",width:"60px",maxWidth:"60px"})}else browserCookieUtils.getCookie("leftMenuWidth")&&(i=browserCookieUtils.getCookie("leftMenuWidth")),t.getAttribute("data-pwidth")&&(i=t.getAttribute("data-pwidth")),(i<300||i>500)&&(i=300),jQuery(".left-sidebar-wrap-inner").animate({opacity:"1"}),jQuery("aside.td-sidebar").animate({width:i,maxWidth:i})}var t=document.querySelector(".left-sidebar-wrap nav:not(.fixed-nav) > ul a.current"),i=browserCookieUtils.getCookie("leftMenuShowHide"),a=browserCookieUtils.getCookie("leftMenuWidth"),o=document.querySelector("aside.td-sidebar"),d=document.querySelector(".side-nav-collapse-toggle-2"),r=document.querySelector(".left-sidebar-wrap");o&&(i&&""!==i&&(o.classList.add("toggled-sidebar"),"hide"===i&&(o.classList.add("stick-bar"),r.classList.add("click-to-expand"),e(i))),a&&""!==a&&(jQuery(".td-main").addClass("hide-right-menu"),"hide"===i?o.setAttribute("data-pwidth",a):(o.style.width="".concat(a,"px"),o.style.maxWidth="".concat(a,"px")),setTimeout(function(){jQuery(".td-sidebar nav:not(.fixed-nav) a").each(function(e,t){jQuery(t).outerHeight()>=42&&jQuery(t).outerHeight()<60?jQuery(t).attr("data-lines",2):jQuery(t).outerHeight()>=60&&jQuery(t).outerHeight()<=72?jQuery(t).attr("data-lines",3):jQuery(t).outerHeight()>72?jQuery(t).attr("data-lines",4):jQuery(t).removeAttr("data-lines")})},1e3)),t&&function(e){var t=document.querySelector("aside.td-sidebar nav:not(.fixed-nav)");if(t&&e){t.style.overflow="hidden";var i=t.clientHeight,a=e.getBoundingClientRect().top;t.scrollTop=a-i,setTimeout(function(){t.style.overflow="auto"},600)}}(t),d.addEventListener("click",function(){o.classList.toggle("stick-bar"),o.classList.add("toggled-sidebar"),o.classList.contains("stick-bar")?(browserCookieUtils.setCookie("leftMenuShowHide","hide",{timeToLive:3,unit:"month"}),e("hide"),r.classList.add("click-to-expand")):(browserCookieUtils.setCookie("leftMenuShowHide","show",{timeToLive:3,unit:"month"}),e("show"),r.classList.remove("click-to-expand"))}),r.addEventListener("click",function(e){e.target.classList.contains("left-sidebar-wrap")&&e.target.classList.contains("click-to-expand")&&d.click()}))}();</script>
+<div id="dragbar"></div>
+        </aside>
+
+        <div class="flex-xl-nowrap content-parent">
+          <div class="content-child">
+            <div>
+              <main class="content-area">
+  
+<nav aria-label="breadcrumb" class="td-breadcrumbs">
+  <ol class="breadcrumb">
+  <li class="breadcrumb-item">
+    <a href="/stable/">YugabyteDB</a></li>
+  <li class="breadcrumb-item">
+    <a href="/stable/architecture/">Architecture</a></li>
+  <li class="breadcrumb-item">
+    <a href="/stable/architecture/docdb-sharding/">Sharding</a></li>
+  <li class="breadcrumb-item active" aria-current="page">
+    Cluster balancing</li>
+  </ol>
+</nav>
+<div class="td-content"><div class="main-heading-with-version heading-without-image"><div class="header-version-dropdown dropdown-list">
+        <div class="dropdown">
+
+<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+  
+    
+    
+      
+      
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+  v2025.2 <span class='tag release lts'>LTS <span class='popup-details'>Stable release with long-term support</span></span>
+</a>
+<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+  
+  
+    
+    
+      
+    
+  
+  
+    
+
+    
+    
+    
+    
+    
+    
+
+    
+      <a class="dropdown-item" href="/stable/architecture/docdb-sharding/cluster-balancing/">v2025.2 <span class='tag release lts'>LTS <span class='popup-details'>Stable release with long-term support</span></span></a>
+    
+  
+    
+
+    
+    
+    
+    
+    
+    
+
+    
+      <a class="dropdown-item" href="/v2025.1/architecture/docdb-sharding/cluster-balancing/">v2025.1 <span class='tag release sts'>STS <span class='popup-details'>Stable release with standard-term support</span></span></a>
+    
+  
+    
+
+    
+    
+    
+    
+    
+    
+
+    
+      <a class="dropdown-item" href="/v2024.2/architecture/docdb-sharding/cluster-balancing/">v2024.2 <span class='tag release lts'>LTS <span class='popup-details'>Stable release with long-term support</span></span></a>
+    
+  
+    
+
+    
+    
+    
+    
+    
+    
+
+    
+      <a class="dropdown-item" href="/v2.20/architecture/docdb-sharding/cluster-balancing/">v2.20 <span class='tag release lts'>LTS <span class='popup-details'>Stable release with long-term support</span></span></a>
+    
+  
+    
+    
+
+    
+    
+    
+    
+    
+    
+
+    
+      <a class="dropdown-item" href="https://docs-archive.yugabyte.com/v2.18/" target="_blank" rel="noopener">Unsupported versions</a>
+    
+  
+</div>
+</div>
+      </div><div class="heading-content">
+      <div>
+        <h1>
+          Cluster balancing
+          </h1>
+        <div class="lead">Learn how YugabyteDB balances data and queries across nodes</div>
+      </div>
+    </div>
+  </div><header class="article-meta">
+		
+
+		
+	</header>
+  
+  <h2 id="overview">Overview<a class="td-heading-self-link" href="#overview" aria-label="Heading self-link"></a></h2><p>Cluster balancing is the process by which YugabyteDB automatically distributes data and queries across the nodes in a cluster to maintain fault tolerance and maximize performance. This page describes the various scenarios in which YugabyteDB performs cluster balancing and how to monitor its progress.</p>
+<p>Cluster balancing is performed by a component of the <a href="../../yb-master/" title="YB-Master">YB-Master</a> called the cluster balancer. The cluster balancer continuously monitors the cluster configuration and moves <a href="../../key-concepts/#tablet" title="tablet">tablet</a> data and <a href="../../key-concepts/#tablet-leader" title="leaders">leaders</a> to evenly distribute data and query load, thus distributing CPU, disk, and network load across the cluster.</p>
+<div class="admonition note">
+<p class="admonition-title">Terminology</p>
+Many of the flags and metrics on this page refer to the cluster balancer as the &quot;load balancer&quot;. This document uses the more precise term &quot;cluster balancer&quot; to avoid confusion with network load balancers or client-side load balancers.
+</div>
+<h3 id="placement-policy">Placement policy<a class="td-heading-self-link" href="#placement-policy" aria-label="Heading self-link"></a></h3><p>A placement policy is a specification of how data and queries should be distributed across the cluster. For example, a typical <a href="../../key-concepts/#replication-factor-rf" title="replication factor">replication factor</a> of 3 (RF-3) placement might specify that there should be one replica of each tablet in three separate regions (for example, <code>us-west-1a</code>, <code>us-east-2a</code>, and <code>us-central-1a</code>), with leader preference towards <code>us-west-1a</code>.</p>
+<p>The default placement policy is automatically inferred when a cluster is created, but you can change it at the cluster-level using <a href="../../../admin/yb-admin/" title="yb-admin">yb-admin</a>, or override it on a per-table basis using <a href="../../../explore/going-beyond-sql/tablespaces/" title="tablespaces">tablespaces</a> (for YSQL clusters).</p>
+<h3 id="remote-bootstrap">Remote bootstrap<a class="td-heading-self-link" href="#remote-bootstrap" aria-label="Heading self-link"></a></h3><p>The cluster balancer creates new tablet replicas by a process called remote bootstrap. This involves copying data from a <a href="../../yb-tserver/" title="YB-TServer">YB-TServer</a> hosting an up-to-date <a href="../../docdb-replication/replication/#tablet-peers" title="tablet peer">tablet peer</a> (typically, the geographically closest peer) to the destination YB-TServer.</p>
+<h3 id="blacklisting">Blacklisting<a class="td-heading-self-link" href="#blacklisting" aria-label="Heading self-link"></a></h3><p>A YB-TServer can be blacklisted or leader blacklisted to prevent it from hosting data or leaders, respectively. Blacklists are used to facilitate graceful shutdowns (for example, when performing staged restarts or OS patching on a node).</p>
+<h2 id="cluster-balancing-scenarios">Cluster balancing scenarios<a class="td-heading-self-link" href="#cluster-balancing-scenarios" aria-label="Heading self-link"></a></h2><p>Cluster balancing happens automatically when you scale a cluster in or out, when there are node outages (for example, a failed node, or a network partition), and after creating or deleting tables and tablets.</p>
+<h3 id="cluster-balancing-when-scaling">Cluster balancing when scaling<a class="td-heading-self-link" href="#cluster-balancing-when-scaling" aria-label="Heading self-link"></a></h3><h4 id="scaling-out">Scaling out<a class="td-heading-self-link" href="#scaling-out" aria-label="Heading self-link"></a></h4><p>When scaling out (adding nodes), the cluster balancer will gracefully move tablet data and leaders to the new nodes, without any application impact. Because tablet leaders handle queries, moving leaders also moves the location of where queries execute.</p>
+<h4 id="scaling-in">Scaling in<a class="td-heading-self-link" href="#scaling-in" aria-label="Heading self-link"></a></h4><p>When scaling in, removed nodes are marked as &quot;blacklisted&quot;. This signals to the cluster balancer that it should do the following:</p>
+<ul>
+<li>Gracefully transfer leadership off of the node being removed.</li>
+<li>Re-replicate the data that was on the node to other nodes in the same region.</li>
+</ul>
+<p>After all data and queries have moved off of the node, the node can be removed safely.</p>
+<p>Blacklisting is performed automatically by YugabyteDB Anywhere and YugabyteDB Aeon. For yugabyted clusters, you should use <a href="../../../admin/yb-admin/#change-blacklist" title="yb-admin">yb-admin</a> to blacklist the node being removed.</p>
+<h3 id="cluster-balancing-after-node-outages">Cluster balancing after node outages<a class="td-heading-self-link" href="#cluster-balancing-after-node-outages" aria-label="Heading self-link"></a></h3><p>On an unplanned node outage, cluster balancing occurs twice: first when the node goes down, and again if the node recovers.</p>
+<p>When a node goes down, the cluster balancer automatically transfers tablet leadership to healthy nodes. This happens in 3 seconds or less.</p>
+<p>If the node stays down for a predetermined length of time (15 minutes by default, as set using the <a href="../../../reference/configuration/yb-tserver/#follower-unavailable-considered-failed-sec" title="follower_unavailable_considered_failed_sec">follower_unavailable_considered_failed_sec</a> flag) the cluster balancer starts creating new replicas of the data that was on the failed node on other nodes in the same region (if any exist).</p>
+<p>Queries will succeed as soon as tablet leaders move off of the failed node. The data balancing phase does not impact the availability of the database.</p>
+<p>If or when the failed node recovers, the cluster balancer rebalances tablet leaders onto the recovered node, as well as tablet data (if data had moved off of the node).</p>
+<h3 id="table-and-tablet-creation-and-deletion">Table and tablet creation and deletion<a class="td-heading-self-link" href="#table-and-tablet-creation-and-deletion" aria-label="Heading self-link"></a></h3><p>Operations that create or delete tablets may also trigger cluster balancing. These can include the following:</p>
+<ul>
+<li>Creating a table</li>
+<li>Dropping a table</li>
+<li><a href="../tablet-splitting/" title="Tablet splitting">Tablet splitting</a></li>
+</ul>
+<h2 id="monitoring-cluster-balancer-progress">Monitoring cluster balancer progress<a class="td-heading-self-link" href="#monitoring-cluster-balancer-progress" aria-label="Heading self-link"></a></h2><p>While leader rebalancing is fast, data rebalancing can take anywhere from seconds to hours. The major factors influencing how long data rebalancing takes are:</p>
+<ul>
+<li>The size of data on the failed node.</li>
+<li>The configured network and disk throughput.</li>
+<li>Cluster balancer configuration flags (see <a href="#flags" title="Flags">Flags</a> for details).</li>
+</ul>
+<ul class="nav nav-tabs-alt nav-tabs-yb">
+  <li>
+    <a href="#yugabyted" class="nav-link active" id="yugabyted-tab" data-bs-toggle="tab" role="tab" aria-controls="yugabyted" aria-selected="true">
+      <img src="/icons/database.svg" alt="Database Icon">
+      yugabyted
+    </a>
+  </li>
+  <li>
+    <a href="#yba" class="nav-link" id="yba-tab" data-bs-toggle="tab" role="tab" aria-controls="yba" aria-selected="false">
+      <img src="/icons/server.svg" alt="Server Icon">
+      YugabyteDB Anywhere
+    </a>
+  </li>
+</ul>
+<div class="tab-content">
+  <div id="yugabyted" class="tab-pane fade show active" role="tabpanel" aria-labelledby="yugabyted-tab">
+<p>With yugabyted, you can access the YB-Master UI at <a href="http://localhost:7000" title="http://localhost:7000" target="_blank" rel="noopener">http://localhost:7000</a> to access two views to monitor the cluster balancer progress.</p>
+<p><strong>Tablet Servers view</strong></p>
+<p>The <strong>Tablet Servers</strong> view provides information about how many peers and leaders are hosted on each tablet server, as well as whether each tablet server is currently data or leader blacklisted.</p>
+<p>To access the view, click <strong>Tablet Servers</strong> on your YB-Master UI.</p>
+<p><strong>Cluster Balancer view</strong></p>
+<p>This view is available in YugabyteDB <a href="/stable/releases/ybdb-releases/v2024.2#v2024.2.6.0">v2024.2.6</a> and later, and <a href="/stable/releases/ybdb-releases/v2025.1#v2025.1.1.0">v2025.1.1</a> and later.</p>
+<p>The Cluster Balancer view displays the following information:</p>
+<ul>
+<li>Ongoing cluster balancing tasks (for example, moving tablet leaders, and tablets being added or removed).</li>
+<li>Any warnings during cluster balancing. For example, if a placement policy cannot be satisfied because there are no TServers in the requested zone.</li>
+<li>Ongoing remote bootstraps from one tablet server to another, including the speed of data transfer.</li>
+</ul>
+<p>To access the view, click <strong>Utilities &gt; Load Balancer</strong> on your YB-Master UI.</p>
+  </div>
+  <div id="yba" class="tab-pane fade" role="tabpanel" aria-labelledby="yba-tab">
+<p>The YugabyteDB Anywhere <a href="../../../yugabyte-platform/alerts-monitoring/anywhere-metrics/" title="Metrics">Metrics</a> page includes the following charts for monitoring cluster balancing progress.</p>
+<p>You access metrics by navigating to <strong>Universes &gt; Universe-Name &gt; Metrics</strong>.</p>
+<p><strong>Data Disk Usage</strong></p>
+<p><strong>Data Disk Usage</strong> displays the amount of disk space used by the selected tablet server. The disk usage should be similar on all tablet servers after data is balanced.</p>
+<p>To view the chart, select the <strong>Resources</strong> tab on your universe <strong>Metrics</strong> page.</p>
+<p><strong>Cluster load balancer statistics</strong></p>
+<p>This chart is available in <a href="/stable/releases/ybdb-releases/v2024.2#v2024.2.6.0">v2024.2.6</a> and later, and <a href="/stable/releases/ybdb-releases/v2025.1#v2025.1.1.0">v2025.1.1</a> and later.</p>
+<p>Cluster load balancer statistics displays an estimate of the number of tablets that still have to be moved before the cluster is considered balanced.</p>
+<p>To view the chart, select the <strong>Master Server</strong> tab on your universe <strong>Metrics</strong> page as per the following illustration:</p>
+<p><img src="/images/architecture/cluster-balancer-graph.png" alt="Cluster load balancer statistics" title="Cluster load balancer statistics" /></p>
+<p>The chart shows the following metrics, which can be used to track the number of tablet moves that are required before the cluster is considered balanced:</p>
+<ul>
+<li><code>total_table_load_difference</code></li>
+<li><code>blacklisted_leaders</code></li>
+<li><code>tablets_in_wrong_placement</code></li>
+</ul>
+<p>Cluster balancing is complete when all metrics reach 0.</p>
+<p>The metric <code>estimated_data_to_balance_bytes</code> tracks how much data (in bytes) must be transferred before a cluster is balanced. This is the most accurate indicator of how long cluster balancing will take for clusters that are limited by data transfer speed.</p>
+  </div>
+</div>
+<h2 id="configuration-and-tuning">Configuration and tuning<a class="td-heading-self-link" href="#configuration-and-tuning" aria-label="Heading self-link"></a></h2><p>Starting in <a href="/stable/releases/ybdb-releases/v2025.1#v2025.1.1.0">v2025.1.1</a> and later, you configure cluster balancing using the <a href="#current-flags" title="remote_bootstrap_rate_limit_bytes_per_sec">remote_bootstrap_rate_limit_bytes_per_sec</a> flag. This flag controls how much data each node sends or receives each second. Set the flag according to your network and disk provisioning limits, and also based on the requirements of your workload.</p>
+<p>For example, if you provisioned your network and disk to 1 GiB/s, and your workload typically uses 500 MiB/s of network and disk, you might want to set <code>remote_bootstrap_rate_limit_bytes_per_sec</code> to 300 MiB/s to leave some headroom (200 MiB/s) for workload spikes. Alternatively, you could set it to 500 MiB/s to minimize the time taken for node recovery and cluster scaling operations (at the cost of some workload impact).</p>
+<p>Versions prior to <a href="/stable/releases/ybdb-releases/v2025.1#v2025.1.1.0">v2025.1.1</a> have many more flags available for tuning cluster balancing performance (see <a href="#legacy-flags" title="Legacy flags">Legacy flags</a>). In cases where the cluster has a significant amount of data, the defaults should be sufficient. Increasing the defaults may be required if a cluster has many thousands of tablets with very little data.</p>
+<div class="admonition warning">
+<p class="admonition-title">Upgrades</p>
+If you upgrade YugabyteDB to a version later than <a href="/stable/releases/ybdb-releases/v2025.1#v2025.1.1.0">v2025.1.1</a>, you must unset the <a href="#legacy-flags" title="legacy flags">legacy flags</a> for YugabyteDB to use the simpler cluster balancing defaults.
+</div>
+<h2 id="flags">Flags<a class="td-heading-self-link" href="#flags" aria-label="Heading self-link"></a></h2><h3 id="current-flags">Current flags<a class="td-heading-self-link" href="#current-flags" aria-label="Heading self-link"></a></h3><p>The following flags are recommended for use in <a href="/stable/releases/ybdb-releases/v2025.1#v2025.1.1.0">v2025.1.1</a> and later.</p>
+<h5 id="remote-bootstrap-rate-limit-bytes-per-sec">remote_bootstrap_rate_limit_bytes_per_sec<a class="td-heading-self-link" href="#remote-bootstrap-rate-limit-bytes-per-sec" aria-label="Heading self-link"></a></h5><p>The maximum transmission rate during a remote bootstrap. This is the total limit across all remote bootstrap sessions for which this process is acting as a sender or receiver. The total limit is therefore 2 × <code>remote_bootstrap_rate_limit_bytes_per_sec</code> because a YB-TServer or YB-Master can act as both a sender and receiver at the same time.</p>
+<h5 id="enable-load-balancing">enable_load_balancing<a class="td-heading-self-link" href="#enable-load-balancing" aria-label="Heading self-link"></a></h5><p>Enables cluster balancing. Default is true.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+It's strongly recommended not to disable the cluster balancer. If the balancer is disabled, the cluster cannot automatically re-replicate data after a node failure.
+</div>
+<h3 id="legacy-flags">Legacy flags<a class="td-heading-self-link" href="#legacy-flags" aria-label="Heading self-link"></a></h3><p>The following flags are available in releases prior to <a href="/stable/releases/ybdb-releases/v2025.1#v2025.1.1.0">v2025.1.1</a> for fine-tuning cluster balancing performance. These flags are deprecated in favor of the automatic defaults in <a href="/stable/releases/ybdb-releases/v2025.1#v2025.1.1.0">v2025.1.1</a> and later.</p>
+<h5 id="load-balancer-max-concurrent-tablet-remote-bootstraps">load_balancer_max_concurrent_tablet_remote_bootstraps<a class="td-heading-self-link" href="#load-balancer-max-concurrent-tablet-remote-bootstraps" aria-label="Heading self-link"></a></h5><p>The maximum number of tablets being remote bootstrapped across the cluster. If set to -1, there is no global limit on the number of concurrent remote bootstraps; per-table or per YB-TServer limits still apply.</p>
+<h5 id="load-balancer-max-concurrent-tablet-remote-bootstraps-per-table">load_balancer_max_concurrent_tablet_remote_bootstraps_per_table<a class="td-heading-self-link" href="#load-balancer-max-concurrent-tablet-remote-bootstraps-per-table" aria-label="Heading self-link"></a></h5><p>The maximum number of tablets being remote bootstrapped for any table. The maximum number of remote bootstraps <em>across the cluster</em> is still limited by the flag <code>load_balancer_max_concurrent_tablet_remote_bootstraps</code>. This flag prevents a single table from using all the available remote bootstrap sessions and starving other tables.</p>
+<h5 id="load-balancer-max-inbound-remote-bootstraps-per-tserver">load_balancer_max_inbound_remote_bootstraps_per_tserver<a class="td-heading-self-link" href="#load-balancer-max-inbound-remote-bootstraps-per-tserver" aria-label="Heading self-link"></a></h5><p>Maximum number of tablets simultaneously remote bootstrapping on a YB-TServer.</p>
+<h5 id="load-balancer-min-inbound-remote-bootstraps-per-tserver">load_balancer_min_inbound_remote_bootstraps_per_tserver<a class="td-heading-self-link" href="#load-balancer-min-inbound-remote-bootstraps-per-tserver" aria-label="Heading self-link"></a></h5><p>Minimum number of tablets simultaneously remote bootstrapping on a YB-TServer (if any are required).</p>
+<h5 id="load-balancer-max-over-replicated-tablets">load_balancer_max_over_replicated_tablets<a class="td-heading-self-link" href="#load-balancer-max-over-replicated-tablets" aria-label="Heading self-link"></a></h5><p>Maximum number of running tablet replicas per table that are allowed to be over the configured replication factor. This controls the amount of space amplification in the cluster when tablet removal is slow. A value less than 0 means no limit.</p>
+<h5 id="load-balancer-max-concurrent-adds">load_balancer_max_concurrent_adds<a class="td-heading-self-link" href="#load-balancer-max-concurrent-adds" aria-label="Heading self-link"></a></h5><p>Maximum number of tablet peer replicas to add in any one run of the cluster balancer.</p>
+<h5 id="load-balancer-max-concurrent-removals">load_balancer_max_concurrent_removals<a class="td-heading-self-link" href="#load-balancer-max-concurrent-removals" aria-label="Heading self-link"></a></h5><p>Maximum number of over-replicated tablet peer removals to do in any one run of the cluster balancer. A value less than 0 means no limit.</p>
+<h5 id="load-balancer-max-concurrent-moves">load_balancer_max_concurrent_moves<a class="td-heading-self-link" href="#load-balancer-max-concurrent-moves" aria-label="Heading self-link"></a></h5><p>Maximum number of tablet leaders on tablet servers (across the cluster) to move in any one run of the cluster balancer.</p>
+<h5 id="load-balancer-max-concurrent-moves-per-table">load_balancer_max_concurrent_moves_per_table<a class="td-heading-self-link" href="#load-balancer-max-concurrent-moves-per-table" aria-label="Heading self-link"></a></h5><p>Maximum number of tablet leaders per table to move in any one run of the cluster balancer. The maximum number of tablet leader moves <em>across the cluster</em> is still limited by the flag <code>load_balancer_max_concurrent_moves</code>. This flag is meant to prevent a single table from using all of the leader moves quota and starving other tables. If set to -1, the number of leader moves per table is set to the global number of leader moves (<code>load_balancer_max_concurrent_moves</code>).</p>
+<h2 id="metrics">Metrics<a class="td-heading-self-link" href="#metrics" aria-label="Heading self-link"></a></h2><p>Use the following metrics to monitor cluster balancing progress.</p>
+<div class=table-responsive> <table>
+  <thead>
+      <tr>
+          <th style="text-align: left">Metric</th>
+          <th style="text-align: left">Description</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: left"><code>estimated_data_to_balance_bytes</code></td>
+          <td style="text-align: left">The estimated amount of data (in bytes) that needs to be moved for the cluster to be balanced.</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><code>total_table_load_difference</code></td>
+          <td style="text-align: left">The estimated number of tablet moves required for the cluster to be balanced.</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><code>blacklisted_leaders</code></td>
+          <td style="text-align: left">The number of leaders on leader blacklisted TServers.</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><code>tablets_in_wrong_placement</code></td>
+          <td style="text-align: left">The number of tablet peers in invalid or blacklisted TServers. (An invalid TServer is one that is not part of the tablet's current placement policy.)</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><code>load_balancer_duration</code></td>
+          <td style="text-align: left">How long the previous cluster balancer run took, in milliseconds.</td>
+      </tr>
+  </tbody>
+</table> </div>
+<h2 id="learn-more">Learn more<a class="td-heading-self-link" href="#learn-more" aria-label="Heading self-link"></a></h2><ul>
+<li><a href="http://youtube.com/watch?v=AiIM3bb5kS8" title="YFTT: Cluster Balancing" target="_blank" rel="noopener">YFTT: Cluster Balancing</a></li>
+<li><a href="/stable/develop/drivers-orms/smart-drivers/" title="Smart drivers">Smart drivers</a></li>
+</ul>
+
+	
+	
+	
+</div>
+
+</main><aside class="d-none d-xl-block td-sidebar-toc d-print-none">
+
+
+
+
+
+
+<div class="dropdown dropdown-list" id="contribute-list">
+  <ul class="navbar-nav mt-2 mt-lg-0">
+    <li class="nav-item dropdown mr-4 d-none d-lg-block">
+      <a class="nav-link dropdown-toggle" id="contributeDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <img src="/icons/contribute-list-icon.svg" alt="Contribute List">
+        Contribute
+      </a>
+
+      <div class="dropdown-menu" aria-labelledby="contributeDropdownMenuLink">
+        <a class="dropdown-item" href="https://github.com/yugabyte/yugabyte-db/issues/new?title=%5BDocs%5D+&labels=area/documentation&template=docs.yml" title="Report a doc issue" target="_blank" rel="noopener">
+          Report a doc issue
+        </a>
+        <a class="dropdown-item" href="https://github.com/yugabyte/yugabyte-db/issues/new?title=%5BDocs%5D+New+docs+proposal&labels=area/documentation&template=docs.yml" title="Suggest new content" target="_blank" rel="noopener">
+          Suggest new content
+        </a>
+        <a class="dropdown-item contribute-edit-file-path" href="https://github.com/yugabyte/yugabyte-db/tree/master/docs/content/" data-git="https://github.com/yugabyte/yugabyte-db/tree/master/docs/content/ADD_FILE_PATH_HERE" title="Edit this page" target="_blank" rel="noopener">
+          Edit this page
+        </a>
+        <a class="dropdown-item" href="/stable/contribute/docs/" title="Contributor guide" target="_blank" rel="noopener">
+          Contributor guide
+        </a>
+      </div>
+    </li>
+  </ul>
+</div>
+
+
+
+
+
+<div class="td-toc">
+	<div class="head-title">
+		<img src="/icons/list-icon.svg" alt="On this page">
+		<span>On this page</span>
+	</div>
+	<nav id="TableOfContents">
+  <ul>
+    <li><a href="#overview">Overview</a>
+      <ul>
+        <li><a href="#placement-policy">Placement policy</a></li>
+        <li><a href="#remote-bootstrap">Remote bootstrap</a></li>
+        <li><a href="#blacklisting">Blacklisting</a></li>
+      </ul>
+    </li>
+    <li><a href="#cluster-balancing-scenarios">Cluster balancing scenarios</a>
+      <ul>
+        <li><a href="#cluster-balancing-when-scaling">Cluster balancing when scaling</a>
+          <ul>
+            <li><a href="#scaling-out">Scaling out</a></li>
+            <li><a href="#scaling-in">Scaling in</a></li>
+          </ul>
+        </li>
+        <li><a href="#cluster-balancing-after-node-outages">Cluster balancing after node outages</a></li>
+        <li><a href="#table-and-tablet-creation-and-deletion">Table and tablet creation and deletion</a></li>
+      </ul>
+    </li>
+    <li><a href="#monitoring-cluster-balancer-progress">Monitoring cluster balancer progress</a></li>
+    <li><a href="#configuration-and-tuning">Configuration and tuning</a></li>
+    <li><a href="#flags">Flags</a>
+      <ul>
+        <li><a href="#current-flags">Current flags</a>
+          <ul>
+            <li></li>
+          </ul>
+        </li>
+        <li><a href="#legacy-flags">Legacy flags</a>
+          <ul>
+            <li></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#metrics">Metrics</a></li>
+    <li><a href="#learn-more">Learn more</a></li>
+  </ul>
+</nav>
+</div>
+
+
+
+<script>if (!$.trim($('#TableOfContents').text())){$('aside.td-sidebar-toc .td-toc').remove()}</script>
+</aside></div><footer>
+  <div class="footer-top"><a href="/" title="YugabyteDB"><img src="/images/yugabytedb-logo.svg" alt="YugabyteDB" title="YugabyteDB" width="184" height="34"></a><div class="footer-socials"><a target="_blank" rel="noopener" href="https://inviter.co/yugabytedb" aria-label="Slack" title="Slack"><i class="fab fa-slack"></i></a><a target="_blank" rel="noopener" href="https://github.com/yugabyte/yugabyte-db" aria-label="GitHub" title="GitHub"><i class="fab fa-github"></i></a><a target="_blank" rel="noopener" href="https://twitter.com/yugabyte" aria-label="Twitter" title="Twitter"><i class="fab fa-twitter"></i></a><a target="_blank" rel="noopener" href="https://www.linkedin.com/company/yugabyte" aria-label="LinkedIn" title="LinkedIn"><i class="fab fa-linkedin"></i></a><a target="_blank" rel="noopener" href="https://www.youtube.com/channel/UCL9BhSLRowqQ1TyBndhiCEw" aria-label="YouTube" title="YouTube"><i class="fab fa-youtube"></i></a></div></div>
+  <div class="footer-bottom"><span>&copy; 2026 YugabyteDB, Inc. All Rights Reserved</span><a href="https://www.yugabyte.com/privacy-policy/" target="_blank" rel="noopener">Privacy Policy</a><span> | </span>
+      <a href="https://www.yugabyte.com/terms-of-service/" target="_blank" rel="noopener">Terms of Service</a></div>
+</footer>
+</div>
+        </div>
+        <div class="scroll-to-top">
+          <button class="scrolltop-btn" aria-label="Click here to scroll to top"></button>
+        </div>
+      </div>
+    </div><script src="/js/main.min.db2d8f6e1830ac43fcb9190027853936d2531c469d626dc7d96f29b28ec2bf4e.js" integrity="sha256-2y2PbhgwrEP8uRkAJ4U5NtJTHEadYm3H2W8pso7Cv04=" crossorigin="anonymous"></script>
+<script defer src="/js/click-to-copy.min.73478a7d4807698aed7e355eb23f9890ca18fea3158604c8471746d046702bad.js" integrity="sha256-c0eKfUgHaYrtfjVesj&#43;YkMoY/qMVhgTIRxdG0EZwK60=" crossorigin="anonymous"></script>
+<script src='/js/tabpane-persist.js'></script>
+<script src="/js/site.js"></script>
+<script src="/js/trackUtm.js"></script>
+
+<script type="module">
+import detectExternalLink from 'https://cdn.jsdelivr.net/npm/detect-external-link@2/+esm';
+if (typeof detectExternalLink === 'function') {
+  const selectLinks = document.querySelectorAll('.td-content a');
+  selectLinks.forEach(element => {
+    const linkHref = element.getAttribute('href');
+    if (linkHref !== null) {
+      const isExternal = detectExternalLink(linkHref, {
+        'hosts': [
+          'https://docs.yugabyte.com/'
+        ]
+      });
+      if (isExternal) {
+        if (!element.target) {
+          element.target = '_blank';
+          if (!element.rel) {
+            element.rel = 'noopener';
+          }
+        }
+      }
+    }
+  });
+}
+</script><script src="/js/search.js" id="algolia-search-script" data-sequence-expressions="true"></script><script defer src="https://widget.kapa.ai/kapa-widget.bundle.js"
+  data-website-id="7669d105-58f8-41b7-b3f1-4799ac938657"
+  data-project-name="Yugabyte"
+  data-project-color="rgb(120, 121, 241)"
+  data-project-logo="/icons/yugabyte.svg"
+  data-source-group-ids-include="b7e416bc-0ead-40ac-a708-182c2a72ee6e"
+  data-user-analytics-fingerprint-enabled="true"
+  data-font-family="Inter,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji;"
+  data-font-size-xs="13px"
+  data-font-size-xs="13px"
+  data-font-size-sm="13px"
+  data-font-size-md="15px"
+  data-font-size-lg="18px"
+  data-font-size-xl="18px"
+  data-button-hide="true"
+  data-button-text-font-weight="400"
+  data-modal-disclaimer="This is a custom LLM for Yugabyte with access to developer docs (docs.yugabyte.com), and all GitHub issues from the past year (github.com/yugabyte/yugabyte-db/issues). Please note that answers are generated by AI and may not be fully accurate."
+  data-modal-disclaimer-bg-color="#fff"
+  data-modal-disclaimer-text-color="#4e5f6d"
+  data-modal-disclaimer-font-size="11.5px"
+  data-modal-example-questions="How do I create an index?,
+ Follower Reads vs Read Replicas?,
+ What are transaction isolation levels?,
+ What does Voyager do?"
+  data-modal-z-index="99999"
+  data-modal-header-bg-color="#fff"
+  data-modal-header-border-bottom="1px solid #e9eef2"
+  data-modal-header-padding-right="16px"
+  data-modal-header-padding-left="16px"
+  data-modal-title-font-family="Inter"
+  data-modal-title-font-size="18px"
+  data-modal-title-font-weight="600"
+  data-modal-title-color="#0b1117"
+  data-modal-image-height="24px"
+  data-modal-image-width="24px"
+  data-modal-overlay-bg-color="rgba(11, 17, 23, 0.2)"
+  data-query-input-font-size="14px"
+  data-query-input-text-color="#0b1117"
+  data-query-input-placeholder-text-color="#6d7c88"
+  data-query-input-border-color="#d7dee4"
+  data-switch-bg-color="#fff"
+  data-switch-color="#7879f1"
+  data-example-question-button-height="36px"
+  data-example-question-button-border="1px solid #d7dee4"
+  data-example-question-button-border-radius="8px"
+  data-example-question-button-bg-color="#fff"
+  data-example-question-button-font-size="13px"
+  data-search-mode-enabled="true"
+  data-search-include-source-names='["Documentation"]'
+  data-search-result-primary-text-color="#0b1117"
+  data-mcp-enabled="true"
+  data-mcp-server-url="https://yugabyte.mcp.kapa.ai"
+></script>
+<script>
+  (function() {
+    window.addEventListener('load', function () {
+      const askAiTopSpan = document.querySelector('.ask-ai-top > span');
+      if (askAiTopSpan) {
+        askAiTopSpan.addEventListener('click', function () {
+          if (window.Kapa) {
+            window.Kapa.open({
+              mode: 'ai',
+            });
+          }
+        });
+      }
+
+      let clearbitAnonymousId = window.browserCookieUtils.getCookie('cb_anonymous_id');
+      if (clearbitAnonymousId && clearbitAnonymousId !== 'null') {
+        clearbitAnonymousId = clearbitAnonymousId.replace(/%22/g, '').replace(/"/g, '');
+        const kapaUser = {
+          uniqueClientId: clearbitAnonymousId,
+        };
+
+        let clearbitUserId = window.browserCookieUtils.getCookie('cb_user_id');
+        if (clearbitUserId && clearbitUserId !== 'null') {
+          clearbitUserId = clearbitUserId.replace(/%22/g, '').replace(/"/g, '');
+          kapaUser.email = clearbitUserId;
+        }
+
+        window.kapaSettings = {
+          user: kapaUser,
+        };
+      }
+    });
+  })();
+</script>
+<script async id="netlify-rum-container" src="/.netlify/scripts/rum" data-netlify-rum-site-id="c4c5aff9-0fc2-4db0-8c8d-ec4f7488d0f4" data-netlify-deploy-branch="master" data-netlify-deploy-context="production" data-netlify-cwv-token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzaXRlX2lkIjoiYzRjNWFmZjktMGZjMi00ZGIwLThjOGQtZWM0Zjc0ODhkMGY0IiwiYWNjb3VudF9pZCI6IjVkNDI2YjUzYjJkNTk1NDQxNTI2YjlhYSIsImRlcGxveV9pZCI6IjZhMTk5OWZkZWI0MGRlMDAwOGZmZjY3NiIsImlzc3VlciI6Im5mc2VydmVyIn0.ttP3BF86bjXu0cUc3_EZj5_iM6m21f0GJcZpc6Fvdxw"></script></body>
+</html>

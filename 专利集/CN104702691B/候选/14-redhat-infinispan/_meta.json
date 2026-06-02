@@ -1,0 +1,10 @@
+{
+  "nn": "14",
+  "slug": "14-redhat-infinispan",
+  "type": "产品",
+  "name": "Infinispan / Red Hat Data Grid（segment owner + rebalance）",
+  "organization": "Red Hat (IBM)",
+  "hit_features_initial": "F0,F1,F2,F3",
+  "publicity": "高",
+  "blurb": "- 类型：产品\n- 名称：Infinispan / Red Hat Data Grid\n- vendor：Red Hat (IBM)\n- 命中 F#（初判）：F0,F1,F2,F3\n- 公开度：高\n- 一句话定位：内存数据网格，segment + owner 副本，一致性哈希分布 + rebalance（F1/F3），可配置反亲和（F2）。"
+}

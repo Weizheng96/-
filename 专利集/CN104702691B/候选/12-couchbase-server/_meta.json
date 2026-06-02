@@ -1,0 +1,10 @@
+{
+  "nn": "12",
+  "slug": "12-couchbase-server",
+  "type": "产品",
+  "name": "Couchbase Server（vBucket + replica + server group awareness）",
+  "organization": "Couchbase Inc",
+  "hit_features_initial": "F0,F1,F2,F3",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：Couchbase Server\n- vendor：Couchbase Inc（NASDAQ: BASE）\n- 命中 F#（初判）：F0,F1,F2,F3\n- 公开度：中\n- 一句话定位：分布式 NoSQL，1024 vBucket + replica，Server Group Awareness 实现反亲和（F2），rebalance 均衡 vBucket（F1/F3）。"
+}
