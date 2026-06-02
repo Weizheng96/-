@@ -1,0 +1,10 @@
+{
+  "nn": "07",
+  "slug": "07-volcengine-vertc",
+  "type": "产品",
+  "name": "veRTC（火山引擎实时音视频）",
+  "organization": "火山引擎/字节",
+  "hit_features_initial": "F2, F4, F5",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：veRTC（火山引擎实时音视频）\n- vendor：火山引擎 / 字节跳动（超级独角兽）\n- 命中 F#（初判）：F2, F4, F5\n- 公开度：中\n- 一句话定位：字节自研实时音视频传输，支撑抖音系实时互动业务。"
+}

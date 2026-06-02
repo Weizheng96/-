@@ -1,0 +1,10 @@
+{
+  "nn": "12",
+  "slug": "12-aws-nitro",
+  "type": "产品",
+  "name": "AWS Nitro System (Nitro Cards / ENA / EBS)",
+  "organization": "AWS",
+  "hit_features_initial": "F1,F4,F6,F8",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：AWS Nitro System（Nitro Cards / ENA / EBS）\n- vendor：AWS\n- 命中 F#（初判）：F1,F4,F6,F8\n- 公开度：低（架构有公开演讲，但数据通路实现高度闭源）\n- 一句话定位：把网络/存储 I/O 卸载到 Nitro 卡，Guest 见标准设备前端、硬件直通数据面。"
+}

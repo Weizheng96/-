@@ -1,0 +1,10 @@
+{
+  "nn": "11",
+  "slug": "11-broadcom-stingray",
+  "type": "产品",
+  "name": "Stingray SmartNIC / Thor 数据面卸载",
+  "organization": "Broadcom",
+  "hit_features_initial": "F1,F2,F4,F5",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：Broadcom Stingray SmartNIC / Thor\n- vendor：Broadcom\n- 命中 F#（初判）：F1, F2, F4, F5\n- 公开度：中\n- 一句话定位：SoC 型 SmartNIC，支持完整数据面卸载模型（含流表）。"
+}

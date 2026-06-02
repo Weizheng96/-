@@ -1,0 +1,10 @@
+{
+  "nn": "13",
+  "slug": "13-aliyun-cipu-luoshen",
+  "type": "产品",
+  "name": "阿里云 CIPU + 洛神 vSwitch",
+  "organization": "阿里云",
+  "hit_features_initial": "F1,F2,F3",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：阿里云 神龙 CIPU + 洛神 vSwitch\n- vendor：阿里云\n- 命中 F#（初判）：F1,F2,F3\n- 公开度：低（自研黑盒，少量技术 PR）\n- 一句话定位：超大规模自研 vSwitch + DPU 转发面；很可能实现等价负载再分配但公开细节有限。"
+}

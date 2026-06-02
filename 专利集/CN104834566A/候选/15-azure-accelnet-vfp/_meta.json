@@ -1,0 +1,10 @@
+{
+  "nn": "15",
+  "slug": "15-azure-accelnet-vfp",
+  "type": "产品",
+  "name": "Azure AccelNet + VFP",
+  "organization": "Microsoft Azure",
+  "hit_features_initial": "F1,F2,F3",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：Azure AccelNet（FPGA SmartNIC）+ VFP 虚拟过滤平台\n- vendor：Microsoft Azure\n- 命中 F#（初判）：F1,F2,F3\n- 公开度：低（VFP/AccelNet 有 NSDI 论文但偏 FPGA 卸载路径）\n- 一句话定位：VFP 软件 vSwitch + FPGA 卸载；软件路径的核间调度需核验，FPGA 路径可能不同层。"
+}

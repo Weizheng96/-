@@ -1,0 +1,10 @@
+{
+  "nn": "11",
+  "slug": "11-cisco-webex",
+  "type": "产品",
+  "name": "Cisco Webex Meetings",
+  "organization": "Cisco",
+  "hit_features_initial": "F2, F4, F5",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：Cisco Webex Meetings\n- vendor：Cisco（NASDAQ:CSCO）\n- 命中 F#（初判）：F2, F4, F5\n- 公开度：中\n- 一句话定位：企业会议头部，自研媒体栈含 FEC 抗丢包。"
+}

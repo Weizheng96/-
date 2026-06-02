@@ -1,0 +1,10 @@
+{
+  "nn": "03",
+  "slug": "03-intel-ipu-ipdk",
+  "type": "产品",
+  "name": "Intel IPU + IPDK / OVS-DPDK",
+  "organization": "Intel",
+  "hit_features_initial": "F1,F2,F3,F4",
+  "publicity": "高",
+  "blurb": "- 类型：产品\n- 名称：Intel IPU（Mount Evans / E2000）+ IPDK / OVS-DPDK\n- vendor：Intel\n- 命中 F#（初判）：F1,F2,F3,F4\n- 公开度：高（IPDK 开源 + DPDK 主要贡献者）\n- 一句话定位：Intel 是 DPDK 与 OVS-DPDK 的核心贡献方；IPU 上的基础设施数据面基于 OVS-DPDK，pmd-auto-lb 直接可用。"
+}

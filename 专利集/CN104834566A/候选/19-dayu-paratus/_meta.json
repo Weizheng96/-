@@ -1,0 +1,10 @@
+{
+  "nn": "19",
+  "slug": "19-dayu-paratus",
+  "type": "产品",
+  "name": "大禹智芯 Paratus DPU",
+  "organization": "大禹智芯 DaYu",
+  "hit_features_initial": "F1,F3",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：大禹智芯 Paratus 系列 DPU\n- vendor：大禹智芯 DaYu（独角兽候选）\n- 命中 F#（初判）：F1,F3\n- 公开度：低\n- 一句话定位：集成 OVS 卸载数据面的 DPU；公开细节有限。"
+}

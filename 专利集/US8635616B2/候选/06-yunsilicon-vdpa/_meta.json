@@ -1,0 +1,10 @@
+{
+  "nn": "06",
+  "slug": "06-yunsilicon-vdpa",
+  "type": "产品",
+  "name": "云豹智能 metalDPU / Xinghe DPU",
+  "organization": "Yunsilicon 云豹智能",
+  "hit_features_initial": "F1,F2,F5,F8",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：云豹智能 metalDPU / Xinghe DPU（轻量虚拟化方案）\n- vendor：Yunsilicon 云豹智能（DPU 独角兽，腾讯为最大股东）\n- 命中 F#（初判）：F1,F2,F5,F8\n- 公开度：中（宣称\"中国首个开放、公开可用、商用的 DPU 轻量虚拟化方案\"，已落地中国移动、腾讯）\n- 一句话定位：国产 DPU 独角兽，DPU 后端实现 virtio、支持跨厂商 DPU 的虚拟机热迁移，机制与本专利贴近。"
+}

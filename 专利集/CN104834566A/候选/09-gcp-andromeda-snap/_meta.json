@@ -1,0 +1,10 @@
+{
+  "nn": "09",
+  "slug": "09-gcp-andromeda-snap",
+  "type": "产品",
+  "name": "Google Andromeda / Snap 网络栈",
+  "organization": "Google Cloud",
+  "hit_features_initial": "F1,F2,F3",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：Google Andromeda 虚拟网络 / Snap 用户态网络栈\n- vendor：Google Cloud\n- 命中 F#（初判）：F1,F2,F3\n- 公开度：中（Snap 有 SOSP 论文披露引擎/线程动态伸缩）\n- 一句话定位：软件转发面，Snap 的 engine 在 CPU 核间动态调度数据包处理；论文级公开材料利于比对 F1-F3。"
+}

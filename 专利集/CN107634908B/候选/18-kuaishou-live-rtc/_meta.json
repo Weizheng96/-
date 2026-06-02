@@ -1,0 +1,10 @@
+{
+  "nn": "18",
+  "slug": "18-kuaishou-live-rtc",
+  "type": "产品",
+  "name": "快手直播 / 实时互动传输",
+  "organization": "快手",
+  "hit_features_initial": "F2, F4, F5",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：快手直播 / 实时互动传输\n- vendor：快手（HK:1024）\n- 命中 F#（初判）：F2, F4, F5\n- 公开度：低\n- 一句话定位：直播 / 连麦头部，自研实时传输栈。"
+}

@@ -1,0 +1,10 @@
+{
+  "nn": "11",
+  "slug": "11-azure-hyperv",
+  "type": "产品",
+  "name": "Microsoft Azure Accelerated Networking + Hyper-V",
+  "organization": "Microsoft",
+  "hit_features_initial": "F3,F4,F5,F8",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：Microsoft Azure Accelerated Networking + Windows Server Hyper-V（NetVSC/StorVSC + SR-IOV）\n- vendor：Microsoft\n- 命中 F#（初判）：F3,F4,F5,F8\n- 公开度：中（Hyper-V VMBus FE/BE 模型有文档；Azure SmartNIC/FPGA 卸载有论文如 AccelNet）\n- 一句话定位：Hyper-V 用 VMBus 的 FE/BE 式半虚拟化通道 + SR-IOV，Azure 用 SmartNIC 卸载——FE/BE 模型与本专利相似，但非 vDPA 命名、\"导出 API/绑定空闲 VF\"形态需取证。"
+}

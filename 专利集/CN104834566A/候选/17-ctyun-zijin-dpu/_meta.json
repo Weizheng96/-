@@ -1,0 +1,10 @@
+{
+  "nn": "17",
+  "slug": "17-ctyun-zijin-dpu",
+  "type": "产品",
+  "name": "天翼云 紫金 DPU",
+  "organization": "天翼云 / 中国电信",
+  "hit_features_initial": "F1,F2,F3",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：天翼云 紫金 DPU + 云网络转发面\n- vendor：天翼云 / 中国电信\n- 命中 F#（初判）：F1,F2,F3\n- 公开度：低（原始申请人含天翼云，自研动机存在但需核验落地）\n- 一句话定位：自研 DPU 承载 VPC 转发；核验多核转发再分配机制。"
+}

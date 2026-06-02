@@ -4,7 +4,7 @@
   "type": "产品",
   "name": "全 OVS 卸载 SmartNIC（FPGA）",
   "organization": "Napatech",
-  "hit_features_initial": "F1, F2, F4, F5",
+  "hit_features_initial": "F1,F2,F4,F5",
   "publicity": "中",
-  "blurb": "- 类型：产品\n- 名称：Napatech 全 OVS 卸载 SmartNIC（FPGA）\n- vendor：Napatech（Oslo 上市）\n- 命中 F#（初判）：F1, F2, F4, F5\n- 公开度：中\n- 一句话定位：FPGA SmartNIC 全 OVS 卸载（含 VXLAN/VLAN），fast path 完全绕过软件 OVS。"
+  "blurb": "- 类型：产品\n- 名称：Napatech 全 OVS 卸载 SmartNIC（FPGA）\n- vendor：Napatech（Oslo 上市）\n- 命中 F#（初判）：F1, F2, F4, F5\n- 公开度：中\n- 一句话定位：FPGA SmartNIC 全 OVS 卸载（含 VXLAN/VLAN），fast path 完全绕过软件 OVS，~6x 性能提升。"
 }

@@ -1,0 +1,10 @@
+{
+  "nn": "16",
+  "slug": "16-tencent-dpu-vswitch",
+  "type": "产品",
+  "name": "腾讯云 自研 vSwitch + DPU",
+  "organization": "腾讯云",
+  "hit_features_initial": "F1,F2,F3",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：腾讯云 自研 vSwitch（FPGA+SoC 智能网卡）+ DPU\n- vendor：腾讯云\n- 命中 F#（初判）：F1,F2,F3\n- 公开度：低\n- 一句话定位：自研 vSwitch 硬件卸载，100Gbps；公开细节有限。"
+}

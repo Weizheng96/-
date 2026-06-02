@@ -1,0 +1,10 @@
+{
+  "nn": "12",
+  "slug": "12-juniper-contrail-vrouter",
+  "type": "产品",
+  "name": "Juniper Contrail vRouter（DPDK）",
+  "organization": "Juniper Networks",
+  "hit_features_initial": "F1,F3,F4",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：Juniper Contrail / Tungsten Fabric vRouter（DPDK 模式）\n- vendor：Juniper Networks\n- 命中 F#（初判）：F1,F3,F4\n- 公开度：中\n- 一句话定位：vRouter DPDK 转发核绑定 + rxq 调度；核验是否按负载触发再分配（F2）。"
+}

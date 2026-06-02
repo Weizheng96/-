@@ -1,0 +1,10 @@
+{
+  "nn": "16",
+  "slug": "16-asterfusion-helium",
+  "type": "产品",
+  "name": "Helium DPU 智能网卡（OVS 卸载，开放代码）",
+  "organization": "星融元 Asterfusion",
+  "hit_features_initial": "F1,F2,F4,F5",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：星融元 Asterfusion Helium DPU 智能网卡\n- vendor：星融元 Asterfusion\n- 命中 F#（初判）：F1, F2, F4, F5\n- 公开度：中\n- 一句话定位：基于 Marvell OCTEON 的 DPU 智能网卡，OVS/NVMe-oF/LVS/5G 场景验证，部分代码开放（公开度因开源而较高，但厂商知名度门槛待复核）。"
+}

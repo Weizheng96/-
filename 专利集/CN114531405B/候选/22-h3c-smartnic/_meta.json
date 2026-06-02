@@ -1,0 +1,10 @@
+{
+  "nn": "22",
+  "slug": "22-h3c-smartnic",
+  "type": "产品",
+  "name": "自研智能网卡 / DPU 云网络卸载",
+  "organization": "新华三 H3C",
+  "hit_features_initial": "F1,F2,F4,F5",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：新华三 H3C 自研智能网卡 / DPU\n- vendor：新华三 H3C\n- 命中 F#（初判）：F1, F2, F4, F5\n- 公开度：低\n- 一句话定位：云网络数据面卸载智能网卡 / DPU，与紫光云/运营商落地。"
+}

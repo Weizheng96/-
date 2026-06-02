@@ -1,0 +1,10 @@
+{
+  "nn": "03",
+  "slug": "03-intel-ifcvf-vdpa",
+  "type": "产品",
+  "name": "Intel IFCVF vDPA 驱动 / Intel IPU",
+  "organization": "Intel",
+  "hit_features_initial": "F1,F2,F5,F7,F8",
+  "publicity": "高",
+  "blurb": "- 类型：产品\n- 名称：Intel IFCVF（FPGA 100G VF）vDPA 驱动 / Intel IPU\n- vendor：Intel\n- 命中 F#（初判）：F1,F2,F5,F7,F8\n- 公开度：高（DPDK IFCVF 文档 + in-kernel `ifcvf` 源码）\n- 一句话定位：in-kernel vDPA 另一参考实现，\"IFCVF datapath is virtio ring compatible, works as a HW vhost backend\"，与本专利 VF 直通 DMA 通路高度对应。"
+}

@@ -1,0 +1,10 @@
+{
+  "nn": "18",
+  "slug": "18-tencent-xuanling",
+  "type": "产品",
+  "name": "玄灵智能网卡 / 自研云网络卸载",
+  "organization": "腾讯云",
+  "hit_features_initial": "F1,F2,F4,F5",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：腾讯云 玄灵智能网卡 / 自研云网络卸载\n- vendor：腾讯云\n- 命中 F#（初判）：F1, F2, F4, F5\n- 公开度：低\n- 一句话定位：自研\"玄灵\"智能网卡芯片，把虚拟化、网络/存储 IO 下移到芯片，CVM/BM/容器场景（并投资云豹智能）。"
+}

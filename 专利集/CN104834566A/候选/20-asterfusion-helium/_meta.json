@@ -1,0 +1,10 @@
+{
+  "nn": "20",
+  "slug": "20-asterfusion-helium",
+  "type": "产品",
+  "name": "星融元 Helium DPU",
+  "organization": "星融元 Asterfusion",
+  "hit_features_initial": "F1,F3",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：星融元 Helium DPU / 开放网络\n- vendor：星融元 Asterfusion（独角兽候选）\n- 命中 F#（初判）：F1,F3\n- 公开度：中\n- 一句话定位：Helium DPU 集成 vSwitch 转发；核验线程↔端口分配是否动态。"
+}

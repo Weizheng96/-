@@ -1,0 +1,10 @@
+{
+  "nn": "15",
+  "slug": "15-cloudvein-metafusion",
+  "type": "产品",
+  "name": "metaFusion-200 100G DPU（OVS 卸载 + RDMA）",
+  "organization": "云脉芯联",
+  "hit_features_initial": "F1,F2,F4,F5",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：云脉芯联 metaFusion-200 100G DPU\n- vendor：云脉芯联\n- 命中 F#（初判）：F1, F2, F4, F5\n- 公开度：低\n- 一句话定位：国内首款 FPGA 平台集成 OVS 虚拟化网络卸载 + RDMA 的 100G DPU，已获商用订单。"
+}

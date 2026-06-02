@@ -1,0 +1,2220 @@
+    <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <link rel="canonical" href="https://blog.csdn.net/yusur/article/details/142918552"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="renderer" content="webkit"/>
+    <meta name="force-rendering" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+      <meta name="report" content='{"pid": "blog", "spm":"1001.2101"}'>
+    <meta name="referrer" content="always">
+    <meta http-equiv="Cache-Control" content="no-siteapp" /><link rel="alternate" media="handheld" href="#" />
+    <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848">
+    <meta name="applicable-device" content="pc">
+    <link  href="https://g.csdnimg.cn/static/logo/favicon32.ico"  rel="shortcut icon" type="image/x-icon" />
+    <title>基于DPU的轻量虚拟化解决方案_vmware dpu-CSDN博客</title>
+        <script type="application/ld+json">
+          {"datePublished":"2024-10-14T14:56:36+08:00","@type":"Article","author":[{"@type":"Person","name":"yusur","url":"https://blog.csdn.net/yusur"}],"dateModified":"2024-10-14T14:56:38+08:00","@context":"https://schema.org","headline":"基于DPU的轻量虚拟化解决方案"}
+        </script>
+    <script>
+      (function(){ 
+        var el = document.createElement("script"); 
+        el.src = "https://s3a.pstatp.com/toutiao/push.js?1abfa13dfe74d72d41d83c86d240de427e7cac50c51ead53b2e79d40c7952a23ed7716d05b4a0f683a653eab3e214672511de2457e74e99286eb2c33f4428830"; 
+        el.id = "ttzz"; 
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(el, s);
+      })(window)
+    </script>
+        <meta name="keywords" content="云计算,云原生,DPU">
+    <meta name="description" content="文章浏览阅读1.8k次，点赞20次，收藏20次。为了应对虚拟化技术面临的问题和挑战，中科驭数在多年的技术积累和丰富的行业经验基础上，面向公开市场，推出了基于自研DPU的轻量虚拟化解决方案。_vmware dpu">
+          <link rel="stylesheet" type="text/css" href="https://csdnimg.cn/release/blogv2/dist/pc/css/corporate_blog_enter-15c3da366f.min.css">
+    <style>
+        #content_views pre{
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none; 
+            user-select: none; 
+        }
+        #content_views pre code{
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none; 
+            user-select: none; 
+        }
+    </style>
+    <script type="application/ld+json">{"@context":"https://ziyuan.baidu.com/contexts/cambrian.jsonld","@id":"https://blog.csdn.net/yusur/article/details/142918552","appid":"1638831770136827","pubDate":"2024-10-14T14:50:01","title":"基于DPU的轻量虚拟化解决方案_vmware dpu-CSDN博客","upDate":"2024-10-14T14:56:36"}</script>
+    <script src="https://g.csdnimg.cn/lib/jquery/1.12.4/jquery.min.js" type="text/javascript"></script>
+    <script src="https://g.csdnimg.cn/lib/jquery-migrate/1.4.1/jquery-migrate.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var isCorporate = true;
+        var username =  "yusur";
+        var skinImg = "white";
+
+        var blog_address = "https://blog.csdn.net/yusur";
+        var currentUserName = "";
+        var isOwner = false;
+        var loginUrl = "http://passport.csdn.net/account/login?from=https://blog.csdn.net/yusur/article/details/142918552";
+        var blogUrl = "https://blog.csdn.net/";
+        var starMapUrl = "https://ai.csdn.net";
+        var inscodeHost = "https://inscode.csdn.net";
+        var paymentBalanceUrl = "https://csdnimg.cn/release/vip-business-components/vipPaymentBalance.js?v=2025122501";
+        var appBlogDomain = "https://app-blog.csdn.net";
+        var avatar = "https://profile-avatar.csdnimg.cn/c4adf8e7a9784288a2526fd7ab4d2266_yusur.jpg!1";
+        var isCJBlog = false;
+        var isStarMap = false;
+        var articleTitle = "基于DPU的轻量虚拟化解决方案";
+        var articleDesc = "文章浏览阅读1.8k次，点赞20次，收藏20次。为了应对虚拟化技术面临的问题和挑战，中科驭数在多年的技术积累和丰富的行业经验基础上，面向公开市场，推出了基于自研DPU的轻量虚拟化解决方案。_vmware dpu";
+        var articleTitles = "基于DPU的轻量虚拟化解决方案_vmware dpu-CSDN博客";
+        var nickName = "中科驭数";
+        var articleDetailUrl = "https://blog.csdn.net/yusur/article/details/142918552";
+        var vipUrlV = "https://mall.csdn.net/vip?vipSource=learningVip";
+        if(window.location.host.split('.').length == 3) {
+            blog_address = blogUrl + username;
+        }
+        var skinStatus = 'White';
+        var blogStaticHost = "https://csdnimg.cn/release/blogv2/"
+          var payColumn = false
+    </script>
+      <meta name="toolbar" content='{"type":"0","fixModel":"1"}'>
+      <script ript src="https://g.csdnimg.cn/??fixed-sidebar/1.1.7/fixed-sidebar.js" type="text/javascript"></script>
+    <script src='//g.csdnimg.cn/common/csdn-report/report.js' type='text/javascript'></script>
+    <link rel="stylesheet" type="text/css" href="https://csdnimg.cn/public/sandalstrap/1.4/css/sandalstrap.min.css">
+    <style>
+        .MathJax_Message, .MathJax_Preview{
+            display: none !important;
+        }
+    </style>
+    <script src="https://dup.baidustatic.com/js/ds.js"></script>
+      <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "lgtpix6r85");
+      </script>
+    <script src="/cdn_cgi_bs_bot/static/crypto.min.js"></script>
+    <script src="/cdn_cgi_bs_bot/static/bot-score-v1.js"></script>
+    <script src="/cdn_cgi_bs_captcha/static/js/waf_captcha_embedded_bs.js"></script>
+</head>
+  <body class="nodata company_blog " style="">
+    <div id="toolbarBox" style="min-height: 48px;"></div>
+        <script>
+            var toolbarSearchExt = '{\"id\":142918552,\"landingWord\":[\"vmware dpu\"],\"queryWord\":\"\",\"tag\":[\"云计算\",\"云原生\",\"DPU\"],\"title\":\"基于DPU的轻量虚拟化解决方案\"}';
+        </script>
+    <script src="https://g.csdnimg.cn/common/csdn-toolbar/csdn-toolbar.js" type="text/javascript"></script>
+    <script>
+    (function(){
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        }
+        else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+    </script>
+
+    <link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/pc/css/blog_code-01256533b5.min.css">
+    <link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/chart-3456820cac.css" />
+    <link rel="stylesheet" href="https://g.csdnimg.cn/lib/swiper/6.0.4/css/swiper.css" />
+    <script src="https://g.csdnimg.cn/lib/swiper/6.0.4/js/swiper.js" async></script>
+    <script>
+      var articleId = 142918552;
+      var annotationModuleBootstrapData = {
+        hasAnnotation: false,
+        totalCount: 0,
+        list: [],
+        categories: []
+      };
+      var annotationFeatureEnabled = false;
+
+
+        var privateEduData = [];
+        var privateData = [];
+      var crytojs = "https://csdnimg.cn/release/blogv2/dist/components/js/crytojs-ca5b8bf6ae.min.js";
+      var commentscount = 0;
+      var commentAuth = 2;
+      var curentUrl = "https://blog.csdn.net/yusur/article/details/142918552";
+      var myUrl = "https://my.csdn.net/";
+      var isGitCodeBlog = false;
+      var vipActivityIcon = "";
+      var isOpenSourceBlog = false;
+      var isVipArticle = false;
+        var highlight = [];
+        var isRecommendModule = true;
+          var isBaiduPre = false;
+          var baiduCount = 0;
+          var setBaiduJsCount = 0;
+        var viewCountFormat = 1809;
+      var share_card_url = "https://app-blog.csdn.net/share?article_id=142918552&username=yusur"
+      var mallVipUrl = "https://mall.csdn.net/vip?vipSource=article"
+      var vipArticleAbStyle = "t_1"
+      var vipArticleCpStyle = "t_1"
+      var detailheaderAbCommunity = "control"
+      var codeAiAbStyle = "exp1"
+      var runProjectDeepBlogAB = "isRunProject is false"
+      var gitcodeHighlightWordAB = "exp1"
+
+      var asideCknowsEntryAB = "con1"
+      var deepblogUrl = ""
+        deepblogUrl = "https://deepblog.net?utm_source=blog_onekey_run";
+      var codeAiAbObjStyle = ""
+        codeAiAbObjStyle = "{\"control\":{\"title\":\"AI写代码\",\"destUrl\":\"https://trae.com.cn?utm_source=community&utm_medium=csdn&utm_campaign=daima\",\"imgUrl\":\"https://i-operation.csdnimg.cn/images/a5fff6f6c9f0464c9a46b130c972952b.png\"},\"exp1\":{\"title\":\"一键获取完整项目代码\",\"runClose\":true,\"destUrl\":\"https://inscode.net?utm_source=blog_code_block\",\"imgUrl\":\"https://i-operation.csdnimg.cn/images/4648c13ca82a446ea1bfb99876a27770.png\",\"blogUrl\":true},\"control_run_project\": {\"title\": \"运行项目并下载源码\",\"destUrl\": \"\",\"imgUrl\":\"https://i-operation.csdnimg.cn/images/46c457a2cf8b4b9b8f17a2ab71461d4a.png\"},\"control_deepblog\": {\"title\": \"AI生成项目\",\"destUrl\": \"https://inscode.net?utm_source=blog_code_block_fixed\",\"imgUrl\":\"https://i-operation.csdnimg.cn/images/9899ea0f099e4e4e8b1fcdb918a27fcd.png\",\"blogUrl\": false},\"exp2\":{\"title\":\"AI编程工具\",\"destUrl\":\"https://www.codebuddy.cn/work/?fromSource=gwzcw.13129862.13129862.13129862&utm_medium=cpc&utm_id=gwzcw.13129862.13129862.13129862\",\"imgUrl\":\"https://i-operation.csdnimg.cn/images/034b15f494eb444abc72cc544790ca5f.svg\"},\"exp3\":{\"title\":\"AI构建项目\",\"destUrl\":\"https://t.csdnimg.cn/9I17\",\"imgUrl\":\"https://i-operation.csdnimg.cn/images/bf18ebff2c3748d59ea0f95954bb4b4a.png\"}}";
+      var aiSideSegment = -1;
+        aiSideSegment = "16";
+      var articleType = 1;
+      var baiduKey = "";
+      var copyPopSwitch = true;
+      var needInsertBaidu = false;
+      var recommendRegularDomainArr = ["blog.csdn.net/.+/article/details/","download.csdn.net/download/","edu.csdn.net/course/detail/","ask.csdn.net/questions/","bbs.csdn.net/topics/","www.csdn.net/gather_.+/"]
+      var codeStyle = "";
+      var baiduSearchType = "";
+      var sharData = "{\"hot\":[{\"id\":1,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/a5f4260710904e538002a6ab337939b3.png\"},{\"id\":2,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/188b37199a2c4b74b1d9ffc39e0d52de.png\"},{\"id\":3,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/14ded358b631444581edd98a256bc5af.png\"},{\"id\":4,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/1470f23a770444d986ad551b9c33c5be.png\"},{\"id\":5,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/c329f5181dc74f6c9bd28c982bb9f91d.png\"},{\"id\":6,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/ccd8a3305e81460f9c505c95b432a65f.png\"},{\"id\":7,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/bc89d8283389440d97fc4d30e30f45e1.png\"},{\"id\":8,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/452d485b4a654f5592390550d2445edf.png\"},{\"id\":9,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/f8b9939db2ed474a8f43a643015fc8b7.png\"},{\"id\":10,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/6de8864187ab4ed3b1db0856369c36ff.png\"},{\"id\":11,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/673cc3470ff74072acba958dc0c46e2d.png\"},{\"id\":12,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/930c119760ac4491804db80f9c6d4e3f.png\"},{\"id\":13,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/15e6befb05a24233bc2b65e96aa8d972.png\"},{\"id\":14,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/2075fd6822184b95a41e214de4daec13.png\"},{\"id\":15,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/859b1552db244eb6891a809263a5c657.png\"},{\"id\":16,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/0be2f920f1f74290a98921974a9613fd.png\"},{\"id\":17,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/2e97e00b43f14afab494ea55ef3f4a6e.png\"},{\"id\":18,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/ff4ab252f46e444686f5135d6ebbfec0.png\"},{\"id\":19,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/ae029bbe99564e79911657912d36524f.png\"},{\"id\":20,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/b3ece39963de440388728e9e7b9bf427.png\"},{\"id\":21,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/6f14651a99ba486e926d63b6fa692997.png\"},{\"id\":22,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/83ceddf050084875a341e32dcceca721.png\"},{\"id\":23,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/b90368b8fd5d4c6c8c79a707d877cf7c.png\"},{\"id\":24,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/aeffae14ecf14e079b2616528c9a393b.png\"},{\"id\":25,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/c5a06b5a13d44d16bed868fc3384897a.png\"},{\"id\":26,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/08b697658b844b318cea3b119e9541ef.png\"},{\"id\":27,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/68ccb0b8d09346ac961d2b5c1a8c77bf.png\"},{\"id\":28,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/a2227a247e37418cbe0ea972ba6a859b.png\"},{\"id\":29,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/3a42825fede748f9993e5bb844ad350d.png\"},{\"id\":30,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/8882abc1dd484224b636966ea38555c3.png\"},{\"id\":31,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/4f6a5f636a3e444d83cf8cc06d87a159.png\"},{\"id\":32,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/1953ef79c56b4407b78d7181bdff11c3.png\"},{\"id\":33,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/c04a2a4f772948ed85b5b0380ed36287.png\"},{\"id\":34,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/5b4fecd05091405ea04d8c0f53e9f2c7.png\"},{\"id\":35,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/b89f576d700344e280d6ceb2a66c2420.png\"},{\"id\":36,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/1c65780e11804bbd9971ebadb3d78bcf.png\"},{\"id\":37,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/d590db2055f345db9706eb68a7ec151a.png\"},{\"id\":38,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/fe602f80700b4f6fb3c4a9e4c135510e.png\"},{\"id\":39,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/39ff2fcd31e04feba301a071976a0ba7.png\"},{\"id\":40,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/f9b61b3d113f436b828631837f89fb39.png\"},{\"id\":41,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/df1aca5f610c4ad48cd16da88c9c8499.png\"},{\"id\":42,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/d7acf73a1e6b41399a77a85040e10961.png\"},{\"id\":43,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/b7f1b63542524b97962ff649ab4e7e23.png\"}],\"vip\":[{\"id\":1,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101150.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101154.png\"},{\"id\":2,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101204.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101208.png\"},{\"id\":3,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101211.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101215.png\"},{\"id\":4,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101218.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101220.png\"},{\"id\":5,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101223.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101226.png\"},{\"id\":6,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100635.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100639.png\"},{\"id\":7,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100642.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100644.png\"},{\"id\":8,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100647.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100649.png\"},{\"id\":9,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100652.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100655.png\"},{\"id\":10,\"vipUrl\":\"https:\\/\\/img-blog.csdnimg.cn\\/55de67481fde4b04b97ad78f11fe369a.png\",\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/bb2418fb537e4d78b10d8765ccd810c5.png\"},{\"id\":11,\"vipUrl\":\"https:\\/\\/img-blog.csdnimg.cn\\/579c713394584d128104ef1044023954.png\",\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/f420d9fbcf5548079d31b5e809b6d6cd.png\"},{\"id\":12,\"vipUrl\":\"https:\\/\\/img-blog.csdnimg.cn\\/75b7f3155ba642f5a4cc16b7baf44122.png\",\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/a9030f5877be401f8b340b80b0d91e64.png\"},{\"id\":13,\"vipUrl\":\"https:\\/\\/img-blog.csdnimg.cn\\/0903d33cafa54934be3780aa54ae958d.png\",\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/2cd8c8929f5a42fca5da2a0aeb456203.png\"},{\"id\":14,\"vipUrl\":\"https:\\/\\/img-blog.csdnimg.cn\\/949fd7c22884439fbfc3c0e9c3b8dee7.png\",\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/dafbea9bd9eb4f3b962b48dc41657f89.png\"},{\"id\":15,\"vipUrl\":\"https:\\/\\/img-blog.csdnimg.cn\\/4119cfddd71d4e6a8a27a18dbb74d90e.png\",\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/c56310c8b6384d9e85388e4e342ce508.png\"},{\"id\":16,\"vipUrl\":\"https:\\/\\/img-blog.csdnimg.cn\\/121575274da142bcbbbbc2e8243dd411.png\",\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/5013993de06542f881018bb9abe2edf7.png\"},{\"id\":17,\"vipUrl\":\"https:\\/\\/img-blog.csdnimg.cn\\/4d97aa6dd4fe4f09a6bef5bdf8a6abcd.png\",\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/76f23877b6ad4066ad45ce8e31b4b977.png\"},{\"id\":18,\"vipUrl\":\"https:\\/\\/img-blog.csdnimg.cn\\/fdb619daf21b4c829de63b9ebc78859d.png\",\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/a1abe5d27a5441f599adfe662f510243.png\"},{\"id\":19,\"vipUrl\":\"https:\\/\\/img-blog.csdnimg.cn\\/676b7707bb11410f8f56bc0ed2b2345c.png\",\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/7ac5b467fbf24e1d8c2de3f3332c4f54.png\"},{\"id\":20,\"vipUrl\":\"https:\\/\\/img-blog.csdnimg.cn\\/0becb8cc227e4723b765bdd69a20fd4a.png\",\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/fdec85b26091486b9a89d0b8d45c3749.png\"},{\"id\":21,\"vipUrl\":\"https:\\/\\/img-blog.csdnimg.cn\\/1a6c06235ad44941b38c54cbc25a370c.png\",\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/410a06cda2d44b0c84578f88275caf70.png\"}],\"map\":{\"hot\":\"热门\",\"vip\":\"VIP\"}}";
+        var commentListModule = ''
+      var canRead = true;
+      var blogMoveHomeArticle = false;
+      var showSearchText = "";
+      var articleSource = 1;
+      var articleReport = '{"pid": "blog", "spm":"1001.2101"}';
+        var baiduSearchChannel = 'pc_relevant'
+        var baiduSearchIdentification = ''
+        var distRequestId = ''
+        var initRewardObject = {
+          giver: currentUserName,
+          anchor: username,
+          articleId: articleId,
+          sign: ''
+        }
+        var isLikeStatus = false;
+        var isUnLikeStatus = false;
+        var studyLearnWord = "";
+        var unUseCount = 0;
+        var codeMaxSize = 0;
+        var overCost = true;
+        var isCurrentUserVip = false;
+        var contentViewsHeight = 0;
+        var contentViewsCount = 0;
+        var contentViewsCountLimit = 5;
+        var isShowConcision = false;
+        var lastTime = 0
+        var postTime = "2024-10-14 14:56:36"
+      var isCookieConcision = false
+      var isHasDirectoryModel = false
+      var isShowSideModel = false
+      var isShowDirectoryModel = true
+      function getCookieConcision(sName){
+        var allCookie = document.cookie.split("; ");
+        for (var i=0; i < allCookie.length; i++){
+          var aCrumb = allCookie[i].split("=");
+          if (sName == aCrumb[0])
+            return aCrumb[1];
+        }
+        return null;
+      }
+      if (getCookieConcision('blog_details_concision') && getCookieConcision('blog_details_concision') == 0){
+        isCookieConcision = true
+        isShowSideModel = true
+        isShowDirectoryModel = false
+      }
+    </script>
+        <div class="main_father clearfix d-flex justify-content-center " style="height:100%;">
+          <div class="container clearfix " id="mainBox">
+          <script>
+          if (!isCookieConcision) {
+            $('.main_father').removeClass('mainfather-concision')
+            $('.main_father .container').removeClass('container-concision')
+          } else {
+            $('#mainBox').css('margin-right', '0')
+          }
+          </script>
+          <main>
+<script type="text/javascript">
+    var resourceId =  "";
+    function getQueryString(name) {   
+      var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象  
+      var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+      if( r != null ) return decodeURIComponent( r[2] ); return '';   
+    }
+    function stripscript(s){ 
+      var pattern = new RegExp("[`~!@#$^&*()=|{}':;',\\[\\].<>/?~！@#￥……&*（）——|{}【】‘；：”“'。，、？%]") 
+      var rs = ""; 
+      for (var i = 0; i < s.length; i++) { 
+        rs = rs+s.substr(i, 1).replace(pattern, ''); 
+      } 
+      return rs;
+    }
+    var blogHotWords = stripscript(getQueryString('utm_term')).length > 1 ? stripscript(getQueryString('utm_term')) : ''
+</script>
+<div class="blog-content-box">
+  <div class="article-header-box" id="article-header-box">
+    <div class="article-header">
+      <div class="article-title-box">
+        <h1 class="title-article" id="articleContentId">基于DPU的轻量虚拟化解决方案</h1>
+      </div>
+      <div class="article-info-box">
+          <div class="article-bar-top">
+              <div class="bar-content active">
+              <span class="article-type-text original">原创</span>
+
+              
+                  <span class="time">于&nbsp;2024-10-14 14:56:36&nbsp;发布</span>
+                <span class="border-dian">·</span>
+                <span class="read-count">1.8k 阅读</span>
+                <div class="read-count-box is-like like-ab-new" data-type="top">
+                  <span class="border-dian">·</span>
+                  <img class="article-read-img article-heard-img active" style="display:none" id="is-like-imgactive-new" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newHeart2023Active.png" alt="">
+                  <img class="article-read-img article-heard-img" style="display:block" id="is-like-img-new" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newHeart2023Black.png" alt="">
+                  <span class="read-count" id="blog-digg-num" style="color:;">
+                      20
+                  </span>
+                </div>
+                <span class="border-dian">·</span>
+                <a id="blog_detail_zk_collection" class="un-collection" data-report-click='{"mod":"popu_823","spm":"1001.2101.3001.4232","ab":"new"}'>
+                  <img class="article-collect-img article-heard-img un-collect-status isdefault" style="display:inline-block" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarCollect2.png" alt="">
+                  <img class="article-collect-img article-heard-img collect-status isactive" style="display:none" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarCollectionActive2.png" alt="">
+                  <span class="get-collection">
+                      20
+                  </span>
+                </a>
+
+                    <span class="border-dian">·</span>
+                    <div class="href-article-edit-new">
+                      <span class="href-article-edit-click">CC 4.0 BY-SA版权</span>
+                      <div class="slide-content-box-new">
+                                  版权声明：本文为博主原创文章，遵循<a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener"> CC 4.0 BY-SA </a>版权协议，转载请附上原文出处链接和本声明。
+                      </div>
+                    </div>
+              </div>
+              <div class="operating active">
+              </div>
+          </div>
+          <div class="blog-tags-box">
+            <div class="tags-box artic-tag-box">
+                      <div class="article-tag">
+                        <span class="label">文章标签：</span>
+                      <p>
+                          <a rel="nofollow" data-report-query="spm=1001.2101.3001.4223" data-report-click='{"mod":"popu_626","spm":"1001.2101.3001.4223","strategy":"云计算","ab":"new","extra":"{\"searchword\":\"云计算\"}"}' data-report-view='{"mod":"popu_626","spm":"1001.2101.3001.4223","strategy":"云计算","ab":"new","extra":"{\"searchword\":\"云计算\"}"}' class="tag-link-new" href="https://so.csdn.net/so/search/s.do?q=%E4%BA%91%E8%AE%A1%E7%AE%97&amp;t=all&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=&amp;from_tracking_code=tag_word&amp;from_code=app_blog_art" target="_blank" rel="noopener">#云计算</a>
+                          <a rel="nofollow" data-report-query="spm=1001.2101.3001.4223" data-report-click='{"mod":"popu_626","spm":"1001.2101.3001.4223","strategy":"云原生","ab":"new","extra":"{\"searchword\":\"云原生\"}"}' data-report-view='{"mod":"popu_626","spm":"1001.2101.3001.4223","strategy":"云原生","ab":"new","extra":"{\"searchword\":\"云原生\"}"}' class="tag-link-new" href="https://so.csdn.net/so/search/s.do?q=%E4%BA%91%E5%8E%9F%E7%94%9F&amp;t=all&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=&amp;from_tracking_code=tag_word&amp;from_code=app_blog_art" target="_blank" rel="noopener">#云原生</a>
+                          <a rel="nofollow" data-report-query="spm=1001.2101.3001.4223" data-report-click='{"mod":"popu_626","spm":"1001.2101.3001.4223","strategy":"DPU","ab":"new","extra":"{\"searchword\":\"DPU\"}"}' data-report-view='{"mod":"popu_626","spm":"1001.2101.3001.4223","strategy":"DPU","ab":"new","extra":"{\"searchword\":\"DPU\"}"}' class="tag-link-new" href="https://so.csdn.net/so/search/s.do?q=DPU&amp;t=all&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=&amp;from_tracking_code=tag_word&amp;from_code=app_blog_art" target="_blank" rel="noopener">#DPU</a>
+                      </p>
+                      </div>
+                <p class="community-name" id="community-name"></p>
+            </div>
+          </div>
+      </div>
+    </div>
+  </div>
+    <div id="blogHuaweiyunAdvert" class=""></div>
+        <div id="blogColumnPayAdvert" class="">
+              <div class="column-group">
+                <div class="column-group-item column-group0 column-group-item-one">
+                    <div class="item-l">
+                        <a class="item-target" href="https://blog.csdn.net/yusur/category_12700760.html" target="_blank" title="驭云系列高性能云异构算力解决方案"
+                        data-report-view='{"spm":"1001.2101.3001.6332"}'
+                        data-report-click='{"spm":"1001.2101.3001.6332"}'>
+                            <img class="item-target" src="https://i-blog.csdnimg.cn/direct/6b6c8767899b43808183bc2e273e3b16.jpeg?x-oss-process=image/resize,m_fixed,h_224,w_224" alt="">
+                            <span class="title item-target">
+                                <span>
+                                <span class="tit">驭云系列高性能云异构算力解决方案</span>
+                                    <span class="dec">专栏收录该内容</span>
+                                </span>
+                            </span>
+                        </a>
+                    </div>
+                    <div class="item-m">
+                        <span>14 篇文章</span>
+                    </div>
+                    <div class="item-r">
+                            <a class="item-target article-column-bt articleColumnFreeBt" data-id="12700760">订阅专栏</a>
+                    </div>
+                </div>
+              </div>
+
+        </div>
+    <article class="baidu_pl">
+        <div id="article_content" class="article_content clearfix">
+        <link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/kdoc_html_views-1a98987dfd.css">
+        <link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/ck_htmledit_views-a50b13a894.css">
+                <div id="content_views" class="htmledit_views atom-one-dark">
+                    <h3>1.  背景、挑战与业界进展</h3>
+
+<h4>1.1. 虚拟化技术背景</h4>
+
+<p>在云计算的浪潮中&#xff0c;虚拟化技术扮演着举足轻重的角色。它通过将物理机集群的资源进行抽象整合&#xff0c;构建出一个统一的虚拟资源池。在这个资源池中&#xff0c;每一台物理机上都会运行宿主机以及虚拟化的系统软件。这些系统软件负责为用户提供虚拟的计算环境&#xff0c;包括虚拟CPU、虚拟内存、虚拟网络等&#xff0c;都是由Hypervisor这一核心组件来实现的。Hypervisor不仅确保了虚拟机计算能力的平稳性和弹性&#xff0c;还为用户提供了灵活的资源调度和分配能力。</p>
+
+<p>虚拟化技术在云数据中心、大数据处理、AI与机器学习等多个领域都得到了广泛的应用。通过虚拟化技术&#xff0c;企业可以更加高效地利用物理资源&#xff0c;实现资源的按需分配和弹性扩展&#xff0c;从而提高业务的灵活性和响应速度。</p>
+
+<h4>1.2. 虚拟化技术面临的问题与挑战</h4>
+
+<p>尽管虚拟化技术带来了诸多优势&#xff0c;但在实际应用中也面临着一些问题和挑战。</p>
+
+<p>首先&#xff0c;虚拟化架构中的管理面会占用部分CPU和内存资源&#xff0c;从而降低了系统整体资源的利用率。系统服务systemd&#xff0c;或libvirtd等虚机管理程序的线程与vCPU线程之间存在资源争抢的问题&#xff0c;导致业务虚拟机的稳定性难以保证&#xff0c;进而影响客户业务的质量。</p>
+
+<p>其次&#xff0c;虚拟机I/O处理线程会占用大量的CPU和内存资源。虚拟化通常使用virtio-blk&#xff0c;virito-net为虚机提供磁盘和网卡设备&#xff0c;为了获得更好的I/O性能&#xff0c;virtio-blk会采用iothread机制加速磁盘I/O的处理&#xff1b;而virtio-net则采用vhost-net的方案将网卡的I/O卸载到内核&#xff0c;通过减少用户态和内核态的切换来减速网卡的I/O的处理&#xff1b;不论是iothread还是vhost-net&#xff0c;都需要在Host上创建对应的线程来完成具体的I/O处理&#xff0c;当I/O负载高的时候&#xff0c;iothread和vhost-net的处理线程会占用大量的CPU和内存资源。</p>
+
+<p>此外&#xff0c;虚拟化技术的安全性问题也不容忽视。当前主流虚拟化方案都是采用QEMU &#43; KVM的形式&#xff0c;QEMU模拟了丰富的外设&#xff0c;由于编写模拟设备的人员众多&#xff0c;加上设备的接口大多数比较复杂&#xff0c;因此QEMU经常在处理这些读写请求的时候没有完整的对请求数据进行安全校验&#xff0c;导致产生了很多安全性问题。攻击者可能会利用虚拟化和Hypervisor的安全漏洞展开攻击&#xff0c;从而威胁到整个虚拟化环境的安全。</p>
+
+<h4>1.3. 头部云服务提供商的方案</h4>
+
+<p>针对虚拟化技术面临的问题和挑战&#xff0c;业界头部云服务提供商纷纷展开了探索和研发&#xff0c;并不约而同的提出了基于DPU的轻量虚拟化方案。</p>
+
+<p>AWS研发了Nitro系统&#xff0c;通过Nitro卡将虚拟机的I/O卸载到硬件上&#xff0c;从而消除了I/O处理线程对VCPU的资源抢占。同时&#xff0c;Nitro hypervisor内置了虚拟机的管理能力&#xff0c;将管理组件卸载到Nitro SoC上。这种设计不仅提高了系统的资源利用率和稳定性&#xff0c;还大大增强了虚拟化的安全性。Host侧只运行Nitro hypervisor&#xff0c;不提供通用OS能力&#xff0c;没有用户态和文件系统&#xff0c;从而减少了潜在的攻击面。</p>
+
+<p>VMware也提出了基于DPU的ESXi卸载方案。在该方案中&#xff0c;Host ESXi hypervisor负责虚拟化的核心逻辑&#xff0c;而DPU上的ESXi hypervisor则负责主机管理、存储和网络等功能。这种设计同样消除了管理和I/O处理的CPU占用&#xff0c;减少了vCPU的抢占&#xff0c;保证了vCPU的性能。同时&#xff0c;它也减少了Host的攻击面&#xff0c;增强了系统的安全性。</p>
+
+<p>阿里云则推出了神龙系统&#xff0c;其中的Dragonfly Hypervisor以其超轻薄、资源零损耗的特点著称。根据公开资料&#xff0c;其内存占用每个虚拟机不到1MB&#xff0c;CPU占用小于0.1%。这种超低的资源损耗使得神龙系统能够提供更加平稳、高效的虚拟化服务。同时&#xff0c;Dragonfly Hypervisor还具备超平稳、超平滑的特点&#xff0c;能够解决资源池之间互相热迁移的难题&#xff0c;与KVM无缝兼容&#xff0c;从而为用户提供了更加稳定、可靠的云服务。</p>
+
+<h4>1.4. DPU轻量虚拟化方案的成效与市场应用挑战</h4>
+
+<p>基于DPU的轻量虚拟化Hypervisor解决方案在市场上取得了显著的成效。它大幅提升了资源利用率&#xff0c;降低了运营成本&#xff0c;增强了系统的安全性&#xff0c;为用户提供了更加稳定、可靠的云服务。这些优势使得该方案在市场上得到了广泛的认可&#xff0c;其商业价值也得到了充分的体现。</p>
+
+<p>然而&#xff0c;头部云厂商自研的解决方案往往具有高度定制化和封闭性的特点&#xff0c;大部分未面向公开商用市场&#xff0c;这限制了其应用范围的扩大。尤其是在国内市场&#xff0c;商业化、公开的DPU轻量虚拟化解决方案仍然是一片空白。这不仅限制了其他云厂商或行业客户对这些方案的直接采用&#xff0c;也阻碍了基于DPU的虚拟化技术的进一步发展和普及。</p>
+
+<p>综上所述&#xff0c;基于DPU的轻量虚拟化方案将为虚拟化技术带来了新的发展机遇&#xff0c;各云服务提供商和企业对该类方案的需求日益增加&#xff0c;市场呼唤创新和开放的解决方案。</p>
+
+<h3>2.  方案介绍</h3>
+
+<p>为了应对虚拟化技术面临的问题和挑战&#xff0c;中科驭数在多年的技术积累和丰富的行业经验基础上&#xff0c;面向公开市场&#xff0c;推出了基于自研DPU的轻量虚拟化解决方案。</p>
+
+<h4>2.1. DPU轻量虚拟化整体方案架构</h4>
+
+<p>基于中科驭数DPU的轻量虚拟化方案&#xff0c;在Host侧只保留Hypervisor和部分Linux内核功能&#xff0c;且不提供用户态控制面组件。QEMU作为Device Emulation service组件运行在SoC&#xff0c;提供虚机机型及设备的模拟&#xff0c;Host侧只有VCPU内核线程。驭数DPU卡支持nvme和virtio-net的硬件卸载&#xff0c;因此虚机的存储和网卡采用VF直通的方式透传给虚机&#xff0c;提供高性能的存储和网络。其他非关键I/O设备则采用半卸载的方式&#xff0c;卸载到SoC侧&#xff0c;交由QEMU进行模拟。</p>
+
+<p>该方案中&#xff0c;每一个虚机都分配了一个特殊的PCIe设备&#xff0c;该PCIe设备的BAR空间划分成了两部分&#xff0c;其他一部分用于API信息的交互&#xff0c;成为API CHANNEL&#xff1b;另外一部分用于I/O请求的交互&#xff0c;称为IOREQ RING BUFFER。</p>
+
+<p style="text-align:center;"></p>
+
+<p class="img-center"><img alt="" height="483" src="https://img-blog.csdnimg.cn/img_convert/e7204257c732153cedc85cef157498c5.png" width="865" /></p>
+
+<p>以下为该方案的关键组件&#xff1a;</p>
+
+<p>Libvritd&#xff1a;该组件运行在SoC侧&#xff0c;对上层管理组件如nova-compute等提供虚机管理API&#xff0c;libvirtd进一步和SoC侧QEMU进行交互达到管理虚机生命周期的目的。</p>
+
+<p>QEMU&#xff1a;运行在SoC侧&#xff0c;提供虚机的I/O设备模拟服务&#xff0c;QEMU的交互接口是SoC-KVM提供的/dev/kvm-soc设备文件。QEMU在模拟I/O设备的过程中通过DPU卡提供DMA机制访问HOST内存。</p>
+
+<p>SOC-KVM&#xff1a;这是HOST-KVM内核模块在SoC侧的镜像&#xff0c;通过向用户态暴露/dev/kvm-soc设备文件&#xff0c;供用户态组件如QEMU&#xff0c;libvirtd等调用SOC-KVM提供的能力。该KVM内核模块不提供具体的CPU、MEMORY、I/O等虚拟化能力&#xff0c;只是作为管理面API和虚机I/O请求的转发模块。管理面API通过API channel转发到HOST-KVM模块&#xff0c;并由HOST-KVM进行处理&#xff1b;来自HOST-KVM的I/O请求保存在IOREQ RING BUFFER中&#xff0c;并由SOC-KVM分发给用户态QEMU。</p>
+
+<p>HOST-KVM&#xff1a;这个内核模块是原生KVM的扩展&#xff0c;与原生KVM的区别是&#xff1a;请求不是来自用户态I/OCTL请求&#xff0c;而是来自API channel&#xff1b;除了原生提供的API&#xff0c;HOST-KVM进一步提供了管里面API的处理&#xff0c;如nova-compute或kubelet的资源汇报类接口。</p>
+
+<p>驭数DPU卡提供了SoC和Host间的双向内存同步机制及SoC和Host间的双向中断机制&#xff0c;配合IOREQ RING BUFFER&#xff0c;使得虚机的I/O请求可以卸载到SoC侧QEMU完成&#xff1b;通过API channel&#xff0c;使得来自SoC侧管理API可以被HOST-KVM处理。</p>
+
+<h4>2.2. 方案描述</h4>
+
+<p>中科驭数DPU轻量虚拟化在保持虚机形态不变的情况下&#xff0c;完成了的虚机I/O和控制面的卸载&#xff1b;以下对主要部分做详细描述&#xff1a;</p>
+
+<h5>2.2.1.  基于该方案的虚机生命周期管理</h5>
+
+<p style="text-align:center;"></p>
+
+<p class="img-center"><img alt="" height="751" src="https://img-blog.csdnimg.cn/img_convert/e50bf05bceee975ade106564516e9c87.png" width="774" /></p>
+
+<p>Libvirt-soc使用原生API和QEMU-SOC交互&#xff0c;QEMU-SOC采用原生API和KVM-SOC交互&#xff0c;KVM-SOC使用硬件的API channel通道&#xff0c;转发KVM-SOC的API到KVM-HOST&#xff0c;最后由KVM-HOST完成具体的处理。上图以虚机启动为例展示了各个组件的交互&#xff0c;在完成VM和VCPU创建后&#xff0c;QEMU-SOC进一步加载BIOS或kernel&#xff0c;加载后需要使用DMA机制将BIOS内存块同步给Host&#xff1b;加载成功后&#xff0c;设置虚机的寄存器&#xff0c;并发送kvm_run请求&#xff0c;开始VCPU的运行。</p>
+
+<h5>2.2.2.  基于该方案的虚机I/O处理</h5>
+
+<p style="text-align:center;"></p>
+
+<p class="img-center"><img alt="" height="603" src="https://img-blog.csdnimg.cn/img_convert/801f3421b02afdaacfee34c531e0a5a8.png" width="743" /></p>
+
+<p>GUEST的I/O操作&#xff0c;无论是PIO还是MMIO操作&#xff0c;都会导致VMEXIT&#xff0c;VMEXIT后KVM-HOST检查是否能够处理该I/O&#xff0c;如果无法处理&#xff0c;则需要将该I/O转交给KVM-SOC。KVM-HOST构造I/OREQ结构体&#xff0c;该结构体描述了该I/O的类型&#xff0c;地址&#xff0c;长度&#xff0c;数据等内容。构造完成后&#xff0c;将该IOREQ存放在IOREQ RING BUFFER中&#xff0c;并通过中断机制通知SoC侧&#xff0c;有新IOREQ到达。</p>
+
+<p>KVM-SOC通过ioeventfd机制通知QEMU-SOC&#xff0c;QEMU-SOC访问BAR空间的IO RING BUFFER&#xff0c;取出IOREQ并处理。处理过程中&#xff0c;通过DMA机制访问Host内存。处理结束后&#xff0c;QEMU-SOC通过KVM-SOC 的ioctl接口注入中断。KVM-SOC通过BAR空间的API channel转发中断注入的API到KVM-HOST&#xff0c;最终由KVM-HOST完成虚机中断的注入工作。</p>
+
+<h5>2.2.3.  基于该方案的虚机热迁移处理</h5>
+
+<p style="text-align:center;"></p>
+
+<p class="img-center"><img alt="" height="767" src="https://img-blog.csdnimg.cn/img_convert/3a31250811320b3a6b24b5a5afe3169f.png" width="788" /></p>
+
+<p>Libvirt-soc发起热迁移操作&#xff0c;使用QEMU-SOC提供的QMP命令接口通知QEMU-SOC。QEMU-SOC连接迁移对端的QEMU&#xff0c;并开始热迁移的操作。QEMU-SOC首先发送全量的内存到对端&#xff0c;内存的同步使用DMA机制完成&#xff1b;全量内存发送完成后&#xff0c;开始迭代发送脏页&#xff0c;首先通过API channel&#xff0c;告知KVM-HOST开始记录脏页&#xff0c;在后续的迭代过程中&#xff0c;使用DMA机制将脏页信息从Host同步到SoC。在热迁移的最后阶段&#xff0c;KVM-SOC通过API channel发送暂停VCPU的API&#xff0c;KVM-HOST停止VCPU的运行。VCPU暂停后&#xff0c;QEMU-SOC停止所有I/O设备的运行&#xff0c;并发送最后的脏页的设备状态到对端。热迁移结束后&#xff0c;QEMU-SOC调用KVM-SOC的ioctl接口&#xff0c;销毁虚机&#xff0c;KVM-SOC通过API channel通知KVM-HOST完成真正的销毁操作。</p>
+
+<h5>2.2.4.  openstack控制面对接</h5>
+
+<p style="text-align:center;"></p>
+
+<p class="img-center"><img alt="" height="460" src="https://img-blog.csdnimg.cn/img_convert/23ef047ad3d7dc0deecfe3443e434348.png" width="829" /></p>
+
+<p>在该方案中nova-compute和libvirt均运行在DPU的SoC系统内&#xff0c;libvirtd直接和SoC侧QEMU交互镜像虚机管理&#xff0c;Host文件系统通过sharedfs代理到SoC侧&#xff0c;libvirtd通过在SoC侧访问Host文件系统来完成Host系统资源的跟踪和管理。虚机的网络和存储使用PCIe直通的方式&#xff0c;给虚机提供高性能存储和网络。存储和网络资源的管理通过nova-compute的yusur-driver完成&#xff0c;yusur-driver使用/dev/kvm-soc接口请求KVM-HOST侧的PCIe资源管理能力&#xff0c;完成虚机PCIe资源的准备、销毁等操作。</p>
+
+<h3>3.  方案优势</h3>
+
+<h4>3.1. 方案优势</h4>
+
+<p>基于DPU的轻量虚拟化解决方案展现出了显著的价值与优势&#xff0c;这一方案不仅填补了市场空白&#xff0c;更引领了云计算行业的技术创新。</p>
+
+<p><strong>a. 填补空白&#xff0c;引领创新</strong></p>
+
+<p>该方案作为国内首创的、公开的、可商业化的DPU轻量虚拟化方案&#xff0c;打破了头部云厂商自研方案的封闭性&#xff0c;为更多云厂商和行业客户提供了可借鉴和采用的先进技术。这一方案的推出&#xff0c;无疑为云计算行业的多元化发展注入了新的活力。</p>
+
+<p><strong>b. 硬件加速&#xff0c;性能卓越</strong></p>
+
+<p>基于DPU的轻量虚拟化方案充分利用了DPU提供的硬件加速能力&#xff0c;显著提升了系统性能和I/O处理效率。在云计算环境中&#xff0c;I/O性能往往是决定业务稳定性和响应速度的关键因素。该方案通过I/O卸载技术&#xff0c;将I/O处理下放给DPU&#xff0c;有效减轻了HOST的负担&#xff0c;从而提升了整体系统的性能。</p>
+
+<p><strong>c. 显著提升资源利用率</strong></p>
+
+<p>该方案还显著提升了资源利用率。传统的虚拟化技术中&#xff0c;管理面和I/O处理线程会占用大量的CPU和内存资源&#xff0c;导致系统整体资源利用率降低。而基于DPU的轻量虚拟化方案则通过精简Hypervisor的设计&#xff0c;几乎不消耗任何主机侧的资源&#xff0c;使得所有的资源都被业务系统所使用。这一优势不仅降低了运营成本&#xff0c;还提高了业务的盈利能力。</p>
+
+<p><strong>d. 减少攻击面&#xff0c;强化安全</strong></p>
+
+<p>该方案在安全性方面也表现出色&#xff0c;通过I/O卸载技术&#xff0c;将I/O处理下放给DPU&#xff0c;有效地减少了HOST的攻击面&#xff0c;大大增强了HOST的安全性。同时&#xff0c;该方案还采用了多种安全技术和措施&#xff0c;进一步提升了系统的安全性。</p>
+
+<p>综上所述&#xff0c;基于DPU的轻量虚拟化解决方案在技术创新、性能提升、资源利用率提高以及安全性增强等方面都展现出了显著的优势和价值。这一方案的推出将为云计算行业的发展带来新的机遇。</p>
+
+<h4>3.2. 未来与展望</h4>
+
+<p>展望未来&#xff0c;基于DPU的轻量虚拟化解决方案具有广阔的发展前景。随着云计算、大数据、人工智能等领域的快速发展&#xff0c;资源池规模不断扩大&#xff0c;对虚拟化技术的需求将日益增长。该方案以其卓越的性能、高效的资源利用率和强大的安全性&#xff0c;将成为推动这些领域发展的关键力量。</p>
+
+<p>在技术层面&#xff0c;随着DPU技术的不断演进和升级&#xff0c;基于DPU的轻量虚拟化解决方案也将不断优化和完善&#xff0c;我们可以期待该方案在I/O处理效率、资源利用率和安全性方面实现更大的突破&#xff0c;为用户提供更加优质、高效的云服务体验。</p>
+
+<p>同时&#xff0c;该方案的商业化应用也将进一步拓展。随着越来越多的云厂商和行业客户认识到其价值和优势&#xff0c;基于DPU的轻量虚拟化解决方案有望在市场上实现更广泛的应用和推广&#xff0c;为云计算行业的持续发展注入新的动力。</p>
+
+<p></p>
+
+<p><strong>本方案来自于中科驭数软件研发团队&#xff0c;团队核心由一群在云计算、数据中心架构、高性能计算领域深耕多年的业界资深架构师和技术专家组成&#xff0c;不仅拥有丰富的实战经验&#xff0c;还对行业趋势具备敏锐的洞察力&#xff0c;该团队致力于探索、设计、开发、推广可落地的高性能云计算解决方案&#xff0c;帮助最终客户加速数字化转型&#xff0c;提升业务效能&#xff0c;同时降低运营成本。</strong></p>
+
+                </div>
+        </div>
+    </article>
+
+
+
+
+  <script>
+    $(function() {
+      setTimeout(function () {
+        var mathcodeList = document.querySelectorAll('.htmledit_views img.mathcode');
+        if (mathcodeList.length > 0) {
+          for (let i = 0; i < mathcodeList.length; i++) {
+            if (mathcodeList[i].complete) {
+              if (mathcodeList[i].naturalWidth === 0 || mathcodeList[i].naturalHeight === 0) {
+                var alt = mathcodeList[i].alt;
+                alt = '\\(' + alt + '\\)';
+                var curSpan = $('<span class="img-codecogs"></span>');
+                curSpan.text(alt);
+                $(mathcodeList[i]).before(curSpan);
+                $(mathcodeList[i]).remove();
+              }
+            } else {
+              mathcodeList[i].onerror = function() {
+                var alt = mathcodeList[i].alt;
+                alt = '\\(' + alt + '\\)';
+                var curSpan = $('<span class="img-codecogs"></span>');
+                curSpan.text(alt);
+                $(mathcodeList[i]).before(curSpan);
+                $(mathcodeList[i]).remove();
+              };
+            }
+          }
+          MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+        }
+      }, 500)
+    });
+  </script>
+</div>
+<div class="directory-boxshadow-dialog" style="display:none;">
+  <div class="directory-boxshadow-dialog-box">
+  </div>
+   <div class="vip-limited-time-offer-box-new" id="vip-limited-time-offer-box-new">
+      <img class="limited-img limited-img-new" src="https://csdnimg.cn/release/blogv2/dist/pc/img/vip-limited-close-newWhite.png">
+      <div class="vip-limited-time-top">
+        确定要放弃本次机会？
+      </div>
+      <span class="vip-limited-time-text">福利倒计时</span>
+      <div class="limited-time-box-new">
+        <span class="time-hour"></span>
+        <i>:</i>
+        <span class="time-minite"></span>
+        <i>:</i>
+        <span class="time-second"></span>
+      </div>
+      <div class="limited-time-vip-box">
+        <p>
+          <img class="coupon-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/vip-limited-close-roup.png">
+          <span class="def">立减 ¥</span>
+          <span class="active limited-num"></span>
+        </p>
+        <span class="">普通VIP年卡可用</span>
+      </div>
+      <a class="limited-time-btn-new" href="https://mall.csdn.net/vip" data-report-click='{"spm":"1001.2101.3001.9621"}' data-report-query='spm=1001.2101.3001.9621'>立即使用</a>
+  </div>
+</div>
+    <div class="more-toolbox-new more-toolbar" id="toolBarBox">
+      <div class="left-toolbox">
+        <div class="toolbox-left">
+            <div class="profile-box">
+              <a class="profile-href" target="_blank" href="https://blog.csdn.net/yusur"><img class="profile-img" src="https://profile-avatar.csdnimg.cn/c4adf8e7a9784288a2526fd7ab4d2266_yusur.jpg!1">
+                <span class="profile-name">
+                  中科驭数
+                </span>
+              </a>
+            </div>
+            <div class="profile-attend">
+                <a class="tool-attend tool-bt-button tool-bt-attend" href="javascript:;" data-report-view='{"mod":"1592215036_002","spm":"1001.2101.3001.4232","extend1":"关注"}'>关注</a>
+              <a class="tool-item-follow active-animation" style="display:none;">关注</a>
+            </div>
+        </div>
+        <div class="toolbox-middle">
+          <ul class="toolbox-list">
+            <li class="tool-item tool-item-size tool-active is-like" id="is-like" data-type="bottom">
+              <a class="tool-item-href">
+                <img style="display:none;" id="is-like-imgactive-animation-like" class="animation-dom active-animation" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarThumbUpactive.png" alt="">
+                <img class="isactive" style="display:none" id="is-like-imgactive" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/like-active.png" alt="">
+                <img class="isdefault" style="display:block" id="is-like-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/like.png" alt="">
+                <span id="spanCount" class="count ">
+                    20
+                </span>
+              </a>
+              <div class="tool-hover-tip"><span class="text space">点赞</span></div>
+            </li>
+            <li class="tool-item tool-item-size tool-active is-unlike" id="is-unlike">
+              <a class="tool-item-href">
+                <img class="isactive" style="margin-right:0px;display:none" id="is-unlike-imgactive" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/unlike-active.png" alt="">
+                <img class="isdefault" style="margin-right:0px;display:block" id="is-unlike-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/unlike.png" alt="">
+                <span id="unlikeCount" class="count "></span>
+              </a>
+              <div class="tool-hover-tip"><span class="text space">踩</span></div>
+            </li>
+            <li class="tool-item tool-item-size tool-active is-collection ">
+              <a class="tool-item-href" href="javascript:;" data-report-click='{"mod":"popu_824","spm":"1001.2101.3001.4130","ab":"new"}'>
+                <img style="display:none" id="is-collection-img-collection" class="animation-dom active-animation" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/collect-active.png" alt="">
+                <img class="isdefault" id="is-collection-img" style="display:block" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/collect.png" alt="">
+                <img class="isactive" id="is-collection-imgactive" style="display:none" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newCollectActive.png" alt="">
+                <span class="count get-collection " data-num="20" id="get-collection">
+                    20
+                </span>
+              </a>
+              <div class="tool-hover-tip collect">
+                <div class="collect-operate-box">
+                  <span class="collect-text" id="is-collection">
+                    收藏
+                  </span>
+                </div>
+              </div>
+              <div class="tool-active-list">
+                <div class="text">
+                  觉得还不错?
+                  <span class="collect-text" id="tool-active-list-collection">
+                    一键收藏
+                  </span>
+                 <img id="tool-active-list-close" src="https://csdnimg.cn/release/blogv2/dist/pc/img/collectionCloseWhite.png" alt="">
+                </div>
+              </div>
+            </li>
+            <li class="tool-item tool-item-size tool-active tool-item-comment">
+              <div class="guide-rr-first">
+                <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/guideRedReward01.png" alt="">
+                <button class="btn-guide-known">知道了</button>
+              </div>
+                <a class="tool-item-href" href="#commentBox" data-report-click='{"spm":"1001.2101.3001.7009"}'>
+                <img class="isdefault" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/comment.png" alt="">
+                <span class="count">
+                      0
+                </span>
+              </a>
+              <div class="tool-hover-tip"><span class="text space">评论</span></div>
+            </li>
+            <li class="tool-item tool-item-size tool-active tool-QRcode" data-type="article" id="tool-share">
+              <a class="tool-item-href" href="javascript:;" data-report-view='{"spm":"3001.4129","extra":{"type":"blogdetail"}}'>
+                <img class="isdefault" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/share.png" alt="">
+                <span class="count">分享</span>
+              </a>
+                <div class="QRcode" id="tool-QRcode">
+                <div class="share-bg-box">
+                  <div class="share-content">
+                    <a id="copyPosterUrl" data-type="link" class="btn-share">复制链接</a>
+                  </div>
+                  <div class="share-content">
+                    <a class="btn-share" data-type="qq">分享到 QQ</a>
+                  </div>
+                  <div class="share-content">
+                    <a class="btn-share" data-type="weibo">分享到新浪微博</a>
+                  </div>
+                  <div class="share-code">
+                    <div class="share-code-box" id='shareCode'></div>
+                    <div class="share-code-text">
+                      <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/share/icon-wechat.png" alt="">扫一扫
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </li>
+          <li class="tool-item tool-item-size tool-active is-more" id="is-more">
+            <a class="tool-item-href">
+              <img class="isdefault" style="margin-right:0px;display:block" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/more.png" alt="">
+              <span class="count"></span>
+            </a>
+            <div class="more-opt-box">
+              <div class="mini-box">
+                <a class="tool-item-href" id="toolReportBtnHide">
+                  <img class="isdefault" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/report.png" alt="">
+                  <span class="count">举报</span>
+                </a>
+              </div>
+              <div class="normal-box">
+                <a class="tool-item-href" id="toolReportBtnHideNormal">
+                  <img class="isdefault" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/report.png" alt="">
+                  <span class="count">举报</span>
+                </a>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="toolbox-right">
+            <div class="tool-directory">
+                <a class="bt-columnlist-show"
+                  data-id="12700760"
+                  data-free="true"
+                  data-description="“驭云®高性能云异构算力解决方案，是对中科驭数所倡导的“IaaS on DPU”（IoD）技术路线的生动诠释与深度实践；是深度洞察算力技术发展趋势，精准把握云平台业务需求，致力于解决云基础设施算力效率、安全性、以及业务敏捷性等关键问题的创新成果。"
+                  data-subscribe="false"
+                  data-title="驭云系列高性能云异构算力解决方案"
+                  data-img="https://i-blog.csdnimg.cn/direct/6b6c8767899b43808183bc2e273e3b16.jpeg?x-oss-process=image/resize,m_fixed,h_224,w_224"
+                  data-url="https://blog.csdn.net/yusur/category_12700760.html"
+                  data-sum="14"
+                  data-people="10"
+                  data-price="0"
+                  data-hotRank="0"
+                  data-status="true"
+                  data-oldprice="0"
+                  data-join="false"
+                  data-studyvip="false"
+                  data-studysubscribe="false"
+                  data-report-view='{"spm":"1001.2101.3001.6334","extend1":"专栏目录"}'
+                  data-report-click='{"spm":"1001.2101.3001.6334","extend1":"专栏目录"}'>专栏目录</a>
+          </div>
+</div>
+</div>
+</div>
+<script type=text/javascript crossorigin src="https://csdnimg.cn/release/phoenix/production/qrcode-7c90a92189.min.js"></script>
+<script type="text/javascript" crossorigin src="https://g.csdnimg.cn/common/csdn-login-box/csdn-login-box.js"></script>
+<script type="text/javascript" crossorigin src="https://g.csdnimg.cn/collection-box/2.1.2/collection-box.js"></script>
+            <script src="https://csdnimg.cn/release/blogv2/dist/components/js/pc_wap_commontools-55fb7fc975.min.js" type="text/javascript" async></script>
+<a id="commentBox" name="commentBox"></a>
+  <div id="pcCommentBox" class="comment-box comment-box-new2 unlogin-comment-box-new" style="display:none">
+      <div class="unlogin-comment-model">
+          <span class="unlogin-comment-tit">参与评论</span>
+        <span class="unlogin-comment-text">您还未登录，请先</span>
+        <span class="unlogin-comment-bt">登录</span>
+        <span class="unlogin-comment-text">后发表或查看评论</span>
+      </div>
+  </div>
+              <div class="recommend-box insert-baidu-box  recommend-highlight-default">
+                <div class="recommend-item-box no-index" style="display:none"></div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/yusur/article/details/157029674" >
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<span class="type">
+					<img src="https://csdnimg.cn/release/blogv2/dist/components/img/blogType.png" alt="">
+					<span class="tip">博客</span>
+				</span>
+				<a href="https://blog.csdn.net/yusur/article/details/157029674" class="tit" target="_blank"  >
+					<div class="left ellipsis-online ellipsis-online-1"> 边缘智算新引擎 DPU 驱动的算力革新</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info display-flex">
+					<span class="info-block time">01-16</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					903
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/yusur/article/details/157029674" target="_blank"  >
+				<div class="desc ellipsis-online ellipsis-online-1">随着5G/6G、物联网和人工智能时代的到来，下一代互联网的关键特征之一是海量信息在本地生成并在本地消费，且大量的边缘设备存在可用计算和存储资源。尤其在工业互联网中，工业制造，医疗服务，无人运输等诸多场景中，对数据采集和处理的时效性、连续性、安全性、隐私性，以及数据价值的挖掘和利用，都有更高的要求。因此，未来几年是构建新一代智能数据中心基础设施的关键时期，数据中心将从&ldquo;云+端&rdquo;转变为&ldquo;云+边+端&rdquo;三层架构。</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/yusur/article/details/152048170" >
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<span class="type">
+					<img src="https://csdnimg.cn/release/blogv2/dist/components/img/blogType.png" alt="">
+					<span class="tip">博客</span>
+				</span>
+				<a href="https://blog.csdn.net/yusur/article/details/152048170" class="tit" target="_blank"  >
+					<div class="left ellipsis-online ellipsis-online-1">DPU构建新一代AI网络的优势与关键技术</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info display-flex">
+					<span class="info-block time">09-24</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					1252
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/yusur/article/details/152048170" target="_blank"  >
+				<div class="desc ellipsis-online ellipsis-online-1">本文节选自鄢贵海博士在新一代计算标准工作委员会主办的&ldquo;新一代计算产业大会&rdquo;上的报告内容，全文阅读大约需要8分钟。</div>
+			</a>
+		</div>
+	</div>
+</div>
+		<dl id="recommend-item-box-tow" class="recommend-item-box type_blog clearfix">
+		</dl>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/yusur/article/details/148591501" >
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<span class="type">
+					<img src="https://csdnimg.cn/release/blogv2/dist/components/img/blogType.png" alt="">
+					<span class="tip">博客</span>
+				</span>
+				<a href="https://blog.csdn.net/yusur/article/details/148591501" class="tit" target="_blank"  >
+					<div class="left ellipsis-online ellipsis-online-1">DPU核心技术论文再次登陆体系结构领域旗舰期刊《IEEE Transactions on Computers》</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info display-flex">
+					<span class="info-block time">06-11</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					546
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/yusur/article/details/148591501" target="_blank"  >
+				<div class="desc ellipsis-online ellipsis-online-1">在硬件架构方面，KPU-SQL集成了多个独立设计的查询操作计算单元，通过对这些特定功能计算核的充分优化，最大程度上提升数据查询性能。特定需求只需要增删功能核的种类和数量即可。该研究主要围绕KPU敏捷计算架构展开，KPU具有超强异构核集成和调度能力，在降低了规模限制的硬件成本和设计周期的同时，又可通过软件编程实现不同功能的计算，具有较高的可扩展性和灵活性。然而，随着数据量呈指数增长以及应用类型的丰富，面向某一特定计算操作的加速器难以处理复杂的工作负载和应用需求，现有的加速器设计也难以满足大规模数据计算需求。</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/yusur/article/details/145725503" >
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<span class="type">
+					<img src="https://csdnimg.cn/release/blogv2/dist/components/img/blogType.png" alt="">
+					<span class="tip">博客</span>
+				</span>
+				<a href="https://blog.csdn.net/yusur/article/details/145725503" class="tit" target="_blank"  >
+					<div class="left ellipsis-online ellipsis-online-1">中科驭数DPU助力大模型训练和推理</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info display-flex">
+					<span class="info-block time">02-19</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					1125
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/yusur/article/details/145725503" target="_blank"  >
+				<div class="desc ellipsis-online ellipsis-online-1">随着深度学习技术的进一步发展，类似DeepSeek大模型的兴起，以及由此带来对智算资源的大幅优化，给国产GPU和CPU实现高效大模型训练和推理的大规模部署带来巨大可能和期盼。中科驭数的DPU产品，通过流程简化和存储卸载，实现了裸金属部署时间从传统的30分钟优化到3分钟，大大便利了资源的反复利用，也极大地提升了客户订阅的体验。K2-Pro芯片的网络处理能力，可以很好的支撑国产化推理集群的各种应用需求，在中科驭数自建的全国产化推理集群中，很好的承担了高通量网络传输，云化流表卸载与分布式资源快速加载的任务。</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/yusur/article/details/160970891" >
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<span class="type">
+					<img src="https://csdnimg.cn/release/blogv2/dist/components/img/blogType.png" alt="">
+					<span class="tip">博客</span>
+				</span>
+				<a href="https://blog.csdn.net/yusur/article/details/160970891" class="tit" target="_blank"  >
+					<div class="left ellipsis-online ellipsis-online-1">开芯院院长唐丹一行来访中科驭数 共探RISC-V与DPU算力协同创新之路</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info display-flex">
+					<span class="info-block time">05-11</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					69
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/yusur/article/details/160970891" target="_blank"  >
+				<div class="desc ellipsis-online ellipsis-online-1">开芯院是国内开源芯片领域的核心研发机构，深耕 RISC-V 架构高性能处理器核研发，主导的 &ldquo;香山&rdquo; 系列处理器核已实现产品级交付与规模化应用，发布全球首个开源大规模片上互联网络（NoC）IP &ldquo;温榆河&rdquo;，打造 &ldquo;开芯云&rdquo; RISC-V SoC 敏捷设计云平台，构建了从处理器 IP、核心工具链到生态适配的完整开源芯片创新体系，为国产芯片自主化发展提供了开源模式新支撑。中科驭数始终坚持核心技术自主可控，后续将与开芯院持续探索 RISC-V 与 DPU 的融合创新应用。</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/yusur/article/details/160112916" >
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<span class="type">
+					<img src="https://csdnimg.cn/release/blogv2/dist/components/img/blogType.png" alt="">
+					<span class="tip">博客</span>
+				</span>
+				<a href="https://blog.csdn.net/yusur/article/details/160112916" class="tit" target="_blank"  >
+					<div class="left ellipsis-online ellipsis-online-1">十万卡集群时代的网络基石&mdash;&mdash;AI NIC 深度解析</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info display-flex">
+					<span class="info-block time">04-13</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					392
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/yusur/article/details/160112916" target="_blank"  >
+				<div class="desc ellipsis-online ellipsis-online-1">随着大模型训练与分布式推理进入十万卡级集群时代，传统以太网与通用网卡已成为算力扩展的主要瓶颈。AI NIC 作为面向人工智能工作负载的专用网络加速硬件，通过高带宽、低时延、RDMA 硬件卸载、集合通信加速等能力，为大规模 AI 基础设施提供确定性通信保障。本文参考国际厂商的定义，结合中科驭数的行业实践，系统阐述 AI NIC 的标准定义、核心特征及三大落地场景，为智算中心规划与算力平台建设提供参考。</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/yusur/article/details/159011765" >
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<span class="type">
+					<img src="https://csdnimg.cn/release/blogv2/dist/components/img/blogType.png" alt="">
+					<span class="tip">博客</span>
+				</span>
+				<a href="https://blog.csdn.net/yusur/article/details/159011765" class="tit" target="_blank"  >
+					<div class="left ellipsis-online ellipsis-online-1">中科驭数&times;海光信息：战略合作，算力同行</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info display-flex">
+					<span class="info-block time">03-13</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					72
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/yusur/article/details/159011765" target="_blank"  >
+				<div class="desc ellipsis-online ellipsis-online-1">3月11日，国内DPU芯片领军企业中科驭数与高端处理器龙头企业海光信息举行战略合作签约仪式。双方将聚焦国产算力基础设施建设，发挥各自在产品技术、市场布局上的核心优势，携手深耕高端计算市场，助力国产算力产业高质量发展。</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/yusur/article/details/157551608" >
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<span class="type">
+					<img src="https://csdnimg.cn/release/blogv2/dist/components/img/blogType.png" alt="">
+					<span class="tip">博客</span>
+				</span>
+				<a href="https://blog.csdn.net/yusur/article/details/157551608" class="tit" target="_blank"  >
+					<div class="left ellipsis-online ellipsis-online-1">中科驭数CEO鄢贵海：AI尚处&ldquo;Day 1&rdquo;，算力基建的价值外溢如同高铁</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info display-flex">
+					<span class="info-block time">01-30</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					417
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/yusur/article/details/157551608" target="_blank"  >
+				<div class="desc ellipsis-online ellipsis-online-1">【摘要】中科驭数CEO鄢贵海在亚洲金融论坛上回应&quot;AI泡沫论&quot;，指出当前AI发展仍处早期阶段，算力基建具有长期外溢价值。他以高铁建设类比，强调不能仅用短期财务指标衡量基础设施价值。面对国际芯片巨头垄断，鄢贵海提出国产芯片应聚焦细分领域实现单点突破，中科驭数选择DPU（数据处理器）这一&quot;水下&quot;赛道，避开GPU/CPU的红海竞争。他认为随着网络带宽升级，DPU将迎来巨大发展空间，建议国产厂商要敢于攻克核心技术而非简单跟风。（149字）</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/yusur/article/details/157505258" >
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<span class="type">
+					<img src="https://csdnimg.cn/release/blogv2/dist/components/img/blogType.png" alt="">
+					<span class="tip">博客</span>
+				</span>
+				<a href="https://blog.csdn.net/yusur/article/details/157505258" class="tit" target="_blank"  >
+					<div class="left ellipsis-online ellipsis-online-1">信创技术创新赋能证券核心交易系统 拆解低时延DPU网卡在证券行业的应用实践</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info display-flex">
+					<span class="info-block time">01-29</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					320
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/yusur/article/details/157505258" target="_blank"  >
+				<div class="desc ellipsis-online ellipsis-online-1">本方案采用IEEE 1588v2协议实现各部件与时钟源之间的高精度时间同步，在此基础上结合低时延证券业务系统的业务特点及其时延度量需求，设计了一套高精度业务时间戳提取方案，无需对现有网络系统进行改动，即可实现精确分析任意业务处理环节的时延，并在复杂的低时延业务系统中展开了测试验证。对上，低时延DPU网卡直接承接应用层的各种业务系统的网络请求，对下，它要对接各种交换设备，同时也要适配各种不同的服务器的CPU架构和操作系统内核，并且要保障网络在各种流量情况下的吞吐，时延，和稳定性，因此技术壁垒非常高。</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/yusur/article/details/156193318" >
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<span class="type">
+					<img src="https://csdnimg.cn/release/blogv2/dist/components/img/blogType.png" alt="">
+					<span class="tip">博客</span>
+				</span>
+				<a href="https://blog.csdn.net/yusur/article/details/156193318" class="tit" target="_blank"  >
+					<div class="left ellipsis-online ellipsis-online-1">中科驭数亮相光合组织 2025 人工智能创新大会 共筑开放智算新生态</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info display-flex">
+					<span class="info-block time">12-23</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					440
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/yusur/article/details/156193318" target="_blank"  >
+				<div class="desc ellipsis-online ellipsis-online-1">作为国内 DPU 芯片领域的领军企业，中科驭数近期受邀参与由海光信息牵头成立的光合组织主办的 2025 人工智能创新大会。</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/yusur/article/details/155861248" >
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<span class="type">
+					<img src="https://csdnimg.cn/release/blogv2/dist/components/img/blogType.png" alt="">
+					<span class="tip">博客</span>
+				</span>
+				<a href="https://blog.csdn.net/yusur/article/details/155861248" class="tit" target="_blank"  >
+					<div class="left ellipsis-online ellipsis-online-1">彰显硬科技实力 中科驭数荣登 VENTURE50 硬科技榜 构建DPU&ldquo;运力&rdquo;底座</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info display-flex">
+					<span class="info-block time">12-12</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					263
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/yusur/article/details/155861248" target="_blank"  >
+				<div class="desc ellipsis-online ellipsis-online-1">近日，由清科控股、投资界发起的 2025 VENTURE50（简称 V50）评选结果正式揭晓，DPU 芯片研发领军企业中科驭数凭借深厚的技术壁垒、成熟的商业化能力及突出的产业价值，成功荣登 &ldquo;2025 VENTURE 50 硬科技&rdquo; 榜单，成为中国科技创新 &ldquo;深水区&rdquo; 的标杆代表之一。</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/yusur/article/details/153964555" >
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<span class="type">
+					<img src="https://csdnimg.cn/release/blogv2/dist/components/img/blogType.png" alt="">
+					<span class="tip">博客</span>
+				</span>
+				<a href="https://blog.csdn.net/yusur/article/details/153964555" class="tit" target="_blank"  >
+					<div class="left ellipsis-online ellipsis-online-1">2025中国计算机大会DPU技术论坛成功举办 共探算力基础设施新变革，共筑数字产业新生态。</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info display-flex">
+					<span class="info-block time">10-27</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					515
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/yusur/article/details/153964555" target="_blank"  >
+				<div class="desc ellipsis-online ellipsis-online-1">在中科驭数组织的DPU技术论坛上，几位嘉宾围绕DPU的相关行业标准建设、标杆产品进展，产业应用案例、国产替代情况等内容，展开了广泛的讨论。</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/yusur/article/details/153824390" >
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<span class="type">
+					<img src="https://csdnimg.cn/release/blogv2/dist/components/img/blogType.png" alt="">
+					<span class="tip">博客</span>
+				</span>
+				<a href="https://blog.csdn.net/yusur/article/details/153824390" class="tit" target="_blank"  >
+					<div class="left ellipsis-online ellipsis-online-1"> 2025中国计算机大会CNCC开幕 DPU技术论坛开启</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info display-flex">
+					<span class="info-block time">10-24</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					205
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/yusur/article/details/153824390" target="_blank"  >
+				<div class="desc ellipsis-online ellipsis-online-1">中科驭数再次在中国计算机大会CNCC的平台上举办DPU论坛，活动将围绕DPU的相关行业标准建设、产业应用案例、国产替代情况、产品技术迭代等内容，邀请DPU研发产商、标准机构、科研机构、用户单位等展开广泛的讨论。</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/yusur/article/details/153332860" >
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<span class="type">
+					<img src="https://csdnimg.cn/release/blogv2/dist/components/img/blogType.png" alt="">
+					<span class="tip">博客</span>
+				</span>
+				<a href="https://blog.csdn.net/yusur/article/details/153332860" class="tit" target="_blank"  >
+					<div class="left ellipsis-online ellipsis-online-1">上新！功夫系列高通量DPU卡 CONFLUX&reg;-2200P 全新升级，带宽升 40% IOPS提60%，赋能多业务场景。</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info display-flex">
+					<span class="info-block time">10-15</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					519
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/yusur/article/details/153332860" target="_blank"  >
+				<div class="desc ellipsis-online ellipsis-online-1">在金秋十月这一收获时节，&ldquo;功夫&rdquo;系列再添新力&nbsp;&mdash;&mdash;CONFLUX&reg; 2200P高通量&nbsp;DPU&nbsp;卡迎来全新升级。该产品可深度支持网络、存储及虚拟化场景下的协议卸载与加速功能，将其部署于通用服务器中，能显著提升&nbsp;I/O&nbsp;性能与计算效率，为业务高效运转注入强劲动力。</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/yusur/article/details/150521454" >
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<span class="type">
+					<img src="https://csdnimg.cn/release/blogv2/dist/components/img/blogType.png" alt="">
+					<span class="tip">博客</span>
+				</span>
+				<a href="https://blog.csdn.net/yusur/article/details/150521454" class="tit" target="_blank"  >
+					<div class="left ellipsis-online ellipsis-online-1">中科驭数受邀出席2025光合组织领导人大会 分享DPU人工智能&ldquo;芯&rdquo;方案</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info display-flex">
+					<span class="info-block time">08-19</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					575
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/yusur/article/details/150521454" target="_blank"  >
+				<div class="desc ellipsis-online ellipsis-online-1">中科驭数作为光合组织成员和北京中关村科学城集成电路专委会成员单位受邀参会，中科驭数副总裁侯东辉在信息技术应用创新分论坛作主题演讲，分享DPU在人工智能领域的应用和方案，该方案还被评为&ldquo;海光CPU优秀联合解决方案&rdquo;。</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/yusur/article/details/150521313" >
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<span class="type">
+					<img src="https://csdnimg.cn/release/blogv2/dist/components/img/blogType.png" alt="">
+					<span class="tip">博客</span>
+				</span>
+				<a href="https://blog.csdn.net/yusur/article/details/150521313" class="tit" target="_blank"  >
+					<div class="left ellipsis-online ellipsis-online-1">中科驭数亮相高性能计算大会 携高通量以太网联盟共筑国产智算网络生态</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info display-flex">
+					<span class="info-block time">08-19</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					609
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/yusur/article/details/150521313" target="_blank"  >
+				<div class="desc ellipsis-online ellipsis-online-1">在昨日开幕的中国计算机学会全国高性能计算学术大会（CCF HPC China 2025）上，中科驭数作为高通量以太网联盟成员参与联盟成果发布。同期举办的世界算力博览会上，中科驭数展出的DPU芯片系列产品受到广泛关注，展现了国产DPU芯片的创新实力。</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/yusur/article/details/148159901" >
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<span class="type">
+					<img src="https://csdnimg.cn/release/blogv2/dist/components/img/blogType.png" alt="">
+					<span class="tip">博客</span>
+				</span>
+				<a href="https://blog.csdn.net/yusur/article/details/148159901" class="tit" target="_blank"  >
+					<div class="left ellipsis-online ellipsis-online-1">中科驭数携DPU全栈产品亮相福州数博会，赋能智算时代算力基建</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info display-flex">
+					<span class="info-block time">05-23</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					939
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/yusur/article/details/148159901" target="_blank"  >
+				<div class="desc ellipsis-online ellipsis-online-1">4月29日-5月2日，第八届数字中国建设峰会在福州海峡国际会展中心举办，共有150多家企业参展，展会吸引了八万多名观众参观。作为国内DPU领域领军企业，中科驭数携三大产品线亮相展会，其创新的DPU技术方案成为专业观众关注焦点。据大会报告的数据显示，我国算力总规模已达280EFLOPS，数据中心绿色化率超80%。而DPU正成为提升算力效率的关键引擎。</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/yusur/article/details/148159640" >
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<span class="type">
+					<img src="https://csdnimg.cn/release/blogv2/dist/components/img/blogType.png" alt="">
+					<span class="tip">博客</span>
+				</span>
+				<a href="https://blog.csdn.net/yusur/article/details/148159640" class="tit" target="_blank"  >
+					<div class="left ellipsis-online ellipsis-online-1">从香港走向世界，中科驭数受邀参展香港创科展推动国际创新合作</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info display-flex">
+					<span class="info-block time">05-23</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					384
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/yusur/article/details/148159640" target="_blank"  >
+				<div class="desc ellipsis-online ellipsis-online-1">4月13日至16日，由香港创新科技及工业局与香港贸易发展局联合主办的第三届香港国际创科展（InnoEX）在香港会议展览中心举行。中科驭数在北京市科委的推荐下，作为北京市科技创新力量的代表，联合中关村的11家科技企业，共同在中关村展示区做展览展示，向海内外潜在合作伙伴介绍DPU Made in China 的产品和解决方案。</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/yusur/article/details/146914090" >
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<span class="type">
+					<img src="https://csdnimg.cn/release/blogv2/dist/components/img/blogType.png" alt="">
+					<span class="tip">博客</span>
+				</span>
+				<a href="https://blog.csdn.net/yusur/article/details/146914090" class="tit" target="_blank"  >
+					<div class="left ellipsis-online ellipsis-online-1">中科驭数受邀参展2025中关村论坛 DPU受主流媒体关注</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info display-flex">
+					<span class="info-block time">04-01</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					411
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/yusur/article/details/146914090" target="_blank"  >
+				<div class="desc ellipsis-online ellipsis-online-1">2025中关村论坛年会3月27日至31日在京举办，中科驭数作为高性能芯片企业代表受邀参与中关村论坛，在位于中关村展示中心的常设展中展出公司最新的DPU芯片产品。</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/yusur/article/details/146592151" >
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<span class="type">
+					<img src="https://csdnimg.cn/release/blogv2/dist/components/img/blogType.png" alt="">
+					<span class="tip">博客</span>
+				</span>
+				<a href="https://blog.csdn.net/yusur/article/details/146592151" class="tit" target="_blank"  >
+					<div class="left ellipsis-online ellipsis-online-1">中科驭数高性能网卡产品 成就DeepSeek推理模型网络底座</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info display-flex">
+					<span class="info-block time">03-28</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					811
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/yusur/article/details/146592151" target="_blank"  >
+				<div class="desc ellipsis-online ellipsis-online-1">中科驭数的作为国内全品种网卡的研发企业，基于全自研、国产芯片K2-Pro打造的FlexFlow-2200T网卡，可以承担智算大模型的网络底座，为您的智算模型增加一颗&ldquo;中国芯&rdquo;。</div>
+			</a>
+		</div>
+	</div>
+</div>
+              </div>
+<div class="blog-footer-bottom" style="margin-top:10px;"></div>
+<script src="https://g.csdnimg.cn/common/csdn-footer/csdn-footer.js" data-isfootertrack="false" type="text/javascript"></script>
+<script type="text/javascript">
+    window.csdn.csdnFooter.options = {
+        el: '.blog-footer-bottom',
+        type: 2
+    }
+</script>          </main>
+<aside class="blog_container_aside ">
+<div id="asideProfile" class="aside-box active">
+    <div class="profile-intro d-flex">
+        <div class="avatar-box d-flex justify-content-center flex-column">
+            <a href="https://blog.csdn.net/yusur" target="_blank" data-report-click='{"mod":"popu_379","spm":"3001.4121","dest":"https://blog.csdn.net/yusur","ab":"new"}'>
+                <img src="https://profile-avatar.csdnimg.cn/c4adf8e7a9784288a2526fd7ab4d2266_yusur.jpg!1" class="avatar_pic">
+            </a>
+        </div>
+        <div class="user-info d-flex flex-column profile-intro-name-box">
+            <div class="profile-intro-name-boxTop">
+                <a href="https://blog.csdn.net/yusur" target="_blank" class="" id="uid" title="中科驭数" data-report-click='{"mod":"popu_379","spm":"3001.4122","dest":"https://blog.csdn.net/yusur","ab":"new"}'>
+                    <span class="name" username="yusur">中科驭数</span>
+                </a>
+            </div>
+            <div class="profile-intro-name-boxFooter-new">
+              <p class="profile-intro-name-leve">
+                <span>
+                  博客等级
+                </span>
+                  <img class="level" src="https://csdnimg.cn/identity/blog5.png">
+              </p>
+                <span class="profile-intro-name-years" title="已加入 CSDN 4年">码龄4年</span>
+               
+            </div>
+        </div>
+    </div>
+    <div class="profile-intro-Identity-information">
+        <p class="profile-information-box">
+          <img class="information-img" data-report-click='{"spm":"3001.4296"}' src="https://img-bss.csdnimg.cn/202108111545367561.png" alt="">
+          <span>中科驭数企业专用账号</span>
+        </p>
+
+    </div>
+    <div class="profile-intro-rank-information">
+      <dl>
+        <a href="https://blog.csdn.net/yusur" data-report-click='{"mod":"1598321000_001","spm":"3001.4310"}' data-report-query="t=1">  
+            <dd><span >139</span></dd>
+            <dt>原创</dt>
+        </a>
+      </dl>
+       <dl title="907">
+        <dd>907</dd>
+        <dt>点赞</dt>
+      </dl>
+       <dl title="959">
+        <dd>959</dd>
+        <dt>收藏</dt>
+      </dl>
+      <dl id="fanBox" title="601">
+        <dd><span id="fan">601</span></dd>
+        <dt>粉丝</dt>
+      </dl>
+    </div>
+    <div class="profile-intro-name-boxOpration">
+        <div class="opt-letter-watch-box"> 
+            <a class="personal-watch bt-button" id="btnAttent" >关注</a>  
+        </div>
+        <div class="opt-letter-watch-box">
+        <a rel="nofollow" class="bt-button personal-letter" href="https://im.csdn.net/chat/yusur" target="_blank" rel="noopener">私信</a>
+        </div>
+    </div>
+</div>
+
+
+
+<div id="asideHotArticle" class="aside-box">
+	<h3 class="aside-title">热门文章</h3>
+	<div class="aside-content">
+		<ul class="hotArticle-list">
+			<li>
+				<a href="https://blog.csdn.net/yusur/article/details/124682791" target="_blank"  data-report-click='{"mod":"popu_541","spm":"3001.4139","dest":"https://blog.csdn.net/yusur/article/details/124682791","ab":"new"}'>
+				DPU应用场景系列（一）网络功能卸载
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					<span class="read">5600</span>
+                </a>
+			</li>
+			<li>
+				<a href="https://blog.csdn.net/yusur/article/details/123713990" target="_blank"  data-report-click='{"mod":"popu_541","spm":"3001.4139","dest":"https://blog.csdn.net/yusur/article/details/123713990","ab":"new"}'>
+				DPU 技术发展概况系列（一）什么是DPU
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					<span class="read">5326</span>
+                </a>
+			</li>
+			<li>
+				<a href="https://blog.csdn.net/yusur/article/details/123867395" target="_blank"  data-report-click='{"mod":"popu_541","spm":"3001.4139","dest":"https://blog.csdn.net/yusur/article/details/123867395","ab":"new"}'>
+				DPU 技术发展概况系列（二）DPU的作用
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					<span class="read">3795</span>
+                </a>
+			</li>
+			<li>
+				<a href="https://blog.csdn.net/yusur/article/details/124867257" target="_blank"  data-report-click='{"mod":"popu_541","spm":"3001.4139","dest":"https://blog.csdn.net/yusur/article/details/124867257","ab":"new"}'>
+				DPU应用场景系列（二） 存储功能卸载
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					<span class="read">3247</span>
+                </a>
+			</li>
+			<li>
+				<a href="https://blog.csdn.net/yusur/article/details/139675943" target="_blank"  data-report-click='{"mod":"popu_541","spm":"3001.4139","dest":"https://blog.csdn.net/yusur/article/details/139675943","ab":"new"}'>
+				基于DPU的云原生裸金属服务快速部署及存储解决方案
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					<span class="read">2544</span>
+                </a>
+			</li>
+		</ul>
+	</div>
+</div>
+<div id="asideCategory" class="aside-box aside-box-column flexible-box-new">
+    <h3 class="aside-title">分类专栏</h3>
+    <div class="aside-content" id="aside-content">
+        <ul>
+            <li>
+                <a class="clearfix special-column-name"  href="https://blog.csdn.net/yusur/category_12700760.html" data-report-click='{"mod":"popu_537","spm":"3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/yusur/category_12700760.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://i-blog.csdnimg.cn/direct/6b6c8767899b43808183bc2e273e3b16.jpeg?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        驭云系列高性能云异构算力解决方案
+                    </span>
+                </a>
+                <span class="special-column-num">14篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name"  href="https://blog.csdn.net/yusur/category_12790468.html" data-report-click='{"mod":"popu_537","spm":"3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/yusur/category_12790468.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756923.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        如何利用DPU加速Spark大数据处理？
+                    </span>
+                </a>
+                <span class="special-column-num">1篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name"  href="https://blog.csdn.net/yusur/category_12371776.html" data-report-click='{"mod":"popu_537","spm":"3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/yusur/category_12371776.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        先进计算
+                    </span>
+                </a>
+                <span class="special-column-num">16篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name"  href="https://blog.csdn.net/yusur/category_12316740.html" data-report-click='{"mod":"popu_537","spm":"3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/yusur/category_12316740.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756923.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        DPU
+                    </span>
+                </a>
+                <span class="special-column-num">36篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name"  href="https://blog.csdn.net/yusur/category_12484768.html" data-report-click='{"mod":"popu_537","spm":"3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/yusur/category_12484768.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        算力
+                    </span>
+                </a>
+                <span class="special-column-num">12篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name"  href="https://blog.csdn.net/yusur/category_12644129.html" data-report-click='{"mod":"popu_537","spm":"3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/yusur/category_12644129.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756925.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        智算中心
+                    </span>
+                </a>
+                <span class="special-column-num">2篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name"  href="https://blog.csdn.net/yusur/category_12447281.html" data-report-click='{"mod":"popu_537","spm":"3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/yusur/category_12447281.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756925.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        FPGA
+                    </span>
+                </a>
+                <span class="special-column-num">1篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name"  href="https://blog.csdn.net/yusur/category_12366826.html" data-report-click='{"mod":"popu_537","spm":"3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/yusur/category_12366826.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756913.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        CSTIC 2023
+                    </span>
+                </a>
+                <span class="special-column-num">1篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name"  href="https://blog.csdn.net/yusur/category_12358893.html" data-report-click='{"mod":"popu_537","spm":"3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/yusur/category_12358893.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756754.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        北京金融科技产业联盟
+                    </span>
+                </a>
+                <span class="special-column-num">1篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name"  href="https://blog.csdn.net/yusur/category_12358894.html" data-report-click='{"mod":"popu_537","spm":"3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/yusur/category_12358894.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756738.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        金融计算
+                    </span>
+                </a>
+                <span class="special-column-num">1篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name"  href="https://blog.csdn.net/yusur/category_12352621.html" data-report-click='{"mod":"popu_537","spm":"3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/yusur/category_12352621.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756754.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        算力浦江一周年
+                    </span>
+                </a>
+                <span class="special-column-num">1篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name"  href="https://blog.csdn.net/yusur/category_12346135.html" data-report-click='{"mod":"popu_537","spm":"3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/yusur/category_12346135.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756927.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        P4可编程
+                    </span>
+                </a>
+                <span class="special-column-num">2篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name"  href="https://blog.csdn.net/yusur/category_12316741.html" data-report-click='{"mod":"popu_537","spm":"3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/yusur/category_12316741.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756928.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        移动云大会
+                    </span>
+                </a>
+                <span class="special-column-num">1篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name"  href="https://blog.csdn.net/yusur/category_12316742.html" data-report-click='{"mod":"popu_537","spm":"3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/yusur/category_12316742.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756926.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        云计算
+                    </span>
+                </a>
+                <span class="special-column-num">1篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name"  href="https://blog.csdn.net/yusur/category_12148189.html" data-report-click='{"mod":"popu_537","spm":"3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/yusur/category_12148189.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756754.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        驭说芯语
+                    </span>
+                </a>
+                <span class="special-column-num">2篇</span>
+            </li>
+        </ul>
+    </div>
+    <p class="text-center">
+      <a class="flexible-btn-new" data-report-click='{"spm":"3001.10779","strategy":"展开全部"}' data-maxheight="0" data-minheight="208px" data-fbox="#aside-content" data-flag="flag"><span class="text">展开全部</span> <img class="look-more" src="https://csdnimg.cn/release/blogv2/dist/pc/img/arrowup-line-bot-White.png" alt=""></a>
+      <a class="flexible-btn-new-close" data-report-click='{"spm":"3001.10779","strategy":"收起"}' data-minheight="208px" data-fbox="#aside-content" data-scroll="true" data-flag="flag"><span class="text">收起</span> <img class="look-more" src="https://csdnimg.cn/release/blogv2/dist/pc/img/arrowup-line-top-White.png" alt=""></a>
+    </p>
+</div>
+  <div class="article-previous" id="article-previous">
+      <dl data-report-click='{"spm":"3001.10752","extend1":"上一篇"}' data-report-view='{"spm":"3001.10752","extend1":"上一篇"}'>
+          <dt>
+              上一篇：
+          </dt>
+          <dd>
+            <a href="https://blog.csdn.net/yusur/article/details/142495570" data-report-query="spm=3001.10752">
+              征才令！开物™创新论文激励计划，等你来大展身手
+            </a>
+          </dd>
+      </dl>
+      <dl class="next" data-report-click='{"spm":"3001.10796","extend1":"下一篇"}' data-report-view='{"spm":"3001.10796","extend1":"下一篇"}'>
+          <dt>
+            下一篇：
+          </dt>
+          <dd >
+            <a href="https://blog.csdn.net/yusur/article/details/143157058" data-report-query="spm=3001.10796">
+              基于DPU的Openstack裸金属服务网络解决方案
+            </a>
+          </dd>
+      </dl>
+  </div>
+<div id="asideNewComments" class="aside-box">
+    <h3 class="aside-title">最新评论</h3>
+    <div class="aside-content">
+        <ul class="newcomment-list">
+            <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/yusur/article/details/140276594#comments_36240322" data-report-click='{"mod":"popu_542","spm":"3001.4231","dest":"https://blog.csdn.net/yusur/article/details/140276594#comments_36240322","ab":"new"}' data-report-view='{"mod":"popu_542","spm":"3001.4231","dest":"https://blog.csdn.net/yusur/article/details/140276594#comments_36240322","ab":"new"}'>基于DPU的云原生计算资源共池管理解决方案</a>
+                <p class="comment ellipsis">
+                    <a href="https://blog.csdn.net/m0_61509658" class="user-name" target="_blank">无名小白12138: </a>
+                    <span class="code-comments">请问该技术有对应的文献或专利吗</span>
+                </p>
+            </li>
+        </ul>
+    </div>
+</div>
+<div id="asideHotArticle" class="aside-box">
+	<h3 class="aside-title">大家在看</h3>
+	<div class="aside-content">
+		<ul class="hotArticle-list">
+			<li>
+				<a href="https://blog.csdn.net/l1t/article/details/161600432" target="_blank"  data-report-click='{"spm":"3001.10093","dest":"https://blog.csdn.net/l1t/article/details/161600432","strategy":"202_1052723-4186631_RCMD","ab":"new"}' data-report-view='{"spm":"3001.10093","dest":"https://blog.csdn.net/l1t/article/details/161600432","strategy":"202_1052723-4186631_RCMD","ab":"new"}'>
+				DeepSeek总结的PostgreSQL 的开源 TDE：pg_tde
+        </a>
+			</li>
+			<li>
+				<a href="https://blog.csdn.net/2609_96127826/article/details/161492664" target="_blank"  data-report-click='{"spm":"3001.10093","dest":"https://blog.csdn.net/2609_96127826/article/details/161492664","strategy":"202_1052723-4186640_RCMD","ab":"new"}' data-report-view='{"spm":"3001.10093","dest":"https://blog.csdn.net/2609_96127826/article/details/161492664","strategy":"202_1052723-4186640_RCMD","ab":"new"}'>
+				GPT-Image-2提示词逻辑完全解析：2026年实战教程与技巧
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					<span class="read">984</span>
+        </a>
+			</li>
+			<li>
+				<a href="https://blog.csdn.net/2401_84677775/article/details/161492554" target="_blank"  data-report-click='{"spm":"3001.10093","dest":"https://blog.csdn.net/2401_84677775/article/details/161492554","strategy":"202_1052723-4186646_RCMD","ab":"new"}' data-report-view='{"spm":"3001.10093","dest":"https://blog.csdn.net/2401_84677775/article/details/161492554","strategy":"202_1052723-4186646_RCMD","ab":"new"}'>
+				C#构造函数 + 析构函数
+        </a>
+			</li>
+			<li>
+				<a href="https://blog.csdn.net/Tianhongmei_/article/details/161587885" target="_blank"  data-report-click='{"spm":"3001.10093","dest":"https://blog.csdn.net/Tianhongmei_/article/details/161587885","strategy":"202_1052723-4186644_RCMD","ab":"new"}' data-report-view='{"spm":"3001.10093","dest":"https://blog.csdn.net/Tianhongmei_/article/details/161587885","strategy":"202_1052723-4186644_RCMD","ab":"new"}'>
+				「 新 · 收藏 」青年科学基金项目答辩PPT设计制作美化 | WordinPPT
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					<span class="read">46</span>
+        </a>
+			</li>
+			<li>
+				<a href="https://blog.csdn.net/2502_94242477/article/details/161568111" target="_blank"  data-report-click='{"spm":"3001.10093","dest":"https://blog.csdn.net/2502_94242477/article/details/161568111","strategy":"202_1052723-4186645_RCMD","ab":"new"}' data-report-view='{"spm":"3001.10093","dest":"https://blog.csdn.net/2502_94242477/article/details/161568111","strategy":"202_1052723-4186645_RCMD","ab":"new"}'>
+				吴恩达Prompt提示词课有感
+        </a>
+			</li>
+		</ul>
+	</div>
+</div>
+<div id="asideArchive" class="aside-box" style="display:block!important; width:300px;">
+    <h3 class="aside-title">最新文章</h3>
+    <div class="aside-content">
+        <ul class="inf_list clearfix">
+            <li class="clearfix">
+            <a href="https://blog.csdn.net/yusur/article/details/160970891" target="_blank" data-report-click='{"mod":"popu_382","spm":"3001.4136","dest":"https://blog.csdn.net/yusur/article/details/160970891","ab":"left"}' data-report-view='{"mod":"popu_382","spm":"3001.4136","dest":"https://blog.csdn.net/yusur/article/details/160970891","ab":"left"}'>开芯院院长唐丹一行来访中科驭数 共探RISC-V与DPU算力协同创新之路</a>
+            </li>
+            <li class="clearfix">
+            <a href="https://blog.csdn.net/yusur/article/details/160112916" target="_blank" data-report-click='{"mod":"popu_382","spm":"3001.4136","dest":"https://blog.csdn.net/yusur/article/details/160112916","ab":"left"}' data-report-view='{"mod":"popu_382","spm":"3001.4136","dest":"https://blog.csdn.net/yusur/article/details/160112916","ab":"left"}'>十万卡集群时代的网络基石——AI NIC 深度解析</a>
+            </li>
+            <li class="clearfix">
+            <a href="https://blog.csdn.net/yusur/article/details/159011765" target="_blank" data-report-click='{"mod":"popu_382","spm":"3001.4136","dest":"https://blog.csdn.net/yusur/article/details/159011765","ab":"left"}' data-report-view='{"mod":"popu_382","spm":"3001.4136","dest":"https://blog.csdn.net/yusur/article/details/159011765","ab":"left"}'>中科驭数×海光信息：战略合作，算力同行</a>
+            </li>
+        </ul>
+        <div class="archive-bar"></div>
+        <div class="archive-box">
+                <div class="archive-list-item"><a href="https://blog.csdn.net/yusur?type=blog&amp;year=2026&amp;month=05" target="_blank" data-report-click='{"mod":"popu_538","spm":"3001.4138","ab":"new","dest":"https://blog.csdn.net/yusur?type=blog&amp;year=2026&amp;month=05"}'><span class="year">2026年</span><span class="num">6篇</span></a></div>
+                <div class="archive-list-item"><a href="https://blog.csdn.net/yusur?type=blog&amp;year=2025&amp;month=12" target="_blank" data-report-click='{"mod":"popu_538","spm":"3001.4138","ab":"new","dest":"https://blog.csdn.net/yusur?type=blog&amp;year=2025&amp;month=12"}'><span class="year">2025年</span><span class="num">15篇</span></a></div>
+                <div class="archive-list-item"><a href="https://blog.csdn.net/yusur?type=blog&amp;year=2024&amp;month=10" target="_blank" data-report-click='{"mod":"popu_538","spm":"3001.4138","ab":"new","dest":"https://blog.csdn.net/yusur?type=blog&amp;year=2024&amp;month=10"}'><span class="year">2024年</span><span class="num">49篇</span></a></div>
+                <div class="archive-list-item"><a href="https://blog.csdn.net/yusur?type=blog&amp;year=2023&amp;month=12" target="_blank" data-report-click='{"mod":"popu_538","spm":"3001.4138","ab":"new","dest":"https://blog.csdn.net/yusur?type=blog&amp;year=2023&amp;month=12"}'><span class="year">2023年</span><span class="num">51篇</span></a></div>
+                <div class="archive-list-item"><a href="https://blog.csdn.net/yusur?type=blog&amp;year=2022&amp;month=12" target="_blank" data-report-click='{"mod":"popu_538","spm":"3001.4138","ab":"new","dest":"https://blog.csdn.net/yusur?type=blog&amp;year=2022&amp;month=12"}'><span class="year">2022年</span><span class="num">18篇</span></a></div>
+        </div>
+    </div>
+</div>
+    <!-- 详情页显示目录 -->
+<div class="aside-box cknows-side-card js-aside-cknows">
+  <div class="cknows-side-header">
+    <div class="cknows-side-header-row">
+      <div class="cknows-side-logo-wrap">
+        <img class="cknows-side-logo" src="https://csdnimg.cn/release/blogv2/dist/pc/img/c-blog-slidelogo-White.png" alt="C知道">
+      </div>
+      <p class="cknows-side-brand">· AI 阅读助手</p>
+    </div>
+  </div>
+  <div class="swiper cknows-side-swiper">
+    <div class="swiper-wrapper cknows-swiper-wrapper"></div>
+    <div class="cknows-side-pagination swiper-pagination"></div>
+  </div>
+</div>
+<!--文章目录-->
+<div id="asidedirectory" class="aside-box">
+    <div class='groupfile groupfile-active' id="directory">
+        <h3 class="aside-title">目录</h3>
+        <div class="align-items-stretch group_item" id="align-items-stretch">
+            <div class="pos-box">
+            <div class="scroll-box">
+                <div class="toc-box"></div>
+            </div>
+            </div>
+        </div>
+          <p class="flexible-btn-new active" id="flexible-btn-groupfile" data-report-click='{"spm":"3001.10780","strategy":"展开全部"}' data-minheight="117px" data-maxheight="446px" data-fbox="#align-items-stretch"><span class="text">展开全部</span> <img class="look-more" src="https://csdnimg.cn/release/blogv2/dist/pc/img/arrowup-line-bot-White.png" alt=""></p>
+          <p class="flexible-btn-new-close active" data-report-click='{"spm":"3001.10780","strategy":"收起"}'  data-minheight="117px" data-maxheight="446px" data-fbox="#align-items-stretch"><span class="text">收起</span> <img class="look-more" src="https://csdnimg.cn/release/blogv2/dist/pc/img/arrowup-line-top-White.png" alt=""></p>
+    </div>
+</div>
+<div class="gitcode-qc-left-box aside-box" data-report-click='{"spm":"3001.11256", "extra":"{\"position\":\"left\"}"}'></div>
+</aside>
+<script>
+	$("a.flexible-btn").click(function(){
+		$(this).parents('div.aside-box').removeClass('flexible-box');
+		$(this).parents("p.text-center").remove();
+	})
+</script>
+<script type="text/javascript"  src="https://g.csdnimg.cn/user-tooltip/2.7/user-tooltip.js"></script>
+<script type="text/javascript"  src="https://g.csdnimg.cn/user-medal/2.0.0/user-medal.js"></script>
+        </div>
+<div class="recommend-right align-items-stretch clearfix" id="rightAside" data-type="recommend">
+    <aside class="recommend-right_aside">
+            <div class="rightside-fixed-hide">
+      </div>
+        <div id="recommend-right" >
+<div class="aside-box cknows-side-card js-aside-cknows">
+  <div class="cknows-side-header">
+    <div class="cknows-side-header-row">
+      <div class="cknows-side-logo-wrap">
+        <img class="cknows-side-logo" src="https://csdnimg.cn/release/blogv2/dist/pc/img/c-blog-slidelogo-White.png" alt="C知道">
+      </div>
+      <p class="cknows-side-brand">· AI 阅读助手</p>
+    </div>
+  </div>
+  <div class="swiper cknows-side-swiper">
+    <div class="swiper-wrapper cknows-swiper-wrapper"></div>
+    <div class="cknows-side-pagination swiper-pagination"></div>
+  </div>
+</div>
+          <div class='flex-column aside-box groupfile groupfile-active ' id="groupfile">
+              <div class="groupfile-div">
+              <h3 class="aside-title">目录</h3>
+              <div class="align-items-stretch group_item" id="align-items-stretch-right">
+                  <div class="pos-box">
+                      <div class="scroll-box">
+                          <div class="toc-box"></div>
+                      </div>
+                  </div>
+              </div>
+                <p class="flexible-btn-new" id="flexible-btn-groupfile" data-report-click='{"spm":"3001.10782","strategy":"展开全部"}' data-traigger="true" data-minheight="117px" data-maxheight="446px" data-fbox="#align-items-stretch-right"><span class="text">展开全部</span> <img class="look-more" src="https://csdnimg.cn/release/blogv2/dist/pc/img/arrowup-line-bot-White.png" alt=""></p>
+                <p class="flexible-btn-new-close close" data-report-click='{"spm":"3001.10782","strategy":"收起"}' data-traigger="true"  data-minheight="117px" data-maxheight="446px" data-fbox="#align-items-stretch-right"><span class="text">收起</span> <img class="look-more" src="https://csdnimg.cn/release/blogv2/dist/pc/img/arrowup-line-top-White.png" alt=""></p>
+              </div>
+          </div>
+          <div class="gitcode-qc-right-box aside-box" data-report-click='{"spm":"3001.11256", "extra":"{\"position\":\"right\"}"}'></div>
+  <div class="article-previous" id="article">
+      <dl data-report-click='{"spm":"3001.10752","extend1":"上一篇"}' data-report-view='{"spm":"3001.10752","extend1":"上一篇"}'>
+          <dt>
+              上一篇：
+          </dt>
+          <dd>
+            <a href="https://blog.csdn.net/yusur/article/details/142495570" data-report-query="spm=3001.10752">
+              征才令！开物™创新论文激励计划，等你来大展身手
+            </a>
+          </dd>
+      </dl>
+      <dl class="next" data-report-click='{"spm":"3001.10796","extend1":"下一篇"}' data-report-view='{"spm":"3001.10796","extend1":"下一篇"}'>
+          <dt>
+            下一篇：
+          </dt>
+          <dd >
+            <a href="https://blog.csdn.net/yusur/article/details/143157058" data-report-query="spm=3001.10796">
+              基于DPU的Openstack裸金属服务网络解决方案
+            </a>
+          </dd>
+      </dl>
+  </div>
+          <div class='aside-box kind_person d-flex flex-column flexible-box-new' >
+                  <h3 class="aside-title">分类专栏</h3>
+                  <div class="align-items-stretch kindof_item" id="kind_person_column">
+                      <div class="aside-content" id="aside-content-column">
+                          <ul>
+                              <li>
+                                  <a class="clearfix special-column-name"  href="https://blog.csdn.net/yusur/category_12700760.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/yusur/category_12700760.html","ab":"new"}'>
+                                      <div class="special-column-bar "></div>
+                                      <img src="https://i-blog.csdnimg.cn/direct/6b6c8767899b43808183bc2e273e3b16.jpeg?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                      <span class="">
+                                          驭云系列高性能云异构算力解决方案
+                                      </span>
+                                  </a>
+                                  <span class="special-column-num">14篇</span>
+                              </li>
+                              <li>
+                                  <a class="clearfix special-column-name"  href="https://blog.csdn.net/yusur/category_12790468.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/yusur/category_12790468.html","ab":"new"}'>
+                                      <div class="special-column-bar "></div>
+                                      <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756923.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                      <span class="">
+                                          如何利用DPU加速Spark大数据处理？
+                                      </span>
+                                  </a>
+                                  <span class="special-column-num">1篇</span>
+                              </li>
+                              <li>
+                                  <a class="clearfix special-column-name"  href="https://blog.csdn.net/yusur/category_12371776.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/yusur/category_12371776.html","ab":"new"}'>
+                                      <div class="special-column-bar "></div>
+                                      <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                      <span class="">
+                                          先进计算
+                                      </span>
+                                  </a>
+                                  <span class="special-column-num">16篇</span>
+                              </li>
+                              <li>
+                                  <a class="clearfix special-column-name"  href="https://blog.csdn.net/yusur/category_12316740.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/yusur/category_12316740.html","ab":"new"}'>
+                                      <div class="special-column-bar "></div>
+                                      <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756923.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                      <span class="">
+                                          DPU
+                                      </span>
+                                  </a>
+                                  <span class="special-column-num">36篇</span>
+                              </li>
+                              <li>
+                                  <a class="clearfix special-column-name"  href="https://blog.csdn.net/yusur/category_12484768.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/yusur/category_12484768.html","ab":"new"}'>
+                                      <div class="special-column-bar "></div>
+                                      <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                      <span class="">
+                                          算力
+                                      </span>
+                                  </a>
+                                  <span class="special-column-num">12篇</span>
+                              </li>
+                              <li>
+                                  <a class="clearfix special-column-name"  href="https://blog.csdn.net/yusur/category_12644129.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/yusur/category_12644129.html","ab":"new"}'>
+                                      <div class="special-column-bar "></div>
+                                      <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756925.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                      <span class="">
+                                          智算中心
+                                      </span>
+                                  </a>
+                                  <span class="special-column-num">2篇</span>
+                              </li>
+                              <li>
+                                  <a class="clearfix special-column-name"  href="https://blog.csdn.net/yusur/category_12447281.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/yusur/category_12447281.html","ab":"new"}'>
+                                      <div class="special-column-bar "></div>
+                                      <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756925.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                      <span class="">
+                                          FPGA
+                                      </span>
+                                  </a>
+                                  <span class="special-column-num">1篇</span>
+                              </li>
+                              <li>
+                                  <a class="clearfix special-column-name"  href="https://blog.csdn.net/yusur/category_12366826.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/yusur/category_12366826.html","ab":"new"}'>
+                                      <div class="special-column-bar "></div>
+                                      <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756913.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                      <span class="">
+                                          CSTIC 2023
+                                      </span>
+                                  </a>
+                                  <span class="special-column-num">1篇</span>
+                              </li>
+                              <li>
+                                  <a class="clearfix special-column-name"  href="https://blog.csdn.net/yusur/category_12358893.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/yusur/category_12358893.html","ab":"new"}'>
+                                      <div class="special-column-bar "></div>
+                                      <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756754.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                      <span class="">
+                                          北京金融科技产业联盟
+                                      </span>
+                                  </a>
+                                  <span class="special-column-num">1篇</span>
+                              </li>
+                              <li>
+                                  <a class="clearfix special-column-name"  href="https://blog.csdn.net/yusur/category_12358894.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/yusur/category_12358894.html","ab":"new"}'>
+                                      <div class="special-column-bar "></div>
+                                      <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756738.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                      <span class="">
+                                          金融计算
+                                      </span>
+                                  </a>
+                                  <span class="special-column-num">1篇</span>
+                              </li>
+                              <li>
+                                  <a class="clearfix special-column-name"  href="https://blog.csdn.net/yusur/category_12352621.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/yusur/category_12352621.html","ab":"new"}'>
+                                      <div class="special-column-bar "></div>
+                                      <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756754.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                      <span class="">
+                                          算力浦江一周年
+                                      </span>
+                                  </a>
+                                  <span class="special-column-num">1篇</span>
+                              </li>
+                              <li>
+                                  <a class="clearfix special-column-name"  href="https://blog.csdn.net/yusur/category_12346135.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/yusur/category_12346135.html","ab":"new"}'>
+                                      <div class="special-column-bar "></div>
+                                      <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756927.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                      <span class="">
+                                          P4可编程
+                                      </span>
+                                  </a>
+                                  <span class="special-column-num">2篇</span>
+                              </li>
+                              <li>
+                                  <a class="clearfix special-column-name"  href="https://blog.csdn.net/yusur/category_12316741.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/yusur/category_12316741.html","ab":"new"}'>
+                                      <div class="special-column-bar "></div>
+                                      <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756928.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                      <span class="">
+                                          移动云大会
+                                      </span>
+                                  </a>
+                                  <span class="special-column-num">1篇</span>
+                              </li>
+                              <li>
+                                  <a class="clearfix special-column-name"  href="https://blog.csdn.net/yusur/category_12316742.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/yusur/category_12316742.html","ab":"new"}'>
+                                      <div class="special-column-bar "></div>
+                                      <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756926.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                      <span class="">
+                                          云计算
+                                      </span>
+                                  </a>
+                                  <span class="special-column-num">1篇</span>
+                              </li>
+                              <li>
+                                  <a class="clearfix special-column-name"  href="https://blog.csdn.net/yusur/category_12148189.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/yusur/category_12148189.html","ab":"new"}'>
+                                      <div class="special-column-bar "></div>
+                                      <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756754.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                      <span class="">
+                                          驭说芯语
+                                      </span>
+                                  </a>
+                                  <span class="special-column-num">2篇</span>
+                              </li>
+                          </ul>
+                      </div>
+                        <p class="text-center">
+                          <a class="flexible-btn-new" data-report-click='{"spm":"3001.10783","strategy":"展开全部"}' data-traigger="true" data-maxheight="0" data-minheight="208px" data-fbox="#aside-content-column" data-flag="flag"><span class="text">展开全部</span> <img class="look-more" src="https://csdnimg.cn/release/blogv2/dist/pc/img/arrowup-line-bot-White.png" alt=""></a>
+                          <a class="flexible-btn-new-close" data-report-click='{"spm":"3001.10783","strategy":"收起"}'data-traigger="true"  data-minheight="208px" data-fbox="#aside-content-column" data-scroll="true" data-flag="flag"><span class="text">收起</span> <img class="look-more" src="https://csdnimg.cn/release/blogv2/dist/pc/img/arrowup-line-top-White.png" alt=""></a>
+                        </p>
+                  </div>
+          </div>
+        </div>
+    </aside>
+</div>
+
+<div class="recommend-right1  align-items-stretch clearfix" id="rightAsideConcision" data-type="recommend">
+    <aside class="recommend-right_aside">
+        <div id="recommend-right-concision" >
+            <div class='flex-column aside-box groupfile' id="groupfileConcision">
+                <div class="groupfile-div1">
+                <h3 class="aside-title">目录</h3>
+                <div class="align-items-stretch group_item">
+                    <div class="pos-box">
+                        <div class="scroll-box">
+                            <div class="toc-box"></div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+</div>
+
+      </div>
+      <div class="mask-dark"></div>
+        <script type="text/javascript">
+        var timert = setInterval(function() {
+          sideToolbar = $(".csdn-side-toolbar");
+          if (sideToolbar.length > 0) {
+            sideToolbar.css('cssText', 'bottom:64px !important;')
+            clearInterval(timert);
+          }
+        }, 200);
+        </script>
+      <div class="skin-boxshadow"></div>
+      <div class="directory-boxshadow"></div>
+<div class="comment-side-box-shadow comment-side-tit-close" id="commentSideBoxshadow">
+<div class="comment-side-content">
+	<div class="comment-side-tit">
+		<span class="comment-side-tit-count">评论</span>	
+	<img class="comment-side-tit-close" src="https://csdnimg.cn/release/blogv2/dist/pc/img/closeBt.png"></div>
+  <div id="pcCommentSideBox" class="comment-box comment-box-new2 unlogin-comment-box-new" style="display:none">
+	
+	</div>
+	<div id="pcFlodCommentSideBox" class="pc-flodcomment-sidebox">
+		<div class="comment-fold-tit"><span id="lookUnFlodComment" class="back"><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentArrowLeftWhite.png" alt=""></span>被折叠的&nbsp;<span class="count"></span>&nbsp;条评论
+		 <a href="https://blogdev.blog.csdn.net/article/details/122245662" class="tip" target="_blank">为什么被折叠?</a>
+		 <a href="https://bbs.csdn.net/forums/FreeZone" class="park" target="_blank">
+		 <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/iconPark.png">到【灌水乐园】发言</a>                                
+		</div>
+		<div class="comment-fold-content"></div>
+		<div id="lookBadComment" class="look-bad-comment side-look-comment">
+			<a class="look-more-comment">查看更多评论<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentArrowDownWhite.png" alt=""></a>
+		</div>
+	</div>
+</div>
+<div class="comment-rewarddialog-box">
+  <div class="form-box">
+    <div class="title-box">
+      添加红包
+      <a class="btn-form-close"></a>
+    </div>
+    <form id="commentRewardForm">
+      <div class="ipt-box">
+        <label for="txtName">祝福语</label>
+        <div class="ipt-btn-box">
+          <input type="text" name="name" id="txtName" autocomplete="off" maxlength="50">
+          <a class="btn-ipt btn-random"></a>
+        </div>
+        <p class="notice">请填写红包祝福语或标题</p>
+      </div>
+      <div class="ipt-box">
+        <label for="txtSendAmount">红包数量</label>
+        <div class="ipt-txt-box">
+          <input type="text" name="sendAmount" maxlength="4" id="txtSendAmount" placeholder="请填写红包数量(最小10个)" autocomplete="off">
+          <span class="after-txt">个</span>
+        </div>
+        <p class="notice">红包个数最小为10个</p>
+      </div>
+      <div class="ipt-box">
+        <label for="txtMoney">红包总金额</label>
+        <div class="ipt-txt-box error">
+          <input type="text" name="money" maxlength="5" id="txtMoney" placeholder="请填写总金额(最低5元)" autocomplete="off">
+          <span class="after-txt">元</span>
+        </div>
+        <p class="notice">红包金额最低5元</p>
+      </div>
+      <div class="balance-info-box">
+        <label>余额支付</label>
+        <div class="balance-info">
+          当前余额<span class="balance">3.43</span>元
+          <a href="https://i.csdn.net/#/wallet/balance/recharge" class="link-charge" target="_blank">前往充值 ></a>
+        </div>
+      </div>
+      <div class="opt-box">
+        <div class="pay-info">
+          需支付：<span class="price">10.00</span>元
+        </div>
+        <button type="button" class="ml-auto btn-cancel">取消</button>
+        <button type="button" class="ml8 btn-submit" disabled="true">确定</button>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="rr-guide-box">
+  <div class="rr-first-box">
+    <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/guideRedReward02.png" alt="">
+    <button class="btn-guide-known next">下一步</button>
+  </div>
+  <div class="rr-second-box">
+    <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/guideRedReward03.png" alt="">
+    <button class="btn-guide-known known">知道了</button>
+  </div>
+</div>
+</div>
+
+<div class="redEnvolope" id="redEnvolope">
+  <div class="env-box">
+    <div class="env-container">
+      <div class="pre-open" id="preOpen">
+        <div class="top">
+          <header>
+            <img class="clearTpaErr" :src="redpacketAuthor.avatar" alt="" />
+            <div class="author">成就一亿技术人!</div>
+          </header>
+          <div class="bot-icon"></div>
+        </div>
+        <footer>
+          <div class="red-openbtn open-start"></div>
+          <div class="tip">
+            领取后你会自动成为博主和红包主的粉丝
+            <a class="rule" target="_blank">规则</a>
+          </div>
+        </footer>
+      </div>
+      <div class="opened" id="opened">
+        <div class="bot-icon">
+          <header>
+            <a class="creatorUrl" href="" target="_blank">
+              <img class="clearTpaErr" src="https://profile-avatar.csdnimg.cn/default.jpg!2" alt="" />
+            </a>
+            <div class="author">
+              <div class="tt">hope_wisdom</div> 发出的红包
+            </div>
+          </header>
+        </div>
+        <div class="receive-box">
+          <header></header>
+          <div class="receive-list">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="close-btn"></div>
+  </div>
+</div>
+      
+      <div class="pay-code">
+      <div class="pay-money">实付<span class="pay-money-span" data-nowprice='' data-oldprice=''>元</span></div>
+      <div class="content-blance"><a class="blance-bt" href="javascript:;">使用余额支付</a></div>
+      <div class="content-code">
+        <div id="payCode" data-id="">
+          <div class="renovate">
+            <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/pay-time-out.png">
+            <span>点击重新获取</span>
+          </div>
+        </div>
+        <div class="pay-style"><span><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/weixin.png"></span><span><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/zhifubao.png"></span><span><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/jingdong.png"></span><span class="text">扫码支付</span></div>
+      </div>
+      <div class="bt-close">
+        <svg t="1567152543821" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="10924" xmlns:xlink="http://www.w3.org/1999/xlink" width="12" height="12">
+          <defs>
+            <style type="text/css"></style>
+          </defs>
+          <path d="M512 438.378667L806.506667 143.893333a52.032 52.032 0 1 1 73.6 73.621334L585.621333 512l294.485334 294.485333a52.074667 52.074667 0 0 1-73.6 73.642667L512 585.621333 217.514667 880.128a52.053333 52.053333 0 1 1-73.621334-73.642667L438.378667 512 143.893333 217.514667a52.053333 52.053333 0 1 1 73.621334-73.621334L512 438.378667z" fill="" p-id="10925"></path>
+        </svg>
+      </div>
+      <div class="pay-balance">
+        <input type="radio" class="pay-code-radio" data-type="details">
+        <span class="span">钱包余额</span>
+          <span class="balance" style="color:#FC5531;font-size:14px;">0</span>
+          <div class="pay-code-tile">
+            <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/pay-help.png" alt="">
+            <div class="pay-code-content">
+              <div class="span">
+                <p class="title">抵扣说明：</p>
+                <p> 1.余额是钱包充值的虚拟货币，按照1:1的比例进行支付金额的抵扣。<br> 2.余额无法直接购买下载，可以购买VIP、付费专栏及课程。</p>
+              </div>
+            </div>
+          </div>
+      </div>
+      <a class="pay-balance-con" href="https://i.csdn.net/#/wallet/balance/recharge" target="_blank"><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/recharge.png" alt=""><span>余额充值</span></a>
+    </div>
+    <div style="display:none;">
+      <img src="" onerror='setTimeout(function(){if(!/(csdn.net|iteye.com|baiducontent.com|googleusercontent.com|360webcache.com|sogoucdn.com|bingj.com|baidu.com)$/.test(window.location.hostname)){window.location.href="\x68\x74\x74\x70\x73\x3a\x2f\x2f\x77\x77\x77\x2e\x63\x73\x64\x6e\x2e\x6e\x65\x74"}},3000);'>
+    </div>
+    <div class="keyword-dec-box" id="keywordDecBox"></div>
+  </body>
+    <!-- 富文本柱状图  -->
+    <link rel="stylesheet" href="https://csdnimg.cn/release/blog_editor_html/release1.6.12/ckeditor/plugins/chart/chart.css" />
+    <script type="text/javascript" src="https://csdnimg.cn/release/blog_editor_html/release1.6.12/ckeditor/plugins/chart/lib/chart.min.js"></script>
+    <script type="text/javascript" src="https://csdnimg.cn/release/blog_editor_html/release1.6.12/ckeditor/plugins/chart/widget2chart.js"></script>
+  <script src="https://csdnimg.cn/release/blogv2/dist/components/js/axios-83fa28cedf.min.js" type="text/javascript"></script>
+  <script src="https://csdnimg.cn/release/blogv2/dist/components/js/pc_wap_highlight-8defd55d6e.min.js" type="text/javascript"></script>
+  <script src="https://csdnimg.cn/release/blogv2/dist/components/js/pc_wap_common-3c7b273c43.min.js" type="text/javascript"></script>
+  <script src="https://csdnimg.cn/release/blogv2/dist/components/js/edit_copy_code-43c2d050a0.min.js" type="text/javascript"></script>
+  <script src="https://g.csdnimg.cn/lib/cboxEditor/1.1.6/embed-editor.min.js" type="text/javascript"></script>
+  <link rel="stylesheet" href="https://g.csdnimg.cn/lib/cboxEditor/1.1.6/embed-editor.min.css">
+  <link rel="stylesheet" href="https://csdnimg.cn/release/blog_editor_html/release1.6.12/ckeditor/plugins/codesnippet/lib/highlight/styles/atom-one-dark.css">
+  <script src="https://g.csdnimg.cn/user-accusation/1.0.6/user-accusation.js" type="text/javascript"></script>
+  <script>
+    // 全局声明
+    if (window.csdn === undefined) {
+      window.csdn = {};
+    }
+    var sideToolbarOpt = {}
+    $(function() {
+      $(document).on('click', "#toolReportBtnHideNormal,#toolReportBtnHide", function() {
+        window.csdn.loginBox.key({
+          biz: 'blog',
+          subBiz: 'other_service',
+          cb: function() {
+            window.csdn.feedback({
+              "type": 'blog',
+              "rtype": 'article',
+              "rid": articleId,
+              "reportedName": username,
+              "submitOptions": {
+                "title": articleTitle,
+                "contentUrl": articleDetailUrl
+              },
+              "callback": function() {
+                showToast({
+                  text: "感谢您的举报，我们会尽快审核！",
+                  bottom: '10%',
+                  zindex: 9000,
+                  speed: 500,
+                  time: 1500
+                })
+              }
+            })
+          }
+        })
+      });
+    })
+      window.csdn.sideToolbar = {
+        options: {
+          ...sideToolbarOpt,
+          theme: 'white',
+        }
+      }
+  </script>
+  <script src="https://csdnimg.cn/release/download/old_static/js/qrcode.js"></script>
+  <script src="https://g.csdnimg.cn/lib/qrcode/1.0.0/qrcode.min.js"></script>
+  <script src="https://g.csdnimg.cn/user-ordercart/3.0.1/user-ordercart.js" type="text/javascript"></script>
+  <script src="https://g.csdnimg.cn/user-ordertip/5.0.3/user-ordertip.js" type="text/javascript"></script>
+  <script src="https://g.csdnimg.cn/order-payment/4.0.5/order-payment.js" type="text/javascript"></script>
+  <script src="https://csdnimg.cn/release/blogv2/dist/pc/js/common-48ed13f265.min.js" type="text/javascript"></script>
+  <script src="https://csdnimg.cn/release/blogv2/dist/pc/js/detail-b15e6c982b.min.js" type="text/javascript"></script>
+  <script src="https://csdnimg.cn/release/blogv2/dist/pc/js/column-efcae2ca36.min.js" type="text/javascript"></script>
+    <script src="https://g.csdnimg.cn/side-toolbar/3.6/side-toolbar.js" type="text/javascript"></script>
+  <script src="https://g.csdnimg.cn/copyright/1.0.4/copyright.js" type="text/javascript"></script>
+  <script>
+    $(".MathJax").remove();
+    if ($('div.markdown_views pre.prettyprint code.hljs').length > 0) {
+      $('div.markdown_views')[0].className = 'markdown_views';
+    }
+  </script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true,
+        processClass: "mathjax",
+        ignoreClass: "title-article|no-mathjax",
+        preview: "none"
+      },
+      
+      // 优先使用 HTML-CSS 而非 NativeMML
+      "HTML-CSS": {
+        preferredFont: "STIX",        // 使用 STIX 字体
+        availableFonts: ["STIX", "TeX"],
+        webFont: "STIX-Web",
+        scale: 100,                   // 放大 20%
+        minScaleAdjust: 100,
+        linebreaks: { 
+          automatic: true, 
+          width: "90% container" 
+        },
+        matchFontHeight: true,
+        styles: {
+          ".MathJax": {
+            "font-weight": "500 !important"  // 加粗
+          }
+        }
+      },
+      
+      // 禁用 NativeMML（浏览器原生渲染质量不好）
+      NativeMML: {
+        scale: 100
+      },
+      
+      // 设置优先级：HTML-CSS > SVG > NativeMML
+      menuSettings: {
+        renderer: "HTML-CSS"
+      },
+      
+      messageStyle: "none"
+    });
+    MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+  </script>
+  <script src="https://g.csdnimg.cn/static/mathjax-2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript" crossorigin src="https://g.csdnimg.cn/common/csdn-login-box/csdn-login-box.js"></script></html>

@@ -1,0 +1,10 @@
+{
+  "nn": "16",
+  "slug": "16-broadcom-stingray",
+  "type": "产品",
+  "name": "Broadcom Stingray / Thor NIC (SR-IOV + virtio)",
+  "organization": "Broadcom",
+  "hit_features_initial": "F1,F2,F8",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：Broadcom Stingray SmartNIC / Thor NIC（SR-IOV + virtio）\n- vendor：Broadcom\n- 命中 F#（初判）：F1,F2,F8\n- 公开度：低（产品页为主，vDPA 数据面披露少）\n- 一句话定位：高端 NIC/SmartNIC，支持 SR-IOV 与 virtio 卸载。"
+}

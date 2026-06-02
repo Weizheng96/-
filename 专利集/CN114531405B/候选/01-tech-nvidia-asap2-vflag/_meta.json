@@ -2,9 +2,9 @@
   "nn": "01",
   "slug": "01-tech-nvidia-asap2-vflag",
   "type": "技术",
-  "name": "ASAP² / SR-IOV VF-LAG OVS 硬件卸载（跨 bond/LAG 多端口下发到硬件 eSwitch）",
+  "name": "ASAP² / SR-IOV VF-LAG OVS 硬件卸载（ConnectX-6/7、BlueField-2/3）",
   "organization": "NVIDIA",
-  "hit_features_initial": "F1, F2, F3, F4, F5",
+  "hit_features_initial": "F1,F2,F3,F4,F5",
   "publicity": "高",
-  "blurb": "- 类型：技术\n- 名称：NVIDIA ASAP² / SR-IOV VF-LAG OVS 硬件卸载\n- 组织：NVIDIA（Mellanox）\n- 命中 F#（初判）：F1, F2, F3, F4, F5\n- 公开度：高\n- 一句话定位：把 OVS 流表卸载到网卡 eSwitch，并通过 VF-LAG 把跨物理端口的链路聚合（bond/LAG）功能整体卸载到网卡硬件——与本专利\"N 逻辑端口聚合为第一端口 + 流表卸载到全部网卡\"概念最接近的公开实现。\n- 应用案例（仅\"技术\"类条目）：ConnectX-6/7 智能网卡、BlueField-2/3 DPU、OVS-DOCA / OVS-Kernel 卸载模式。"
+  "blurb": "- 类型：技术\n- 名称：NVIDIA ASAP² / SR-IOV VF-LAG OVS 硬件卸载\n- 组织：NVIDIA（Mellanox）\n- 命中 F#（初判）：F1, F2, F3, F4, F5\n- 公开度：高\n- 一句话定位：把 OVS 流表卸载到网卡 eSwitch，并通过 VF-LAG 把跨物理端口的链路聚合（bond/LAG，支持 LACP 模式）整体卸载到网卡硬件——与本专利\"N 逻辑端口聚合为第一端口 + 流表卸载到全部网卡\"概念最接近的公开实现。\n- 应用案例（仅\"技术\"类条目）：ConnectX-6/7 智能网卡、BlueField-2/3 DPU、OVS-DOCA / OVS-Kernel 卸载模式。"
 }

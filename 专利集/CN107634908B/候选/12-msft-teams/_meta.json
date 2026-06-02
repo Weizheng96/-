@@ -1,0 +1,10 @@
+{
+  "nn": "12",
+  "slug": "12-msft-teams",
+  "type": "产品",
+  "name": "Microsoft Teams",
+  "organization": "Microsoft",
+  "hit_features_initial": "F2, F4, F5",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：Microsoft Teams\n- vendor：Microsoft（NASDAQ:MSFT）\n- 命中 F#（初判）：F2, F4, F5\n- 公开度：低（媒体栈相对闭源）\n- 一句话定位：全球办公协作头部，自研会议媒体传输。"
+}

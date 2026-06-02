@@ -1,0 +1,10 @@
+{
+  "nn": "19",
+  "slug": "19-bilibili-live-rtc",
+  "type": "产品",
+  "name": "哔哩哔哩直播实时传输",
+  "organization": "哔哩哔哩",
+  "hit_features_initial": "F2, F4, F5",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：哔哩哔哩直播实时传输\n- vendor：哔哩哔哩（NASDAQ:BILI）\n- 命中 F#（初判）：F2, F4, F5\n- 公开度：低\n- 一句话定位：B 站自研直播实时传输。"
+}

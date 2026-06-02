@@ -1,0 +1,10 @@
+{
+  "nn": "09",
+  "slug": "09-marvell-octeon10",
+  "type": "产品",
+  "name": "OCTEON 10 DPU OVS 卸载",
+  "organization": "Marvell",
+  "hit_features_initial": "F1,F2,F4,F5",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：Marvell OCTEON 10 DPU OVS 卸载\n- vendor：Marvell\n- 命中 F#（初判）：F1, F2, F4, F5\n- 公开度：中\n- 一句话定位：OCTEON DPU 做 OVS/NFV 卸载，被多家 SmartNIC 整机（如 Asterfusion）采用。"
+}

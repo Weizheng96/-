@@ -1,0 +1,10 @@
+{
+  "nn": "22",
+  "slug": "22-broadcom-stingray",
+  "type": "产品",
+  "name": "Broadcom Stingray SmartNIC",
+  "organization": "Broadcom",
+  "hit_features_initial": "F1,F3",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：Broadcom Stingray SmartNIC / NetXtreme\n- vendor：Broadcom\n- 命中 F#（初判）：F1,F3\n- 公开度：低\n- 一句话定位：承载 vSwitch 卸载的 SmartNIC；公开的线程级调度细节有限。\n\n> 排序说明：01-06 为 A 高 B 高/中（OVS-DPDK 系 + 直接运行 OVS 的 DPU + VPP），最可能坐实；07-12 为 A 中 B 中（国产独角兽 / 商业 SDN 数据面，有一定公开材料）；13-22 为 A 中 B 低（云厂商自研黑盒 + 公开度低的 DPU 创业公司）。**排序只决定取证优先级，不预判档位**。Step 6 默认取证 01-10。"
+}

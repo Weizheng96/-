@@ -1,0 +1,10 @@
+{
+  "nn": "13",
+  "slug": "13-dingtalk-rtc",
+  "type": "产品",
+  "name": "钉钉音视频会议 RTC",
+  "organization": "钉钉 DingTalk",
+  "hit_features_initial": "F2, F4, F5",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：钉钉音视频会议 RTC\n- vendor：钉钉 DingTalk（阿里）\n- 命中 F#（初判）：F2, F4, F5\n- 公开度：低\n- 一句话定位：国内办公会议头部，自研 / 集成实时音视频传输。"
+}

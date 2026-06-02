@@ -1,40 +1,35 @@
 # 01-tech-nvidia-asap2-vflag verdict
 
 ## 候选基本信息
-- 名称：ASAP² / SR-IOV VF-LAG OVS 硬件卸载（跨 bond/LAG 多端口下发到硬件 eSwitch）
-- 组织：NVIDIA（Mellanox）
+- 名称：ASAP² / SR-IOV VF-LAG OVS 硬件卸载（ConnectX-6/7、BlueField-2/3）
+- 组织：NVIDIA
 - 类型：技术
-- 初判命中 F#：F1, F2, F3, F4, F5
+- 初判命中 F#：F1,F2,F3,F4,F5
 - 专利公开（授权）日：2023-06-06
 
-## 检索粗筛
-- query 1 `NVIDIA ASAP2 VF-LAG OVS hardware offload bond` → 命中：ASAP² 把 OVS 数据面卸载到 ConnectX-5+ 网卡 eSwitch；VF-LAG "single bonded PF port"，bond "both physical functions of the NIC"。
-- query 2 `NVIDIA VF-LAG offload LAG both physical ports of NIC e-switch single bonded PF port` → 再确认单卡双 PF 端口聚合 + LACP(mode=4) 支持。
-- Phase 1 命中信号强 → 未剪枝，进入 Phase 2 深抓 2 篇 NVIDIA 官方 docs。
-
 ## F# 命中表
+
 | F# | 判定 | 证据 verbatim | URL | 备注 |
 | --- | --- | --- | --- | --- |
-| F1（多虚机+多网卡 N≥2） | 公开资料不足（架构层级不同） | "A single virtual function is backed by two physical bond ports." / "The two network interfaces from the NIC PFs are bounded in the hypervisor." | https://docs.nvidia.com/networking/display/public/SOL/QSG+for+High+Availability+with+NVIDIA+Enhanced+SR-IOV+with+Bonding+Support+(VF-LAG) | **关键分歧**：VF-LAG 聚合的是**单块网卡的两个物理端口/两个 PF**，不是 N≥2 块**独立网卡**。整数限定外推禁令：vendor 仅描述单卡(N=1)双端口，不得外推为字面命中 N≥2 块网卡。 |
-| F2（N 逻辑端口聚合为第一端口） | 等同命中 | "The bonding creates a single bonded PF port." / "SR-IOV VF LAG ... offload them to the hardware e-switch." | https://docs.nvidia.com/networking/display/MLNXENv495100/OVS+Offload+Using+ASAP2+Direct | 把多个 uplink 聚合为单一逻辑 bond 口并卸载到 eSwitch——"聚合为一个端口"机制等同；但聚合对象是端口而非独立网卡。 |
-| F3（LACP 形成逻辑端口） | 字面命中 | "Bond modes supported are: Active-Backup, Active-Active, LACP" / "BONDING_OPTS=\"mode=4 miimon=100 lacp_rate=1\"" | https://docs.nvidia.com/networking/display/MLNXENv495100/OVS+Offload+Using+ASAP2+Direct | LACP(mode=4) 显式支持；逻辑端口由 LACP 聚合形成，与 F3 一致。 |
-| F4（卸载流表 miss 触发） | 公开资料不足 | "SR-IOV VF LAG allows the NIC's physical functions to get the rules that the OVS will try to offload to the bond net-device, and to offload them to the hardware e-switch." | https://docs.nvidia.com/networking/display/MLNXENv495100/OVS+Offload+Using+ASAP2+Direct | ASAP² 本质是 OVS first-packet/cache-miss 驱动卸载（标准 OVS 卸载语义），概念相容；但所抓文档未 verbatim 描述"miss 触发"措辞，记公开资料不足。 |
-| F5（精确流表卸载至全部 N 网卡） | 公开资料不足（架构层级不同） | "A single virtual function is backed by two physical bond ports."（无任何"同步卸载至多块独立网卡"描述） | 同 F1 URL | F5 核心限定是把同一精确流表**同步卸载到全部 N 块独立网卡**以消除单网卡单点故障；VF-LAG 卸载到单卡 eSwitch 的双端口，单卡故障整 bond 即失效，正是本专利背景批评的单网卡单点故障。架构层级不同 → 不得判命中。 |
+| F1（vSwitch+M VM+N≥2 网卡） | 反向证据 | "To enable SR-IOV VF LAG, both physical functions of **the NIC** should first be configured to SR-IOV SwitchDev mode, and only afterwards bond the up-link representors" / "bonding separate NICs with full eswitch offload support is **not a supported configuration**. The eswitch offload functionality works within a **single NIC's** embedded switch" | https://docs.nvidia.com/networking/display/MLNXENv543580/OVS+Offload+Using+ASAP%C2%B2+Direct | VF-LAG 聚合的是**同一块网卡**的两个 PF / 物理端口（单卡双口），不是专利要求的 N≥2 块**独立网卡**；且跨独立网卡的全 e-switch 卸载明确不支持。F1 要求 N≥2 网卡，候选为单卡形态——正向反向事实 |
+| F2（N 逻辑端口聚合为第一端口） | 反向证据 | "if both PFs are up, traffic from any VF will split between these two PFs"（聚合对象=同卡两 PF） | https://docs.nvidia.com/networking/display/MLNXENv543580/OVS+Offload+Using+ASAP%C2%B2+Direct | 聚合层级是"单卡两物理端口→一个 bond"，无"N 块网卡各自逻辑端口再聚合为第一端口"的跨卡结构；架构层级不同 |
+| F3（每网卡逻辑端口由其物理端口经 LACP 聚合） | 公开资料不足 | "The supported Bond modes are: Active-Backup, XOR and LACP"（确有 LACP bond） | https://docs.nvidia.com/networking/display/TAN10110/OVS+Kernel+-+VF+LAG+Configuration | 确有 LACP 聚合机制，但作用于单卡的两物理端口；专利 F3 的语义是"N 块网卡中每块各自形成逻辑端口"，候选只有 1 块网卡，谈不上"每个网卡"的复数结构 |
+| F4（目标网卡流表 miss 触发卸载） | 等同命中 | OVS 硬件卸载 first-packet miss → upcall → 慢路径下发 exact flow（ASAP² 保持 OVS control-plane 不变，data-plane 在网卡硬件） | https://docs.nvidia.com/networking/display/MLNXENv543580/OVS+Offload+Using+ASAP%C2%B2+Direct | 这是 OVS 卸载通用 miss→offload 机制，与 F4 同手段同效果；但属行业通用，不构成对候选的正向命中加分 |
+| F5（经第一端口将精确流表卸载至**全部 N 个**网卡） | 反向证据 | "offload them to **the hardware e-switch**"（单数，单卡内嵌交换机）；"works within a single NIC's embedded switch" | https://docs.nvidia.com/networking/display/MLNXENv543580/OVS+Offload+Using+ASAP%C2%B2+Direct | 流规则只卸载到**单块网卡的单个 e-switch**，不存在"向 N 块独立网卡全部下发精确流表"的冗余下发；这正是专利 F5 区别于普通单卡 OVS 卸载的核心，候选恰好落在被区分的一侧 |
 
 ## 已检查文档清单
-- OVS Offload Using ASAP² Direct（MLNX_EN v4.9-5.1.0.0 LTS）— VF-LAG 配置、bond 模式、eSwitch 卸载机制 — https://docs.nvidia.com/networking/display/MLNXENv495100/OVS+Offload+Using+ASAP2+Direct
-- QSG for High Availability with NVIDIA Enhanced SR-IOV with Bonding Support (VF-LAG) — 单卡双端口 bond 架构、LACP mode=4、页面 Last updated 2023-09-12 — https://docs.nvidia.com/networking/display/public/SOL/QSG+for+High+Availability+with+NVIDIA+Enhanced+SR-IOV+with+Bonding+Support+(VF-LAG)
+- OVS Kernel - VF LAG Configuration（bond 成员 enp3s0f0/f1=单卡双端口，支持 LACP）— https://docs.nvidia.com/networking/display/TAN10110/OVS+Kernel+-+VF+LAG+Configuration
+- OVS Offload Using ASAP² Direct（"both physical functions of the NIC"、单数 e-switch、同卡两 PF 分流）— https://docs.nvidia.com/networking/display/MLNXENv543580/OVS+Offload+Using+ASAP%C2%B2+Direct
+- 搜索聚合：跨独立网卡全 e-switch 卸载"not a supported configuration"，"works within a single NIC's embedded switch"（见 _sources.md query 2）
 
 ## 最终判定
-**第 4 档：公开资料不足（弱候选）**
-五档定义：第1档=确认侵权(高)F全字面命中；第2档=确认侵权(中)含≥1等同命中；第3档=公开资料不足(强候选)≥60%F#命中且无反向证据；第4档=公开资料不足(弱候选)<60%；第5档=已排除(仅当≥1条F#真反向证据 OR 全部证据<2023-06-06 OR 架构层级不同)。
-**0 命中 ≠ 已排除**。无正向也无反向 → 第3或4档。
-判定依据（基于 F# 命中分布）：F3 字面命中、F2 等同命中，但本专利**核心创新限定 F1+F5（N≥2 块独立网卡聚合 + 精确流表同步卸载至全部网卡以跨卡消除单点故障）公开资料显示架构层级不同**——NVIDIA VF-LAG 是单块网卡的两个物理端口做 LAG（"single bonded PF port"/"two physical bond ports"），属卡内端口聚合而非跨卡聚合，且单卡故障即整体失效。两个核心区分限定未命中，命中比例 <60%（2/5 且 F4 不足），落第4档而非第3档。注：未达第5档已排除——NVIDIA 文档只是默认描述单卡双端口，并未**显式拒绝/排除**多卡部署，不构成"真反向证据"，故保留为弱候选而非排除。
 
-## 升级路径（第4档）
-- 检索 NVIDIA / 云厂商是否有"把同一 OVS 精确流表同步卸载到**两块独立 ConnectX 网卡**"的 multi-NIC HA 部署文档或 commit（关键词：multi-NIC bond hardware offload、cross-card eSwitch flow sync、dual-card SR-IOV failover offload）。
-- 若找到把 bond 跨两块独立网卡且流表同步下发到两卡 eSwitch 的一手证据（且发布日 ≥2023-06-06），F1/F5 可升级为等同/字面命中，整体升至第2-3档。
-- 抓更细的 OVS-DOCA / OVS-Kernel 卸载源码或 release note 验证 F4 "miss 触发卸载"的 verbatim 措辞。
+**第 5 档：已排除**
+
+判定依据（1-3 句，基于上表 F# 分布）：候选的 VF-LAG 是把**同一块网卡的两个物理端口/PF** 经 LACP 聚合为一个 bond，并把流规则卸载到**该单块网卡的单个 e-switch**；而本专利权 1 在 F1 明确要求 N≥2 块**独立网卡**、F5 要求"经第一端口将精确流表卸载至**全部 N 块网卡**"以消除单网卡单点故障。NVIDIA 官方文档正向写明"跨独立网卡 + 全 e-switch 卸载不是受支持的配置，卸载仅在单块网卡的内嵌交换机内工作"——这是针对该候选产品的**正向反向事实**（命中第5档硬门槛 (c) 架构层级不同 + (a) F1/F5 真反向证据），而非"公开资料未提及"。专利背景技术本身即把这种"单一网络接口卡内"的卸载列为存在单点故障风险的现有技术，候选正落在被本专利区分掉的一侧。
+
+## 升级路径（仅落第3-4档时填）
+- （不适用，已落第5档）
 
 ## 总结一句话
-候选 01-tech-nvidia-asap2-vflag 落第 4 档（公开资料不足-弱候选）：VF-LAG 命中 LACP(F3)与端口聚合(F2)，但其"单卡双端口"架构与本专利"N≥2 块独立网卡聚合+流表同步卸载至全部网卡"的核心限定 F1/F5 架构层级不同，且未见显式拒绝多卡的反向证据，故为弱候选而非排除。
+候选 01-tech-nvidia-asap2-vflag 落第5档（已排除）：NVIDIA VF-LAG 是单卡双 PF 的 LACP bond + 单 e-switch 卸载，与专利"N≥2 独立网卡聚合 + 精确流表向全部 N 块网卡下发"在 F1/F5 上有官方正向反向证据，架构层级根本不同。

@@ -1,0 +1,418 @@
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="applicable-device" content="pc,mobile" />
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="aplus-core" content="aplus.js" />
+  <meta name="aplus-waiting" content="MAN" />
+  <meta name="data-spm" content="a2c6h" />
+  <title>阿里云 RTC QoS 弱网对抗之变分辨率编码-阿里云开发者社区</title>
+  <meta name="date" content="2021-04-02 14:42:37" />
+  <meta name="last-modified" content="2024-08-14 11:44:35" />
+  <meta name="keywords" content="编解码,测试技术,网络性能优化" />
+  <meta name="description" content="本文为 QoS 弱网优化系列的第二篇" />
+  <meta property="og:title" content="阿里云 RTC QoS 弱网对抗之变分辨率编码-阿里云开发者社区" />
+  <meta property="og:type" content="website" />
+  <meta property="og:description" content="本文为 QoS 弱网优化系列的第二篇" />
+  <meta property="og:image" content="https://img.alicdn.com/tfs/TB1LCE1aQ5E3KVjSZFCXXbuzXXa-200-200.png" />
+  <meta property="og:url" content="https://developer.aliyun.com/article/783329" />
+  <link rel="preconnect" href="https://at.alicdn.com" />
+  <link rel="preconnect" href="https://query.aliyun.com" />
+  <link rel="canonical" href="https://developer.aliyun.com/article/783329" />
+  
+  <link rel="stylesheet" href="//g.alicdn.com/aliyun/developer-aliyun-com-fe/2.8.58/css/??articleDetail.css,yuqueDocViewer.css,markdownViewer.css,medalDialog.css,mathjax.css,report.css" />
+  
+  <link href="https://gw.alipayobjects.com/os/lib/ali/yuque-editor/1.8.18/dist/antd.css" rel="stylesheet" />
+  <link href="https://gw.alipayobjects.com/os/lib/ali/yuque-editor/1.8.18/dist/yuque_editor.css" rel="stylesheet" />
+  
+  
+    <link rel="shortcut icon" href="//img.alicdn.com/tfs/TB1_ZXuNcfpK1RjSZFOXXa6nFXa-32-32.ico" type="image/x-icon" />
+    
+    <link rel="stylesheet" href="https://g.alicdn.com/code/npm/@ali??hmod-ace-2023-box/0.1.0/index.css,hmod-ace-2023-developer-global-community-nav/0.0.70/index.css,hmod-aliyun-com-global-nav-search/0.8.4/index.css,hmod-aliyun-com-global-nav/0.3.11/index.css" />
+    <link rel="stylesheet" href="https://g.alicdn.com/code/npm/@ali??hmod-ace-2023-box/0.1.0/index.css,hmod-ace-2024-global-footer/0.1.2/index.css" />
+    
+
+  <script nonce="7c05b57ffb0c4a2db559676e0ed14b1e">
+    var GLOBAL_CONFIG = {
+      "csrf_key": 'p_csrf',
+      "csrf_val": '26d7ca84-04fd-417f-93f5-ca8472f8fe3f',
+      "wechat_disable": false,
+      "articleId": '783329',
+      "groupCode": null,
+      "groupInfo": null,
+      "articleRealGroupCode": null,
+      "needLarkJs": true,
+      "larkContent": '',
+      "isLogin": false,
+      "isBest": false,
+      "authorUccId": 'f5ohvetnafk4u',
+      "visitorUccId": null,
+      "communityCode": null,
+      "community": null,
+      "freeTierInfo":'[]',
+      "commentSwitch":true,
+      "articleRewardEnable":false,
+      "isOfficialBlog":false,
+      "cloudProductCodeList":'[]',
+    };
+  </script>
+  <style>
+    .article-detail #skill-builder-waker-button{
+        margin-left: 16px;
+    }
+  </style>
+</head>
+<body data-spm="12873639"><script type="text/javascript"
+id="beacon-aplus"
+src="//g.alicdn.com/alilog/mlog/aplus_v2.js"
+exparams="category=&userid=&aplus&yunid=&yunpk=&channel=&cps="
+nonce="7c05b57ffb0c4a2db559676e0ed14b1e"
+cspx="7c05b57ffb0c4a2db559676e0ed14b1e"
+async>
+</script>
+  
+  
+    <div class="yuque-sdk-extra-container yuquesdk"></div>
+    <script nonce="7c05b57ffb0c4a2db559676e0ed14b1e">
+      window._VIEWER_JS_URL = "https://gw.alipayobjects.com/os/lib/ali/yuque-editor/1.8.18/dist/yuque_editor.js";
+      window._VIEWER_CSS_URL = [
+        `https://gw.alipayobjects.com/os/lib/ali/yuque-editor/1.8.18/dist/antd.css`,
+        `https://gw.alipayobjects.com/os/lib/ali/yuque-editor/1.8.18/dist/yuque_editor.css`,
+      ];
+      window.__imageBrowser_options = {
+        container : document.querySelectorAll(".yuque-sdk-extra-container.yuquesdk")
+      };
+    </script>
+    <script type="text/javascript" src="//gw.alipayobjects.com/os/lib/??moment/2.24.0/min/moment.min.js" nonce="7c05b57ffb0c4a2db559676e0ed14b1e"></script>
+    <script type="text/javascript" src="//gw.alipayobjects.com/as/g/larkgroup/lake-codemirror/6.0.2/CodeMirror.js" nonce="7c05b57ffb0c4a2db559676e0ed14b1e"></script>
+    <script nonce="7c05b57ffb0c4a2db559676e0ed14b1e">
+      /*<![CDATA[*/
+      if(!window.React || window.React.version != "16.14.0") {
+        var nonce = '7c05b57ffb0c4a2db559676e0ed14b1e';
+        document.write('<script type="text/javascript" src="//g.alicdn.com/developer_center/developer-fresh-aliyun-com-fe/0.7.41/??react.js,react-dom.js" nonce="'+ nonce + '"><\/script>');
+      }
+      GLOBAL_CONFIG.larkContent = '<!doctype lake><meta name=\"doc-version\" content=\"1\" /><meta name=\"viewport\" content=\"adapt\" /><meta name=\"typography\" content=\"classic\" /><p data-lake-id=\"a20d224c568e48b9d67847a2c66a8c01_p_0\" style=\"text-align: justify;\"><span class=\"lake-fontsize-9\" style=\"color: #595959;\">\u4F5C\u8005\uFF5C<span style=\"color: #595959;\">\u5B89\u57FA\u7A0B\u3001\u7530\u4F1F\u5CF0<\/span><\/span><\/p><p data-lake-id=\"fed4a8f0b098d61c3adeac33a1fda52a\" style=\"text-align: justify;\"><span class=\"lake-fontsize-9\" style=\"color: #595959;\">\u5BA1\u6821\uFF5C \u6CF0\u4E00<\/span><\/p><h2 data-lake-id=\"c39617c63409fa64f262e5accd7ae0f8\" id=\"FAAZY\"><span>\u89C6\u9891\u7F16\u7801\u4E2D\u7684\u53D8\u5206\u8FA8\u7387\u95EE\u9898\u53CA\u89E3\u51B3<\/span><\/h2><p data-lake-id=\"599b4f926a12f79b25efe78f6b547fdc\"><br /><\/p><p data-lake-id=\"20288601062346619a13345bd001fd0f\"><span style=\"color: #595959;\">\u53D8\u5206\u8FA8\u7387\u5728\u5F31\u7F51\u573A\u666F\u7684\u5B9E\u9645\u5E94\u7528\u4E2D\u975E\u5E38\u5E38\u89C1\uFF0C\u7F51\u7EDC\u72B6\u51B5\u4E0D\u597D\u7684\u65F6\u5019\u964D\u4F4E\u5206\u8FA8\u7387\u53EF\u4EE5\u964D\u4F4E\u7801\u7387\uFF0C\u51CF\u5C11\u5757\u6548\u5E94\uFF0C\u7F51\u7EDC\u597D\u7684\u65F6\u5019\u589E\u52A0\u5206\u8FA8\u7387\u53EF\u4EE5\u63D0\u5347\u6E05\u6670\u5EA6\u53CA\u4E3B\u89C2\u4F53\u9A8C\u3002<\/span><\/p><p data-lake-id=\"e137cf09e8c8956dc1fa30c26a4054f8\"><span style=\"color: #595959;\"><br /><\/span><\/p><p data-lake-id=\"8e5efa6946ba713e0fbb1f1b2ef4f715\"><span style=\"color: #595959;\">\u76EE\u524D\u4E3B\u6D41\u7684\u89C6\u9891\u7F16\u7801\u6807\u51C6\uFF0C\u6BD4\u5982 H.264\u3001H.265\uFF0C\u5728\u7F16\u7801\u8FC7\u7A0B\u4E2D\u5982\u679C\u8981\u8FDB\u884C\u5206\u8FA8\u7387\u5207\u6362\uFF0C\u5219\u5FC5\u987B\u8981\u5148\u7F16\u7801\u4E00\u4E2A I \u5E27\uFF0C\u800C I \u5E27\u53EA\u80FD\u4F7F\u7528\u5E27\u5185\u9884\u6D4B\uFF0C\u7F16\u7801\u6548\u7387\u4F4E\u4E0B\u3002\u8FD9\u5728\u5F31\u7F51\u53D8\u5206\u8FA8\u7387\u7684\u65F6\u5019\u5C31\u5BB9\u6613\u9020\u6210\u5361\u987F\u3002\u4E0B\u56FE\u4E2D\u5C55\u793A\u4E86\u6BCF\u79D2\u949F\u5207\u6362\u5206\u8FA8\u7387\u7684\u7801\u7387\u6CE2\u52A8\u6548\u679C\uFF0C\u9AD8\u4F4E\u4E24\u4E2A\u5206\u8FA8\u7387\uFF0C\u6BCF\u79D2\u949F\u5207\u6362\u4E00\u6B21\u3002<card type=\"inline\" name=\"image\" value=\"data:%7B%22src%22%3A%22https%3A%2F%2Fucc.alicdn.com%2Fpic%2Fdeveloper-ecology%2F9acd8913ae6940d5b8e98faeecbdf188.png%22%2C%22originWidth%22%3A746%2C%22originHeight%22%3A111%2C%22name%22%3A%22image.png%22%2C%22size%22%3A36996%2C%22display%22%3A%22inline%22%2C%22align%22%3A%22left%22%2C%22linkTarget%22%3A%22_blank%22%2C%22status%22%3A%22done%22%2C%22style%22%3A%22none%22%2C%22search%22%3A%22%22%2C%22margin%22%3A%7B%22top%22%3Atrue%2C%22bottom%22%3Atrue%7D%2C%22width%22%3A746%2C%22height%22%3A111%7D\"><\/card><\/span><\/p><p data-lake-id=\"38334ed656dd53cc121982dc943c14be\"><span style=\"color: #595959;\">\u4E0A\u56FE\u4E2D\u6A2A\u5750\u6807\u8868\u793A\u7F16\u7801\u7684\u5E27\u6570\uFF0C\u7EB5\u5750\u6807\u8868\u793A\u6BCF\u5E27\u7684\u5927\u5C0F\uFF0C\u56FE\u4E2D\u6700\u9AD8\u7684 4 \u4E2A\u5C16\u5CF0\u8868\u793A\u4ECE\u4F4E\u5206\u8FA8\u7387\u5207\u6362\u5230\u9AD8\u5206\u8FA8\u7387\u65F6\u7F16\u7684 I \u5E27\uFF0C\u5728\u8FD9 4 \u4E2A\u5C16\u5CF0\u4E2D\u95F4\u7684\u8F83\u4F4E\u5C16\u5CF0\u662F\u4ECE\u9AD8\u5206\u8FA8\u7387\u5207\u6362\u5230\u4F4E\u5206\u8FA8\u7387\u7F16\u7801\u7684 I \u5E27\u3002\u53EF\u89C1\u7F16\u7801 I \u5E27\u5E26\u6765\u7684\u7801\u7387\u6CE2\u52A8\u8FD8\u662F\u975E\u5E38\u660E\u663E\u7684\uFF0C\u8FD9\u5728\u5F31\u7F51\u4E0B\u5C31\u5F88\u6709\u53EF\u80FD\u9020\u6210\u5982\u4E0B\u56FE\u6240\u793A\u7684\u5361\u987F\u3002<\/span><span style=\"color: #595959;\"><br /><\/span><\/p><card type=\"block\" name=\"thirdparty\" alias=\"youku\" value=\"data:%7B%22entrance%22%3A%22youku%22%2C%22margin%22%3Atrue%2C%22id%22%3A%22MS5Ec%22%2C%22url%22%3A%22https%3A%2F%2Fplayer.youku.com%2Fembed%2FXNTEzMTY3MzU5Ng%3D%3D%22%2C%22src%22%3A%22https%3A%2F%2Fv.youku.com%2Fv_show%2Fid_XNTEzMTY3MzU5Ng%3D%3D.html%22%2C%22height%22%3A500%7D\"><\/card><p data-lake-id=\"6803333da1c38bfef2fb56a04c158cc0\"><span style=\"color: #595959;\">\u89C6\u9891\u4E2D\u5DE6\u4E00\u7684\u7537\u58EB\u5728\u4F38\u624B\u521A\u63A5\u5230\u5DE6\u4E09\u5973\u58EB\u9012\u51FA\u7684\u4F20\u5355\u4E4B\u65F6\u8FDB\u5165\u5F31\u7F51\uFF0C\u5207\u6362\u5206\u8FA8\u7387\uFF0C\u4EA7\u751F\u4E86\u5361\u987F\u3002<\/span><\/p><p data-lake-id=\"e92e012b39f60f2760ec31b8d609ce11\"><span style=\"color: #595959;\"><br /><\/span><\/p><p data-lake-id=\"10c5987b98aef3701f32d5b623aec008\"><span style=\"color: #595959;\">\u65B0\u4E00\u4EE3\u7684\u538B\u7F29\u6807\u51C6\uFF0C\u5982 VP9\u3001AV1\u3001VVC/H.266 \u7B49\u90FD\u652F\u6301\u5728\u505A\u5E27\u95F4\u9884\u6D4B\u7684\u65F6\u5019\u5F53\u524D\u5E27\u548C\u5176\u53C2\u8003\u5E27\u4F7F\u7528\u4E0D\u540C\u7684\u5206\u8FA8\u7387\uFF0C\u5176\u57FA\u672C\u601D\u60F3\u662F\u5BF9\u53C2\u8003\u5E27\u505A\u91CD\u91C7\u6837 (re-sampling) \u4EE5\u4F7F\u5F97\u5176\u548C\u5F53\u524D\u5E27\u7684\u5206\u8FA8\u7387\u5339\u914D\uFF0C\u4ECE\u800C\u8FDB\u884C\u5E27\u95F4\u9884\u6D4B\uFF0C\u4EE5\u5B9E\u73B0\u5206\u8FA8\u7387\u5207\u6362\u7684\u65F6\u5019\u4E0D\u7528\u7F16 I \u5E27\u7684\u76EE\u7684\u3002<\/span><\/p><p data-lake-id=\"7bc10823d7269398d99c9214adfde1f8\"><span style=\"color: #595959;\"><br /><\/span><\/p><p data-lake-id=\"7006f137e76b1ff37821433e9b501fc6\"><span style=\"color: #595959;\">\u963F\u91CC\u4E91 RTC codec \u7684\u53D8\u5206\u8FA8\u7387\u7F16\u7801 (resolution change coding, \u4EE5\u4E0B\u7B80\u79F0 RCC) \u4E5F\u4F7F\u7528\u548C\u4E0A\u8FF0\u6807\u51C6\u7C7B\u4F3C\u7684\u57FA\u672C\u601D\u60F3\uFF0C\u901A\u8FC7\u53C2\u8003\u5E27\u91CD\u91C7\u6837\u7B49\u624B\u6BB5\u4F7F\u5F97\u4E4B\u524D\u5DF2\u7F16\u7801\u7684\u5176\u4ED6\u5206\u8FA8\u7387\u7684\u53C2\u8003\u5E27\u4E5F\u80FD\u4E3A\u5F53\u524D\u5E27\u6240\u7528\uFF0C\u7EF4\u6301\u5E27\u95F4\u7684\u53C2\u8003\u94FE\u4E0D\u65AD\uFF0C\u5145\u5206\u5229\u7528\u5E27\u95F4\u4FE1\u606F\u5197\u4F59\u63D0\u5347\u538B\u7F29\u6548\u7387\uFF0C\u7701\u53BB\u7F16\u7801\u6548\u7387\u4F4E\u4E0B\u7684 I \u5E27\u3002<\/span><\/p><h2 data-lake-id=\"8b197651760178bb5313d45f7df3ebfe\" id=\"vi70I\"><span>Codec level \u538B\u7F29\u6027\u80FD\u6D4B\u8BD5<\/span><\/h2><p data-lake-id=\"9b717cddbce39fd7fcd35ffa20280053\"><br /><\/p><p data-lake-id=\"575bc10b0b168c0cea187567f47feafe\"><span style=\"color: #595959;\">\u672C\u6587\u5BF9\u963F\u91CC\u4E91 RTC codec \u7684 RCC \u7279\u6027\u8FDB\u884C\u6D4B\u8BD5\uFF0C\u4F7F\u7528 6 \u4E2A\u89C6\u9891\u4F1A\u8BAE\u5E8F\u5217\uFF08\u80CC\u666F\u4E0D\u52A8\uFF0C\u8FD0\u52A8\u5E45\u5EA6\u8F83\u5C0F\uFF09\uFF0C\u548C 5 \u4E2A\u8FD0\u52A8\u7A0B\u5EA6\u8F83\u5927\u7684\u5E8F\u5217\uFF0C\u9AD8\u4F4E\u4E24\u4E2A\u5206\u8FA8\u7387\uFF0C\u4E00\u79D2\u949F\u5207\u6362\u4E00\u6B21\uFF0C\u53EA\u8BC4\u4EF7\u5206\u8FA8\u7387\u5207\u6362\u5E27\u7684\u7801\u7387\u548C\u89C6\u9891\u8D28\u91CF\uFF0C\u56E0\u4E3A\u5BF9\u4E8E\u540E\u7EED\u7684\u5E27\uFF0C\u4F7F\u7528 RCC \u4E0E\u5426\uFF0C\u7F16\u7801\u65B9\u5F0F\u5E76\u6CA1\u6709\u53D8\u5316\u3002<\/span><\/p><p data-lake-id=\"eea28f1b85ddebaa4d9bf63dfe98377f\"><span style=\"color: #595959;\"><br /><\/span><\/p><p data-lake-id=\"5600664884d7c630682b8dfff20a60d8\"><span style=\"color: #595959;\">\u5BF9\u4E8E\u89C6\u9891\u4F1A\u8BAE\u5E8F\u5217\uFF0C\u76F8\u540C\u89C6\u9891\u8D28\u91CF\u4E0B\u7801\u7387\u6709 70% \u8282\u7701\uFF0C\u5BF9\u4E8E\u8FD0\u52A8\u5E8F\u5217\uFF0C\u76F8\u540C\u89C6\u9891\u8D28\u91CF\u4E0B\u7801\u7387\u6709 58% \u7684\u8282\u7701\uFF0C\u56E0\u4E3A\u89C6\u9891\u5185\u5BB9\u8D8A\u9759\u6B62\u4E0D\u52A8\uFF0C\u5E27\u95F4\u7F16\u7801\u7684\u6BD4\u4F8B\u8D8A\u9AD8\uFF0C\u5219 RCC \u7684\u4F18\u52BF\u8D8A\u660E\u663E\uFF0C\u6240\u4EE5\u89C6\u9891\u4F1A\u8BAE\u5E8F\u5217 RCC \u7684\u589E\u76CA\u6BD4\u8FD0\u52A8\u5E8F\u5217\u8981\u9AD8\uFF0C\u662F\u5408\u7406\u7684\u3002<\/span><\/p><p data-lake-id=\"7c6c66452cdb1bdf31f0d7b39e3f0e15\"><span style=\"color: #595959;\"><br /><\/span><\/p><p data-lake-id=\"e45c02ec0908c2a85f18734ad1500fef\"><span style=\"color: #595959;\">\u4E0B\u56FE\u5C55\u793A\u4E86\u4E00\u4E2A\u6D4B\u8BD5\u5E8F\u5217\u4F7F\u7528 RCC \u540E\u7801\u7387\u6CE2\u52A8\u7684\u53D8\u5316\uFF0C<span>\u84DD\u7EBF\u8868\u793A\u7684\u662F\u672A\u52A0 RCC \u7684\u7801\u7387\u6CE2\u52A8\uFF0C\u7EA2\u7EBF\u8868\u793A\u7684\u662F\u52A0\u4E86 RCC \u4E4B\u540E\u7684\u7801\u7387\u6CE2\u52A8\uFF0C<\/span>\u53EF\u4EE5\u770B\u5230\u4F7F\u7528 RCC \u540E\u5206\u8FA8\u7387\u5207\u6362\u5904\u7684<span>\u7F16\u7801 I \u5E27<\/span>\u7801\u7387\u5C16\u5CF0\u660E\u663E\u6CA1\u6709\u4E86\uFF0C\u7801\u7387\u66F4\u52A0\u5E73\u7A33\uFF0C\u800C\u4E14\u89C6\u9891\u8D28\u91CF PSNR \u4E5F\u6709\u6240\u63D0\u5347\u3002<\/span><card type=\"inline\" name=\"image\" value=\"data:%7B%22src%22%3A%22https%3A%2F%2Fucc.alicdn.com%2Fpic%2Fdeveloper-ecology%2Fcec0eced80cc4e44a890f387868c2018.gif%22%2C%22originWidth%22%3A1%2C%22originHeight%22%3A1%2C%22name%22%3A%22image.gif%22%2C%22size%22%3A70%2C%22display%22%3A%22inline%22%2C%22align%22%3A%22left%22%2C%22linkTarget%22%3A%22_blank%22%2C%22status%22%3A%22done%22%2C%22style%22%3A%22none%22%2C%22search%22%3A%22%22%2C%22margin%22%3A%7B%22top%22%3Afalse%2C%22bottom%22%3Afalse%7D%2C%22width%22%3A1%2C%22height%22%3A1%7D\"><\/card><\/p><p data-lake-id=\"e47e5fabd0b8e8f82e422f333268db0e\"><card type=\"inline\" name=\"image\" value=\"data:%7B%22src%22%3A%22https%3A%2F%2Fucc.alicdn.com%2Fpic%2Fdeveloper-ecology%2F52afc9797f8a4011a7ed997b6c7a1ea9.png%22%2C%22originWidth%22%3A746%2C%22originHeight%22%3A111%2C%22name%22%3A%22image.png%22%2C%22size%22%3A48000%2C%22display%22%3A%22inline%22%2C%22align%22%3A%22left%22%2C%22linkTarget%22%3A%22_blank%22%2C%22status%22%3A%22done%22%2C%22style%22%3A%22none%22%2C%22search%22%3A%22%22%2C%22margin%22%3A%7B%22top%22%3Atrue%2C%22bottom%22%3Atrue%7D%2C%22width%22%3A746%2C%22height%22%3A111%7D\"><\/card><\/p><p data-lake-id=\"7e575354944f645cb9388a636205f980\"><span style=\"color: #595959;\">\u84DD\u7EBF\u4E2D\u5206\u8FA8\u7387\u5207\u6362\u5904\u7684 I \u5E27\u5E73\u5747\u7801\u7387\u4E3A 840kbps, PSNR=33.5db, 39.7db, 40.6db for Y, U, V \u4E09\u4E2A\u5206\u91CF\uFF1B\u800C\u7EA2\u7EBF\u4E2D\u5206\u8FA8\u7387\u5207\u6362\u5E27\u7684\u5E73\u5747\u7801\u7387\u4E3A 360kbps, PSNR=36.3db, 40.9db, 42.0db for Y, U, V \u4E09\u4E2A\u5206\u91CF\u3002<\/span><\/p><p data-lake-id=\"3ed2d0319bcf3082993312de57c1738b\"><span style=\"color: #595959;\"><br /><\/span><\/p><p data-lake-id=\"e595b042ff80fb10ecff32f32d8b1378\"><span style=\"color: #595959;\">\u5373\u5F00\u4E86 RCC \u4E4B\u540E\uFF0C\u5206\u8FA8\u7387\u5207\u6362\u65F6\u7684 I \u5E27\u7801\u7387\u964D\u4F4E\u4E86\u8FD1 60%\uFF0C\u540C\u65F6\u4EAE\u5EA6\u7684 PSNR \u63D0\u5347\u4E86\u8FD1 3 \u4E2A db\u3002<\/span><strong><br /><\/strong><\/p><h2 data-lake-id=\"eb152b585eb8b8ba43e828bd6e7cd567\" id=\"vPzwU\"><span>RTC level \u6548\u679C<\/span><\/h2><p data-lake-id=\"8cbcef5ab6131f265eb43ad29f0e19e3\"><br /><\/p><p data-lake-id=\"35e125f9e2348f35df600ecc751a1fa3\"><span style=\"color: #595959;\">\u9664\u4E86\u524D\u8FF0\u7684\u5355\u7EAF codec level \u53D8\u5206\u8FA8\u7387\u4E0D\u7F16 I \u5E27\u5E26\u6765\u7684\u4E00\u5E27\u7684\u538B\u7F29\u6027\u80FD\u63D0\u5347\u4E4B\u5916\uFF0CRCC \u5728\u548C LTR (Long Term Reference) \u7ED3\u5408\u540E\u4F1A\u8FDB\u4E00\u6B65\u964D\u4F4E\u5F31\u7F51\u4E0B\u9891\u7E41\u8BF7\u6C42 I \u5E27\u7684\u53EF\u80FD\u6027\u3002<\/span><span style=\"color: #595959;\"><br /><\/span><\/p><p data-lake-id=\"6671c964cda4b36d625b3d2a63fd4a86\"><span style=\"color: #595959;\"><br /><\/span><\/p><p data-lake-id=\"4fa0581a454e3233fff43848db474ce3\"><span style=\"color: #595959;\">LTR \u6297\u5F31\u7F51\u7684\u539F\u7406\u5728\u4E0A\u4E00\u7BC7\u5206\u4EAB<a target=\"_blank\" href=\"https://mp.weixin.qq.com/s/VV4cmcEQRQnD5sbkICEknQ\">\u300A\u963F\u91CC\u4E91 RTC QoS \u5C4F\u5E55\u5171\u4EAB\u5F31\u7F51\u4F18\u5316\u4E4B\u82E5\u5E72\u7F16\u7801\u5668\u76F8\u5173\u4F18\u5316\u300B<\/a>\u4E2D\u5DF2\u6709\u6240\u4ECB\u7ECD\uFF0C\u5728\u6B64\u7ED3\u5408 RCC \u4F1A\u8FDB\u4E00\u6B65\u63D0\u5347\u5176\u6297\u5F31\u7F51\u6548\u679C\uFF0C\u539F\u7406\u5982\u4E0B\uFF1A<\/span><\/p><p data-lake-id=\"94cfa547d0269e79395a57eae65137e2\"><span style=\"color: #595959;\">1. \u6CA1\u6709 LTR \u65F6\uFF0C\u5728\u5F31\u7F51\u573A\u666F\u4E0B\u5982\u679C\u4E22\u5305\u6216\u5361\u987F\u65E0\u6CD5\u6062\u590D\uFF0C\u5219\u4F1A\u8BF7\u6C42 I \u5E27\uFF1B<\/span><\/p><p data-lake-id=\"250c42b4b65d4850600217e2baee40cc\"><span style=\"color: #595959;\">2. \u589E\u52A0\u4E86 LTR \u4E4B\u540E\uFF0C\u5219\u4E0D\u4F1A\u8BF7\u6C42 I \u5E27\uFF0C\u800C\u662F\u4F1A\u8BF7\u6C42 LTR \u5E27\u6062\u590D\uFF0C\u7F16\u7801\u6548\u7387\u63D0\u5347\u5F88\u591A\uFF1B<\/span><\/p><p data-lake-id=\"9fd2a7690ee7aee816668604a91d9281\"><span style=\"color: #595959;\">3. \u5982\u679C\u662F\u5F31\u7F51\u4E0B\u53D1\u751F\u4E86\u5206\u8FA8\u7387\u5207\u6362\uFF0C\u6CA1\u6709 RCC \u7684\u60C5\u51B5\u4E0B\uFF0C\u7531\u4E8E\u5FC5\u987B\u7F16\u7801 IDR \u5E27\uFF0C\u6240\u4EE5 LTR \u88AB\u6E05\u7A7A\uFF0C\u5982\u679C\u6B64 I \u5E27\u592A\u5927\uFF0C\u5BFC\u81F4\u63A5\u6536\u7AEF\u6536\u4E0D\u5230\uFF0C\u5219\u5176\u4F1A\u518D\u6B21\u8BF7\u6C42 I \u5E27\uFF0C\u9677\u5165\u4E00\u4E2A\u6076\u6027\u5FAA\u73AF\u4E2D\u3002<\/span><\/p><p data-lake-id=\"546627aba03ea2c497e353d1fb4dcf59\"><span style=\"color: #595959;\">4. \u5982\u679C\u5F00\u4E86 RCC \uFF0C\u4E0D\u4EC5\u5206\u8FA8\u7387\u5207\u6362\u5E27\u672C\u5E27\u4E0D\u4F1A\u7F16\u7801 I \u5E27\uFF0C\u5176\u4ED6\u7684\u53C2\u8003\u5E27\u7BA1\u7406\u4E5F\u548C\u4E4B\u524D\u4E00\u6837\uFF0CLTR \u4E5F\u4E0D\u4F1A\u88AB\u6E05\u7A7A\uFF0C\u5206\u8FA8\u7387\u5207\u6362\u5E27\u672C\u5E27\u7684\u5927\u5C0F\u6BD4 I \u5E27\u51CF\u5C11\u4E86\u5F88\u591A\uFF0C\u63A5\u6536\u7AEF\u6536\u4E0D\u5230\u7684\u6982\u7387\u5927\u5927\u964D\u4F4E\uFF0C\u5373\u4F7F\u6536\u4E0D\u5230\uFF0C\u4E5F\u53EF\u4EE5\u8BF7\u6C42 LTR \u6062\u590D\uFF0C\u800C\u4E0D\u662F I \u5E27\u6062\u590D\u3002<\/span><\/p><p data-lake-id=\"5248e8777b558595474bc1d5f9609a6b\"><span style=\"color: #595959;\"><br /><\/span><\/p><p data-lake-id=\"1dd28864e10b54a13e670d6d9960d6b0\"><span style=\"color: #595959;\">\u672C\u6587\u5728 RTC level \u6A21\u62DF\u5F31\u7F51\u573A\u666F\uFF0C\u4F7F\u5176\u4E00\u79D2\u949F\u5207\u6362\u4E00\u6B21\u5206\u8FA8\u7387\uFF0C\u4E0B\u9762\u4E24\u56FE\u5206\u522B\u662F\u672A\u52A0 RCC \u548C \u52A0\u4E86 RCC \u4E4B\u540E\u7684\u6548\u679C\uFF0C\u53EF\u4EE5\u770B\u5230\u672A\u52A0 RCC \u7684\u753B\u9762\u5728\u5206\u8FA8\u7387\u5207\u6362\u65F6\u4F1A\u6709\u660E\u663E\u7684\u5361\u987F\u4EE5\u53CA\u7F16 I \u5E27\u9020\u6210\u7684 flicker \u6548\u5E94\uFF0C\u800C\u52A0\u4E86 RCC \u7684\u5219\u4F1A\u5F88\u6D41\u7545\uFF0C\u753B\u9762\u4E5F\u6CA1\u6709 flicker \u6548\u5E94\u3002<\/span><card type=\"inline\" name=\"image\" value=\"data:%7B%22src%22%3A%22https%3A%2F%2Fucc.alicdn.com%2Fpic%2Fdeveloper-ecology%2F1ae7e97105af4a209e7f1e3e64eefaf6.gif%22%2C%22originWidth%22%3A1%2C%22originHeight%22%3A1%2C%22name%22%3A%22image.gif%22%2C%22size%22%3A70%2C%22display%22%3A%22inline%22%2C%22align%22%3A%22left%22%2C%22linkTarget%22%3A%22_blank%22%2C%22status%22%3A%22done%22%2C%22style%22%3A%22none%22%2C%22search%22%3A%22%22%2C%22margin%22%3A%7B%22top%22%3Afalse%2C%22bottom%22%3Afalse%7D%2C%22width%22%3A1%2C%22height%22%3A1%7D\"><\/card><\/p><p data-lake-id=\"13d48a8ac2d41b85380529de99332e79\"><span><card type=\"inline\" name=\"image\" value=\"data:%7B%22src%22%3A%22https%3A%2F%2Fucc.alicdn.com%2Fpic%2Fdeveloper-ecology%2F31fe6e3cc0ce4c929a8e3dad450e7623.gif%22%2C%22originWidth%22%3A672%2C%22originHeight%22%3A378%2C%22name%22%3A%22%E5%9B%BE%E7%89%871.gif%22%2C%22size%22%3A4345866%2C%22display%22%3A%22inline%22%2C%22align%22%3A%22left%22%2C%22linkTarget%22%3A%22_blank%22%2C%22status%22%3A%22done%22%2C%22style%22%3A%22none%22%2C%22search%22%3A%22%22%2C%22margin%22%3A%7B%22top%22%3Atrue%2C%22bottom%22%3Atrue%7D%2C%22width%22%3A672%2C%22height%22%3A378%7D\"><\/card><\/span><\/p><p data-lake-id=\"5a5554ec213bb5eeebc4b099ee420222\"><span style=\"color: #595959;\">\u4E0A\u56FE\u662F\u672A\u52A0 RCC\uFF0C\u4E00\u79D2\u949F\u5207\u6362\u4E00\u6B21\u5206\u8FA8\u7387\u7684\u6548\u679C\uFF0C\u6709\u591A\u6B21\u660E\u663E\u7684\u5C0F\u5361\u987F\uFF0C\u4E14\u753B\u9762\u6709\u9891\u7E41 I \u5E27\u9020\u6210\u7684 flicker \u6548\u5E94\u3002<\/span><card type=\"inline\" name=\"image\" value=\"data:%7B%22src%22%3A%22https%3A%2F%2Fucc.alicdn.com%2Fpic%2Fdeveloper-ecology%2F539806dd3c324faa974e1860fcd8909e.gif%22%2C%22originWidth%22%3A1%2C%22originHeight%22%3A1%2C%22name%22%3A%22image.gif%22%2C%22size%22%3A70%2C%22display%22%3A%22inline%22%2C%22align%22%3A%22left%22%2C%22linkTarget%22%3A%22_blank%22%2C%22status%22%3A%22done%22%2C%22style%22%3A%22none%22%2C%22search%22%3A%22%22%2C%22margin%22%3A%7B%22top%22%3Afalse%2C%22bottom%22%3Afalse%7D%2C%22width%22%3A1%2C%22height%22%3A1%7D\"><\/card><\/p><p data-lake-id=\"4c7719a30e6158dd9b4c6b99bf4e80a2\"><card type=\"inline\" name=\"image\" value=\"data:%7B%22src%22%3A%22https%3A%2F%2Fucc.alicdn.com%2Fpic%2Fdeveloper-ecology%2Fc3a6b7eebf8e46bfa5dd6c0219bbba43.gif%22%2C%22originWidth%22%3A672%2C%22originHeight%22%3A378%2C%22name%22%3A%22%E5%9B%BE%E7%89%872.gif%22%2C%22size%22%3A4630129%2C%22display%22%3A%22inline%22%2C%22align%22%3A%22left%22%2C%22linkTarget%22%3A%22_blank%22%2C%22status%22%3A%22done%22%2C%22style%22%3A%22none%22%2C%22search%22%3A%22%22%2C%22margin%22%3A%7B%22top%22%3Atrue%2C%22bottom%22%3Atrue%7D%2C%22width%22%3A672%2C%22height%22%3A378%7D\"><\/card><\/p><p data-lake-id=\"46c53273a72f419a279fdfec697f95ba\"><span style=\"color: #595959;\">\u4E0A\u56FE\u662F\u52A0\u4E86 RCC\uFF0C\u4E00\u79D2\u949F\u5207\u6362\u4E00\u6B21\u5206\u8FA8\u7387\u7684\u6548\u679C\uFF0C\u6574\u4F53\u6BD4\u8F83\u6D41\u7545\uFF0C\u611F\u89C9\u4E0D\u5230\u5361\u987F\uFF0C\u89C6\u9891\u8D28\u91CF\u4E5F\u6BD4\u8F83\u5E73\u7A33\uFF0C\u6CA1\u6709 flicker \u6548\u5E94\u3002<\/span><\/p><p data-lake-id=\"ed2892088f89f432ee4bf554a6989251\"><br /><\/p><blockquote><p data-lake-id=\"268113596b5349be77b424d87a6bbacd\"><span>\u300C\u89C6\u9891\u4E91\u6280\u672F\u300D\u4F60\u6700\u503C\u5F97\u5173\u6CE8\u7684\u97F3\u89C6\u9891\u6280\u672F\u516C\u4F17\u53F7\uFF0C\u6BCF\u5468\u63A8\u9001\u6765\u81EA\u963F\u91CC\u4E91\u4E00\u7EBF\u7684\u5B9E\u8DF5\u6280\u672F\u6587\u7AE0\uFF0C\u5728\u8FD9\u91CC\u4E0E\u97F3\u89C6\u9891\u9886\u57DF\u4E00\u6D41\u5DE5\u7A0B\u5E08\u4EA4\u6D41\u5207\u78CB\u3002<\/span><\/p><\/blockquote><p data-lake-id=\"65ad36be993a990fd0fa0d3ba4e50fd2\"><card type=\"inline\" name=\"image\" value=\"data:%7B%22src%22%3A%22https%3A%2F%2Fucc.alicdn.com%2Fpic%2Fdeveloper-ecology%2Faba91f5019734e6d85fb03788e1b328a.png%22%2C%22originWidth%22%3A1080%2C%22originHeight%22%3A328%2C%22name%22%3A%22image.png%22%2C%22size%22%3A158160%2C%22display%22%3A%22inline%22%2C%22align%22%3A%22left%22%2C%22linkTarget%22%3A%22_blank%22%2C%22status%22%3A%22done%22%2C%22style%22%3A%22none%22%2C%22search%22%3A%22%22%2C%22margin%22%3A%7B%22top%22%3Atrue%2C%22bottom%22%3Atrue%7D%2C%22width%22%3A1080%2C%22height%22%3A328%7D\"><\/card><\/p>';
+      /*]]>*/
+    </script>
+    <script type="text/javascript" src="https://gw.alipayobjects.com/os/lib/ali/yuque-editor/1.8.18/dist/yuque_editor.js" nonce="7c05b57ffb0c4a2db559676e0ed14b1e"></script>
+  
+  
+        
+        <script nonce="7c05b57ffb0c4a2db559676e0ed14b1e">
+            /*<![CDATA[*/
+            !(function(c,b,d,a){c[a]||(c[a]={});c[a].config= {
+                pid: "hl0znr436e@8b95b85ff013e64",
+                appType: "web",
+                imgUrl: "https://arms-retcode.aliyuncs.com/r.png?",
+                sendResource: true,
+                disableHook: true,
+                enableLinkTrace: true,
+                behavior: true,
+                enableConsole: true,
+                c1: window.location.href,
+                environment: (function getEnv(){
+                    return document.location.hostname === 'developer.aliyun.com' ? 'prod' : 'local';
+                })(),
+                uid: (function getUID() {
+                    var pk = document.cookie.match(/login_aliyunid_pk=(.*?);/);
+                    var cna = document.cookie.match(/cna=(.*?);/);
+                    return pk && pk.length === 2 ? pk[1] : cna && cna.length === 2 ? cna[1] : "";
+                })()
+            };with(b)with(body)with(insertBefore(createElement("script"),firstChild))setAttribute("crossorigin","",src=d)
+            })(window,document,"https://retcode.alicdn.com/retcode/bl.js","__bl");
+            /*]]>*/
+        </script>
+        <!-- 官网前端新标准使用 aes -->
+        <script src="//g.alicdn.com/aes/??tracker/3.3.3/index.js,tracker-plugin-pv/3.0.5/index.js,tracker-plugin-event/3.0.0/index.js,tracker-plugin-jserror/3.0.3/index.js,tracker-plugin-api/3.1.3/index.js,tracker-plugin-resourceError/3.0.4/index.js,tracker-plugin-perf/3.1.0/index.js,tracker-plugin-eventTiming/3.0.0/index.js,tracker-plugin-longtask/3.0.1/index.js,tracker-plugin-blank/3.0.1/index.js,tracker-plugin-autolog/3.0.3/index.js" nonce="7c05b57ffb0c4a2db559676e0ed14b1e"></script>
+        <script nonce="7c05b57ffb0c4a2db559676e0ed14b1e">
+            /*<![CDATA[*/
+            const aes = new AES({
+                pid: "B5w3hb",
+                user_type: "6",
+                uid: (function getUID() {
+                    let pk = document.cookie.match(/login_aliyunid_pk=(.*?);/);
+                    let cna = document.cookie.match(/cna=(.*?);/);
+                    return pk && pk.length === 2 ? pk[1] : cna && cna.length === 2 ? cna[1] : "";
+                })()
+            });
+            const plugins = aes.use([AESPluginPV,AESPluginEvent,AESPluginJSError,AESPluginAPI,AESPluginResourceError,AESPluginPerf,AESPluginEventTiming,AESPluginLongTask,AESPluginBlank,AESPluginAutolog]);
+            /*]]>*/
+        </script>
+    
+  <div id="596f6f3071ba0065fb8d85163835db85"><div class="_18a32969382a277c44015217fbc5cb5a_box"><div class="_3bd147f6948a20d6c528ac898ad4ba47_pc de5ef2fee09ebcb2b1dcaf0c982523bc_theme _277ebb348812c9712fac6b680ad5e513_reset _277ebb348812c9712fac6b680ad5e513_aliyun-font-family" data-ai-assistant-text-selection-tooltip="disabled"><header class="_702422913dd5754f065139ec2d2def80_container   "><button class="_17fcaf1a4ee37405e5ad5fbad24204b4_container _17fcaf1a4ee37405e5ad5fbad24204b4_loading" aria-label="打开菜单" data-spm="d_dashboard_trigger" data-tracker-exp="true"><span class="_17fcaf1a4ee37405e5ad5fbad24204b4_burger "><span class="_17fcaf1a4ee37405e5ad5fbad24204b4_middle"></span></span></button><a href="https://www.aliyun.com/" class="_3f46140aade30bc61f3012933357c477_logo _702422913dd5754f065139ec2d2def80_logo" data-tracker-content="LOGO" data-spm="d_logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4608 1024" fill="#ff6a00" width="80"><path d="M3266.56 773.12h327.68v-102.4h-327.68v-102.4H3584V35.84H2846.72v532.48h317.44v102.4h-327.68v102.4h327.68v112.64h-353.28v102.4h814.08v-102.4h-353.28v-112.64zM3276.8 138.24h215.04v112.64H3276.8V138.24z m0 215.04h215.04V460.8H3276.8V353.28zM3174.4 460.8h-215.04V353.28H3174.4V460.8z m0-209.92h-215.04V138.24H3174.4v112.64zM537.6 445.44H1075.2v122.88H537.6z"></path><path d="M1341.44 5.12h-353.28L1075.2 128l256 81.92c46.08 15.36 76.8 61.44 76.8 107.52v389.12c0 46.08-30.72 92.16-76.8 107.52l-256 81.92-87.04 122.88h353.28c148.48 0 266.24-117.76 266.24-266.24V276.48c0-148.48-117.76-271.36-266.24-271.36zM276.48 814.08c-46.08-15.36-76.8-61.44-76.8-107.52V317.44c0-46.08 30.72-92.16 76.8-107.52l256-81.92L619.52 5.12H266.24C117.76 5.12 0 128 0 276.48v471.04c0 148.48 117.76 266.24 266.24 266.24h353.28l-87.04-122.88-256-76.8zM2493.44 250.88h-261.12v537.6h261.12V250.88z m-107.52 430.08h-56.32V353.28h56.32v327.68zM1848.32 988.16h102.4V138.24h107.52L1996.8 419.84v102.4h61.44v225.28c0 15.36-10.24 25.6-25.6 25.6h-25.6v102.4h51.2c56.32 0 102.4-46.08 102.4-102.4v-358.4H2099.2l61.44-281.6v-102.4h-312.32v957.44z"></path><path d="M2206.72 138.24H2560v660.48c0 46.08-35.84 87.04-87.04 87.04h-76.8v102.4h107.52c87.04 0 163.84-71.68 163.84-163.84V138.24h35.84v-102.4h-496.64v102.4zM3763.2 40.96h737.28v102.4H3763.2zM4541.44 527.36v-102.4H3727.36v102.4h204.8l-163.84 358.4v102.4h691.2c30.72 0 51.2-25.6 51.2-51.2 0-10.24 0-15.36-5.12-20.48l-87.04-194.56h-112.64l76.8 163.84h-496.64l163.84-358.4h491.52z"></path></svg></a><div class="e76910c82efe8556eb8a6ce6019c5d00_container"><button class="e76910c82efe8556eb8a6ce6019c5d00_controller" data-spm="dscroll-left"><i class="ee52067fb65534cb06d3b35f654f5441_icon ddd10ed9ffa4788f54781e516c4c6560-button_left"></i></button><div class="e76910c82efe8556eb8a6ce6019c5d00_menu-warp"><nav class="_0b0e00051b37611378e027e6ac3a695a_menus"><a class="_2cdcedb5935313401458d214540870bc_menu" href="https://www.aliyun.com/product/tongyi" data-spm="d_menu_0">大模型</a><a class="_2cdcedb5935313401458d214540870bc_menu" href="https://www.aliyun.com/product/list" data-spm="d_menu_1">产品</a><a class="_2cdcedb5935313401458d214540870bc_menu" href="https://www.aliyun.com/solution/tech-solution/" data-spm="d_menu_2">解决方案</a><a class="_2cdcedb5935313401458d214540870bc_menu" href="https://www.aliyun.com/benefit" data-spm="d_menu_3">权益</a><a class="_2cdcedb5935313401458d214540870bc_menu" href="https://www.aliyun.com/price" data-spm="d_menu_4">定价</a><a class="_2cdcedb5935313401458d214540870bc_menu" href="https://market.aliyun.com/" data-spm="d_menu_5">云市场</a><a class="_2cdcedb5935313401458d214540870bc_menu" href="https://partner.aliyun.com/management/v2" data-spm="d_menu_6">伙伴</a><a class="_2cdcedb5935313401458d214540870bc_menu" href="https://www.aliyun.com/service" data-spm="d_menu_7">服务</a><a class="_2cdcedb5935313401458d214540870bc_menu" href="https://www.aliyun.com/about" data-spm="d_menu_8">了解阿里云</a></nav></div><button class="e76910c82efe8556eb8a6ce6019c5d00_controller" data-spm="dscroll-right"><i class="ee52067fb65534cb06d3b35f654f5441_icon ddd10ed9ffa4788f54781e516c4c6560-button_right"></i></button></div><div class="_702422913dd5754f065139ec2d2def80_search-wrap " style="--left-width:0px;--right-width:0px"><div class="global-nav-search _626567c051250ffe2f303af907d3fc83_global-nav-search"><div class="global-search-container _626567c051250ffe2f303af907d3fc83_global-nav-search-desktop-container"><div class="ff4f4a96a12f52ffbdd0d6adbdb6a2b0_position-desktop-search-container"><div><div class="f6fd7e4d3293f0634b9ac54848c275b7_default-search-panel  f6fd7e4d3293f0634b9ac54848c275b7_hidden-default-search-panel"></div><div class="_3b4f5487091623b0b6852e2b46d2729e_search-recommend-panel  _3b4f5487091623b0b6852e2b46d2729e_hidden-search-recommend-panel"><button class="_4b65cdd64479a2fabe582b8c0789821e_search-no-content " type="button">查看 &quot;&quot; 全部搜索结果</button></div></div></div></div><div class="_626567c051250ffe2f303af907d3fc83_global-nav-search-mobile-container"><a class="_626567c051250ffe2f303af907d3fc83_search-button" href="https://www.aliyun.com/search?from=h5-global-nav-search"><span role="img" class="_9a1d73bbcd1a80626a31035a12410804_icon _626567c051250ffe2f303af907d3fc83_search-button-icon"><svg width="1em" height="1em" viewBox="0 0 32 32" focusable="false" color="currentColor" fill="currentColor" class="" data-icon="search"><g><g><path fill-opacity="1" fill-rule="evenodd" d="M14,4C15.3558,4,16.653399999999998,4.262105,17.8926,4.786314C19.089100000000002,5.29242,20.1486,6.00666,21.071,6.92905C21.9933,7.85144,22.7076,8.91087,23.2137,10.10735C23.7379,11.34664,24,12.64419,24,14C24,15.3558,23.7379,16.653399999999998,23.2137,17.892699999999998C22.8382,18.7803,22.3482,19.5925,21.7436,20.3293L27.7072,26.2928L26.293,27.7071L20.3294,21.7435C19.592599999999997,22.3481,18.7803,22.8382,17.8926,23.2137C16.653399999999998,23.7379,15.3558,24,14,24C12.64419,24,11.34664,23.7379,10.10735,23.2137C8.91087,22.7076,7.85144,21.9933,6.92905,21.0709C6.00666,20.1486,5.29242,19.089100000000002,4.786314,17.8926C4.262105,16.653399999999998,4,15.3558,4,14C4,12.64419,4.262105,11.34664,4.786314,10.10735C5.29242,8.91087,6.00666,7.85144,6.92905,6.92905C7.85144,6.00666,8.91087,5.29242,10.10735,4.786314C11.34664,4.262105,12.64419,4,14,4ZM14,6C11.79102,6,9.905439999999999,6.78109,8.34326,8.34326C6.78109,9.905439999999999,6,11.79102,6,14C6,16.209,6.78109,18.0946,8.34326,19.6567C9.905439999999999,21.2189,11.79102,22,14,22C16.209,22,18.0946,21.2189,19.6567,19.6567C21.2189,18.0946,22,16.209,22,14C22,11.79102,21.2189,9.905439999999999,19.6567,8.34326C18.0946,6.78109,16.209,6,14,6Z"></path></g></g></svg></span></a></div></div></div><div class="_174801eef2caf75aeaee91c72b19c09a_container"><a class="global-nav-ai-assistant _174801eef2caf75aeaee91c72b19c09a_item _2d3ef330b3f8055912d355b9a255bfcf_btn" href="https://www.aliyun.com/ai-assistant?displayMode=side" data-spm="dai_assistant" target="_blank"><div class="LogoStyled-aliyun-ai-assistant-rc-8096__sc-1qusfpt-0 cpJKij"><div class="ai-assistant-brand-logo-icon" style="background:no-repeat center/100%  url(https://img.alicdn.com/imgextra/i4/O1CN012X1Rxl1clAgB5waMK_!!6000000003640-2-tps-52-52.png)"><img src="https://img.alicdn.com/imgextra/i2/O1CN01bYc1m81RrcSAyOjMu_!!6000000002165-54-tps-60-60.apng" loading="lazy"/></div><div class="ai-assistant-brand-logo-tooltip "><div class="ai-assistant-logo-tooltip-content">AI 助理</div></div></div></a><button class="_174801eef2caf75aeaee91c72b19c09a_item bb3dbc2de557f9f2029f50770c77fab9_button"><i class="ee52067fb65534cb06d3b35f654f5441_icon ddd10ed9ffa4788f54781e516c4c6560-intl"></i></button><button class="_174801eef2caf75aeaee91c72b19c09a_item"><i class="ee52067fb65534cb06d3b35f654f5441_icon ddd10ed9ffa4788f54781e516c4c6560-contact d42d5e3a0d0e018547c66700af2a2030_icon"></i></button><a class="_174801eef2caf75aeaee91c72b19c09a_item" href="https://help.aliyun.com/" target="_blank" data-spm="d_quick_access_3">文档</a><a class="_174801eef2caf75aeaee91c72b19c09a_item" href="https://beian.aliyun.com/" target="_blank" data-spm="d_quick_access_4">备案</a><a class="_174801eef2caf75aeaee91c72b19c09a_item" href="https://home.console.aliyun.com/home/dashboard/ProductAndService" target="_blank" data-spm="d_quick_access_5" rel="nofollow">控制台</a><span class="_05da28cf18b2b6ee04dbfd3ceb5ad3c9_loading _174801eef2caf75aeaee91c72b19c09a_item"></span></div></header></div><div class="_3bd147f6948a20d6c528ac898ad4ba47_mobile de5ef2fee09ebcb2b1dcaf0c982523bc_theme _277ebb348812c9712fac6b680ad5e513_reset _277ebb348812c9712fac6b680ad5e513_aliyun-font-family"></div><div class="_18a32969382a277c44015217fbc5cb5a_box"><nav class="ace-developer-new-global-community-nav"><div class="ace-developer-new-global-community-nav-box" id="ace-developer-new-global-community-nav-box"><div class="global-community-nav-pc" id="global-community-nav-pc"><div class="fixed-container"><div class="global-community-nav"><div class="global-community-nav-top"><div class="aliyun-community-logo"><a href="https://developer.aliyun.com/" target="_blank" class="aliyun-community-logo-link" data-spm="d_logo">开发者社区</a></div><div class="global-community-nav-menu"><div class="global-community-nav-menu-box"><div class="global-community-menu-list"><div class="menu"><a href="https://developer.aliyun.com/" target="_blank" class="menu-link" title="开发者社区" data-spm="d_menu_0">首页</a></div><div class="ismore menu"><div class="menu-item">探索云世界<span class="community-icon arrow-top"></span></div><div class="global-community-nav-menu-dropdown" data-spm="sub-nav-dropdown-developer-menu-1"><div class="_7b008fc39f3f9af1c012bbc310a2ddbd_summary _838c54de0ce88fe6cbf6db922a0d8beb_scrollbar da99d5ca697c2dbaf5daa5c35dacbc46_reset _838c54de0ce88fe6cbf6db922a0d8beb_theme"><h3 class="_7b008fc39f3f9af1c012bbc310a2ddbd_title">探索云世界</h3></div><div class="_7b008fc39f3f9af1c012bbc310a2ddbd_detail _838c54de0ce88fe6cbf6db922a0d8beb_scrollbar da99d5ca697c2dbaf5daa5c35dacbc46_reset _838c54de0ce88fe6cbf6db922a0d8beb_theme"><div class="ce35cdf234cb85271d07249f75e3a4f1_container "><div class="ce35cdf234cb85271d07249f75e3a4f1_column _4750b6c0ec0fadb5d91f92fe4e89fe0a_column"><section class="_1359bc36739bac5989f9fac7db450d68_category"><h4 class="_1359bc36739bac5989f9fac7db450d68_title">热门</h4><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/modelstudio/" target="_blank" data-spm="d_main_0_0" data-tracker-exp="true">百炼大模型</a><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/modelscope/" target="_blank" data-spm="d_main_0_1" data-tracker-exp="true">Modelscope模型即服务</a><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/ecs/" target="_blank" data-spm="d_main_0_2" data-tracker-exp="true">弹性计算</a><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/lingma/" target="_blank" data-spm="d_main_0_3" data-tracker-exp="true">通义灵码</a><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/cloudnative/" target="_blank" data-spm="d_main_0_4" data-tracker-exp="true">云原生</a><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/database/" target="_blank" data-spm="d_main_0_5" data-tracker-exp="true">数据库</a><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/group/yunxiao/" target="_blank" data-spm="d_main_0_6" data-tracker-exp="true">云效DevOps</a><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/group/aliyun_linux/" target="_blank" data-spm="d_main_0_7" data-tracker-exp="true">龙蜥操作系统</a></section></div><div class="ce35cdf234cb85271d07249f75e3a4f1_column _4750b6c0ec0fadb5d91f92fe4e89fe0a_column"><section class="_1359bc36739bac5989f9fac7db450d68_category"><h4 class="_1359bc36739bac5989f9fac7db450d68_title"><a href="https://developer.aliyun.com/ecs/" target="_blank" data-spm="d_main_1" data-tracker-exp="true">云计算<i class="ee52067fb65534cb06d3b35f654f5441_icon c0d2b2426f4e619b0e0a3897f1b4cfdb-link _1359bc36739bac5989f9fac7db450d68_icon"></i></a></h4><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/ecs/" target="_blank" data-spm="d_main_1_0" data-tracker-exp="true">弹性计算</a><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/group/wuying/" target="_blank" data-spm="d_main_1_1" data-tracker-exp="true">无影</a><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/storage/" target="_blank" data-spm="d_main_1_2" data-tracker-exp="true">存储</a><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/group/networking/" target="_blank" data-spm="d_main_1_3" data-tracker-exp="true">网络</a><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/yitian/" target="_blank" data-spm="d_main_1_4" data-tracker-exp="true">倚天</a></section><section class="_1359bc36739bac5989f9fac7db450d68_category"><h4 class="_1359bc36739bac5989f9fac7db450d68_title"><a href="https://developer.aliyun.com/bigdata/" target="_blank" data-spm="d_main_4" data-tracker-exp="true">大数据<i class="ee52067fb65534cb06d3b35f654f5441_icon c0d2b2426f4e619b0e0a3897f1b4cfdb-link _1359bc36739bac5989f9fac7db450d68_icon"></i></a></h4><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/group/maxcompute/" target="_blank" data-spm="d_main_4_0" data-tracker-exp="true">大数据计算</a><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/group/hologres/" target="_blank" data-spm="d_main_4_1" data-tracker-exp="true">实时数仓Hologres</a><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/group/sc/" target="_blank" data-spm="d_main_4_2" data-tracker-exp="true">实时计算Flink</a><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/group/aliyunemr/" target="_blank" data-spm="d_main_4_3" data-tracker-exp="true">E-MapReduce</a><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/group/dataworks/" target="_blank" data-spm="d_main_4_4" data-tracker-exp="true">DataWorks</a><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/group/es/" target="_blank" data-spm="d_main_4_5" data-tracker-exp="true">Elasticsearch</a><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/group/pai/" target="_blank" data-spm="d_main_4_6" data-tracker-exp="true">机器学习平台PAI</a><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/group/aios/" target="_blank" data-spm="d_main_4_7" data-tracker-exp="true">智能搜索推荐</a><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/group/datav/" target="_blank" data-spm="d_main_4_8" data-tracker-exp="true">数据可视化DataV</a></section></div><div class="ce35cdf234cb85271d07249f75e3a4f1_column _4750b6c0ec0fadb5d91f92fe4e89fe0a_column"><section class="_1359bc36739bac5989f9fac7db450d68_category"><h4 class="_1359bc36739bac5989f9fac7db450d68_title"><a href="https://developer.aliyun.com/cloudnative/" target="_blank" data-spm="d_main_2" data-tracker-exp="true">云原生<i class="ee52067fb65534cb06d3b35f654f5441_icon c0d2b2426f4e619b0e0a3897f1b4cfdb-link _1359bc36739bac5989f9fac7db450d68_icon"></i></a></h4><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/group/kubernetes/" target="_blank" data-spm="d_main_2_0" data-tracker-exp="true">容器</a><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/group/serverless/" target="_blank" data-spm="d_main_2_1" data-tracker-exp="true">serverless</a><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/group/aliware/" target="_blank" data-spm="d_main_2_2" data-tracker-exp="true">中间件</a><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/group/mse/" target="_blank" data-spm="d_main_2_3" data-tracker-exp="true">微服务</a><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/group/arms/" target="_blank" data-spm="d_main_2_4" data-tracker-exp="true">可观测</a><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/group/rocketmq/" target="_blank" data-spm="d_main_2_5" data-tracker-exp="true">消息队列</a></section><section class="_1359bc36739bac5989f9fac7db450d68_category"><h4 class="_1359bc36739bac5989f9fac7db450d68_title"><a href="https://developer.aliyun.com/modelscope/" target="_blank" data-spm="d_main_5" data-tracker-exp="true">人工智能<i class="ee52067fb65534cb06d3b35f654f5441_icon c0d2b2426f4e619b0e0a3897f1b4cfdb-link _1359bc36739bac5989f9fac7db450d68_icon"></i></a></h4><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/group/pai/" target="_blank" data-spm="d_main_5_0" data-tracker-exp="true">机器学习平台PAI</a><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/group/viapi/" target="_blank" data-spm="d_main_5_1" data-tracker-exp="true">视觉智能开放平台</a><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/group/speech/" target="_blank" data-spm="d_main_5_2" data-tracker-exp="true">智能语音交互</a><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/group/nlp/" target="_blank" data-spm="d_main_5_3" data-tracker-exp="true">自然语言处理</a><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/group/multimodel/" target="_blank" data-spm="d_main_5_4" data-tracker-exp="true">多模态模型</a><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/group/pythonsdk/" target="_blank" data-spm="d_main_5_5" data-tracker-exp="true">pythonsdk</a><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/group/others/" target="_blank" data-spm="d_main_5_6" data-tracker-exp="true">通用模型</a></section></div><div class="ce35cdf234cb85271d07249f75e3a4f1_column _4750b6c0ec0fadb5d91f92fe4e89fe0a_column"><section class="_1359bc36739bac5989f9fac7db450d68_category"><h4 class="_1359bc36739bac5989f9fac7db450d68_title"><a href="https://developer.aliyun.com/database/" target="_blank" data-spm="d_main_3" data-tracker-exp="true">数据库<i class="ee52067fb65534cb06d3b35f654f5441_icon c0d2b2426f4e619b0e0a3897f1b4cfdb-link _1359bc36739bac5989f9fac7db450d68_icon"></i></a></h4><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/group/polardb/" target="_blank" data-spm="d_main_3_0" data-tracker-exp="true">关系型数据库</a><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/group/hbasespark/" target="_blank" data-spm="d_main_3_1" data-tracker-exp="true">NoSQL数据库</a><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/group/analyticdb/" target="_blank" data-spm="d_main_3_2" data-tracker-exp="true">数据仓库</a><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/database/dm" target="_blank" data-spm="d_main_3_3" data-tracker-exp="true">数据管理工具</a><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/polardb/" target="_blank" data-spm="d_main_3_4" data-tracker-exp="true">PolarDB开源</a><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/database/vectordatabase" target="_blank" data-spm="d_main_3_5" data-tracker-exp="true">向量数据库</a></section><section class="_1359bc36739bac5989f9fac7db450d68_category"><h4 class="_1359bc36739bac5989f9fac7db450d68_title"><a href="https://developer.aliyun.com/group/othertech/" target="_blank" data-spm="d_main_6" data-tracker-exp="true">开发与运维<i class="ee52067fb65534cb06d3b35f654f5441_icon c0d2b2426f4e619b0e0a3897f1b4cfdb-link _1359bc36739bac5989f9fac7db450d68_icon"></i></a></h4><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/group/yunxiao/" target="_blank" data-spm="d_main_6_0" data-tracker-exp="true">云效DevOps</a><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/group/yida/" target="_blank" data-spm="d_main_6_1" data-tracker-exp="true">钉钉宜搭</a><a class="_1359bc36739bac5989f9fac7db450d68_item" href="https://developer.aliyun.com/group/mirror/" target="_blank" data-spm="d_main_6_2" data-tracker-exp="true">镜像站</a></section></div></div></div><div class="global-community-nav-menu-dropdown-close close-icon community-icon"></div></div></div><div class="menu"><a href="https://developer.aliyun.com/ask/hottestQuestionsWithProduct" target="_blank" class="menu-link" data-spm="d_menu_2">问产品</a></div><div class="menu"><a href="https://developer.aliyun.com/adc/" target="_blank" class="menu-link" data-spm="d_menu_3">动手实践</a></div><div class="menu"><a href="https://developer.aliyun.com/blog/" target="_blank" class="menu-link" data-spm="d_menu_4">官方博客</a></div><div class="menu"><a href="https://edu.aliyun.com/" target="_blank" class="menu-link" data-spm="d_menu_5">考认证</a></div><div class="menu"><a href="https://tianchi.aliyun.com/" target="_blank" class="menu-link" data-spm="d_menu_6">TIANCHI大赛</a></div><div class="ismore menu"><div class="menu-item">活动广场<span class="community-icon arrow-top"></span></div><div class="global-community-nav-menu-dropdown" data-spm="sub-nav-dropdown-developer-menu-7"><div class="_7b008fc39f3f9af1c012bbc310a2ddbd_summary _838c54de0ce88fe6cbf6db922a0d8beb_scrollbar da99d5ca697c2dbaf5daa5c35dacbc46_reset _838c54de0ce88fe6cbf6db922a0d8beb_theme"><h3 class="_7b008fc39f3f9af1c012bbc310a2ddbd_title">活动广场</h3><p class="_7b008fc39f3f9af1c012bbc310a2ddbd_desc">丰富的线上&amp;线下活动，深入探索云世界</p></div><div class="_7b008fc39f3f9af1c012bbc310a2ddbd_detail _838c54de0ce88fe6cbf6db922a0d8beb_scrollbar da99d5ca697c2dbaf5daa5c35dacbc46_reset _838c54de0ce88fe6cbf6db922a0d8beb_theme"><div class="ce35cdf234cb85271d07249f75e3a4f1_container "><div class="ce35cdf234cb85271d07249f75e3a4f1_column ef3f497bbdf2b586236b37344fa5354a_column"><a class="ef3f497bbdf2b586236b37344fa5354a_item" href="https://developer.aliyun.com/mission" target="_blank" data-spm="d_main_0" data-tracker-exp="true"><h4 class="ef3f497bbdf2b586236b37344fa5354a_title">任务中心<i class="ee52067fb65534cb06d3b35f654f5441_icon c0d2b2426f4e619b0e0a3897f1b4cfdb-link ef3f497bbdf2b586236b37344fa5354a_icon"></i></h4><p class="ef3f497bbdf2b586236b37344fa5354a_desc" title="做任务，得社区积分和周边">做任务，得社区积分和周边</p></a></div><div class="ce35cdf234cb85271d07249f75e3a4f1_column ef3f497bbdf2b586236b37344fa5354a_column"><a class="ef3f497bbdf2b586236b37344fa5354a_item" href="https://edu.aliyun.com/trainingcamp/" target="_blank" data-spm="d_main_1" data-tracker-exp="true"><h4 class="ef3f497bbdf2b586236b37344fa5354a_title">训练营<i class="ee52067fb65534cb06d3b35f654f5441_icon c0d2b2426f4e619b0e0a3897f1b4cfdb-link ef3f497bbdf2b586236b37344fa5354a_icon"></i></h4><p class="ef3f497bbdf2b586236b37344fa5354a_desc" title="资深技术专家手把手带教">资深技术专家手把手带教</p></a></div><div class="ce35cdf234cb85271d07249f75e3a4f1_column ef3f497bbdf2b586236b37344fa5354a_column"><a class="ef3f497bbdf2b586236b37344fa5354a_item" href="https://developer.aliyun.com/live/" target="_blank" data-spm="d_main_2" data-tracker-exp="true"><h4 class="ef3f497bbdf2b586236b37344fa5354a_title">直播<i class="ee52067fb65534cb06d3b35f654f5441_icon c0d2b2426f4e619b0e0a3897f1b4cfdb-link ef3f497bbdf2b586236b37344fa5354a_icon"></i></h4><p class="ef3f497bbdf2b586236b37344fa5354a_desc" title="技术交流，直击现场">技术交流，直击现场</p></a></div><div class="ce35cdf234cb85271d07249f75e3a4f1_column ef3f497bbdf2b586236b37344fa5354a_column"><a class="ef3f497bbdf2b586236b37344fa5354a_item" href="https://developer.aliyun.com/topic/bloggers" target="_blank" data-spm="d_main_3" data-tracker-exp="true"><h4 class="ef3f497bbdf2b586236b37344fa5354a_title">乘风者计划<i class="ee52067fb65534cb06d3b35f654f5441_icon c0d2b2426f4e619b0e0a3897f1b4cfdb-link ef3f497bbdf2b586236b37344fa5354a_icon"></i></h4><p class="ef3f497bbdf2b586236b37344fa5354a_desc" title="让创作激发创新">让创作激发创新</p></a></div></div></div><div class="global-community-nav-menu-dropdown-close close-icon community-icon"></div></div></div><div class="ismore menu"><div class="menu-item">下载<span class="community-icon arrow-top"></span></div><div class="global-community-nav-menu-dropdown" data-spm="sub-nav-dropdown-developer-menu-8"><div class="_7b008fc39f3f9af1c012bbc310a2ddbd_summary _838c54de0ce88fe6cbf6db922a0d8beb_scrollbar da99d5ca697c2dbaf5daa5c35dacbc46_reset _838c54de0ce88fe6cbf6db922a0d8beb_theme"><h3 class="_7b008fc39f3f9af1c012bbc310a2ddbd_title">下载</h3><p class="_7b008fc39f3f9af1c012bbc310a2ddbd_desc">海量开发者使用工具、手册，免费下载</p></div><div class="_7b008fc39f3f9af1c012bbc310a2ddbd_detail _838c54de0ce88fe6cbf6db922a0d8beb_scrollbar da99d5ca697c2dbaf5daa5c35dacbc46_reset _838c54de0ce88fe6cbf6db922a0d8beb_theme"><div class="ce35cdf234cb85271d07249f75e3a4f1_container "><div class="ce35cdf234cb85271d07249f75e3a4f1_column ef3f497bbdf2b586236b37344fa5354a_column"><a class="ef3f497bbdf2b586236b37344fa5354a_item" href="https://developer.aliyun.com/mirror" target="_blank" data-spm="d_main_0" data-tracker-exp="true"><h4 class="ef3f497bbdf2b586236b37344fa5354a_title">镜像站<i class="ee52067fb65534cb06d3b35f654f5441_icon c0d2b2426f4e619b0e0a3897f1b4cfdb-link ef3f497bbdf2b586236b37344fa5354a_icon"></i></h4><p class="ef3f497bbdf2b586236b37344fa5354a_desc" title="极速、全面、稳定、安全的开源镜像">极速、全面、稳定、安全的开源镜像</p></a></div><div class="ce35cdf234cb85271d07249f75e3a4f1_column ef3f497bbdf2b586236b37344fa5354a_column"><a class="ef3f497bbdf2b586236b37344fa5354a_item" href="https://developer.aliyun.com/ebook/" target="_blank" data-spm="d_main_1" data-tracker-exp="true"><h4 class="ef3f497bbdf2b586236b37344fa5354a_title">技术资料<i class="ee52067fb65534cb06d3b35f654f5441_icon c0d2b2426f4e619b0e0a3897f1b4cfdb-link ef3f497bbdf2b586236b37344fa5354a_icon"></i></h4><p class="ef3f497bbdf2b586236b37344fa5354a_desc" title="开发手册、白皮书、案例集等实战精华">开发手册、白皮书、案例集等实战精华</p></a></div><div class="ce35cdf234cb85271d07249f75e3a4f1_column ef3f497bbdf2b586236b37344fa5354a_column"></div><div class="ce35cdf234cb85271d07249f75e3a4f1_column ef3f497bbdf2b586236b37344fa5354a_column"></div></div></div><div class="global-community-nav-menu-dropdown-close close-icon community-icon"></div></div></div></div></div></div></div></div></div></div><div class="global-community-nav-mobile" id="global-community-nav-mobile"></div></div><div class="ace-developer-new-global-sub-community-nav-box" id="ace-developer-new-global-sub-community-nav-box"><div class="global-sub-community-nav-pc"><div class="fixed-container"><div class="global-sub-community-nav"><div class="global-sub-community-nav-left" id="global-sub-community-nav-left"></div><div class="community-search-box"><div class="community-search-box-main"><input class="community-search-box-input" placeholder="" value=""/><div class="community-search-box-icon"><i class="community-search-icon community-icon"></i></div></div></div></div></div></div><div class="global-sub-community-nav-mobile"></div></div><div class="nav-common-sub"><div>探索云世界</div><div class="sc-nav-submenu"><div class="more-list"><div><p class="more-list-title">热门</p><a href="https://developer.aliyun.com/modelstudio/" target="_blank" class="href">百炼大模型</a><a href="https://developer.aliyun.com/modelscope/" target="_blank" class="href">Modelscope模型即服务</a><a href="https://developer.aliyun.com/ecs/" target="_blank" class="href">弹性计算</a><a href="https://developer.aliyun.com/lingma/" target="_blank" class="href">通义灵码</a><a href="https://developer.aliyun.com/cloudnative/" target="_blank" class="href">云原生</a><a href="https://developer.aliyun.com/database/" target="_blank" class="href">数据库</a><a href="https://developer.aliyun.com/group/yunxiao/" target="_blank" class="href">云效DevOps</a><a href="https://developer.aliyun.com/group/aliyun_linux/" target="_blank" class="href">龙蜥操作系统</a></div><div><a href="https://developer.aliyun.com/ecs/" target="_blank" class="more-list-title hasurl">云计算</a><a href="https://developer.aliyun.com/ecs/" target="_blank" class="href">弹性计算</a><a href="https://developer.aliyun.com/group/wuying/" target="_blank" class="href">无影</a><a href="https://developer.aliyun.com/storage/" target="_blank" class="href">存储</a><a href="https://developer.aliyun.com/group/networking/" target="_blank" class="href">网络</a><a href="https://developer.aliyun.com/yitian/" target="_blank" class="href">倚天</a></div><div><a href="https://developer.aliyun.com/cloudnative/" target="_blank" class="more-list-title hasurl">云原生</a><a href="https://developer.aliyun.com/group/kubernetes/" target="_blank" class="href">容器</a><a href="https://developer.aliyun.com/group/serverless/" target="_blank" class="href">serverless</a><a href="https://developer.aliyun.com/group/aliware/" target="_blank" class="href">中间件</a><a href="https://developer.aliyun.com/group/mse/" target="_blank" class="href">微服务</a><a href="https://developer.aliyun.com/group/arms/" target="_blank" class="href">可观测</a><a href="https://developer.aliyun.com/group/rocketmq/" target="_blank" class="href">消息队列</a></div><div><a href="https://developer.aliyun.com/database/" target="_blank" class="more-list-title hasurl">数据库</a><a href="https://developer.aliyun.com/group/polardb/" target="_blank" class="href">关系型数据库</a><a href="https://developer.aliyun.com/group/hbasespark/" target="_blank" class="href">NoSQL数据库</a><a href="https://developer.aliyun.com/group/analyticdb/" target="_blank" class="href">数据仓库</a><a href="https://developer.aliyun.com/database/dm" target="_blank" class="href">数据管理工具</a><a href="https://developer.aliyun.com/polardb/" target="_blank" class="href">PolarDB开源</a><a href="https://developer.aliyun.com/database/vectordatabase" target="_blank" class="href">向量数据库</a></div><div><a href="https://developer.aliyun.com/bigdata/" target="_blank" class="more-list-title hasurl">大数据</a><a href="https://developer.aliyun.com/group/maxcompute/" target="_blank" class="href">大数据计算</a><a href="https://developer.aliyun.com/group/hologres/" target="_blank" class="href">实时数仓Hologres</a><a href="https://developer.aliyun.com/group/sc/" target="_blank" class="href">实时计算Flink</a><a href="https://developer.aliyun.com/group/aliyunemr/" target="_blank" class="href">E-MapReduce</a><a href="https://developer.aliyun.com/group/dataworks/" target="_blank" class="href">DataWorks</a><a href="https://developer.aliyun.com/group/es/" target="_blank" class="href">Elasticsearch</a><a href="https://developer.aliyun.com/group/pai/" target="_blank" class="href">机器学习平台PAI</a><a href="https://developer.aliyun.com/group/aios/" target="_blank" class="href">智能搜索推荐</a><a href="https://developer.aliyun.com/group/datav/" target="_blank" class="href">数据可视化DataV</a></div><div><a href="https://developer.aliyun.com/modelscope/" target="_blank" class="more-list-title hasurl">人工智能</a><a href="https://developer.aliyun.com/group/pai/" target="_blank" class="href">机器学习平台PAI</a><a href="https://developer.aliyun.com/group/viapi/" target="_blank" class="href">视觉智能开放平台</a><a href="https://developer.aliyun.com/group/speech/" target="_blank" class="href">智能语音交互</a><a href="https://developer.aliyun.com/group/nlp/" target="_blank" class="href">自然语言处理</a><a href="https://developer.aliyun.com/group/multimodel/" target="_blank" class="href">多模态模型</a><a href="https://developer.aliyun.com/group/pythonsdk/" target="_blank" class="href">pythonsdk</a><a href="https://developer.aliyun.com/group/others/" target="_blank" class="href">通用模型</a></div><div><a href="https://developer.aliyun.com/group/othertech/" target="_blank" class="more-list-title hasurl">开发与运维</a><a href="https://developer.aliyun.com/group/yunxiao/" target="_blank" class="href">云效DevOps</a><a href="https://developer.aliyun.com/group/yida/" target="_blank" class="href">钉钉宜搭</a><a href="https://developer.aliyun.com/group/mirror/" target="_blank" class="href">镜像站</a></div></div></div></div></nav><div class="community-global-guide-2023"></div></div></div></div>
+  
+  
+    <div class="article-detail" id="article-detail" data-spm="article-detail">
+        <div class="article-wrapper">
+            <div class="left-content">
+                <div id="article-shang-btn"></div>
+
+                
+
+                
+
+                <div class="developer-nav" data-spm="article_breadcrumb">
+                    <a href="/" target="_blank" class="nav-item" data-spm="d_article_breadcrumb_1">开发者社区</a>
+                    <a class="nav-item" target="_blank" data-spm="d_article_breadcrumb_2" href="/group/videocloudtech/">阿里云视频云</a>
+                    <a class="nav-item" target="_blank" data-spm="d_article_breadcrumb_3" href="/group/videocloudtech/article/">文章</a>
+                    <span class="nav-item">正文</span>
+                </div>
+
+                <div class="content-wrapper">
+                    
+                    
+
+                    <h1 class="article-title">阿里云 RTC QoS 弱网对抗之变分辨率编码</h1>
+
+                    <div class="article-info">
+                        <div class="article-info-num">
+                            <div class="article-info-left">
+                                <span class="article-info-time">2021-04-02</span>
+                                <span class="article-info-read">783</span>
+                                <span class="personal-ip-icon"></span>
+                            </div>
+                            <div class="article-info-right">
+                                
+<span class="copyright-btn copyright-open">版权</span>
+
+<span class="article-info-report"></span>
+
+                            </div>
+                        </div>
+                        <div class="article-copyright">
+                            <div class="article-copyright-info">
+                                <div class="article-copyright-info-note">版权声明：</div>
+                                <div>
+    <span>
+        本文内容由阿里云实名注册用户自发贡献，版权归原作者所有，阿里云开发者社区不拥有其著作权，亦不承担相应法律责任。具体规则请查看《
+        <a style="color:#1366EC" href="https://developer.aliyun.com/article/768092">阿里云开发者社区用户服务协议</a>》和
+        《<a style="color:#1366EC" href="https://developer.aliyun.com/article/768093">阿里云开发者社区知识产权保护指引</a>》。如果您发现本社区中有涉嫌抄袭的内容，填写
+        <a style="color:#1366EC" href="https://yida.alibaba-inc.com/o/right">侵权投诉表单</a>进行举报，一经查实，本社区将立刻删除涉嫌侵权内容。
+    </span>
+</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                    
+                    
+                    <div>
+    
+    
+    
+    
+</div>
+                    
+                    <div class="article-desc">
+                        <b>简介：</b>
+                        <span>本文为 QoS 弱网优化系列的第二篇</span>
+                    </div>
+
+                    <div class="article-content">
+                        
+                        <div class="article-inner" id="lark-content"></div>
+                    </div>
+                    
+                </div>
+                <div class="community-product"></div>
+
+                <div class="aigc-fixed" data-spm="article_author">
+                    <div class="aigc-fixed-left">
+                        <div class="aigc-fixed-left-author">
+                            <a data-spm="d_article_author_profile" target="_blank" href="/profile/f5ohvetnafk4u">
+                                <img loading="lazy" class="aigc-fixed-left-avatar" src="https://ucc.alicdn.com/avatar/6da382b06ff14f7ba27e16c71bad9d50.jpg?x-oss-process=image/resize,h_150,m_lfit" />
+                            </a>
+                            <div class="aigc-fixed-left-author-badge"></div>
+                        </div>
+                        <a class="aigc-fixed-left-name" data-spm="d_article_author_profile" target="_blank" href="/profile/f5ohvetnafk4u">视频云技术小编</a>
+                        <div class="aigc-fixed-left-focus"></div>
+                        <div class="aigc-fixed-left-num"></div>
+                    </div>
+                    <div class="aigc-fixed-right">
+                        <div class="aigc-fixed-h5-catalog" data-spm="article_contents">
+                            <div class="aigc-fixed-h5-catalog-icon"></div>
+                            <div class="aigc-fixed-h5-catalog-text">目录</div>
+                        </div>
+                        <div id="action-btns"></div>
+                    </div>
+                </div>
+                <div class="article-comment">
+                    <div id="comment"></div>
+                </div>
+
+                
+            </div>
+            <div id="right-box">
+                
+                    <div class="right-item-box skeleton community-skeleton">
+                        <div class="card">
+                            <div class="title skeleton-loading" style="height: 18px;margin-bottom: 13px;margin-right: 15em;"></div>
+                            <div class="title skeleton-loading" style="height: 28px;margin-bottom: 0;margin-right: 7em;"></div>
+                        </div>
+                    </div>
+
+                    <div class="right-item-box skeleton">
+                        <div class="right-item-title">
+                            <div class="right-item-title-text active">热门文章</div>
+                            <div class="right-item-title-text">最新文章</div>
+                        </div>
+                        <div class="card">
+                            <div class="text skeleton-loading"></div>
+                            <div class="text skeleton-loading"></div>
+                            <div class="text skeleton-loading"></div>
+                            <div class="text skeleton-loading"></div>
+                            <div class="text skeleton-loading"></div>
+                            <div class="text skeleton-loading"></div>
+                            <div class="text skeleton-loading"></div>
+                        </div>
+                    </div>
+                
+                
+            </div>
+            
+        </div>
+    </div>
+
+
+  <div id="skill-builder-root" style="display: none"></div>
+  <script type="text/javascript" nonce="7c05b57ffb0c4a2db559676e0ed14b1e" src="//g.alicdn.com/aliyun/developer-aliyun-com-fe/2.8.58/scripts/yuqueDocViewer.js"></script>
+  
+    
+    <div id="39aec8efd6c3e7cd9ed8f44cffd7051b"><div class="_18a32969382a277c44015217fbc5cb5a_box"><footer class="_49ada0cd752f65901c49f2eed0d6c3d5_container" aria-label="PC 端页尾"><div class="_49ada0cd752f65901c49f2eed0d6c3d5_inner"><div class="b34f022d45e42bd104ce1362bc0808b1_services"><nav class="b34f022d45e42bd104ce1362bc0808b1_homepage-footer-main-services" aria-label="页脚导航"><section class="a52e48969cced2d562e47543eeb73ebb_ali-main-services"><h3 class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-title">为什么选择阿里云</h3><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://www.aliyun.com/about/what-is-cloud-computing" target="_blank">什么是云计算</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://infrastructure.aliyun.com/" target="_blank">全球基础设施</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://www.aliyun.com/why-us/leading-technology" target="_blank">技术领先</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://www.aliyun.com/why-us/reliability" target="_blank">稳定可靠</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://www.aliyun.com/why-us/security-compliance" target="_blank">安全合规</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://www.aliyun.com/analyst-reports" target="_blank">分析师报告</a></section><section class="a52e48969cced2d562e47543eeb73ebb_ali-main-services"><h3 class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-title">大模型</h3><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://www.aliyun.com/product/tongyi" target="_blank">千问大模型</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://bailian.console.aliyun.com/?tab=model#/model-market" target="_blank" rel="nofollow">大模型服务</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://bailian.console.aliyun.com/app-center?tab=app#/app-center" target="_blank" rel="nofollow">AI应用构建</a></section><section class="a52e48969cced2d562e47543eeb73ebb_ali-main-services"><h3 class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-title">产品和定价</h3><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://www.aliyun.com/product/list" target="_blank">全部产品</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://free.aliyun.com/" target="_blank">免费试用</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://www.aliyun.com/product/news/" target="_blank">产品动态</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://www.aliyun.com/price/detail" target="_blank">产品定价</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://www.aliyun.com/price/cpq/list" target="_blank">配置报价器</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://www.aliyun.com/price/cost-management" target="_blank">云上成本管理</a></section><section class="a52e48969cced2d562e47543eeb73ebb_ali-main-services"><h3 class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-title">技术内容</h3><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://www.aliyun.com/solution/tech-solution" target="_blank">技术解决方案</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://help.aliyun.com/" target="_blank">帮助文档</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://developer.aliyun.com/" target="_blank">开发者社区</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://tianchi.aliyun.com/" target="_blank">天池大赛</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://edu.aliyun.com/" target="_blank">阿里云认证</a></section><section class="a52e48969cced2d562e47543eeb73ebb_ali-main-services"><h3 class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-title">权益</h3><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://free.aliyun.com/" target="_blank">免费试用</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://www.aliyun.com/solution/free" target="_blank">解决方案免费试用</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://university.aliyun.com/" target="_blank">高校计划</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://www.aliyun.com/benefit/form/index" target="_blank">5亿算力补贴</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://dashi.aliyun.com/?ambRef=shouYeDaoHang2&amp;pageCode=yunparterIndex" target="_blank">推荐返现计划</a></section><section class="a52e48969cced2d562e47543eeb73ebb_ali-main-services"><h3 class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-title">服务</h3><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://www.aliyun.com/service" target="_blank">基础服务</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://www.aliyun.com/service/supportplans" target="_blank">企业增值服务</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://www.aliyun.com/service/devopsimpl/devopsimpl_cloudmigration_public_cn" target="_blank">迁云服务</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://www.aliyun.com/notice/" target="_blank">官网公告</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://status.aliyun.com/" target="_blank">健康看板</a><a class="a52e48969cced2d562e47543eeb73ebb_ali-main-services-link" href="https://security.aliyun.com/trust-center" target="_blank">信任中心</a></section></nav><article class="_7b44142961778903dda8af3f769cd06c_focus"><h3 class="_7b44142961778903dda8af3f769cd06c_ali-main-services-title">关注阿里云</h3><p class="_7b44142961778903dda8af3f769cd06c_ali-main-services-desc">关注阿里云公众号或下载阿里云APP，关注云资讯，随时随地运维管控云服务</p><img alt="阿里云APP" src="https://img.alicdn.com/imgextra/i4/O1CN01XLesV31fkf7pYNATb_!!6000000004045-2-tps-400-400.png" class="_7b44142961778903dda8af3f769cd06c_ali-official-code" loading="lazy"/><img alt="阿里云微信" src="https://img.alicdn.com/tfs/TB1AOdINW6qK1RjSZFmXXX0PFXa-258-258.jpg" class="_7b44142961778903dda8af3f769cd06c_ali-official-code" loading="lazy"/><p class="_7b44142961778903dda8af3f769cd06c_consult-text">联系我们：4008013260</p></article></div><div class="_4598709a854bea355ceb6ef9f23f10d4_about-link-wrap"><a href="https://help.aliyun.com/product/67275.html" class="_4598709a854bea355ceb6ef9f23f10d4_ali-about-link" target="_blank">法律声明</a><a href="https://terms.alicdn.com/legal-agreement/terms/platform_service/20220906101446934/20220906101446934.html" class="_4598709a854bea355ceb6ef9f23f10d4_ali-about-link" target="_blank">Cookies政策</a><a href="https://aliyun.jubao.alibaba.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-about-link" target="_blank">廉正举报</a><a href="https://report.aliyun.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-about-link" target="_blank">安全举报</a><a href="https://www.aliyun.com/contact" class="_4598709a854bea355ceb6ef9f23f10d4_ali-about-link" target="_blank">联系我们</a><a href="https://careers.aliyun.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-about-link" target="_blank">加入我们</a></div><section class="_4598709a854bea355ceb6ef9f23f10d4_friend-link-wrap"><h3 hidden="">友情链接</h3><a href="https://www.alibabagroup.com/cn/global/home" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">阿里巴巴集团</a><a href="https://www.taobao.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">淘宝网</a><a href="https://www.tmall.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">天猫</a><a href="https://www.aliexpress.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">全球速卖通</a><a href="https://www.alibaba.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">阿里巴巴国际交易市场</a><a href="https://www.1688.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">1688</a><a href="https://www.alimama.com/index.htm" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">阿里妈妈</a><a href="https://www.fliggy.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">飞猪</a><a href="https://www.aliyun.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">阿里云计算</a><a href="https://wanwang.aliyun.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">万网</a><a href="https://mobile.amap.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">高德</a><a href="https://www.uc.cn/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">UC</a><a href="https://www.umeng.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">友盟</a><a href="https://www.youku.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">优酷</a><a href="https://www.dingtalk.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">钉钉</a><a href="https://www.alipay.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">支付宝</a><a href="https://damo.alibaba.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">达摩院</a><a href="https://world.taobao.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">淘宝海外</a><a href="https://www.aliyundrive.com/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">阿里云盘</a><a href="https://www.ele.me/" class="_4598709a854bea355ceb6ef9f23f10d4_ali-friend-link" target="_blank">淘宝闪购</a></section><p class="_4598709a854bea355ceb6ef9f23f10d4_ali-copyright-text">© 2009-现在 Aliyun.com 版权所有 增值电信业务经营许可证： <a href="http://beian.miit.gov.cn/" target="_blank">浙B2-20080101</a> 域名注册服务机构许可： <a href="https://domain.miit.gov.cn/域名注册服务机构/互联网域名/阿里云计算有限公司 " target="_blank">浙D3-20210002</a></p><p class="_4598709a854bea355ceb6ef9f23f10d4_ali-report-wrap"><a href="https://zzlz.gsxt.gov.cn/businessCheck/verifKey.do?showType=p&amp;serial=91330106673959654P-SAIC_SHOW_10000091330106673959654P1710919400712&amp;signData=MEUCIQDEkCd8cK7%2Fyqe6BNMWvoMPtAnsgKa7FZetfPkjZMsvhAIgOX1G9YC6FKyndE7o7hL0KaBVn4f%20V%2Fiof3iAgpsV09o%3D" target="_blank" class="_4598709a854bea355ceb6ef9f23f10d4_ali-report-link"><img src="//gw.alicdn.com/tfs/TB1GxwdSXXXXXa.aXXXXXXXXXXX-65-70.gif" class="_4598709a854bea355ceb6ef9f23f10d4_ali-report-img" alt="" loading="lazy"/></a><a href="http://www.beian.gov.cn/portal/registerSystemInfo" target="_blank" class="_4598709a854bea355ceb6ef9f23f10d4_ali-report-link"><img src="//img.alicdn.com/tfs/TB1..50QpXXXXX7XpXXXXXXXXXX-40-40.png" class="_4598709a854bea355ceb6ef9f23f10d4_ali-report-img" alt="浙公网安备 33010602009975号" loading="lazy"/><span class="_4598709a854bea355ceb6ef9f23f10d4_ali-report-link-text">浙公网安备 33010602009975号</span></a><a href="https://beian.miit.gov.cn/" target="_blank" class="_4598709a854bea355ceb6ef9f23f10d4_ali-report-link"><span class="_4598709a854bea355ceb6ef9f23f10d4_ali-report-link-text _4598709a854bea355ceb6ef9f23f10d4_ali-report-link-text-unique">浙B2-20080101-4</span></a></p></div></footer><footer class="_4b41e3343c851a7a8833c9165b249eb2_container" aria-label="移动端页尾"></footer></div></div>
+    <script type="text/javascript" nonce="7c05b57ffb0c4a2db559676e0ed14b1e" src="https://g.alicdn.com/code/npm/@ali/??biu-loader/0.1.2/index.js,hmod-preact/0.0.1/index.js,hmod-preact-hooks/0.0.1/index.js,hmod-preact-compat/0.0.1/index.js,hmod-preact-bridge/0.1.4/index.js,hmod-ace-service-loader/0.1.1/index.js"></script>
+    <script type="text/javascript" nonce="7c05b57ffb0c4a2db559676e0ed14b1e" src="https://g.alicdn.com/aliyun-com/lowcode-engine/0.1.73/renderer/build/js/index.js"></script>
+    <script type="text/javascript" nonce="7c05b57ffb0c4a2db559676e0ed14b1e" src="https://g.alicdn.com/code/npm/@ali??hmod-ace-2023-box/0.1.0/index.js,hmod-ace-2023-developer-global-community-nav/0.0.70/index.js,hmod-ace-2023-developer-global-guide/0.0.22/index.js,hmod-aliyun-com-floating-toolbar/0.2.6/index.js,hmod-aliyun-com-global-nav-search/0.8.4/index.js,hmod-aliyun-com-global-nav/0.3.11/index.js,hmod-lowcode-normal-page/0.1.0/index.js"></script>
+    <script type="text/javascript" nonce="7c05b57ffb0c4a2db559676e0ed14b1e" src="https://cloud-assets.alicdn.com/lowcode/entry/prod/596f6f3071ba0065fb8d85163835db85.js"></script>
+    <script type="text/javascript" nonce="7c05b57ffb0c4a2db559676e0ed14b1e" src="https://g.alicdn.com/code/npm/@ali??hmod-ace-2023-box/0.1.0/index.js,hmod-ace-2024-global-footer/0.1.2/index.js,hmod-lowcode-normal-page/0.1.0/index.js"></script>
+    <script type="text/javascript" nonce="7c05b57ffb0c4a2db559676e0ed14b1e" src="https://cloud-assets.alicdn.com/lowcode/entry/prod/39aec8efd6c3e7cd9ed8f44cffd7051b.js"></script>
+    <script type="text/javascript" nonce="7c05b57ffb0c4a2db559676e0ed14b1e" src="https://cloud-assets.alicdn.com/website.js"></script>
+    
+    
+    
+    <script nonce="7c05b57ffb0c4a2db559676e0ed14b1e">
+        /*<![CDATA[*/
+        if(!window.React || window.React.version != "16.14.0") {
+            var nonce = '7c05b57ffb0c4a2db559676e0ed14b1e';
+            document.write('<script type="text/javascript" src="//g.alicdn.com/developer_center/developer-fresh-aliyun-com-fe/0.7.41/??react.js,react-dom.js" nonce="'+ nonce + '"><\/script>');
+        }
+        /*]]>*/
+    </script>
+    
+    <script type="text/javascript" src="//g.alicdn.com/aliyun/util/1.2.36/loader.js" nonce="7c05b57ffb0c4a2db559676e0ed14b1e"></script>
+    
+    
+    
+    
+    
+    
+    
+    <script nonce="7c05b57ffb0c4a2db559676e0ed14b1e">
+        /*<![CDATA[*/
+        window.addEventListener('DOMContentLoaded',function(){
+            window.ALIYUN_PERF.reportPerfWhenStatic();
+        });
+        window.__ALIYUN_EXPERIENCE_REACT__ =  window.React;
+        window.__ALIYUN_EXPERIENCE_REACT_DOM__ = window.ReactDOM;
+        (function () {let host = window.location.hostname;if (!host.endsWith('.aliyun.com') && !host.endsWith('.aliyun.test') && !host.startsWith('127.0.0.1') && !host.startsWith('localhost')) {window.location.href = '//developer.aliyun.com';}})();
+        /*]]>*/
+    </script>
+
+  
+  <script type="text/javascript" nonce="7c05b57ffb0c4a2db559676e0ed14b1e" src="//g.alicdn.com/aliyun/ucc-component-fe/0.2.43/??actionButtons.js,commentsNum.js"></script>
+  
+  <script type="text/javascript" nonce="7c05b57ffb0c4a2db559676e0ed14b1e" src="//g.alicdn.com/aliyun/developer-aliyun-com-fe/2.8.58/scripts/articleDetail.js"></script>
+  <script type="text/javascript" defer="defer" nonce="7c05b57ffb0c4a2db559676e0ed14b1e" src="//g.alicdn.com/aliyun/developer-aliyun-com-fe/2.8.58/scripts/??weChatDisable.js,medalDialog.js,report.js"></script>
+  
+  <script src="https://o.alicdn.com/aliyun-com/ghost-spm/index.js" defer="defer" nonce="7c05b57ffb0c4a2db559676e0ed14b1e"></script>
+  <script defer="defer" nonce="7c05b57ffb0c4a2db559676e0ed14b1e" src="https://ucc.aliyun.com/ucc/view/log?appCode=developer-ecology&amp;bizCategory=ucc-blog&amp;objectId=783329&amp;nonce=7c05b57ffb0c4a2db559676e0ed14b1e"></script>
+  <script defer="defer" type="text/javascript" src="//oneconsole.alicdn.com/sitemap/js/scm_v2.js" nonce="7c05b57ffb0c4a2db559676e0ed14b1e"></script>
+  <script defer="defer" type="text/javascript" nonce="7c05b57ffb0c4a2db559676e0ed14b1e" src="//g.alicdn.com/developer_center/developer-fresh-aliyun-com-fe/0.7.79/baidu_push.js"></script>
+  
+  
+  <script defer="defer" nonce="7c05b57ffb0c4a2db559676e0ed14b1e" src="//g.alicdn.com/developer-cloud-assets/aliyun-skill-builder-fe/3.1.3/plugin.js"></script>
+  <script nonce="7c05b57ffb0c4a2db559676e0ed14b1e">
+      let articleId = '783329';
+      /*<![CDATA[*/
+      function skillBuilderLoader(callback) {
+          if (!window.adc || !window.adc.init) {
+              callback(false);
+              return;
+          }
+
+          // 计算面包屑
+          let breadCrumbs = [];
+          let breadCrumbsNodeList = document.querySelectorAll('.developer-nav a');
+          for (let i = 0; i < breadCrumbsNodeList.length; i++) {
+              let url = breadCrumbsNodeList[i].href;
+              if (url) {
+                  try {
+                      // 创建一个URL对象
+                      let urlObj = new URL(url);
+                      urlObj.searchParams.delete("spm");
+                      url = urlObj.toString();
+                  } catch (e) {
+                  }
+                  breadCrumbs.push({link: url, text: breadCrumbsNodeList[i].textContent});
+              } else {
+                  breadCrumbs.push({text: breadCrumbsNodeList[i].textContent});
+              }
+          }
+
+          let param = {
+              app: 'developer',
+              objType: 'article',
+              objId: articleId,
+              buttonContainer: '.article-title',
+              documentTitle: document.querySelector('.article-title').textContent,
+              documentHTML: document.querySelector('.article-title').outerHTML + document.querySelector(".article-desc").outerHTML + document.querySelector('.article-content').outerHTML,
+              zIndex: 1000,
+              breadCrumbs: breadCrumbs,
+              feedbackFunction: function(){
+                  document.querySelector('.balloon-box').click();
+              }
+          };
+          // console.log("adc.init param", param);
+          window.adc.init(param);
+          callback(true);
+      }
+
+      function retryTask(taskFunction, delayList) {
+          // 最大重试次数
+          let maxAttempts = delayList.length;
+
+          function attempt(currentAttempt) {
+              if (currentAttempt >= maxAttempts) {
+                  // console.log('已达到最大尝试次数，停止重试');
+                  return;
+              }
+              // console.log("第" + (currentAttempt + 1) + "次重试，间隔时间:" + delayList[currentAttempt]);
+              taskFunction(function (result) {
+                  if (result) {
+                      // console.log('执行skillBuilder初始化成功');
+                  } else {
+                      setTimeout(function () {
+                          attempt(currentAttempt + 1);
+                      }, delayList[currentAttempt]);
+                  }
+              });
+          }
+
+          attempt(0); // 从第1次开始尝试执行任务
+      }
+
+      // 重试任务
+      retryTask(skillBuilderLoader, [500, 500, 1000, 2000, 3000]);
+      /*]]>*/
+  </script>
+</body>
+
+
+</html>

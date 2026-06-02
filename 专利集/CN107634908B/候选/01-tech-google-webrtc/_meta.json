@@ -1,0 +1,10 @@
+{
+  "nn": "01",
+  "slug": "01-tech-google-webrtc",
+  "type": "技术",
+  "name": "WebRTC / libwebrtc（FlexFEC/ULPFEC）",
+  "organization": "Google（及 WebRTC 社区）",
+  "hit_features_initial": "F2, F4, F5",
+  "publicity": "高",
+  "blurb": "- 类型：技术\n- 名称：WebRTC / libwebrtc（FlexFEC / ULPFEC 自适应冗余）\n- 组织：Google（及 WebRTC 开源社区）\n- 命中 F#（初判）：F2, F4, F5\n- 公开度：高（完整开源代码 + 设计文档 + RFC，证据最易坐实）\n- 一句话定位：被全行业广泛集成的开源实时传输库，内置基于网络状态的自适应 FEC 冗余生成与发送调度。\n- 应用案例（仅\"技术\"类条目）：Google Meet、众多浏览器实时通信、及大量下游 App / SDK 的底层传输（部分 RTC 厂商在其基础上二次开发，但下文厂商条目均为各自独立栈，单独成行）"
+}

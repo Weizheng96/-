@@ -1,0 +1,625 @@
+	
+		<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" media="all" href="/css/fpo_9.css" />
+<script type="text/javascript">
+var plstart = new Date();
+</script>
+<script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-174791-1']);
+</script>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="title" content="EXTEND HIGH CPS FLOW TABLE MANAGEMENT FROM DPU TO HOST CPU - Advanced Micro Devices, Inc." />
+<meta name="description" content="&lt;div p-id=&quot;p-0001&quot;&gt;Embodiments herein describe a system including a host having a policy agent and a data plane development kit (DPDK) interface and a data processing unit (DPU) to transmit packets to" />
+<meta name="robots" content="index, follow" />
+<title>EXTEND HIGH CPS FLOW TABLE MANAGEMENT FROM DPU TO HOST CPU - Advanced Micro Devices, Inc.</title>
+<link rel="canonical" href="https://www.freepatentsonline.com/y2025/0310244.html" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<link rel="shortcut icon" href="/images/favicon_1.ico"/>
+    <meta name='DC.identifier' content='US20250310244' />
+<meta name='DC.type' content='Patent' />
+<meta name='DC.title' content='EXTEND HIGH CPS FLOW TABLE MANAGEMENT FROM DPU TO HOST CPU' />
+<meta name='DC.contributor' scheme='assignee' content='Advanced Micro Devices, Inc.' />
+<meta name='DC.coverage' content='US' />
+<meta name='DC.date' scheme='issued' content='2025-10-02' />
+<meta name='DC.date' scheme='submitted' content='2024-04-01' />
+<meta name='citation_patent_application_number' content='18/623129' />
+<meta name='DC.relation' scheme='references' content='US20230066013' />
+<meta name='DC.relation' scheme='references' content='US20220166718' />
+</head>
+<body class="fullWidthContainer">
+
+<div>
+    <a name="top"></a>
+
+    <div class="container-fluid">
+        
+<div class="header">
+    <div class="row-fluid top">
+
+        <div class="pull-left figure">
+            <a href="/" onclick="_gaq.push(['_trackEvent', 'Header', 'Click', 'Logo']);"></a>
+        </div>
+
+
+        <div class="pull-right" style="width: 750px;">
+                        <div class="loginForm">
+                <form class="form-inline form-mini pull-right" action="/login.html" method="post">
+                    <input type="hidden" name="src" value="header_login">
+                    <input id="UID-top" name="UID" type="text" class="input-large" placeholder="Email">
+                    <input id="PWD-top" name="PWD" type="password" class="input-small" placeholder="Password">
+                    <button type="submit" class="btn btn-mini btn-primary"
+                            onclick="_gaq.push(['_trackEvent', 'Header', 'Click', 'Login']);">Login
+                    </button>
+                    <a class="btn btn-mini btn-info" href="/register.html"
+                            onclick="_gaq.push(['_trackEvent', 'Header', 'Click', 'Create']);">Sign up
+                    </a>
+                </form>
+            </div>
+            
+
+            <div class="searchForm well">
+                <form id="quick_result" name="quick_result" class="form-inline" action="/result.html" method="get">
+
+                    <input type="hidden" name="sort" value="relevance">
+                    <input type="hidden" name="srch" value="top">
+
+
+                    <div class="searchBox pull-left">
+                        <input type="text" name="query_txt" placeholder="Enter your search here"
+                               class="search-query" id="topSearchBox">
+
+                        <div class="btn-group">
+                            <button name="submit" class="btn btn-primary" type="submit"
+                                    onclick="_gaq.push(['_trackEvent', 'Header', 'Click', 'Search']);">Search
+                            </button>
+                            <button id="searchBox_dropdown" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a href="/search.html"
+                                       onclick="_gaq.push(['_trackEvent', 'Header', 'Click', 'SearchExpert']);document.cookie = 'searchTab=#expert';">
+                                    Expert Search</a>
+                                </li>
+                                <li><a href="/search.html"
+                                       onclick="_gaq.push(['_trackEvent', 'Header', 'Click', 'SearchQuick']);document.cookie = 'searchTab=#quick';">
+                                    Quick Search</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="sideCollections pull-right">
+                        <ul id="header_search_top" class="borderBottom ul-mini ">
+                            <li>
+                                <label class="checkbox">
+                                    <input type="checkbox" id="patents_us" name="patents_us"
+                                           value="on" checked="checked">US Patents/Apps
+                                </label>
+                            </li>
+
+                            <li>
+                                <label class="checkbox">
+                                    <input type="checkbox" id="patents_other" name="patents_other"
+                                           value="on">Other
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+
+
+                </form>
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+    <div class="row-fluid">
+        <div class="navbar navbar-inverse center" id="primaryNavBar">
+            <div class="navbar-inner">
+                <ul class="nav">
+                    <li><a href="/"></a></li>
+                    <li><a href="/search.html">SEARCH</a></li>
+                    <li>
+                        <a href="/tools-resources.html"
+                           onclick="_gaq.push(['_trackEvent', 'Navbar', 'Click', 'Resources']);">
+                            TOOLS &amp; RESOURCES
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    </div>
+
+<div class="clearfix"></div>        <div class="fixed-width document-details-wrapper">
+
+            <div id="dhtmltooltip"></div>
+            
+    <style type="text/css">
+        #refs {
+            margin-left: 450px;
+            padding-left: 5px;
+            border-left: 1px solid;
+        }
+
+        #fixed_height {
+            clear: both;
+            height: 6em;
+        }
+    </style>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+    <form name="biblio" action="">
+        <input type="hidden" name="patent" value="20250310244"/>
+        <input type="hidden" name="title" value="EXTEND HIGH CPS FLOW TABLE MANAGEMENT FROM DPU TO HOST CPU"/>
+        <input type="hidden" name="number" value="20250310244"/>
+        <input type="hidden" name="author" value=""/>
+        <input type="hidden" name="author_end" value=""/>
+        <input type="hidden" name="year" value="2025"/>
+        <input type="hidden" name="month" value="October"/>
+        <input type="hidden" name="url" value="https://www.freepatentsonline.com/y2025/0310244.html"/>
+        <input type="hidden" name="assignee" value="Advanced Micro Devices, Inc."/>
+        <input type="hidden" name="country" value="United States"/>
+    </form>
+
+
+
+    <!--	TITLE  -->
+    <div class="disp_doc2">
+        <div class="disp_elm_title">Title:</div>
+        <div class="disp_elm_text">
+            <font size="+1"><b>
+                    EXTEND HIGH CPS FLOW TABLE MANAGEMENT FROM DPU TO HOST CPU                </b></font>
+        </div>
+    </div>
+
+    <!--	Document Type   -->
+    <div class="disp_doc2">
+                <div class="disp_elm_text" style="clear: none;"><label class="float_left">
+                United States Patent Application 20250310244            </label>
+            
+                        <div class="disp_elm_name_kcode float_left" style="margin-left:100px;margin-top:-5px;margin-bottom:-5px;">
+                Kind
+                Code:
+            </div>
+            <div class="float_left">
+                A1            </div>
+        </div>
+        </div>
+    <div style="clear: both"></div>
+
+    <div class="disp_doc2">
+        <div class="disp_elm_text">
+            <br clear="all"/><!-- 728x90 Responsive 1 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-1586334167197709"
+     data-ad-slot="2270521617"
+     data-ad-format="auto">
+</ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+<br clear="all"/>        </div>
+    </div>
+
+    <!--	Abstract  -->
+    <div class="disp_doc2">
+        <div class="disp_elm_title">Abstract:</div>
+        <div class="disp_elm_text">
+            <div p-id="p-0001">Embodiments herein describe a system including a host having a policy agent and a data plane development kit (DPDK) interface and a data processing unit (DPU) to transmit packets to the host, wherein the DPDK interface of the host performs operations including evaluating the packets, generating packet evaluation results, selecting, with the policy agent, a data processing library based on the packet evaluation results, and transmitting a control packet that includes the data processing library from the policy agent of the host to the DPU. The DPU is further configured to receive the control packet and program datapath tables based on the data processing library.</div>        </div>
+    </div>
+
+
+    <div class="disp_doc2">
+        <div class="disp_elm_title"></div>
+
+        <div class="disp_elm_text" style="clear: none;">
+
+            <br clear="all"/><!-- Responsive sidebar -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-1586334167197709"
+     data-ad-slot="5590698414"
+     data-ad-format="auto">
+</ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+        </div>
+    </div>
+    <div id="fixed_height" class="disp_elm_text"></div><br id="break"/>
+    <div id="fixed_height" class="disp_elm_text"></div><br id="break"/>
+
+    <!-- Representative Image -->
+
+    <!--	Inventors  -->
+
+    <!--	Application Number  -->
+    <div class="disp_doc2">
+        <div class="disp_elm_title">Application Number:</div>
+        <div class="disp_elm_text">
+            18/623129        </div>
+    </div>
+
+    <!--    Publication Date  -->
+    <div class="disp_doc2">
+        <div class="disp_elm_title">Publication Date:</div>
+        <div class="disp_elm_text">
+            10/02/2025        </div>
+    </div>
+
+    <!--	Filing Date  -->
+    <div class="disp_doc2">
+        <div class="disp_elm_title">Filing Date:</div>
+        <div class="disp_elm_text">
+            04/01/2024        </div>
+    </div>
+
+    <!--	Export Citation  -->
+    <div class="disp_doc2">
+        <div class="disp_elm_title">Export Citation:</div>
+        <div class="disp_elm_text">
+            <a href="javascript:openpopup('/bibliography.html')"
+               onClick="_gaq.push(['_trackEvent', 'Body', 'Click', 'Biblio']);"> Click for automatic bibliography
+                generation </a>
+        </div>
+    </div>
+
+    <!--	Assignee  -->
+    <div class="disp_doc2">
+        <div class="disp_elm_title">Assignee:</div>
+        <div class="disp_elm_text">
+                            Advanced Micro Devices, Inc.                <br/>
+                    </div>
+    </div>
+
+    <!--	Primary Classes  -->
+    
+    <!--	Other Classes  -->
+            
+
+    <!--	International Classes  -->
+
+    <div class="disp_doc2">
+        <div class="disp_elm_title">International Classes:</div>
+        <div class="disp_elm_text">
+            <i><b>H04L45/00</b></i>; <i><b>H04L9/40</b></i>        </div>
+    </div>
+
+
+    <!--	Ecla Classes  -->
+
+    <!--	Field of Search  -->
+
+    <!--    View Patent Images  -->
+    <div class="disp_doc2">
+        <div class="disp_elm_title">View Patent Images:</div>
+        <div class="disp_elm_text">
+            <a href='/20250310244.pdf' rel="nofollow"
+               onclick="_gaq.push(['_trackEvent', 'Body', 'Click', 'PDF']);">Download PDF 20250310244                &nbsp;<span class="inline-pdf-image"></span></a>
+        </div>
+    </div>
+
+    <!--	US Patent References  -->
+    <div class="disp_doc2">
+        <div class="disp_elm_title">US Patent References:</div>
+                <div class="disp_elm_text">
+                                <table cellpadding="0" cellspacing="0" class="patent_detail__table">
+                <tbody>
+                <tr><td>20230066013</td><td>N/A</td><td>2023-03-02</td><td></td><td></td></tr><tr><td>20220166718</td><td>N/A</td><td>2022-05-26</td><td></td><td></td></tr>                </tbody>
+            </table>
+        </div>
+    </div>
+<br clear='all'><br clear="all"/><!-- 728x90 Responsive 2 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-1586334167197709"
+     data-ad-slot="4118051210"
+     data-ad-format="auto">
+</ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+<br clear="all"/>
+    <!--	Foreign Patent References:  -->
+
+    <!--		Other References  -->
+
+    <!--	Primary Examiner  -->
+
+    <!--	Assistant Examiner  -->
+
+    <!--	Attorney, Agent or Firm  -->
+    <div class="disp_doc2">
+        <div class="disp_elm_title">Attorney, Agent or Firm:</div>
+        <div class="disp_elm_text">
+                            PATTERSON + SHERIDAN, LLP - AMD                <br/>
+                    </div>
+    </div>
+
+    <!--		Parent Case Data  -->
+
+    <!--	Claims  -->
+    <div class="disp_doc2">
+        <div class="disp_elm_title">Claims:</div>
+        <div class="disp_elm_text">
+            What is claimed is:<br clear="all"/><br clear="all"/>
+                1. <claim-text>A data processing unit (DPU) comprising:
+<claim-text>a plurality of cores; and</claim-text>
+<claim-text>a datapath to communicate with a policy agent of a host via a data plane development kit (DPDK) interface running on the host, wherein the datapath is configured to:
+<claim-text>transmit packets to the host, wherein the DPDK interface is configured to:
+<claim-text>select, with the policy agent, a data processing library based on packet evaluation results; and</claim-text>
+<claim-text>transmit a control packet that includes the data processing library from the policy agent of the host to the DPU; and</claim-text>
+</claim-text>
+<claim-text>receive the control packet from the host,</claim-text>
+</claim-text>
+<claim-text>wherein the plurality of cores is configured to program datapath tables based on the data processing library.</claim-text>
+</claim-text>                    <br clear="all"/><br clear="all"/>
+                    2. <claim-text>The DPU of claim 1, wherein the packets are flow-miss packets evaluated for forwarding rule matches and security policy.</claim-text>                    <br clear="all"/><br clear="all"/>
+                    3. <claim-text>The DPU of claim 1, wherein the packet evaluation results are encoded in a custom packet metadata of the DPDK interface.</claim-text>                    <br clear="all"/><br clear="all"/>
+                    4. <claim-text>The DPU of claim 1, wherein the packet evaluation results are provided as an application programming interface (API) input to the DPDK interface.</claim-text>                    <br clear="all"/><br clear="all"/>
+                    5. <claim-text>The DPU of claim 1, wherein the control packet is built by the data processing library by encoding a flow entry key and data fields into a hardware-encoded data structure.</claim-text>                    <br clear="all"/><br clear="all"/>
+                    6. <claim-text>The DPU of claim 5, wherein the hardware-encoded data structure specifies programming protocol-independent packet processor (P4) table identifiers, P4 table operations, P4 table keys, and P4 table data.</claim-text>                    <br clear="all"/><br clear="all"/>
+                    7. <claim-text>The DPU of claim 1, wherein the data processing library encapsulates the control packet in a packet header.</claim-text>                    <br clear="all"/><br clear="all"/>
+                    8. <claim-text>The DPU of claim 1, wherein, after the control packet is transmitted to the DPU, the plurality of cores is configured to adjust flow-entry programming rates of the datapath tables based on the data processing library.</claim-text>                    <br clear="all"/><br clear="all"/>
+                    9. <claim-text>The DPU of claim 1, wherein the datapath tables support flow entry processing at a connections per second (CPS) above a predetermined threshold to support increased CPS flow table transactions.</claim-text>                    <br clear="all"/><br clear="all"/>
+                    10. <claim-text>A system comprising:
+<claim-text>a host including a policy agent and a data plane development kit (DPDK) interface; and</claim-text>
+<claim-text>a data processing unit (DPU) to transmit packets to the host, wherein the DPDK interface of the host performs operations including:
+<claim-text>evaluating the packets;</claim-text>
+<claim-text>generating packet evaluation results;</claim-text>
+<claim-text>selecting, with the policy agent, a data processing library based on the packet evaluation results; and</claim-text>
+<claim-text>transmitting a control packet containing the data processing library from the policy agent of the host to the DPU,</claim-text>
+</claim-text>
+<claim-text>wherein the DPU is further configured to receive the control packet and program datapath tables based on the data processing library.</claim-text>
+</claim-text>                    <br clear="all"/><br clear="all"/>
+                    11. <claim-text>The system of claim 10, wherein the packets are flow-miss packets evaluated for forwarding rule matches and security policy.</claim-text>                    <br clear="all"/><br clear="all"/>
+                    12. <claim-text>The system of claim 10, wherein the packet evaluation results are encoded in a custom packet metadata of the DPDK interface.</claim-text>                    <br clear="all"/><br clear="all"/>
+                    13. <claim-text>The system of claim 10, wherein the packet evaluation results are provided as an application programming interface (API) input to the DPDK interface.</claim-text>                    <br clear="all"/><br clear="all"/>
+                    14. <claim-text>The system of claim 10, wherein the control packet is built by the data processing library by encoding a flow entry key and data fields into a hardware-encoded data structure.</claim-text>                    <br clear="all"/><br clear="all"/>
+                    15. <claim-text>The system of claim 14, wherein the hardware-encoded data structure specifies programming protocol-independent packet processor (P4) table identifiers, P4 table operations, P4 table keys, and P4 table data.</claim-text>                    <br clear="all"/><br clear="all"/>
+                    16. <claim-text>The system of claim 10, wherein, after the control packet is transmitted to the DPU, DPU P4 engines of the DPU spray the packets to a plurality of cores of the DPU.</claim-text>                    <br clear="all"/><br clear="all"/>
+                    17. <claim-text>The system of claim 10, wherein the datapath tables support flow entry processing at a connections per second (CPS) above a predetermined threshold to support increased CPS flow table transactions.</claim-text>                    <br clear="all"/><br clear="all"/>
+                    18. <claim-text>A non-transitory computer-readable storage medium storing instructions, which when executed on one or more processing devices, uses a data plane development kit (DPDK) interface running on a host to perform operations including:
+<claim-text>receiving packets from a data processing unit (DPU);</claim-text>
+<claim-text>evaluating the packets;</claim-text>
+<claim-text>generating packet evaluation results;</claim-text>
+<claim-text>selecting, with a policy agent of the host, a data processing library based on the packet evaluation results; and</claim-text>
+<claim-text>transmitting the data processing library from the policy agent of the host to the DPU.</claim-text>
+</claim-text>                    <br clear="all"/><br clear="all"/>
+                    19. <claim-text>The non-transitory computer-readable storage medium of claim 18, wherein the data processing library is used to build a control packet to program datapath tables and wherein the control packet is built by encoding a flow entry key and data fields into a hardware-encoded data structure.</claim-text>                    <br clear="all"/><br clear="all"/>
+                    20. <claim-text>The non-transitory computer-readable storage medium of claim 19, wherein the hardware-encoded data structure specifies programming protocol-independent packet processor (P4) table identifiers, P4 table operations, P4 table keys, and P4 table data.</claim-text>                    <br clear="all"/><br clear="all"/>
+                            </div>
+    </div>
+
+    <!--	Description  -->
+    <div class="disp_doc2">
+        <div class="disp_elm_title">Description:</div>
+        <div class="disp_elm_text">
+            <h1>TECHNICAL FIELD</h1>
+<div p-id="p-0002" num="0001">Examples of the present disclosure generally relate to data processing units (DPUs) providing the capability to perform flow-based networking services.</div>
+<h1>BACKGROUND</h1>
+<div p-id="p-0003" num="0002">Data processing units (DPUs) have become the backbone of next-generation data centers, powering many accelerated network functions (NFs). AMD Pensando™ programmable DPUs provide many functions, such as software-defined networking, software-defined storage, and peripheral component interconnect express (PCIe) services. DPUs have a programmable data path. AMD Pensando™ DPUs are capable of running programming protocol-independent packet processors (P4) programs natively. P4 is a standardized open-source domain-specific language to program input/output (I/O) processing devices on how to handle network traffic.</div>
+<h1>SUMMARY</h1>
+<div p-id="p-0004" num="0003">One embodiment described herein is a DPU including a plurality of cores and a datapath to communicate with a policy agent of a host via a data plane development kit (DPDK) interface running on the host, wherein the datapath is configured to transmit packets to the host, wherein the DPDK interface is configured to select, with the policy agent, a data processing library based on packet evaluation results and transmit a control packet that includes the data processing library from the policy agent of the host to the DPU, and receive the control packet from the host. The plurality of cores is configured to program datapath tables based on the data processing library.</div>
+<div p-id="p-0005" num="0004">One embodiment described herein is a system including a host including a policy agent and a data plane development kit (DPDK) interface and a data processing unit (DPU) to transmit packets to the host, wherein the DPDK interface of the host performs operations including evaluating the packets, generating packet evaluation results, selecting, with the policy agent, a data processing library based on the packet evaluation results, and transmitting a control packet containing the data processing library from the policy agent of the host to the DPU. The DPU is further configured to receive the control packet and program datapath tables based on the data processing library.</div>
+<div p-id="p-0006" num="0005">One embodiment described herein is a non-transitory computer-readable storage medium storing instructions, which when executed on one or more processing devices, uses a data plane development kit (DPDK) interface running on a host to perform operations including receiving packets from a data processing unit (DPU), evaluating the packets, generating packet evaluation results, selecting, with a policy agent of the host, a data processing library based on the packet evaluation results, and transmitting the data processing library from the policy agent of the host to the DPU.</div>
+<h1>BRIEF DESCRIPTION OF DRAWINGS</h1>
+<div p-id="p-0007" num="0006">So that the manner in which the above recited features can be understood in detail, a more particular description, briefly summarized above, may be had by reference to example implementations, some of which are illustrated in the appended drawings. It is to be noted, however, that the appended drawings illustrate only typical example implementations and are therefore not to be considered limiting of its scope.</div>
+<div p-id="p-0008" num="0007">FIG. <b>1</b> illustrates a data processing unit (DPU) software architecture, according to an example.</div>
+<div p-id="p-0009" num="0008">FIG. <b>2</b> illustrates a DPU software architecture showing a sequence to perform DPU P4 flow table programming with an application programming interface (API)-Control-Packet, according to an example.</div>
+<div p-id="p-0010" num="0009">FIG. <b>3</b> illustrates a method for evaluating flow-miss packets and transmitting evaluation results to a policy agent, according to an example.</div>
+<div p-id="p-0011" num="0010">FIG. <b>4</b>A illustrates a method for delivering flow programming API requests to the DPU as a high-performance packet interface, according to an example.</div>
+<div p-id="p-0012" num="0011">FIG. <b>4</b>B illustrates a method for decoupling a DPU datapath when the host CPU and the DPU are not located within a same physical server.</div>
+<div p-id="p-0013" num="0012">FIG. <b>5</b> illustrates a method for spraying the packets to multiple ARM CPU cores of the DPU to achieve parallelism and a multi-core flow programming paradigm, according to an example.</div>
+<div p-id="p-0014" num="0013">To facilitate understanding, identical reference numerals have been used, where possible, to designate identical elements that are common to the figures. It is contemplated that elements of one example may be beneficially incorporated in other examples.</div>
+<h1>DETAILED DESCRIPTION</h1>
+<div p-id="p-0015" num="0014">Various features are described hereinafter with reference to the figures. It should be noted that the figures may or may not be drawn to scale and that the elements of similar structures or functions are represented by like reference numerals throughout the figures. It should be noted that the figures are only intended to facilitate the description of the features. They are not intended as an exhaustive description of the embodiments herein or as a limitation on the scope of the claims. In addition, an illustrated example need not have all the aspects or advantages shown. An aspect or an advantage described in conjunction with a particular example is not necessarily limited to that example and can be practiced in any other examples even if not so illustrated, or if not so explicitly described.</div>
+<div p-id="p-0016" num="0015">A data processing unit (DPU) is a purpose-built piece of silicon technology that is designed for handling network data traffic. A DPU is a programmable processor designed to efficiently handle data-centric workloads such as data transfer, reduction, security, compression, analytics, and encryption, at scale in data centers. By offloading data traffic to a DPU, compute intensive tasks may be optimized on computer processing unit (CPU) and graphical processing unit (GPU) resources. DPUs are rapidly becoming an important component in modern computing because of their ability to improve the efficiency and performance of data centers by offloading workloads from the CPU and the GPU.</div>
+<div p-id="p-0017" num="0016">In general, DPUs offload network and communication workloads from the CPU and GPU, freeing up resources for application processing. By combining processing cores with hardware accelerator blocks to handle data-centric workloads at scale, DPUs can improve performance and reduce latency. DPUs are designed to process data-intensive workloads in large-scale data centers supporting cloud environments or supercomputers driving artificial intelligence (AI), deep learning algorithms, and other data-intensive applications. DPUs can be scaled to accommodate increasing workloads in volume and complexity as data center needs grow and become more intensive. Additionally, DPUs can be added to existing hardware infrastructure, allowing for a flexible and adaptable data center architecture. DPUs can provide improved reliability through features like redundancy and high availability, ensuring the continuity of important data processing tasks in the event of hardware failures. DPUs can reduce overall hardware costs related to managing a data center by offloading processing tasks from the CPU and GPU, and handling complex tasks, thereby enabling the use of fewer hardware components.</div>
+<div p-id="p-0018" num="0017">Therefore, DPUs work with CPUs and GPUs to enhance computing power and the handling of increasingly complex modern data workloads. The DPU market has steadily gained traction thanks to a rise in demand for artificial intelligence (AI), machine learning, deep learning, Internet-of-Things (IoT), 5G, and complex cloud architectures.</div>
+<div p-id="p-0019" num="0018">DPUs are capable of running Programming Protocol-independent Packet Processors (P4) programs natively in their match processing units (MPUs). P4 is a standardized open-source domain-specific language to program input/output (I/O) processing devices on how to handle network traffic.</div>
+<div p-id="p-0020" num="0019">P4 is a domain-specific language for network devices, specifying how data plane devices (e.g., switches, network interface controllers (NICs), routers, filters, etc.) process packets. Before P4, vendors had total control over the functionality supported in the network. And since networking silicon determined much of the possible behavior, silicon vendors controlled the rollout of new features (e.g., virtual extensible local area network (VXLAN)), and rollouts took years. P4 turns the traditional model on its head. Application developers and network engineers can now use P4 to implement specific behavior in the network, and changes can be made in minutes instead of years.</div>
+<div p-id="p-0021" num="0020">In routing, the forwarding plane, sometimes called the data plane or user plane, defines the part of the router architecture that decides what to do with packets arriving on an inbound interface. Most commonly, it refers to a table in which the router looks up the destination address of the incoming packet and retrieves information to determine the path from the receiving element, through the internal forwarding fabric of the router, and to the proper outgoing interface(s).</div>
+<div p-id="p-0022" num="0021">In the realm of network management, two components play a role in how data is handled, that is, the control plane and the data plane. These two entities, while working in tandem, perform distinct functions that are integral to the smooth operation of a network.</div>
+<div p-id="p-0023" num="0022">The control plane is tasked with making decisions on how data should be managed, routed, and processed. The control plane acts as a supervisor of data, coordinating communication between different components and collecting data from the data plane. The control plane uses various protocols, such as, routing protocols, network management protocols, and application layer protocols. These protocols often employ software-defined networking (SDN) to create virtual networks and manage their traffic. Virtual networks, facilitated by SDN, are instrumental in managing data traffic at an enterprise level. They enable organizations to segment traffic, prioritize data flows, and isolate traffic from different parts of the network.</div>
+<div p-id="p-0024" num="0023">While the control plane supervises and directs, the data plane is responsible for the actual movement of data from one system to another. The data plane is the workhorse that delivers data to end users from systems and vice versa. Data planes can include, e.g., Ethernet switches, Wi-Fi networks, cellular networks, etc. Data planes can also include virtualized networks, like those created using virtual private networks (VPNs) or software-defined networks (SDNs). Additionally, data planes can include dedicated networks, like the IoT or industrial control systems.</div>
+<div p-id="p-0025" num="0024">Data planes allow organizations to quickly and securely transfer data between systems. For example, a data plane can enable the transfer of data between a cloud-based application and a local system. This functionality can be beneficial for organizations that access data from multiple systems or that quickly transfer large amounts of data.</div>
+<div p-id="p-0026" num="0025">The main differences between control planes and data planes are their purpose and how they communicate between different systems. The control plane decides how data is managed, routed, and processed, while the data plane is responsible for the actual moving of data. For example, the control plane decides how packets should be routed, and the data plane carries out those instructions by forwarding the packets. Along with doing different jobs, control planes and data planes exist in different areas. While the control plane runs in the cloud, the data plane runs in the data processing area. They also use different functions to do their jobs. Control planes use protocols to communicate between different systems, mostly common routing protocols or network management protocols like simple network management protocol (SNMP).</div>
+<div p-id="p-0027" num="0026">Many targets implement both a control plane and a data plane. P4 is designed to specify only the data plane functionality of the target. P4 programs also partially define the interface by which the control plane and the data plane communicate, but P4 may not be used to describe the control plane functionality of the target. Moreover, a P4-programmable switch differs from a traditional switch in two ways, that is:</div>
+<div p-id="p-0028" num="0027">The data plane functionality is not fixed in advance but is defined by a P4 program. The data plane is configured at initialization time to implement the functionality described by the P4 program and has no built-in knowledge of existing network protocols.</div>
+<div p-id="p-0029" num="0028">The control plane communicates with the data plane using the same channels as in a fixed-function device, but the set of tables and other objects in the data plane are no longer fixed, since they are defined by a P4 program. The P4 compiler generates the API that the control plane uses to communicate with the data plane.</div>
+<div p-id="p-0030" num="0029">Target manufacturers provide the hardware or software implementation framework, an architecture definition, and a P4 compiler for that target. P4 programmers write programs for a specific architecture, which defines a set of P4-programmable components on the target as well as their external data plane interfaces. Compiling a set of P4 programs produces two artifacts, that is, a data plane configuration that implements the forwarding logic described in the input program and an application programming interface (API) for managing the state of the data plane objects from the control plane P4 is a domain-specific language that is designed to be implementable on a large variety of targets including programmable network interface cards, field programmable gate arrays (FPGAs), software switches, and hardware application-specific integrated circuit (ASICs). As such, the language is restricted to constructs that may be efficiently implemented on all of these platforms.</div>
+<div p-id="p-0031" num="0030">DPUs have a programmable data path. DPUs can handle classic P4 functions such as packet parsing, manipulation, tunneling, and access control lists (ACLs). AMD Pensando™ P4 programs may implement (periodic) timer events, handle asynchronous events triggered by state transitions, generate notifications, craft and send packets inline, etc., making it possible to implement complex features and custom network protocols natively in the P4 data path. For example, network functions like transmission control protocol/transport layer security (TCP/TLS) proxies, non-volatile memory express (NVMe) over TCP, Internet protocol security (IPsec), Active-Active or Active-Passive HA state machines, and flow aging may be implemented inline in the fast path processors. Although the AMD Pensando™ DPU also has general-purpose CPU cores, the goal is to not use these to handle fast path data traffic, thus providing both programmability and performance at the same time. Utilization of CPUs for such services may degrade the fast path performance, scale, throughput (as measured by packets per second or PPS), and latency.</div>
+<div p-id="p-0032" num="0031">One challenge in this data-path forwarding paradigm is to be able to classify or create or update or delete flow entries into the data-path tables at a very high rate (in the order of millions per second) to be able to keep up with high incoming connections of various application flows, in a multi workload environment (e.g., a cloud environment).</div>
+<div p-id="p-0033" num="0032">The AMD DPU enforces an architectural constraint that restricts the read/write access to the P4 hardware flow table only to the DPU's CPU, since the DPU memory may not be directly accessed from outside of the DPU (e.g., to provide a communication gap between host and DPU, for security reasons). Hence the software agent(s) running on the host CPU may not directly perform insertions/deletions of flow entries into the DPU P4 flow table, but instead would use a software proxy on the DPU's CPU to perform this task.</div>
+<div p-id="p-0034" num="0033">This constraint leads to a bigger challenge in supporting high connections per second (CPS) flow table management capability in the DPU deployment environments where the flow-programming software agent(s) aren't run in the DPU's CPU cores, but rather are maintained in the host X86 CPUs.</div>
+<div p-id="p-0035" num="0034">The exemplary embodiments present a method to achieve high CPS flow table transactions (i.e., create/update/delete) in the DPU environment where the flow programming software agent is running in the host x86 CPUs to which the DPU is connected over the peripheral component interconnect express (PCIe) interface. As such, sustained high CPS rates of DPU flow table management can be achieved from software agent(s) running in host x86 CPU(s).</div>
+<div p-id="p-0036" num="0035">FIG. <b>1</b> illustrates a data processing unit (DPU) software architecture, according to an example.</div>
+<div p-id="p-0037" num="0036">A DPU, a CPU, and a GPU are all computing processors, each performing a different function. The CPU is the main processor responsible for the overall operation of a computer system, serving as the brain of a computer. The GPU is a specialized processor for graphics computing tasks, such as rendering 3D images or videos. The DPU is the newest processor, specializing in data-centric workloads, such as networking, storage, and security operations in data centers.</div>
+<div p-id="p-0038" num="0037">CPUs consist of a few powerful processing cores optimized for serial or sequential processing, meaning one task after another. GPUs have a large number of simpler cores optimized for parallel processing, meaning simultaneous tasks. DPUs combine processing cores, hardware accelerator blocks, and a high-performance network interface to process data-centric tasks at scale. The DPU may be used to improve data center infrastructure by increasing efficiency, enhancing data processing speed, and reducing workload on CPUs, leading to faster and more reliable data processing.</div>
+<div p-id="p-0039" num="0038">To use a DPU, a server or networking device has a compatible PCIe slot for the DPU card. The hardware should also have a compatible operating system (OS) and drivers, sufficient memory for the DPU to function properly, and reliable power and cooling. The DPU offloads network and communication workloads from the CPU by handling large-scale data processing tasks. Such data-centric workloads range from data analytics, transfer, reduction, security, compression, analytics, compression, and encryption. DPUs are beneficial for storage networking. Practical applications may include artificial intelligence and machine learning, big data analytics and processing, video transcoding and streaming, network traffic processing and security, and storage I/O acceleration.</div>
+<div p-id="p-0040" num="0039">The architecture <b>100</b>A includes a CPU <b>110</b> and a DPU <b>120</b>.</div>
+<div p-id="p-0041" num="0040">The CPU <b>110</b> may be, e.g., a X86 CPU. The CPU <b>110</b> may also be referred to as a host CPU. The CPU <b>110</b> further includes a policy agent <b>112</b>.</div>
+<div p-id="p-0042" num="0041">The CPU <b>110</b> communicates with the DPU <b>120</b>. The DPU <b>120</b> includes ARM cores <b>122</b> and a P4 programmable datapath <b>124</b>. ARM cores <b>122</b> refer to ARM processors. An ARM processor is one of a family of CPUs based on the reduced instruction set computer (RISC) architecture for computer processors.</div>
+<div p-id="p-0043" num="0042">The policy agent <b>112</b> of the CPU <b>110</b> directly communicates with the ARM cores <b>122</b> of the DPU <b>120</b>. The policy agent <b>112</b> may not directly communicate with the P4 programmable datapath <b>124</b>. As noted above, the AMD DPU enforces an architectural constraint that restricts the read/write access to the P4 hardware flow table only to the DPU's CPU, since the DPU memory may not be directly accessed from outside of the DPU <b>120</b>, for security reasons. Hence the policy agent <b>112</b> running on the host CPU <b>110</b> is prevented from directly performing insertions/deletions of flow entries into the DPU P4 flow table, but instead uses a software proxy on the DPU's CPU to perform this task. Thus, the policy agent <b>112</b> running on the host CPU <b>110</b> communicates with a software proxy on the ARM cores <b>122</b>, which has access to the DPU P4 datapath tables where flow/session entries are programmed. The communication between policy agent <b>112</b> and the software proxy takes place over, e.g., an Ethernet device.</div>
+<div p-id="p-0044" num="0043">FIG. <b>2</b> illustrates a DPU software architecture showing a sequence to perform DPU P4 flow table programming with an application programming interface (API)-Control-Packet, according to an example.</div>
+<div p-id="p-0045" num="0044">The architecture <b>100</b>B is similar to the architecture <b>100</b>A of FIG. <b>1</b>, and a description of like elements will be omitted. The DPU <b>120</b> is also shown to include P4 engines <b>126</b> and P4 tables <b>128</b>. The DPU <b>120</b> is configured to send flow-miss packets <b>130</b> to the policy agent <b>112</b>.</div>
+<div p-id="p-0046" num="0045">The flow-miss packets <b>130</b> from the DPU <b>120</b>, which are candidate packets for policy evaluation and flow creation, are delivered to the host x86 CPUs (i.e., CPU <b>110</b>) from the DPU <b>120</b> via a set of PCIe Ethernet based physical function/virtual function (PF/VF) interfaces, which are enabled as data plane development kit (DPDK) interfaces on the host CPU with the flow programming software agent having bound to those interfaces as DPDK packet interfaces. In one example, the Pensando IONIC DPDK PMD (Poll Mode driver) is used to enable the DPDK packet interface in the software agent process on the host CPU <b>110</b>. This is shown as packet P1 in FIG. <b>2</b>.</div>
+<div p-id="p-0047" num="0046">PCIe is an interface standard for connecting high-speed components. Desktop personal computer (PC) motherboards have a number of PCIe slots. PCIe slots come in different physical configurations such as x1, x4, x8, x16, x32. The number after the x indicates how many lanes (how data travels to and from the PCIe card) that PCIe slot has. A PCIe x1 slot has one lane and can move data at one data symbol per cycle. A PCIe x2 slot has two lanes and can move data at two data symbols per cycle (and so on). PCIe lanes are the physical link between the PCIe-supported device and the processor or chipset. PCIe lanes consist of two pairs of copper wires, known as traces that run through the motherboard connecting the PCIe-enabled device to either the processor or motherboard chipset.</div>
+<div p-id="p-0048" num="0047">The PCIe function is defined by a unique identifier, the function ID (FID). Each function specifies a function type and a physical channel identifier (PCHID). Multiple functions may be specified to the same PCHID value provided that each of these functions defines a unique VF number. PFs have the ability to move data in and out of the device, while VFs are lightweight PCIe functions that support data flowing but also have a restricted set of configuration resources. The VFs or PFs available to the hypervisor or guest OS depend on the PCIe device.</div>
+<div p-id="p-0049" num="0048">PFs are full PCIe devices that include single root I/O virtualization (SR-IOV) capabilities. PFs are discovered, managed, and configured as normal PCI devices. PFs configure and manage the SR-IOV functionality by assigning VFs. VFs are simple PCIe functions that process I/O. Each VF is derived from a PF. The number of VFs a device may have is limited by the device hardware. A single Ethernet port, the physical device, may map to many VFs that may be shared with VMs.</div>
+<div p-id="p-0050" num="0049">DPDK is a set of libraries and drivers for fast packet processing. This set of libraries provides the so-called environment abstraction layer (EAL). The EAL hides the details of the environment and provides a standard programming interface. The DPDK further provides a set of data plane libraries and network interface controller polling-mode drivers for offloading transmission control protocol (TCP) packet processing from the OS kernel to processes running in user space.</div>
+<div p-id="p-0051" num="0050">Referring back to the operation of FIG. <b>2</b>, the flow-miss packets are evaluated for security policy and forwarding rule (and any other offloaded features) matches in the DPU's P4 engines <b>126</b> to assist in flow programming evaluations of the policy agent <b>112</b>, and the results of this hardware evaluation are encoded in a custom packet metadata of the DPDK packet that is sent to the host DPDK interface(s). Packet spraying across multiple DPDK queues is employed to maximize the rate of packet delivery to the host CPU <b>110</b>.</div>
+<div p-id="p-0052" num="0051">The host DPDK driver is integrated with a DPU-Flow-SDK-Lib (e.g., a data processing library), which processes the custom packet metadata present in the packet context received on the DPDK queue(s) from the DPU <b>120</b>, and the security policy and forwarding results are picked up from this metadata to be delivered to the policy agent <b>112</b> as an API input. SDK stands for software development kit in the data processing library.</div>
+<div p-id="p-0053" num="0052">The policy agent <b>112</b> leverages the flow evaluation results from the DPU <b>120</b> so that it does not burn the CPU cycles to perform the ACL/policy/routing database evaluations in software and uses the DPU-Flow-SDK-Lib to submit the flow creation request back to the DPU <b>120</b> as an API-Control-Packet <b>132</b>. The API-Control-Packet <b>132</b> is built by the DPU-Flow-SDK-Lib by encoding the flow entry key and data fields into a ‘PDS-API-Header,’ which is a hardware-friendly encoded data-structure that specifies:</div>
+<div p-id="p-0054" num="0053">A P4 table identifier, which may be a specific flow table, session-table, flow-action table, etc.</div>
+<div p-id="p-0055" num="0054">A P4 table operation, such as create or update or delete or read.</div>
+<div p-id="p-0056" num="0055">A P4 table key, where key fields corresponding to the specific P4 table are identified.</div>
+<div p-id="p-0057" num="0056">A P4 table data, which are data fields that the P4 table lookup should yield, corresponding to the table.</div>
+<div p-id="p-0058" num="0057">API flags/metadata, that is, any special instructions to the DPU <b>120</b> in programming the specific P4 table entry, such as byte swizzling, batching and sequencing parameters, etc.</div>
+<div p-id="p-0059" num="0058">The policy agent <b>112</b> then transmits the API-Control-Packet <b>132</b> back to the DPU <b>120</b> over the same DPDK interface transmit queue(s) to deliver the flow programming API requests to the DPU <b>120</b> as a high-performance packet-interface as opposed to a gRPC/remote IPC API-interface that would have scalability and/or performance limitations.</div>
+<div p-id="p-0060" num="0059">These packets can carry a unique packet field to identify themselves as API requests to the DPU <b>120</b>, like a reserved dest-MAC/VLAN/dest-IP field to help in easy classification at the DPU <b>120</b>.</div>
+<div p-id="p-0061" num="0060">Optionally, the original packet can also be carried inside the API-Control-Packet <b>132</b> with an instruction to the DPU <b>120</b> to process the original packet in the P4 flow-based pipeline once the flow entry itself is installed in the P4 table <b>128</b>. This is in case the software agent (i.e., policy agent <b>112</b>) does not intend to perform the handling of the original packet forwarding in software. This API-Control-Packet <b>132</b> is shown as P2.</div>
+<div p-id="p-0062" num="0061">The DPU-Flow-SDK-Lib can also encapsulate the API-Control-Packet <b>132</b> in a L2/L3 or virtual extensible local area network, that is, a general protocol extension (VXLAN-GPE) header to achieve the following goals:</div>
+<div p-id="p-0063" num="0062">When the API-Control-Packet <b>132</b> is received at the DPU <b>120</b> from the policy agent <b>112</b> of the host CPU <b>110</b>, the DPU P4 engines <b>126</b> can spray the packets to multiple ARM cores <b>122</b> of the DPU <b>120</b> based on L3/L4 based receive side scaling (RSS) hashing, to achieve parallelism and multi-core flow programming paradigm, which maximizes a flow programming rate. This is shown as packet P3.</div>
+<div p-id="p-0064" num="0063">These packet formats are made to be more portable to pass over a network other than a host PCIe interface, if it is desired to run the policy agent <b>112</b> on remote CPUs connected over an Ethernet/IP network.</div>
+<div p-id="p-0065" num="0064">Packet P3 also helps in decoupling the DPU datapath from the x86 (or external) control plane to provide backward compatibility during software upgrades.</div>
+<div p-id="p-0066" num="0065">The DPU leverages both its P4 engines <b>126</b> and ARM cores <b>122</b> to process the API-Control-Packet <b>132</b> to program the datapath P4 tables <b>128</b>, based on the type of P4 table entry to be programmed.</div>
+<div p-id="p-0067" num="0066">All entries corresponding to index-based P4 tables <b>128</b>, where the exact index key and data are present in the API-Control-Packet <b>132</b> may be programmed directly by the P4 engines <b>126</b>.</div>
+<div p-id="p-0068" num="0067">All API-Control-Packets <b>132</b> carrying requests to program complex hash-tables are sent to ARM DPDK queues, and such table programming may be handled by the ARM cores <b>122</b> based on the DPDK software data-path application.</div>
+<div p-id="p-0069" num="0068">The ownership of the P4 tables <b>128</b> are divided between P4 direct memory access (DMA) and ARM software at a table level granularity.</div>
+<div p-id="p-0070" num="0069">This enables load-balancing and parallel handling of the API-Control-Packet requests for different tables in order to increase the API handling rates.</div>
+<div p-id="p-0071" num="0070">The ARM cores <b>122</b> are dedicated as DPDK poll-mode cores whose role is to handle incoming API-request packets and program the corresponding P4 table entries accordingly, and then optionally re-inject any accompanying original data packet back into the P4 hardware pipeline.</div>
+<div p-id="p-0072" num="0071">The P4 tables <b>128</b> are memory-mapped in the DPDK packet-processing threads on the ARM cores <b>122</b>, and, hence, each core may perform direct memory read/write instructions to program the P4 tables <b>128</b>.</div>
+<div p-id="p-0073" num="0072">The API response/status of each table programming transaction is again sent back from the DPU <b>120</b> to the host DPDK interface in the same API-Control-Packet format identifying the specific transaction, requested table entry, and its corresponding response status of success/failure opcodes. These packets are shown as P5 and P6.</div>
+<div p-id="p-0074" num="0073">The table programming operations from ARM are shown as T4. These are table read/write/update operations.</div>
+<div p-id="p-0075" num="0074">In order to maintain sustained high CPS rates, the DPU hardware P4 engines also assist in flow-ageing by performing high precision scans to identify idle flows and report them via the same host DPDK interface queues to the policy agent <b>112</b>. This may result in the policy agent <b>112</b> invoking the DPU-Flow-SDK-Lib to build flow-delete requests as API-Control-Packets <b>132</b> and transmit those requests on the same DPDK interface transmit queue(s) back to the DPU, in a similar fashion as the flow-create path described above.</div>
+<div p-id="p-0076" num="0075">The DPU-Flow-SDK-Lib is generalized to handle the table management of any DPU P4 table <b>128</b> that is used in fast-path forwarding, and not restricted to the flow table alone, although the latter is the only table usually employed in high-rate transactions. This enables the entire DPU P4 fast-path table management to be performed from the x86 host based on management/config/data software agent(s) via a single high-performance packet-based API interface.</div>
+<div p-id="p-0077" num="0076">The exemplary methods thus achieve high CPS flow table transactions (i.e., create/update/delete) in the DPU environment where the flow programming software agent is running in the host x86 CPU(s) to which the DPU is connected over the PCIe interface. As such, sustained high CPS rates of DPU flow table management can be achieved from software agent(s) running in host x86 CPU(s). The exemplary methods introduce a high-performance packet interface to perform DPU P4 flow table programming with the DPDK based API-Control-Packet header to extend the high CPS flow-table paradigm from the DPU to the host x86 CPUs. The exemplary methods extend the flow evaluation hardware-assists for packet classification/security policy/forwarding decisions and the hardware flow-ageing assists to be offloaded from host software agents, and provide a library for programmatic interfaces for custom API-Control-Packet formats to achieve parallelism across multi-core CPUs in both the host and the DPU. The exemplary methods introduce hardware (HW) offload/assist in P4-table programming of index and hash tables from the PDSAPI-Header information in the API-Control-Packet by handling these packets in P4 DMA pipeline entirely, without involving the DPU's ARM CPU core(s). The exemplary methods also facilitate data-path P4 tables to be programmed from the host x86 CPU(s) based software-agents via the high-performance DPDK-based packet-interface instead of a gRPC/remote-IPC mechanism to provide higher scaling/table programming rates that may be equivalent of packets-per-second rates through the DPU.</div>
+<div p-id="p-0078" num="0077">FIG. <b>3</b> illustrates a method for evaluating flow-miss packets and transmitting evaluation results to a policy agent, according to an example.</div>
+<div p-id="p-0079" num="0078">At block <b>302</b>, flow-miss packets are evaluated for security policy and forwarding rule matches in the DPUs P4 engines.</div>
+<div p-id="p-0080" num="0079">At block <b>304</b>, the evaluation results are encoded in a custom packet metadata of the DPDK packet.</div>
+<div p-id="p-0081" num="0080">At block <b>306</b>, the flow-miss packets are delivered from the DPU to the host CPU via PCIe interfaces (enabled as DPDK interfaces on the host CPU).</div>
+<div p-id="p-0082" num="0081">At block <b>308</b>, the custom packet metadata of the DPDK packet are extracted.</div>
+<div p-id="p-0083" num="0082">At block <b>310</b>, the security policy and forwarding rule match results are delivered from the custom packet metadata to the policy agent (as an API input).</div>
+<div p-id="p-0084" num="0083">At block <b>312</b>, the policy agent uses the results from the DPU to avoid burning CPU cycles to perform such evaluations and to use a DPU-Flow-SDK-Lib to submit a flow creation request back to the DPU (as an API-Control-Packet).</div>
+<div p-id="p-0085" num="0084">FIG. <b>4</b>A illustrates a method for delivering flow programming API requests to the DPU as a high-performance packet interface, according to an example.</div>
+<div p-id="p-0086" num="0085">At block <b>402</b>, the policy agent transmits the API-Control-Packet to the DPU to deliver the flow programming API requests to the DPU as a high-performance packet interface.</div>
+<div p-id="p-0087" num="0086">At block <b>404</b>, the packets are sprayed to multiple ARM cores of the DPU, via the DPU P4 engines, to achieve parallelism and a multi-core flow programming paradigm (maximize flow programming rates).</div>
+<div p-id="p-0088" num="0087">FIG. <b>4</b>B illustrates a method for decoupling a DPU datapath when the host CPU and the DPU are not located within a same physical server.</div>
+<div p-id="p-0089" num="0088">At block <b>406</b>, the API control packets are sent over a network between the host CPU and the DPU. The host CPU and the DPU are not located in the same physical server.</div>
+<div p-id="p-0090" num="0089">At block <b>408</b>, the DPU datapath is decoupled from a control plane of the host CPU to provide for backward compatibility during software upgrades.</div>
+<div p-id="p-0091" num="0090">FIG. <b>5</b> illustrates a method for spraying the packets to multiple ARM CPU cores of the DPU to achieve parallelism and a multi-core flow programming paradigm, according to an example.</div>
+<div p-id="p-0092" num="0091">At block <b>502</b>, the ARM cores are used to handle incoming API-request packets and program corresponding P4 table entries.</div>
+<div p-id="p-0093" num="0092">At block <b>504</b>, the P4 data path tables are memory-mapped in packet processing threads in the ARM cores of the DPU (each ARM core may perform direct memory read/write instructions to program the P4 tables).</div>
+<div p-id="p-0094" num="0093">At block <b>506</b>, an API response/status of each P4 table programming transaction is sent from the DPU to the host CPU in the same API-Control-Packet format.</div>
+<div p-id="p-0095" num="0094">In conclusion, a method is presented to achieve high CPS flow table transactions (i.e., create/update/delete) in the DPU environment where the flow programming software agent is running in the host x86 CPU(s) to which the DPU is connected over the PCIe interface. As such, sustained high CPS rates of DPU flow table management can be achieved from software agent(s) running in host x86 CPU(s). The exemplary methods introduce a high-performance packet interface to perform DPU P4 flow table programming with DPDK based API-Control-Packet header to extend the high CPS flow-table paradigm from the DPU to the host x86 CPUs. The exemplary methods extend the flow evaluation hardware-assists for packet classification/security policy/forwarding decisions and the hardware flow-ageing assists to be offloaded from host software agents, and provide a library for programmatic interface for custom API-Control-Packet formats to achieve parallelism across multi-core CPUs in both the host and the DPU. The exemplary methods introduce HW offload/assist in P4-table programming of index and hash tables from the PDSAPI-Header information in the API-Control-Packet by handling these packets in P4 DMA pipeline entirely, without involving the DPU's ARM CPU core(s). The exemplary methods also facilitate data-path P4 tables to be programmed from the host x86 CPU(s) based software-agents via the high-performance DPDK-based packet-interface instead of a gRPC/remote-IPC mechanism to provide higher scaling/table programming rates that may be equivalent of packets-per-second rates through the DPU.</div>
+<div p-id="p-0096" num="0095">In the preceding, reference is made to embodiments presented in this disclosure. However, the scope of the present disclosure is not limited to specific described embodiments. Instead, any combination of the described features and elements, whether related to different embodiments or not, is contemplated to implement and practice contemplated embodiments. Furthermore, although embodiments disclosed herein may achieve advantages over other possible solutions or over the prior art, whether or not a particular advantage is achieved by a given embodiment is not limiting of the scope of the present disclosure. Thus, the preceding aspects, features, embodiments and advantages are merely illustrative and are not considered elements or limitations of the appended claims except where explicitly recited in a claim(s).</div>
+<div p-id="p-0097" num="0096">As will be appreciated by one skilled in the art, the embodiments disclosed herein may be embodied as a system, method or computer program product. Accordingly, aspects may take the form of an entirely hardware embodiment, an entirely software embodiment (including firmware, resident software, micro-code, etc.) or an embodiment combining software and hardware aspects that may all generally be referred to herein as a “circuit,” “module” or “system.” Furthermore, aspects may take the form of a computer program product embodied in one or more computer readable medium(s) having computer readable program code embodied thereon.</div>
+<div p-id="p-0098" num="0097">Any combination of one or more computer readable medium(s) may be utilized. The computer readable medium may be a computer readable signal medium or a computer readable storage medium. A computer readable storage medium may be, for example, but not limited to, an electronic, magnetic, optical, electromagnetic, infrared, or semiconductor system, apparatus, or device, or any suitable combination of the foregoing. More specific examples (a non-exhaustive list) of the computer readable storage medium would include the following: an electrical connection having one or more wires, a portable computer diskette, a hard disk, a random access memory (RAM), a read-only memory (ROM), an erasable programmable read-only memory (EPROM or Flash memory), an optical fiber, a portable compact disc read-only memory (CD-ROM), an optical storage device, a magnetic storage device, or any suitable combination of the foregoing. In the context of this document, a computer readable storage medium is any tangible medium that can contain, or store a program for use by or in connection with an instruction execution system, apparatus or device.</div>
+<div p-id="p-0099" num="0098">A computer readable signal medium may include a propagated data signal with computer readable program code embodied therein, for example, in baseband or as part of a carrier wave. Such a propagated signal may take any of a variety of forms, including, but not limited to, electro-magnetic, optical, or any suitable combination thereof. A computer readable signal medium may be any computer readable medium that is not a computer readable storage medium and that can communicate, propagate, or transport a program for use by or in connection with an instruction execution system, apparatus, or device.</div>
+<div p-id="p-0100" num="0099">Program code embodied on a computer readable medium may be transmitted using any appropriate medium, including but not limited to wireless, wireline, optical fiber cable, RF, etc., or any suitable combination of the foregoing.</div>
+<div p-id="p-0101" num="0100">Computer program code for carrying out operations for aspects of the present disclosure may be written in any combination of one or more programming languages, including an object oriented programming language such as Java, Smalltalk, C++ or the like and conventional procedural programming languages, such as the “C” programming language or similar programming languages. The program code may execute entirely on the user's computer, partly on the user's computer, as a stand-alone software package, partly on the user's computer and partly on a remote computer or entirely on the remote computer or server. In the latter scenario, the remote computer may be connected to the user's computer through any type of network, including a local area network (LAN) or a wide area network (WAN), or the connection may be made to an external computer (for example, through the Internet using an Internet Service Provider).</div>
+<div p-id="p-0102" num="0101">Aspects of the present disclosure are described below with reference to flowchart illustrations and/or block diagrams of methods, apparatus (systems) and computer program products according to embodiments presented in this disclosure. It will be understood that each block of the flowchart illustrations and/or block diagrams, and combinations of blocks in the flowchart illustrations and/or block diagrams, can be implemented by computer program instructions. These computer program instructions may be provided to a processor of a general purpose computer, special purpose computer, or other programmable data processing apparatus to produce a machine, such that the instructions, which execute via the processor of the computer or other programmable data processing apparatus, create means for implementing the functions/acts specified in the flowchart and/or block diagram block or blocks.</div>
+<div p-id="p-0103" num="0102">These computer program instructions may also be stored in a computer readable medium that can direct a computer, other programmable data processing apparatus, or other devices to function in a particular manner, such that the instructions stored in the computer readable medium produce an article of manufacture including instructions which implement the function/act specified in the flowchart and/or block diagram block or blocks.</div>
+<div p-id="p-0104" num="0103">The computer program instructions may also be loaded onto a computer, other programmable data processing apparatus, or other devices to cause a series of operational steps to be performed on the computer, other programmable apparatus or other devices to produce a computer implemented process such that the instructions which execute on the computer or other programmable apparatus provide processes for implementing the functions/acts specified in the flowchart and/or block diagram block or blocks.</div>
+<div p-id="p-0105" num="0104">The flowchart and block diagrams in the Figures illustrate the architecture, functionality, and operation of possible implementations of systems, methods, and computer program products according to various examples of the present invention. In this regard, each block in the flowchart or block diagrams may represent a module, segment, or portion of instructions, which comprises one or more executable instructions for implementing the specified logical function(s). In some alternative implementations, the functions noted in the block may occur out of the order noted in the figures. For example, two blocks shown in succession may, in fact, be executed substantially concurrently, or the blocks may sometimes be executed in the reverse order, depending upon the functionality involved. It will also be noted that each block of the block diagrams and/or flowchart illustration, and combinations of blocks in the block diagrams and/or flowchart illustration, can be implemented by special purpose hardware-based systems that perform the specified functions or acts or carry out combinations of special purpose hardware and computer instructions.</div>
+<div p-id="p-0106" num="0105">While the foregoing is directed to specific examples, other and further examples may be devised without departing from the basic scope thereof, and the scope thereof is determined by the claims that follow.</div>
+        </div>
+    </div>
+
+    <br clear="all"/><br/>
+
+
+    <br clear="all"/><br/>
+    <div class="disp_doc2">
+
+            <div class="disp_doc2">
+        <div class="disp_elm_title">&nbsp;</div>
+        <div class="disp_elm_text" style="height:70px;">
+    
+    <b>Previous Patent:</b> <a onClick="_gaq.push(['_trackEvent', 'Bottom', 'Click', 'Previous']);" href="/y2025/0310243.html">METHOD AND DEVICE FOR FORWARDING DATA FLOW, SDN CONTROLLER AND STORAGE MEDIUM</a><br clear='all'/><br clear='all'/><b>Next Patent:</b> <a onClick="_gaq.push(['_trackEvent', 'Bottom', 'Click', 'Next']);" href="/y2025/0310245.html">RELAY DEVICE AND PROGRAM</a>
+            </div>
+        </div>
+        <br clear="all"/><br/>
+</div>
+    <br clear="all"/><br/>
+        </div>
+
+        <div class="pageFooter">
+    <div class="row-fluid top">
+        <div class="figure"></div>
+        <ul>
+            <li>
+                <a href="/" onclick="_gaq.push(['_trackEvent', 'Footer', 'Click', 'Home']);">Home</a>
+            </li>
+            <li>
+                <a href="/search.html" onclick="_gaq.push(['_trackEvent', 'Footer', 'Click', 'Search']);">Search</a>
+            </li>
+            <li>
+                <a href="/services.html" onclick="_gaq.push(['_trackEvent', 'Footer', 'Click', 'Services']);">Services</a>
+            </li>
+        </ul>
+        <ul class="socialIcons">
+            <li><a href="https://twitter.com/FPOCommunity" class="twitter"
+                   onclick="_gaq.push(['_trackEvent', 'Footer', 'Click', 'social twitter']);"></a></li>
+            <li><a href="http://www.linkedin.com/groups/FPO-Community-4524797" class="linkedin"
+                   onclick="_gaq.push(['_trackEvent', 'Footer', 'Click', 'social linkedin']);"></a></li>
+        </ul>
+    </div>
+    <div class="row-fluid bot">
+        <p>
+            &copy; 2004-2026 FreePatentsOnline.com. All rights reserved.
+            <a href="/privacy.html" onclick="_gaq.push(['_trackEvent', 'Footer', 'Click', 'Privacy']);">Privacy Policy
+                &amp; Terms of Use.</a>
+        </p>
+    </div>
+</div>    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    _gaq.push(['_setCustomVar', 2, 'User Origin Source', 'no referer', 2]);
+    _gaq.push(['_trackPageview']);
+
+    (function () {
+        var ga = document.createElement('script');
+        ga.type = 'text/javascript';
+        ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(ga, s);
+    })();
+
+</script>
+<script type="text/javascript">
+    function trackPageLoad() {
+        var plend = new Date();
+        var plload = plend.getTime() - plstart.getTime();
+        var pn = document.location.pathname;
+        var lc = 'slow';
+        var la = new Array(200, 300, 400, 500, 1000, 1500, 2000, 2500, 5000);
+        for (var i = 0, len = la.length; i < len; i++) {
+            if (plload <= la[i]) {
+                lc = String(la[i]);
+                break;
+            }
+        }
+        _gaq.push(['onLoadTracker._setAccount', 'UA-174791-5']);
+        _gaq.push(['onLoadTracker._trackEvent', "LoadTime", lc, pn, plload]);
+        }
+</script>
+<script type="text/javascript">
+    try {
+        if (window.onload != null) {
+            var oldOnload = window.onload;
+            window.onload = function (e) {
+                oldOnload(e);
+                trackPageLoad();
+            };
+        }
+        else {
+            window.onload = trackPageLoad();
+        }
+    } catch (err) {
+    }
+</script>
+<script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="/js/fpo_3.js"></script>
+
+</body>
+</html>

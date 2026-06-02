@@ -1,0 +1,10 @@
+{
+  "nn": "02",
+  "slug": "02-nvidia-mlx5-vdpa",
+  "type": "产品",
+  "name": "NVIDIA BlueField DPU / ConnectX mlx5 vDPA (DOCA)",
+  "organization": "NVIDIA (Mellanox)",
+  "hit_features_initial": "F1,F2,F5,F6,F7,F8,F9",
+  "publicity": "高",
+  "blurb": "- 类型：产品\n- 名称：NVIDIA BlueField-2/3 DPU、ConnectX-6/7 NIC 的 `mlx5_vdpa` 驱动（DOCA hardware vDPA）\n- vendor：NVIDIA (Mellanox)\n- 命中 F#（初判）：F1,F2,F5,F6,F7,F8,F9\n- 公开度：高（DPDK mlx5 vDPA 文档 + DOCA 文档 + in-kernel `mlx5_vdpa` 源码）\n- 一句话定位：in-kernel vDPA 两大参考实现之一，硬件 VF + vDPA 驱动作为\"VF 软件实例\"绑定后端，数据面 DMA 直通 Guest。"
+}

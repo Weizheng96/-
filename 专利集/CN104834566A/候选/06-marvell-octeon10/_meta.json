@@ -1,0 +1,10 @@
+{
+  "nn": "06",
+  "slug": "06-marvell-octeon10",
+  "type": "产品",
+  "name": "Marvell OCTEON 10 DPU 数据面",
+  "organization": "Marvell",
+  "hit_features_initial": "F1,F2,F3,F4",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：Marvell OCTEON 10 DPU 数据面\n- vendor：Marvell\n- 命中 F#（初判）：F1,F2,F3,F4\n- 公开度：中\n- 一句话定位：多核 DPU，运行 OVS / VPP 数据面承载 vSwitch 卸载；继承上游线程级负载均衡机制。"
+}

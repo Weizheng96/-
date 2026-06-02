@@ -1,24 +1,20 @@
-# Verdict — AMD/Pensando DSC + Penguin OS + Elba
+# 11-amd-pensando-dsc — 待评估
 
-> 主体类型：S3 + S4；适用独立权：权 1 / 权 9 / 权 17；分级：**P2**
+> 候选 NN: 11 · 类型: 产品 · 名称: AMD Pensando DSC 分布式服务卡 · 组织: AMD (Pensando)
+> 公开度: 中 · 初判命中 F#: F1,F2,F3,F4
 
-## 核心组织
-**AMD Inc.（NASDAQ: AMD）—— Pensando 子公司（2022 收购）**
+## 状态
 
-## F1-F5 命中表
-| F# | 证据 | 命中 |
-| --- | --- | --- |
-| F1 | Pensando DSC 文档：P4-based dataplane on DSC；不严格是传统 vSwitch 形态 | **字面命中候选**（DSC 与 OVS 集成路径）/ 部分作用域限定（独立 P4 dataplane 与 vSwitch 不一定等价） |
-| F2 | DSC 多核 ARM；Penguin OS 多线程 | **字面命中** |
-| F3-F5 | 闭源；公开材料未明示状态属性 / 触发 / 调整算法 | **公开资料不足** |
+**待评估** — 等待 Step 6 sub-agent 输出最终 verdict。
 
-## 时间线
-- Pensando DSC GA：2020 → post-grant；AMD 收购：2022
+## 检索粗筛（sub-agent 填写）
 
-## 状态机三栏
-| 权 | 原始 | 调整 | 最终 |
-|---|---|---|---|
-| 权 1 / 9 / 17 | **第 3 档：公开资料不足（强候选）** | 闭源 — 升级反向工程 + Pensando 客户案例 | 第 3 档 |
+（待填）
 
-## 总结一句话
-AMD/Pensando DSC：F1-F2 字面命中，F3-F5 闭源致公开资料不足；落第 3 档强候选。
+## F# 比对（sub-agent 填写 — 仅在粗筛通过时）
+
+（待填）
+
+## 最终判定
+
+**待评估**

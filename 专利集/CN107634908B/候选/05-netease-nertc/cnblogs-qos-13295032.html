@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />            
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="referrer" content="never" />
+    <title>实时音视频会议场景下QoS策略 - 网易云信 - 博客园</title>
+    <meta name="keywords" content="音频,视频" />
+    <meta name="description" content="文｜网易智慧企业资深流媒体开发工程师 背 景 科技的进步以及通讯基建的高速发展，使得人们对交流的模式要求越来越即时，对交流内容要求越来越具象，这些要求催化着内容交换模式的不断发展，从传统的信件，到短信电话再到互联网场景下的微信语音、抖音短视频、视频直播及实时音视频通话。随着5G正式商用元年的真正到来" />    
+    <meta property="og:description" content="文｜网易智慧企业资深流媒体开发工程师 背 景 科技的进步以及通讯基建的高速发展，使得人们对交流的模式要求越来越即时，对交流内容要求越来越具象，这些要求催化着内容交换模式的不断发展，从传统的信件，到短信电话再到互联网场景下的微信语音、抖音短视频、视频直播及实时音视频通话。随着5G正式商用元年的真正到来" />
+    <meta property="og:image" content="https://img2020.cnblogs.com/blog/855570/202007/855570-20200713184710387-1401499747.png" />    
+    
+    <link rel="stylesheet" href="/css/blog-common.min.css?v=9xvyan1yGH1Ggi8nKJ01Xc2nqMWMqJCy_-EYS2m06xA" />
+    
+
+    <link id="MainCss" rel="stylesheet" href="/skins/darkgreentrip/bundle-darkgreentrip.min.css?v=GlmU0sT8YnLg47EB2Rre4v_uMPSDBJi6juQcnTEQrGY" />
+        <link id="highlighter-theme-cnblogs" type="text/css" rel="stylesheet" href="/css/hljs/cnblogs.css?v=5J1NDtbnnIr2Rc2SdhEMlMxD4l9Eydj88B31E7_NhS4" />
+    
+    
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/darkgreentrip/bundle-darkgreentrip-mobile.min.css?v=PCOAX1-bDMSk_EKaV4--45IXpDoOtQaKVI4FzXDsAJk" />
+    
+    <link id="favicon" rel="icon" type="image/x-icon" sizes="32x32" href="https://assets.cnblogs.com/favicon_v3_3.ico" />
+    <link id="favicon_svg" rel="icon" type="image/svg+xml" href="https://assets.cnblogs.com/favicon_v3_3.svg" />
+    <link rel="apple-touch-icon" href="https://assets.cnblogs.com/apple-touch-icon.png?v=2" />
+    <link rel="canonical" href="https://www.cnblogs.com/wangyiyunxin/p/13295032.html" />
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/wangyiyunxin/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/wangyiyunxin/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/wangyiyunxin/wlwmanifest.xml" />
+    
+    <script type="application/ld&#x2B;json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "@id": "https://www.cnblogs.com/wangyiyunxin/p/13295032.html",
+      "headline": "实时音视频会议场景下QoS策略",
+      "description": "文｜网易智慧企业资深流媒体开发工程师 背 景 科技的进步以及通讯基建的高速发展，使得人们对交流的模式要求越来越即时，对交流内容要求越来越具象，这些要求催化着内容交换模式的不断发展，从传统的信件，到短信电话再到互联网场景下的微信语音、抖音短视频、视频直播及实时音视频通话。随着5G正式商用元年的真正到来",
+      "image": [
+        
+      ],
+      "author": {
+        "@type": "Person",
+        "@id": "https://www.cnblogs.com/wangyiyunxin/",
+        "name": "网易云信",
+        "url": "https://www.cnblogs.com/wangyiyunxin/"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "@id": "https://www.cnblogs.com/",
+        "name": "博客园",
+        "url": "https://www.cnblogs.com/"
+      },
+      "datePublished": "2020-07-13T18:50:00.0000000&#x2B;08:00",
+      "dateModified": "2020-07-13T18:50:00.0000000&#x2B;08:00",
+      "wordCount": "10757",
+      "isPartOf": {
+        "@type": "Blog",
+        "@id": "https://www.cnblogs.com/wangyiyunxin/",
+        "name": "网易云信",
+        "publisher": {
+          "@type": "Organization",
+          "@id": "https://www.cnblogs.com/",
+          "name": "博客园"
+        }
+      }
+    }
+    </script>
+
+    <script>
+        var currentBlogId = 317356;
+        var currentBlogApp = 'wangyiyunxin';
+        var isLogined = false;
+        var isBlogOwner = false;
+        window.isCorp = false;
+        window.skinName = 'darkgreentrip';
+        var visitorUserId = '';
+        window.hasCustomScript = false;
+        window.cb_enable_mathjax = false;
+        window.mathEngine = 0;
+        window.codeHighlightEngine = 1;
+        window.enableCodeLineNumber = false;
+        window.codeHighlightTheme = 'cnblogs';
+        window.darkModeCodeHighlightTheme = 'vs2015';
+        window.isDarkCodeHighlightTheme = false;
+        window.isDarkModeCodeHighlightThemeDark = true;
+        window.isDisableCodeHighlighter = false;
+        window.enableCodeThemeTypeFollowSystem = false;
+        window.enableMacStyleCodeBlock = false;        
+    </script>
+        <script>
+            window.currentPostId = 13295032;
+            window.currentPostDateAdded = '2020-07-13 18:50';
+        </script>
+    <script src="https://assets.cnblogs.com/scripts/jquery-3.3.1.min.js"></script>
+    <script src="https://cdn-www.cnblogs.com/js/blog-common.min.js?v=2Imn_SB7T4GzJkfvQ1QAKuFD6pHLySvfT6aKpEKPJZ8"></script>
+    
+</head>
+<body class="skin-darkgreentrip has-navbar">
+    <a name="top"></a>
+    <div id="top_nav" class="navbar forpc">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding">
+                    <a href="https://www.cnblogs.com/" title="开发者的网上家园" role="banner">
+                        <img src="//assets.cnblogs.com/logo.svg" alt="博客园logo" />
+                    </a>
+                </li>
+                <li><a href="https://cnblogs.vip/">会员</a></li>
+                <li><a href="https://cnblogs.vip/store">周边</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="countClicks('nav', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="countClicks('nav', 'skin-navbar-q')">博问</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="countClicks('nav', 'skin-navbar-ing')">闪存</a></li>                
+                <li><a href="https://www.cnblogs.com/cmt/p/19316348">赞助商</a></li>
+                <li><a href="https://chat2db-ai.com/" target="_blank">Chat2DB</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search dropdown" action="https://zzk.cnblogs.com/s" method="get" role="search">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="search" tabindex="3" autocomplete="off" />
+                        <button id="zzk_search_button" onclick="window.navbarSearchManager.triggerActiveOption()">
+                            <img id="search_icon" class="focus-hidden" src="//assets.cnblogs.com/icons/search.svg" alt="搜索" />
+                            <img class="hidden focus-visible" src="//assets.cnblogs.com/icons/enter.svg" alt="搜索" />
+                        </button>
+                        <ul id="navbar_search_options" class="dropdown-menu quick-search-menu">
+                            <li tabindex="0" class="active" onclick="zzkSearch(event, document.getElementById('zzk_search_input').value)">
+                                <div class="keyword-wrapper">
+                                    <img src="//assets.cnblogs.com/icons/search.svg" alt="搜索" />
+                                    <div class="keyword"></div>
+                                </div>
+                                <span class="search-area">所有博客</span>
+                            </li>
+                                    <li tabindex="1" onclick="zzkBlogSearch(event, 'wangyiyunxin', document.getElementById('zzk_search_input').value)">
+                                        <div class="keyword-wrapper">
+                                            <img src="//assets.cnblogs.com/icons/search.svg" alt="搜索" />
+                                            <div class="keyword"></div>
+                                        </div>
+                                        <span class="search-area">当前博客</span>
+                                    </li>
+                        </ul>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a class="navbar-user-info navbar-blog" href="https://i.cnblogs.com/EditPosts.aspx?opt=1" alt="写随笔" title="写随笔">
+                        <img id="new_post_icon" class="navbar-icon" src="//assets.cnblogs.com/icons/newpost.svg" alt="写随笔" />
+                    </a>
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://www.cnblogs.com/my" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="//assets.cnblogs.com/icons/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="//assets.cnblogs.com/icons/message.svg" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <a id="navbar_lite_mode_indicator" data-current-page="blog" style="display: none" href="javascript:void(0)" alt="简洁模式" title="简洁模式启用，您在访问他人博客时会使用简洁款皮肤展示">
+                        <img class="navbar-icon" src="//assets.cnblogs.com/icons/lite-mode-on.svg" alt="简洁模式" />
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="//assets.cnblogs.com/icons/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://www.cnblogs.com/my">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="https://vip.cnblogs.com/my">会员中心</a>
+                            <a href="javascript:void(0)" id="navbar_lite_mode_toggle" title="简洁模式会使用简洁款皮肤显示所有博客">
+    简洁模式 <span id="navbar_lite_mode_spinner" class="hide">...</span>
+</a>
+
+                            <a href="javascript:void(0)" onclick="account.logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup">注册</a>
+                    <a class="navbar-anonymous" href="javascript:void(0);" onclick="account.login()">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    
+
+    <div id="home">
+<div id="header">
+	<div id="blogTitle">
+        <a id="lnkBlogLogo" href="https://www.cnblogs.com/wangyiyunxin/"><img id="blogLogo" src="/skins/custom/images/logo.gif" alt="返回主页" /></a>		
+		
+
+<h1><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/wangyiyunxin">网易云信</a>
+</h1>
+<h2></h2>
+
+
+
+
+		
+	</div>
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/wangyiyunxin/">
+首页</a>
+</li>
+<li>
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+</li>
+<li>
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/%E7%BD%91%E6%98%93%E4%BA%91%E4%BF%A1">
+联系</a></li>
+<li>
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/wangyiyunxin/rss/">
+订阅</a>
+<!--<partial name="./Shared/_XmlLink.cshtml" model="Model" /></li>--></li>
+<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+
+		<div class="blogStats">
+			<div id="blog_stats_place_holder"><script>loadBlogStats();</script></div>
+		</div>
+	</div>
+</div>
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="post_detail">
+    
+    <div id="topics">
+        <div class="post">
+            <h1 class = "postTitle">
+                <a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/wangyiyunxin/p/13295032.html" title="发布于 2020-07-13 18:50">
+    <span role="heading" aria-level="2">实时音视频会议场景下QoS策略</span>
+    
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                <div id="cnblogs_post_body" class="blogpost-body blogpost-body-html">
+<p>文｜网易智慧企业资深流媒体开发工程师</p>
+<p>&nbsp;</p>
+<p><strong>背&nbsp; &nbsp; 景</strong></p>
+<p>&nbsp;</p>
+<p>科技的进步以及通讯基建的高速发展，使得人们对交流的模式要求越来越即时，对交流内容要求越来越具象，这些要求催化着内容交换模式的不断发展，从传统的信件，到短信电话再到互联网场景下的微信语音、抖音短视频、视频直播及实时音视频通话。随着5G正式商用元年的真正到来，更加即时与具象的实时音视频通讯将被更广泛的应用。<strong>实时音视频系统，是一个相对比较复杂的内容传输系统，从大的流程上来讲，系统覆盖音视频采集、音视频编码、音视频传输、音视频解码、音视频绘制。</strong>想要做到高质量的音视频通话，每个环节都需要丰富的手段才能进行各种场景及设备的适配与效果提优。</p>
+<p>&nbsp;</p>
+<p><img alt="" loading="lazy" data-src="https://img2020.cnblogs.com/blog/855570/202007/855570-20200713184710387-1401499747.png" class="lazyload"></p>
+<p>&nbsp;</p>
+<p>实时音视频的最显著的特点是低延迟，也就是说实时音视频对于网络的要求是非常高的，甚至可以说是矛盾的。一方面它为了追求低延迟，它能够允许网络传输中的丢包，另一方面因为视频编解码的传递参考性，任何的丢包都会造成很大的视频质量的损失，最终将降低实时通话的QoE评价，所以又不能容忍网络传输中的丢包。为此搭建一个高质量实时音视频系统，尤其是多方参与的会议系统，应对于参与通话各方上下行网络复杂性（带宽受限/丢包/抖动/高时延）的传输QoS策略的设计是非常有必要的。<strong>本文就会议场景下，服务器端的QoS策略，</strong><strong>做一些详细的分享。</strong></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><strong>会议场景分段QoS</strong></p>
+<p>&nbsp;</p>
+<p>会议场景的通话，决定了参与通话的各方都要通过中转的流媒体分发服务器进行传输内容的交换。会话传输链路可以划分为实时通话发送端到流媒体分发服务器的<strong>上行传输链路</strong>，以及流媒体分发服务器到实时通话接受端的<strong>下行传输链路</strong>。上下行传输链路，从服务器角度而言其承担传输角色是不同的，传输策略作用轻重亦不相同，为此针对于这种多人会议场景，需要制定上下行独立的QoS传输方案，去保障上下行的传输质量。我们称之为<strong>分段QoS策略</strong>。</p>
+<p>&nbsp;</p>
+<p><img alt="" loading="lazy" data-src="https://img2020.cnblogs.com/blog/855570/202007/855570-20200713184718298-1390781076.png" class="lazyload"></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><strong>上行QoS</strong></p>
+<p>&nbsp;</p>
+<p>网易云信的设计里，QoS的强控制权都交由发送端。接收端做被动的接受信息反馈和丢包请求与恢复。针对于上行QoS的策略，服务器端作为接收端，设计了一系列的QoS手段，进行高可靠的链路传输。<strong>包括但不局限于：丢包重传请求（NACK）、前向纠错（FEC）、关键帧请求（PLI/FIR）、接受信息反馈（FeedBack）等手段。</strong>这里选取两个抗丢包手段做一些深入的讲解。</p>
+<p>&nbsp;</p>
+<p><strong>&nbsp;丢包重传请求</strong><strong>&nbsp;</strong></p>
+<p>丢包重传请求，简单的实现就是服务器作为接收端，在实时接收传输的流媒体的时候，进行传输层媒体包序的连续性检查，当出现非连续包出现的时候，经过一定的超时时间（考虑到实时音的低时延要求往往这个超时时间会设置的比较短），便会向发送端进行丢失包的重传请求。由于丢包的不确定性，丢失的包序的分布也会呈现出不确定性。<strong>为此我们需要设计出一个合适的重传协议来覆盖丢包的各种分布情况，达到重传请求的最小带宽占用的目的。</strong></p>
+<p>&nbsp;</p>
+<p><img alt="" loading="lazy" data-src="https://img2020.cnblogs.com/blog/855570/202007/855570-20200713184726064-1473304742.png" class="lazyload"></p>
+<p>&nbsp;</p>
+<p>我们设计了灵活NACK请求协议，其协议设计可以很好的解决上述情况：</p>
+<p>&nbsp;<img alt="" loading="lazy" data-src="https://img2020.cnblogs.com/blog/855570/202007/855570-20200713184734241-96849204.png" class="lazyload"></p>
+<p>&nbsp;</p>
+<p>协议允许单个NACK请求包对多个流，进行不同丢包情况的重传请求。</p>
+<p>&nbsp;</p>
+<p><strong>&nbsp;前向纠错&nbsp;</strong></p>
+<p>前向纠错（FEC）其实是一种冗余错误恢复的算法。应用在网络传输中，主要是用来抵抗网络丢包导致的信源错误。</p>
+<p>&nbsp;</p>
+<p><strong>其具体的做法就是将原始的信源数据进行可逆的运算，生成额外的冗余包，在实际发送的时候会将原始包和冗余包分为一组发送到网络上。</strong>在网络出现丢包的时候，接收端可以通过同一分组的原始包和冗余包进行逆运算去还原所丢失的原始包。当然这里的还原是有条件的，还原的成功率跟我们冗余算法的冗余度大小有关，一般情况下成正相关。但过多的冗余包会占据很多的发送流量，这样其实是不利于正常的媒体传输的。</p>
+<p>&nbsp;</p>
+<p>关于冗余算法的选取在服务器端也是非常重要的一个课题，主要涉及到两点：</p>
+<ol class="list-paddingleft-2">
+<li>
+<p><strong>冗余度在算法层面是否支持动态调整。&nbsp;</strong></p>
+</li>
+<li>
+<p><strong>计算复杂度能否满足服务器性能要求。</strong></p>
+</li>
+</ol>
+<p>&nbsp;</p>
+<p>第一点很容易理解，因为网络丢包是复杂多变的，固定冗余度的算法要么会带来带宽的浪费要么恢复效果不理想。第二点的话，源自于实时音视频服务器主要的角色是做媒体分发的，其根本要求是分发的高效，一旦FEC的算法复杂度过高，在高并发高I/O吞吐的情况下，势必会降低服务器并发性能，甚至会引入额外的端到端的delay。</p>
+<p>&nbsp;</p>
+<p>目前已经实现的FEC算法很多，简单有基于异或的实现，复杂的有基于矩阵运算的，以及一些其他的算法，这里就不详细描述了。</p>
+<p>&nbsp;</p>
+<p><img alt="" loading="lazy" data-src="https://img2020.cnblogs.com/blog/855570/202007/855570-20200713184816991-1017702563.png" class="lazyload"></p>
+<p>&nbsp;</p>
+<p><strong>&nbsp;网易云信实践&nbsp;</strong></p>
+<p>以上简单的介绍了丢包重传请求和前向纠错的策略。这两种机制是常见的抗丢包策略。在具体的应用上，各个音视频厂商，只是在协议实现和算法选取上略有不同而已。<strong>既然ARQ和FEC都是为了对抗丢包而制定出来的策略，那么在网易云信中我们如何做最优的策略选取的呢？</strong></p>
+<p>&nbsp;</p>
+<p>首先在做策略选取之前，我们先回顾一下两种策略对抗丢包的不同思路。</p>
+<p>&nbsp;</p>
+<p><strong>第一种丢包重传策略（ARQ）</strong>，解决的是当前丢包已经发生，需要做短暂的时延牺牲（即做丢包重传的时候会造成Jitter），来对抗丢包，其优点明显，即不会实时的占用信道带宽，缺点就是引入的Delay，一些不当的NACK请求策略的设计甚至会造成流量尖刺。</p>
+<p>&nbsp;</p>
+<p><strong>第二种FEC策略，</strong>其作用效果是实时观测丢包率的变化，做丢包率的预估，实时产生冗余数据来对抗可能出现的丢包。其优点在基本不需要牺牲时延，可以做快速的丢包恢复。但其缺点亦很明显，即依赖于丢包预测的准确度，过高的冗余会造成带宽流量的浪费，甚至挤压正常的信源的传输，导致一个不健康的信道传输状态。</p>
+<p>&nbsp;</p>
+<p>下面介绍一下网易云信对这两种策略组合的使用方法。</p>
+<p>&nbsp;</p>
+<p><strong>1. 建立网络状态的观测器。</strong></p>
+<p>其主要监控当前网络的丢包率、抖动、时延、拥塞状态。观测器的建立质量好坏会很大程度的反应到我们的抗丢包效果上去，在丢包率上我们会根据关心的阈值去做不同区间的采样标本，做多个细分丢包率的观测和预估。这里的丢包率有平均RTT内的丢包率，有去抖动的丢包率，以及跟NACK请求相关的丢包重传超时时间相关的丢包率。观测器主要的作用是进行网络可数据化的状态侦测。为后侧的策略提供网络类型的分析，并提供确切的指标，供核心调控模块来调节自适应的参数。</p>
+<p>&nbsp;</p>
+<p><strong>2. ARQ手段先行，FEC手段做兜底。</strong></p>
+<p>具体的意思是我们会根据预设的最大端到端Delay（这个Delay跟用户设置模式有关，可以动态调节），再根据观测器观测出来的相关网络指标去计算ARQ的成功率，剩下的失败率由FEC做兜底。具体算法如下：假设当前选取的网络平均丢包为L，当前Rtt为R，我们能容忍的最大Delay时间为D，最小NACK请求间隔为I，则单个包可以进行NACK的请求次数C = (D-R) / I,那么经过重传之后，单个包仍处于丢失的概率为：X<sub>L</sub>&nbsp;= L * L<sup>C</sup>= L<sup>(C+1)</sup>，那么FEC冗余率设计的参考丢包率<span lang="EN-US">T<sub>L</sub>&nbsp;= a * X<sub>L</sub>&nbsp;+ b * B<sub>L</sub>，其中a为增益系数，属于自适应调整参数，B<sub>L</sub>是基于观测器得到的网络基本（最小）丢包率，b为调节系数（b 小于等于1.0），一般在网络带宽不受限的情况下，将b设置为 1.0。此外基于丢包率如何去选取冗余度，有很多计算方式，这里就不展开了。</span></p>
+<p>&nbsp;</p>
+<p><strong>3. 基于接收端反馈以及模块自检的策略调整。</strong></p>
+<p>服务器作为接收端会建立抗丢包效果评估模块，具体到指标有NACK成功率，NACK响应时长，FEC 成功率等。发送端会基于此类的反馈，以及两个模块自身的相关统计数据，如Rtx（重传包）、FEC流量与原始信源的流量占比，以及拥塞控制模块的拥塞状态等，进行模块内策略相关的参数（D、I、a、b等）的动态的调整。</p>
+<p><img class="rich_pages img_loading lazyload" data-ratio="0.40547476475620187" data-s="300,640" data-src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" data-type="png" data-w="1169"></p>
+<p>&nbsp;</p>
+<p>网络本身是复杂的，需要有一个合理的调度器来控制ARQ和FEC抗丢包模块的协同作用，要做到具体网络情况做具体的调节，<strong>我们的抗丢包策略不应造成过多的网络信道的挤压，进而反向压制了信源的质量，甚至导致拥塞的时而发生</strong>，这样将会和我们的抗丢包策略设计的初衷背道而驰。</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><strong>下行QoS</strong></p>
+<p>&nbsp;</p>
+<p>相比较上行QoS，服务器在下行QoS可以做的策略可以更多，上文提到了我们的QoS设计里更多的控制权是交由发送方，对于下行QoS服务器角色便是发送方。除去抗丢包手段之外，服务器需要做的几个重要的QoS相关的工作在于：</p>
+<ol class="list-paddingleft-2">
+<li>
+<p><strong>设计出下行接收端可弹性接收流组合的方案。</strong></p>
+</li>
+<li>
+<p><strong>准确的探测出用户真实的下行带宽。</strong></p>
+</li>
+<li>
+<p><strong>制定合理的带宽分配方案。</strong></p>
+</li>
+<li>
+<p><strong>进行流量的平滑发送以及拥塞控制。</strong></p>
+</li>
+</ol>
+<p>&nbsp;<img alt="" loading="lazy" data-src="https://img2020.cnblogs.com/blog/855570/202007/855570-20200713184829754-202359763.png" class="lazyload"></p>
+<p>&nbsp;</p>
+<p>下行QoS模块控制总图</p>
+<p>&nbsp;</p>
+<p><strong>设计合理的接收端可弹性接收的方案，是整个下行QoS的设计基础。</strong>一个完整的拥塞控制系统，其必然要完成两个基本的工作：</p>
+<ol class="list-paddingleft-2">
+<li>
+<p><strong>感知当前信道的传输状态</strong>，这个状态可以是信道的最大带宽，也可以是当前合适传输速度。</p>
+</li>
+<li>
+<p><strong>能够根据这个状态对发送信源进行调节</strong>，将信源的码率控制在可承受范围之内。</p>
+<p>&nbsp;</p>
+</li>
+</ol>
+<p>所以，对于服务器端下行拥塞控制而言道理也是一样。服务器设计了多流+SVC的机制进行下行流量的控制。来实现对下行传输链路的控制，应对于用户不同的下行状态，做到最佳的QoE效果。</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>多流机制</p>
+<p>&nbsp;</p>
+<p>我们的多流机制选取大小双流的方案，为了给服务器下行调节最大空间，以及考虑实际体验效果，这里的大小流的分辨率也不是固定的，会随着服务器调节的码率，做弹性的伸缩。针对于多流而言，上行用户可以根据自己的网络能力做不同流的发布，下行用户可以根据自身的需要以及网络带宽，做符合自身能力的流的订阅。另外辅助SVC的策略，服务器可以做到最大的调节空间，充分利用用户的下行网络带宽，做到用户接收的最佳体验。这里发送端弹性分辨率的双流机制以及SVC方案，服务器就不做过多的描述了，感兴趣的同学可以继续关注我们网易云信的相关技术分享。</p>
+<p>&nbsp;</p>
+<p><strong>&nbsp;带宽探测&nbsp;</strong></p>
+<p>带宽探测。这个模块实现的好坏，直接影响到下行QoS的效果。对于拥塞控制而言，开源的实现有GCC，PCC，BBR及其他的拥塞控制方法。</p>
+<p>&nbsp;</p>
+<p><strong>网易云信服务器下行QoS是基于Google的BBR算法，</strong>在实时音视频场景下做了大量的优化，进而建立了完整的拥塞控制方案。</p>
+<p>&nbsp;</p>
+<p><strong>选取BBR算法两个最主要的原因：</strong></p>
+<ol class="list-paddingleft-2">
+<li>
+<p><strong>基于可测量的准确带宽。</strong></p>
+</li>
+<li>
+<p><strong>算法层面的最大带宽利用率。</strong></p>
+<p>&nbsp;</p>
+</li>
+</ol>
+<p>服务器下行和客户端上行拥塞控制的本质区别在于，下行要求的带宽大。客户端上行可以通过平滑的调整信源做到最佳的发送速率，而服务器只是基于现有上行流的转发，要做到平滑的信源调节非常困难。所以客户端的拥塞控制一般使用GCC比较多，原因在于GCC更侧重于发送码率的动态调节来进行拥塞控制。</p>
+<p>&nbsp;</p>
+<p>BBR本身的算法这里就不具体描述了，Webrtc对BBR在实时音频场景下的应用也有代码的实现，处于测试阶段。</p>
+<p>&nbsp;</p>
+<p>在网易云信实际运用BBR做下行带宽探测的时候，我们做了很多优化，这里罗列一些笔者认为在实时音场景下，尤其在服务器端做带宽探测，<strong>BBR建议做相应优化的点</strong>：</p>
+<ol class="list-paddingleft-2">
+<li>
+<p><strong>Probe_RTT 阶段的隐藏弱化</strong></p>
+</li>
+<li>
+<p><strong>上行网络丢包带宽补偿</strong></p>
+</li>
+<li>
+<p><strong>上行网络RTT突变以及高Jitter场景优化</strong></p>
+</li>
+<li>
+<p><strong>下行链路抖动以及丢包的优化</strong></p>
+</li>
+<li>
+<p><strong>Padding流量的优化</strong></p>
+</li>
+<li>
+<p><strong>快速上探机制的实现</strong></p>
+<p>&nbsp;</p>
+</li>
+</ol>
+<p>这里的上下行网络，是针对于BBR网络带宽探测端而言的。经过我们一系列的优化，<strong>基本将带宽探测的准确度做到95%左右。</strong></p>
+<p>&nbsp;</p>
+<p><img alt="" loading="lazy" data-src="https://img2020.cnblogs.com/blog/855570/202007/855570-20200713184844951-1244275108.png" class="lazyload"></p>
+<p>900kbps + 15% loss + 100jitter</p>
+<p>&nbsp;</p>
+<p><strong>&nbsp;带宽分配策略&nbsp;</strong></p>
+<p>带宽分配模块要做的事情，其实就是结合下行用户的探测出来的带宽，以及下行用户的原有的订阅关系，帮用户智能的选取最佳接收流的组合。在介绍具体介绍带宽分配策略之前，简单回顾一下我们下行QoS的设计基础，<strong>即多流+ SVC的机制：用户上行的多流中的每条流都会在发布的时候把自己的可调控码率空间信息，即档位信息告知发布订阅管理器。通过这样的实现，服务器便可制定灵活的带宽分配方案。</strong></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>基于此实现，那么<strong>对于服务器下行接收而言，能做的手段有两种</strong>：</p>
+<ol class="list-paddingleft-2">
+<li>
+<p>源端无感知的，接收端大小流切换</p>
+</li>
+<li>
+<p>源端配合的流内码率（档位）调整</p>
+<p>&nbsp;</p>
+</li>
+</ol>
+<p><img alt="" loading="lazy" data-src="https://img2020.cnblogs.com/blog/855570/202007/855570-20200713184856530-858768527.png" class="lazyload"></p>
+<p>&nbsp;</p>
+<p>这两种手段都交由统一的带宽分配策略来控制，具体的思路有两点：<br><strong>1. 尽可能不去反向压制发送端的编码码率</strong>，在基于可选取的大小流的基础上做最佳接收流的组合，来匹配用户下行可实际接收的带宽。</p>
+<p>&nbsp;</p>
+<p><strong>2. 反向压制发送端编码码率需要建立在接收端用户举手表决的基础上进行结果裁定。</strong></p>
+<p>&nbsp;</p>
+<p><strong>&nbsp;平滑发送及拥塞控制&nbsp;</strong></p>
+<p>平滑发送及拥塞控制。前面几个模块讲的是用户怎么接收的问题，最终如何控制下行的发送，交由这个模块来管理。这个模块的设计的每个细节和用户体验息息相关。大的思路有如下几点：</p>
+<p>&nbsp;</p>
+<p><strong>1. 平滑发送。</strong>就平滑发送而言，我们主要的实现是创建Pacer对象，在单独的发送线程中，起高精定时器，进行发送的平滑，让网络流量不会在观察区间内有Burst的现象。</p>
+<p>&nbsp;</p>
+<p><strong>2. 基于流级别的优先级策略以及可选择性发送策略。</strong>缓冲在发送队列的流，会有不同的优先级。在我们的默认设计里优先级顺序为 重传包 &gt; 音频包 &gt; 大于视频包 &gt; 被切掉的流 &gt; Padding包。另外也设计了用户态的流的优先级。总体策略是用户态优先级最高，然后再参考QoS本身的优先级。可选择性发送策略的设计主要基于SVC，观察Pacer的堆积情况，以及对应流的堆积情况，进行转发分层的选取。</p>
+<p>&nbsp;</p>
+<p><strong>3. 拥塞避免。</strong>这个模块的实现，主要是从BBR带宽探测模块获取建议的发送码率，并且严格按照码率发送，在某些场景下如真实媒体数据不足的情况，甚至可以减少发送码率。当然这些行为都能够让带宽探测模块感知到。</p>
+<p>&nbsp;</p>
+<p><strong>4. 拥塞缓解。</strong>这里的拥塞缓解更多是模块内部拥塞状态的缓解。主要的方法是通过获取发送队列的堆积情况，来进行模块内部拥塞状态的判断。一旦源端超发或者带宽分配模块调节没那么灵敏，导致模块出现拥塞状态。那么就要及时的进行堆积的处理，而不是把数据放到网络上，造成网络的拥塞，带来更多不确定因素。这里堆积判断，主要基于Trendline 配合绝对Delay的固定阈值。</p>
+<p>&nbsp;</p>
+<p><img alt="" loading="lazy" data-src="https://img2020.cnblogs.com/blog/855570/202007/855570-20200713184912133-615252214.png" class="lazyload"></p>
+<p>&nbsp;</p>
+<p>如图，在t0时刻，Delay超过了我们的绝对阈值，但是计算出来的Trend并不高，既不是一个持续拥塞的状态，反而它可能是一个拥塞缓解的状态。在t1时刻这里我们看到Trend值已经很高，而且Delay已经超过我们的阈值。那么t1时刻是我们需要进行拥塞缓解的时刻。<strong>拥塞缓解的具体做法就是根据流的优先级进行选择性的丢弃。</strong>所以，在进行拥塞缓解的时候，我们判断拥塞的状态一定要严谨，一旦主动代替网络丢包，那么用户体验肯定会受影响。</p>
+<p>&nbsp;</p>
+<p><img alt="" loading="lazy" data-src="https://img2020.cnblogs.com/blog/855570/202007/855570-20200713184920604-52452881.png" class="lazyload"></p>
+<p>平滑发送及拥塞控制总图</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><strong>总&nbsp; &nbsp; 结</strong></p>
+<p>&nbsp;</p>
+<p>以上从大的框架上讲述网易云信搭建的音视频服务，在服务器端实现的一些QoS方案的介绍，其中细节很多，很难一一描述，但往往是<strong>细节决定最终的通话质量</strong>。</p>
+<p>&nbsp;</p>
+<p>音视频通讯本身一个复杂的通讯系统，本文开头也提到了，QoS的设计也只是其中的一环，想要达到最佳的通话效果，每个环节做到环节内的最优，环节间也要建立有效的反馈调节机制。才能将整个端到端的体验做到最优，这样才能得到用户的认可。</p>
+
+</div>
+<div class="clear"></div>
+<div id="blog_post_info_block" role="contentinfo" class="post-meta-container">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+            </div>
+            <div class="postDesc">posted @ 
+<span id="post-date" data-last-update-days="0" data-date-updated="2020-07-13 18:50">2020-07-13 18:50</span>&nbsp;
+<a href="https://www.cnblogs.com/wangyiyunxin">网易云信</a>&nbsp;
+阅读(<span id="post_view_count">2086</span>)&nbsp;
+评论(<span id="post_comment_count">0</span>)&nbsp;
+&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(13295032);return false;">收藏</a>&nbsp;
+<a href="https://report.cnblogs.com?targetLink=https%3A%2F%2Fwww.cnblogs.com%2Fwangyiyunxin%2Fp%2F13295032.html&targetId=13295032&targetType=0" target="_blank">举报</a>
+</div>
+        </div>
+	    
+	    
+    </div><!--end: topics 文章、评论容器-->
+</div>
+<script>
+    var cb_entryId = 13295032, cb_entryCreatedDate = '2020-07-13 18:50', cb_postType = 1, cb_postTitle = '实时音视频会议场景下QoS策略';
+    var allowComments = true, cb_blogId = 317356, cb_blogApp = 'wangyiyunxin', cb_blogUserGuid = 'bba86ca5-d19f-e511-9fc1-ac853d9f53cc';
+    mermaidRender.render()
+    markdown_highlight()
+    zoomManager.apply("#cnblogs_post_body img:not(.code_img_closed):not(.code_img_opened)");    
+</script>
+<a id="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav">
+        <div class="comment-nav-right">
+            <span id="span_refresh_tips"></span><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a>
+        </div>
+    </div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+        <div id="cnblogs_ch"></div>
+    <div id="opt_under_post"></div>
+        <div id="blog_c1" class="under-post-card below-post-card">
+            <a href="https://www.volcengine.com/activity/codingplan?utm_campaign=hw&amp;utm_content=hw&amp;utm_medium=devrel_tool_web&amp;utm_source=OWO&amp;utm_term=cnblogs" rel="nofollow" target="_blank" onclick="countCreativeClicks('C1-volcengine-codingplan')">
+                <img src="https://img2024.cnblogs.com/blog/35695/202604/35695-20260423213336272-1914399152.webp" onload="countCreativeImpressions('C1-volcengine-codingplan')" alt="" style="width:300px!important;height:250px!important;min-width:300px!important;max-width:300px!important;" />
+                <span id="c1_impression" style="display:none"></span>
+            </a>
+        </div>
+    <div id="under_post_card1"></div>
+    <div id="related_posts_card"></div>
+    <div id="under_post_card2"></div>
+    <div id="HistoryToday" class="under-post-card below-post-card"></div>
+    <script type="text/javascript">
+        var commentManager = new blogCommentManager();
+        commentManager.renderComments(0);
+        fixPostBody();
+        window.footnoteTipManager.generateFootnoteTips();
+
+            window.tocManager.displayDisableTocTips = false;
+            window.tocManager.generateToc();
+            
+            setTimeout(function() { countViews(cb_blogId, cb_entryId); }, 50);
+            
+            deliverT2();
+            deliverC1C2();
+            loadNewsAndKb();
+            
+            LoadPostCategoriesTags(cb_blogId, cb_entryId);
+            
+            LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+            GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+            loadOptUnderPost();
+            GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+                </script>
+</div>
+
+	</div>
+	</div>
+	<div id="sideBar">
+		<div id="sideBarMain">
+			<div id="sidebar_news" class="newsItem">
+    <h3 class="catListTitle">公告</h3>
+<div id="blog-news" class="sidebar-news">
+    <div id="sidebar_news_container">
+    </div>
+</div>
+<script>loadBlogNews();</script>
+
+
+</div>
+			<div id="blog-calendar" style="display:none"></div><script>loadBlogDefaultCalendar();</script>			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"></div>
+					<script>loadBlogSideColumn()</script>
+			</div>			
+		</div>
+	</div>
+	<div class="clear"></div>
+	</div>
+	<div class="clear"></div>
+	<div id="footer">
+		<a href="https://www.cnblogs.com/" id="footer_site_link" class="footer-brand">博客园</a>
+<span class="footer-copyright"> &nbsp;&copy;&nbsp; 2004-2026</span>
+<br /><span class="footer-icp">
+    <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=33010602011771"><img src="//assets.cnblogs.com/images/ghs.png" />浙公网安备 33010602011771号</a>
+    <a href="https://beian.miit.gov.cn" target="_blank">浙ICP备2021040463号-3</a>
+</span>
+
+
+
+	</div>
+</div>
+
+
+
+    
+
+    <input type="hidden" id="antiforgery_token" value="CfDJ8OBZrxGJLy5MvghieKIKXCx1qdAYSJZe1gt1VR1FDflqlS3GW8eyJz1WBAsPIV7h-whmMQr9_Ij6eDa7P9X2hu4T41826iVL92q4Mt96uIgtHslEM-K8Fko_Z61A5qz22IyDwH-IE5sW6TAiZH_kbXc" />
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-M95P3TTWJZ"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-M95P3TTWJZ');
+</script>
+<script defer src="https://hm.baidu.com/hm.js?866c9be12d4a814454792b1fd0fed295"></script>
+</body>
+</html>

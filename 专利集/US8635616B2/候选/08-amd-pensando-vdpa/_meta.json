@@ -1,0 +1,10 @@
+{
+  "nn": "08",
+  "slug": "08-amd-pensando-vdpa",
+  "type": "产品",
+  "name": "AMD Pensando DPU (virtio 卸载)",
+  "organization": "AMD (Pensando)",
+  "hit_features_initial": "F1,F2,F5,F8",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：AMD Pensando DSC DPU（Elba / Giglio）\n- vendor：AMD (Pensando)\n- 命中 F#（初判）：F1,F2,F5,F8\n- 公开度：中（产品页 + 部分白皮书，P4 可编程数据面，virtio 卸载能力对外披露有限）\n- 一句话定位：芯片巨头 DPU，提供 virtio/SR-IOV 卸载数据面。"
+}

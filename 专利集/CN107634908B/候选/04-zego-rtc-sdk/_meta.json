@@ -1,0 +1,10 @@
+{
+  "nn": "04",
+  "slug": "04-zego-rtc-sdk",
+  "type": "产品",
+  "name": "即构实时音视频 SDK（ZEGO RTC）",
+  "organization": "即构科技 ZEGO",
+  "hit_features_initial": "F2, F4, F5",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：即构实时音视频 SDK（ZEGO RTC）\n- vendor：即构科技 ZEGO（独角兽）\n- 命中 F#（初判）：F2, F4, F5\n- 公开度：中（公开弱网传输优化：自适应码率 + 多路径 + FEC）\n- 一句话定位：RTC 领域知名独角兽，主打极端弱网（音频 80% / 视频 70% 丢包）下的稳定传输。"
+}

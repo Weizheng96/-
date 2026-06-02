@@ -1,0 +1,10 @@
+{
+  "nn": "15",
+  "slug": "15-vmware-vsphere",
+  "type": "产品",
+  "name": "VMware vSphere / ESXi (VMXNET3 + SR-IOV/UPT)",
+  "organization": "VMware (Broadcom)",
+  "hit_features_initial": "F3,F4,F8",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：VMware vSphere / ESXi（VMXNET3 半虚拟化前端 + SR-IOV / UPT）\n- vendor：VMware (Broadcom)\n- 命中 F#（初判）：F3,F4,F8\n- 公开度：中（VMXNET3 / SR-IOV 文档公开，但非 vDPA 架构）\n- 一句话定位：自有 I/O 虚拟化栈，半虚拟化前端 + 直通——FE/BE 形态相似但\"BE 绑定空闲 VF 软件实例 + 导出 API\"是否成立需取证。"
+}

@@ -1,0 +1,10 @@
+{
+  "nn": "12",
+  "slug": "12-jaguarmicro-dpu",
+  "type": "产品",
+  "name": "DPU SoC / 风驰智能网卡（云网络卸载）",
+  "organization": "云豹智能 JaguarMicro",
+  "hit_features_initial": "F1,F2,F4,F5",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：云豹智能 DPU SoC / 风驰智能网卡\n- vendor：云豹智能 JaguarMicro（独角兽，估值约 140 亿、冲刺\"国产 DPU 第一股\"，腾讯/红杉/淡马锡投资）\n- 命中 F#（初判）：F1, F2, F4, F5\n- 公开度：中\n- 一句话定位：云霄/风驰 DPU 做云网络卸载，2024 国内 DPU 市占约 15.3%，落地中国移动、腾讯——招股书或披露其卸载架构。"
+}

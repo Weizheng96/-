@@ -1,0 +1,10 @@
+{
+  "nn": "14",
+  "slug": "14-aws-nitro",
+  "type": "产品",
+  "name": "AWS Nitro / VPC 数据面",
+  "organization": "Amazon AWS",
+  "hit_features_initial": "F1,F2,F3",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：AWS Nitro 系统 / VPC 数据面\n- vendor：Amazon AWS\n- 命中 F#（初判）：F1,F2,F3\n- 公开度：低（Nitro 闭源）\n- 一句话定位：vSwitch 卸载到 Nitro 卡，多核转发；公开技术细节稀少。"
+}

@@ -1,0 +1,10 @@
+{
+  "nn": "14",
+  "slug": "14-yusi-stargate-dpu",
+  "type": "产品",
+  "name": "Stargate 系列 DPU（千万级流表、OVS 加速）",
+  "organization": "益思芯 Yusi",
+  "hit_features_initial": "F1,F2,F4,F5",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：益思芯 Stargate 系列 DPU\n- vendor：益思芯 Yusi（独角兽）\n- 命中 F#（初判）：F1, F2, F4, F5\n- 公开度：低\n- 一句话定位：P4 可编程 DPU，千万级流表、OVS 加速。"
+}

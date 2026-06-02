@@ -1,0 +1,10 @@
+{
+  "nn": "02",
+  "slug": "02-intel-e810-vflag",
+  "type": "产品",
+  "name": "Ethernet 800 系列（E810）OVS TC 卸载 + SR-IOV VF-LAG",
+  "organization": "Intel",
+  "hit_features_initial": "F1,F2,F3,F4,F5",
+  "publicity": "高",
+  "blurb": "- 类型：产品\n- 名称：Intel Ethernet 800 系列（E810）OVS TC 卸载 + SR-IOV VF-LAG\n- vendor：Intel\n- 命中 F#（初判）：F1, F2, F3, F4, F5\n- 公开度：高\n- 一句话定位：E810 eSwitch switchdev 模式支持 TC-Flower exact-match 硬件卸载；SR-IOV VF-LAG 把 bond net-device 上的 OVS 规则整体卸载到硬件 eSwitch——VF-LAG（含 LACP）+ exact-match 卸载几乎逐项对应 F2/F3/F4/F5，Intel 官方配置指南公开详尽。"
+}

@@ -1,0 +1,10 @@
+{
+  "nn": "17",
+  "slug": "17-nebulamatrix-vdpa",
+  "type": "产品",
+  "name": "NebulaMatrix DPU/SmartNIC",
+  "organization": "星云智联 NebulaMatrix",
+  "hit_features_initial": "F1,F2,F5,F8",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：NebulaMatrix DPU/SmartNIC\n- vendor：星云智联 NebulaMatrix（DPU 独角兽）\n- 命中 F#（初判）：F1,F2,F5,F8\n- 公开度：低（公开技术资料较少）\n- 一句话定位：国产 DPU 独角兽，自研 SmartNIC virtio 硬件卸载。"
+}

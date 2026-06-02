@@ -1,0 +1,1623 @@
+From patchwork Sat Mar 31 02:29:28 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Xiao Wang <xiao.w.wang@intel.com>
+X-Patchwork-Id: 36793
+X-Patchwork-Delegate: ferruh.yigit@amd.com
+Return-Path: <dev-bounces@dpdk.org>
+X-Original-To: patchwork@dpdk.org
+Delivered-To: patchwork@dpdk.org
+Received: from [92.243.14.124] (localhost [127.0.0.1])
+	by dpdk.org (Postfix) with ESMTP id 3B98BAA99;
+	Fri, 30 Mar 2018 19:56:22 +0200 (CEST)
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+	by dpdk.org (Postfix) with ESMTP id A9715A823
+	for <dev@dpdk.org>; Fri, 30 Mar 2018 19:56:17 +0200 (CEST)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+	by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	30 Mar 2018 10:56:17 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.48,382,1517904000"; d="scan'208";a="212673966"
+Received: from dpdk-xiao-1.sh.intel.com ([10.67.110.153])
+	by orsmga005.jf.intel.com with ESMTP; 30 Mar 2018 10:56:14 -0700
+From: Xiao Wang <xiao.w.wang@intel.com>
+To: ferruh.yigit@intel.com,
+	maxime.coquelin@redhat.com
+Cc: dev@dpdk.org, zhihong.wang@intel.com, yliu@fridaylinux.org,
+	jianfeng.tan@intel.com, tiwei.bie@intel.com, cunming.liang@intel.com,
+	dan.daly@intel.com, thomas@monjalon.net, gaetan.rivet@6wind.com,
+	anatoly.burakov@intel.com, Xiao Wang <xiao.w.wang@intel.com>,
+	Rosen Xu <rosen.xu@intel.com>
+Date: Sat, 31 Mar 2018 10:29:28 +0800
+Message-Id: <20180331022929.42172-4-xiao.w.wang@intel.com>
+X-Mailer: git-send-email 2.15.1
+In-Reply-To: <20180331022929.42172-1-xiao.w.wang@intel.com>
+References: <20180321132108.52464-4-xiao.w.wang@intel.com>
+	<20180331022929.42172-1-xiao.w.wang@intel.com>
+Subject: [dpdk-dev] [PATCH v3 3/4] net/ifcvf: add ifcvf vdpa driver
+X-BeenThere: dev@dpdk.org
+X-Mailman-Version: 2.1.15
+Precedence: list
+List-Id: DPDK patches and discussions <dev.dpdk.org>
+List-Unsubscribe: <https://dpdk.org/ml/options/dev>,
+	<mailto:dev-request@dpdk.org?subject=unsubscribe>
+List-Archive: <http://dpdk.org/ml/archives/dev/>
+List-Post: <mailto:dev@dpdk.org>
+List-Help: <mailto:dev-request@dpdk.org?subject=help>
+List-Subscribe: <https://dpdk.org/ml/listinfo/dev>,
+	<mailto:dev-request@dpdk.org?subject=subscribe>
+Errors-To: dev-bounces@dpdk.org
+Sender: "dev" <dev-bounces@dpdk.org>
+
+The IFCVF vDPA (vhost data path acceleration) driver provides support for
+the Intel FPGA 100G VF (IFCVF). IFCVF's datapath is virtio ring compatible,
+it works as a HW vhost backend which can send/receive packets to/from
+virtio directly by DMA.
+
+Different VF devices serve different virtio frontends which are in
+different VMs, so each VF needs to have its own DMA address translation
+service. During the driver probe a new container is created, with this
+container vDPA driver can program DMA remapping table with the VM's memory
+region information.
+
+Key vDPA driver ops implemented:
+
+- ifcvf_dev_config:
+  Enable VF data path with virtio information provided by vhost lib,
+  including IOMMU programming to enable VF DMA to VM's memory, VFIO
+  interrupt setup to route HW interrupt to virtio driver, create notify
+  relay thread to translate virtio driver's kick to a MMIO write onto HW,
+  HW queues configuration.
+
+- ifcvf_dev_close:
+  Revoke all the setup in ifcvf_dev_config.
+
+Live migration feature is supported by IFCVF and this driver enables
+it. For the dirty page logging, VF helps to log for packet buffer write,
+driver helps to make the used ring as dirty when device stops.
+
+Because vDPA driver needs to set up MSI-X vector to interrupt the
+guest, only vfio-pci is supported currently.
+
+Signed-off-by: Xiao Wang <xiao.w.wang@intel.com>
+Signed-off-by: Rosen Xu <rosen.xu@intel.com>
+Reviewed-by: Maxime Coquelin <maxime.coquelin@redhat.com>
+---
+ config/common_base                    |   7 +
+ config/common_linuxapp                |   1 +
+ drivers/net/Makefile                  |   3 +
+ drivers/net/ifc/Makefile              |  36 ++
+ drivers/net/ifc/base/ifcvf.c          | 329 +++++++++++++
+ drivers/net/ifc/base/ifcvf.h          | 160 +++++++
+ drivers/net/ifc/base/ifcvf_osdep.h    |  52 +++
+ drivers/net/ifc/ifcvf_vdpa.c          | 842 ++++++++++++++++++++++++++++++++++
+ drivers/net/ifc/rte_ifcvf_version.map |   4 +
+ mk/rte.app.mk                         |   3 +
+ 10 files changed, 1437 insertions(+)
+ create mode 100644 drivers/net/ifc/Makefile
+ create mode 100644 drivers/net/ifc/base/ifcvf.c
+ create mode 100644 drivers/net/ifc/base/ifcvf.h
+ create mode 100644 drivers/net/ifc/base/ifcvf_osdep.h
+ create mode 100644 drivers/net/ifc/ifcvf_vdpa.c
+ create mode 100644 drivers/net/ifc/rte_ifcvf_version.map
+
+diff --git a/config/common_base b/config/common_base
+index b2df1b482..f63f5c7c4 100644
+--- a/config/common_base
++++ b/config/common_base
+@@ -792,6 +792,13 @@ CONFIG_RTE_LIBRTE_VHOST_DEBUG=n
+ #
+ CONFIG_RTE_LIBRTE_PMD_VHOST=n
+ 
++#
++# Compile IFCVF driver
++# To compile, CONFIG_RTE_LIBRTE_VHOST and CONFIG_RTE_EAL_VFIO
++# should be enabled.
++#
++CONFIG_RTE_LIBRTE_IFCVF_VDPA=n
++
+ #
+ # Compile the test application
+ #
+diff --git a/config/common_linuxapp b/config/common_linuxapp
+index ff98f2355..1a5513c20 100644
+--- a/config/common_linuxapp
++++ b/config/common_linuxapp
+@@ -15,6 +15,7 @@ CONFIG_RTE_LIBRTE_PMD_KNI=y
+ CONFIG_RTE_LIBRTE_VHOST=y
+ CONFIG_RTE_LIBRTE_VHOST_NUMA=y
+ CONFIG_RTE_LIBRTE_PMD_VHOST=y
++CONFIG_RTE_LIBRTE_IFCVF_VDPA=y
+ CONFIG_RTE_LIBRTE_PMD_AF_PACKET=y
+ CONFIG_RTE_LIBRTE_PMD_TAP=y
+ CONFIG_RTE_LIBRTE_AVP_PMD=y
+diff --git a/drivers/net/Makefile b/drivers/net/Makefile
+index e1127326b..aec3a32f8 100644
+--- a/drivers/net/Makefile
++++ b/drivers/net/Makefile
+@@ -53,6 +53,9 @@ endif # $(CONFIG_RTE_LIBRTE_SCHED)
+ 
+ ifeq ($(CONFIG_RTE_LIBRTE_VHOST),y)
+ DIRS-$(CONFIG_RTE_LIBRTE_PMD_VHOST) += vhost
++ifeq ($(CONFIG_RTE_EAL_VFIO),y)
++DIRS-$(CONFIG_RTE_LIBRTE_IFCVF_VDPA) += ifc
++endif
+ endif # $(CONFIG_RTE_LIBRTE_VHOST)
+ 
+ ifeq ($(CONFIG_RTE_LIBRTE_MRVL_PMD),y)
+diff --git a/drivers/net/ifc/Makefile b/drivers/net/ifc/Makefile
+new file mode 100644
+index 000000000..f08fcaad8
+--- /dev/null
++++ b/drivers/net/ifc/Makefile
+@@ -0,0 +1,36 @@
++# SPDX-License-Identifier: BSD-3-Clause
++# Copyright(c) 2018 Intel Corporation
++
++include $(RTE_SDK)/mk/rte.vars.mk
++
++#
++# library name
++#
++LIB = librte_ifcvf_vdpa.a
++
++LDLIBS += -lpthread
++LDLIBS += -lrte_eal -lrte_pci -lrte_vhost -lrte_bus_pci
++
++CFLAGS += -O3
++CFLAGS += $(WERROR_FLAGS)
++CFLAGS += -DALLOW_EXPERIMENTAL_API
++CFLAGS += -I$(RTE_SDK)/lib/librte_eal/linuxapp/eal
++
++#
++# Add extra flags for base driver source files to disable warnings in them
++#
++BASE_DRIVER_OBJS=$(sort $(patsubst %.c,%.o,$(notdir $(wildcard $(SRCDIR)/base/*.c))))
++
++VPATH += $(SRCDIR)/base
++
++EXPORT_MAP := rte_ifcvf_version.map
++
++LIBABIVER := 1
++
++#
++# all source are stored in SRCS-y
++#
++SRCS-$(CONFIG_RTE_LIBRTE_IFCVF_VDPA) += ifcvf_vdpa.c
++SRCS-$(CONFIG_RTE_LIBRTE_IFCVF_VDPA) += ifcvf.c
++
++include $(RTE_SDK)/mk/rte.lib.mk
+diff --git a/drivers/net/ifc/base/ifcvf.c b/drivers/net/ifc/base/ifcvf.c
+new file mode 100644
+index 000000000..d312ad99f
+--- /dev/null
++++ b/drivers/net/ifc/base/ifcvf.c
+@@ -0,0 +1,329 @@
++/* SPDX-License-Identifier: BSD-3-Clause
++ * Copyright(c) 2018 Intel Corporation
++ */
++
++#include "ifcvf.h"
++#include "ifcvf_osdep.h"
++
++STATIC void *
++get_cap_addr(struct ifcvf_hw *hw, struct ifcvf_pci_cap *cap)
++{
++	u8 bar = cap->bar;
++	u32 length = cap->length;
++	u32 offset = cap->offset;
++
++	if (bar > IFCVF_PCI_MAX_RESOURCE - 1) {
++		DEBUGOUT("invalid bar: %u\n", bar);
++		return NULL;
++	}
++
++	if (offset + length < offset) {
++		DEBUGOUT("offset(%u) + length(%u) overflows\n",
++			offset, length);
++		return NULL;
++	}
++
++	if (offset + length > hw->mem_resource[cap->bar].len) {
++		DEBUGOUT("offset(%u) + length(%u) overflows bar length(%u)",
++			offset, length, (u32)hw->mem_resource[cap->bar].len);
++		return NULL;
++	}
++
++	return hw->mem_resource[bar].addr + offset;
++}
++
++int
++ifcvf_init_hw(struct ifcvf_hw *hw, PCI_DEV *dev)
++{
++	int ret;
++	u8 pos;
++	struct ifcvf_pci_cap cap;
++
++	ret = PCI_READ_CONFIG_BYTE(dev, &pos, PCI_CAPABILITY_LIST);
++	if (ret < 0) {
++		DEBUGOUT("failed to read pci capability list\n");
++		return -1;
++	}
++
++	while (pos) {
++		ret = PCI_READ_CONFIG_RANGE(dev, (u32 *)&cap,
++				sizeof(cap), pos);
++		if (ret < 0) {
++			DEBUGOUT("failed to read cap at pos: %x", pos);
++			break;
++		}
++
++		if (cap.cap_vndr != PCI_CAP_ID_VNDR)
++			goto next;
++
++		DEBUGOUT("cfg type: %u, bar: %u, offset: %u, "
++				"len: %u\n", cap.cfg_type, cap.bar,
++				cap.offset, cap.length);
++
++		switch (cap.cfg_type) {
++		case IFCVF_PCI_CAP_COMMON_CFG:
++			hw->common_cfg = get_cap_addr(hw, &cap);
++			break;
++		case IFCVF_PCI_CAP_NOTIFY_CFG:
++			PCI_READ_CONFIG_DWORD(dev, &hw->notify_off_multiplier,
++					pos + sizeof(cap));
++			hw->notify_base = get_cap_addr(hw, &cap);
++			hw->notify_region = cap.bar;
++			break;
++		case IFCVF_PCI_CAP_ISR_CFG:
++			hw->isr = get_cap_addr(hw, &cap);
++			break;
++		case IFCVF_PCI_CAP_DEVICE_CFG:
++			hw->dev_cfg = get_cap_addr(hw, &cap);
++			break;
++		}
++next:
++		pos = cap.cap_next;
++	}
++
++	hw->lm_cfg = hw->mem_resource[4].addr;
++
++	if (hw->common_cfg == NULL || hw->notify_base == NULL ||
++			hw->isr == NULL || hw->dev_cfg == NULL) {
++		DEBUGOUT("capability incomplete\n");
++		return -1;
++	}
++
++	DEBUGOUT("capability mapping:\ncommon cfg: %p\n"
++			"notify base: %p\nisr cfg: %p\ndevice cfg: %p\n"
++			"multiplier: %u\n",
++			hw->common_cfg, hw->dev_cfg,
++			hw->isr, hw->notify_base,
++			hw->notify_off_multiplier);
++
++	return 0;
++}
++
++STATIC u8
++ifcvf_get_status(struct ifcvf_hw *hw)
++{
++	return IFCVF_READ_REG8(&hw->common_cfg->device_status);
++}
++
++STATIC void
++ifcvf_set_status(struct ifcvf_hw *hw, u8 status)
++{
++	IFCVF_WRITE_REG8(status, &hw->common_cfg->device_status);
++}
++
++STATIC void
++ifcvf_reset(struct ifcvf_hw *hw)
++{
++	ifcvf_set_status(hw, 0);
++
++	/* flush status write */
++	while (ifcvf_get_status(hw))
++		msec_delay(1);
++}
++
++STATIC void
++ifcvf_add_status(struct ifcvf_hw *hw, u8 status)
++{
++	if (status != 0)
++		status |= ifcvf_get_status(hw);
++
++	ifcvf_set_status(hw, status);
++	ifcvf_get_status(hw);
++}
++
++u64
++ifcvf_get_features(struct ifcvf_hw *hw)
++{
++	u32 features_lo, features_hi;
++	struct ifcvf_pci_common_cfg *cfg = hw->common_cfg;
++
++	IFCVF_WRITE_REG32(0, &cfg->device_feature_select);
++	features_lo = IFCVF_READ_REG32(&cfg->device_feature);
++
++	IFCVF_WRITE_REG32(1, &cfg->device_feature_select);
++	features_hi = IFCVF_READ_REG32(&cfg->device_feature);
++
++	return ((u64)features_hi << 32) | features_lo;
++}
++
++STATIC void
++ifcvf_set_features(struct ifcvf_hw *hw, u64 features)
++{
++	struct ifcvf_pci_common_cfg *cfg = hw->common_cfg;
++
++	IFCVF_WRITE_REG32(0, &cfg->guest_feature_select);
++	IFCVF_WRITE_REG32(features & ((1ULL << 32) - 1), &cfg->guest_feature);
++
++	IFCVF_WRITE_REG32(1, &cfg->guest_feature_select);
++	IFCVF_WRITE_REG32(features >> 32, &cfg->guest_feature);
++}
++
++STATIC int
++ifcvf_config_features(struct ifcvf_hw *hw)
++{
++	u64 host_features;
++
++	host_features = ifcvf_get_features(hw);
++	hw->req_features &= host_features;
++
++	ifcvf_set_features(hw, hw->req_features);
++	ifcvf_add_status(hw, IFCVF_CONFIG_STATUS_FEATURES_OK);
++
++	if (!(ifcvf_get_status(hw) & IFCVF_CONFIG_STATUS_FEATURES_OK)) {
++		DEBUGOUT("failed to set FEATURES_OK status\n");
++		return -1;
++	}
++
++	return 0;
++}
++
++STATIC void
++io_write64_twopart(u64 val, u32 *lo, u32 *hi)
++{
++	IFCVF_WRITE_REG32(val & ((1ULL << 32) - 1), lo);
++	IFCVF_WRITE_REG32(val >> 32, hi);
++}
++
++STATIC int
++ifcvf_hw_enable(struct ifcvf_hw *hw)
++{
++	struct ifcvf_pci_common_cfg *cfg;
++	u8 *lm_cfg;
++	u32 i;
++	u16 notify_off;
++
++	cfg = hw->common_cfg;
++	lm_cfg = hw->lm_cfg;
++
++	IFCVF_WRITE_REG16(0, &cfg->msix_config);
++	if (IFCVF_READ_REG16(&cfg->msix_config) == IFCVF_MSI_NO_VECTOR) {
++		DEBUGOUT("msix vec alloc failed for device config\n");
++		return -1;
++	}
++
++	for (i = 0; i < hw->nr_vring; i++) {
++		IFCVF_WRITE_REG16(i, &cfg->queue_select);
++		io_write64_twopart(hw->vring[i].desc, &cfg->queue_desc_lo,
++				&cfg->queue_desc_hi);
++		io_write64_twopart(hw->vring[i].avail, &cfg->queue_avail_lo,
++				&cfg->queue_avail_hi);
++		io_write64_twopart(hw->vring[i].used, &cfg->queue_used_lo,
++				&cfg->queue_used_hi);
++		IFCVF_WRITE_REG16(hw->vring[i].size, &cfg->queue_size);
++
++		*(u32 *)(lm_cfg + IFCVF_LM_RING_STATE_OFFSET +
++				(i / 2) * IFCVF_LM_CFG_SIZE + (i % 2) * 4) =
++			(u32)hw->vring[i].last_avail_idx |
++			((u32)hw->vring[i].last_used_idx << 16);
++
++		IFCVF_WRITE_REG16(i + 1, &cfg->queue_msix_vector);
++		if (IFCVF_READ_REG16(&cfg->queue_msix_vector) ==
++				IFCVF_MSI_NO_VECTOR) {
++			DEBUGOUT("queue %u, msix vec alloc failed\n",
++					i);
++			return -1;
++		}
++
++		notify_off = IFCVF_READ_REG16(&cfg->queue_notify_off);
++		hw->notify_addr[i] = (void *)((u8 *)hw->notify_base +
++				notify_off * hw->notify_off_multiplier);
++		IFCVF_WRITE_REG16(1, &cfg->queue_enable);
++	}
++
++	return 0;
++}
++
++STATIC void
++ifcvf_hw_disable(struct ifcvf_hw *hw)
++{
++	u32 i;
++	struct ifcvf_pci_common_cfg *cfg;
++	u32 ring_state;
++
++	cfg = hw->common_cfg;
++
++	IFCVF_WRITE_REG16(IFCVF_MSI_NO_VECTOR, &cfg->msix_config);
++	for (i = 0; i < hw->nr_vring; i++) {
++		IFCVF_WRITE_REG16(i, &cfg->queue_select);
++		IFCVF_WRITE_REG16(0, &cfg->queue_enable);
++		IFCVF_WRITE_REG16(IFCVF_MSI_NO_VECTOR, &cfg->queue_msix_vector);
++		ring_state = *(u32 *)(hw->lm_cfg + IFCVF_LM_RING_STATE_OFFSET +
++				(i / 2) * IFCVF_LM_CFG_SIZE + (i % 2) * 4);
++		hw->vring[i].last_avail_idx = (u16)ring_state;
++		hw->vring[i].last_used_idx = (u16)ring_state >> 16;
++	}
++}
++
++int
++ifcvf_start_hw(struct ifcvf_hw *hw)
++{
++	ifcvf_reset(hw);
++	ifcvf_add_status(hw, IFCVF_CONFIG_STATUS_ACK);
++	ifcvf_add_status(hw, IFCVF_CONFIG_STATUS_DRIVER);
++
++	if (ifcvf_config_features(hw) < 0)
++		return -1;
++
++	if (ifcvf_hw_enable(hw) < 0)
++		return -1;
++
++	ifcvf_add_status(hw, IFCVF_CONFIG_STATUS_DRIVER_OK);
++	return 0;
++}
++
++void
++ifcvf_stop_hw(struct ifcvf_hw *hw)
++{
++	ifcvf_hw_disable(hw);
++	ifcvf_reset(hw);
++}
++
++void
++ifcvf_enable_logging(struct ifcvf_hw *hw, u64 log_base, u64 log_size)
++{
++	u8 *lm_cfg;
++
++	lm_cfg = hw->lm_cfg;
++
++	*(u32 *)(lm_cfg + IFCVF_LM_BASE_ADDR_LOW) =
++		log_base & IFCVF_32_BIT_MASK;
++
++	*(u32 *)(lm_cfg + IFCVF_LM_BASE_ADDR_HIGH) =
++		(log_base >> 32) & IFCVF_32_BIT_MASK;
++
++	*(u32 *)(lm_cfg + IFCVF_LM_END_ADDR_LOW) =
++		(log_base + log_size) & IFCVF_32_BIT_MASK;
++
++	*(u32 *)(lm_cfg + IFCVF_LM_END_ADDR_HIGH) =
++		((log_base + log_size) >> 32) & IFCVF_32_BIT_MASK;
++
++	*(u32 *)(lm_cfg + IFCVF_LM_LOGGING_CTRL) = IFCVF_LM_ENABLE_PF;
++}
++
++void
++ifcvf_disable_logging(struct ifcvf_hw *hw)
++{
++	u8 *lm_cfg;
++
++	lm_cfg = hw->lm_cfg;
++	*(u32 *)(lm_cfg + IFCVF_LM_LOGGING_CTRL) = IFCVF_LM_DISABLE;
++}
++
++void
++ifcvf_notify_queue(struct ifcvf_hw *hw, u16 qid)
++{
++	IFCVF_WRITE_REG16(qid, hw->notify_addr[qid]);
++}
++
++u8
++ifcvf_get_notify_region(struct ifcvf_hw *hw)
++{
++	return hw->notify_region;
++}
++
++u64
++ifcvf_get_queue_notify_off(struct ifcvf_hw *hw, int qid)
++{
++	return (u8 *)hw->notify_addr[qid] -
++		(u8 *)hw->mem_resource[hw->notify_region].addr;
++}
+diff --git a/drivers/net/ifc/base/ifcvf.h b/drivers/net/ifc/base/ifcvf.h
+new file mode 100644
+index 000000000..77a2bfa83
+--- /dev/null
++++ b/drivers/net/ifc/base/ifcvf.h
+@@ -0,0 +1,160 @@
++/* SPDX-License-Identifier: BSD-3-Clause
++ * Copyright(c) 2018 Intel Corporation
++ */
++
++#ifndef _IFCVF_H_
++#define _IFCVF_H_
++
++#include "ifcvf_osdep.h"
++
++#define IFCVF_VENDOR_ID		0x1AF4
++#define IFCVF_DEVICE_ID		0x1041
++#define IFCVF_SUBSYS_VENDOR_ID	0x8086
++#define IFCVF_SUBSYS_DEVICE_ID	0x001A
++
++#define IFCVF_MAX_QUEUES		1
++#define VIRTIO_F_IOMMU_PLATFORM		33
++
++/* Common configuration */
++#define IFCVF_PCI_CAP_COMMON_CFG	1
++/* Notifications */
++#define IFCVF_PCI_CAP_NOTIFY_CFG	2
++/* ISR Status */
++#define IFCVF_PCI_CAP_ISR_CFG		3
++/* Device specific configuration */
++#define IFCVF_PCI_CAP_DEVICE_CFG	4
++/* PCI configuration access */
++#define IFCVF_PCI_CAP_PCI_CFG		5
++
++#define IFCVF_CONFIG_STATUS_RESET     0x00
++#define IFCVF_CONFIG_STATUS_ACK       0x01
++#define IFCVF_CONFIG_STATUS_DRIVER    0x02
++#define IFCVF_CONFIG_STATUS_DRIVER_OK 0x04
++#define IFCVF_CONFIG_STATUS_FEATURES_OK 0x08
++#define IFCVF_CONFIG_STATUS_FAILED    0x80
++
++#define IFCVF_MSI_NO_VECTOR	0xffff
++#define IFCVF_PCI_MAX_RESOURCE	6
++
++#define IFCVF_LM_CFG_SIZE		0x40
++#define IFCVF_LM_RING_STATE_OFFSET	0x20
++
++#define IFCVF_LM_LOGGING_CTRL		0x0
++
++#define IFCVF_LM_BASE_ADDR_LOW		0x10
++#define IFCVF_LM_BASE_ADDR_HIGH		0x14
++#define IFCVF_LM_END_ADDR_LOW		0x18
++#define IFCVF_LM_END_ADDR_HIGH		0x1c
++
++#define IFCVF_LM_DISABLE		0x0
++#define IFCVF_LM_ENABLE_VF		0x1
++#define IFCVF_LM_ENABLE_PF		0x3
++
++#define IFCVF_32_BIT_MASK		0xffffffff
++
++
++struct ifcvf_pci_cap {
++	u8 cap_vndr;            /* Generic PCI field: PCI_CAP_ID_VNDR */
++	u8 cap_next;            /* Generic PCI field: next ptr. */
++	u8 cap_len;             /* Generic PCI field: capability length */
++	u8 cfg_type;            /* Identifies the structure. */
++	u8 bar;                 /* Where to find it. */
++	u8 padding[3];          /* Pad to full dword. */
++	u32 offset;             /* Offset within bar. */
++	u32 length;             /* Length of the structure, in bytes. */
++};
++
++struct ifcvf_pci_notify_cap {
++	struct ifcvf_pci_cap cap;
++	u32 notify_off_multiplier;  /* Multiplier for queue_notify_off. */
++};
++
++struct ifcvf_pci_common_cfg {
++	/* About the whole device. */
++	u32 device_feature_select;
++	u32 device_feature;
++	u32 guest_feature_select;
++	u32 guest_feature;
++	u16 msix_config;
++	u16 num_queues;
++	u8 device_status;
++	u8 config_generation;
++
++	/* About a specific virtqueue. */
++	u16 queue_select;
++	u16 queue_size;
++	u16 queue_msix_vector;
++	u16 queue_enable;
++	u16 queue_notify_off;
++	u32 queue_desc_lo;
++	u32 queue_desc_hi;
++	u32 queue_avail_lo;
++	u32 queue_avail_hi;
++	u32 queue_used_lo;
++	u32 queue_used_hi;
++};
++
++struct ifcvf_net_config {
++	u8    mac[6];
++	u16   status;
++	u16   max_virtqueue_pairs;
++} __attribute__((packed));
++
++struct ifcvf_pci_mem_resource {
++	u64      phys_addr; /**< Physical address, 0 if not resource. */
++	u64      len;       /**< Length of the resource. */
++	u8       *addr;     /**< Virtual address, NULL when not mapped. */
++};
++
++struct vring_info {
++	u64 desc;
++	u64 avail;
++	u64 used;
++	u16 size;
++	u16 last_avail_idx;
++	u16 last_used_idx;
++};
++
++struct ifcvf_hw {
++	u64    req_features;
++	u8     notify_region;
++	u32    notify_off_multiplier;
++	struct ifcvf_pci_common_cfg *common_cfg;
++	struct ifcvf_net_device_config *dev_cfg;
++	u8     *isr;
++	u16    *notify_base;
++	u16    *notify_addr[IFCVF_MAX_QUEUES * 2];
++	u8     *lm_cfg;
++	struct vring_info vring[IFCVF_MAX_QUEUES * 2];
++	u8 nr_vring;
++	struct ifcvf_pci_mem_resource mem_resource[IFCVF_PCI_MAX_RESOURCE];
++};
++
++int
++ifcvf_init_hw(struct ifcvf_hw *hw, PCI_DEV *dev);
++
++u64
++ifcvf_get_features(struct ifcvf_hw *hw);
++
++int
++ifcvf_start_hw(struct ifcvf_hw *hw);
++
++void
++ifcvf_stop_hw(struct ifcvf_hw *hw);
++
++void
++ifcvf_enable_logging(struct ifcvf_hw *hw, u64 log_base, u64 log_size);
++
++void
++ifcvf_disable_logging(struct ifcvf_hw *hw);
++
++void
++ifcvf_notify_queue(struct ifcvf_hw *hw, u16 qid);
++
++u8
++ifcvf_get_notify_region(struct ifcvf_hw *hw);
++
++u64
++ifcvf_get_queue_notify_off(struct ifcvf_hw *hw, int qid);
++
++#endif /* _IFCVF_H_ */
+diff --git a/drivers/net/ifc/base/ifcvf_osdep.h b/drivers/net/ifc/base/ifcvf_osdep.h
+new file mode 100644
+index 000000000..cf151ef52
+--- /dev/null
++++ b/drivers/net/ifc/base/ifcvf_osdep.h
+@@ -0,0 +1,52 @@
++/* SPDX-License-Identifier: BSD-3-Clause
++ * Copyright(c) 2018 Intel Corporation
++ */
++
++#ifndef _IFCVF_OSDEP_H_
++#define _IFCVF_OSDEP_H_
++
++#include <stdint.h>
++#include <linux/pci_regs.h>
++
++#include <rte_cycles.h>
++#include <rte_pci.h>
++#include <rte_bus_pci.h>
++#include <rte_log.h>
++#include <rte_io.h>
++
++#define DEBUGOUT(S, args...)    RTE_LOG(DEBUG, PMD, S, ##args)
++#define STATIC                  static
++
++#define msec_delay	rte_delay_ms
++
++#define IFCVF_READ_REG8(reg)		rte_read8(reg)
++#define IFCVF_WRITE_REG8(val, reg)	rte_write8((val), (reg))
++#define IFCVF_READ_REG16(reg)		rte_read16(reg)
++#define IFCVF_WRITE_REG16(val, reg)	rte_write16((val), (reg))
++#define IFCVF_READ_REG32(reg)		rte_read32(reg)
++#define IFCVF_WRITE_REG32(val, reg)	rte_write32((val), (reg))
++
++typedef struct rte_pci_device PCI_DEV;
++
++#define PCI_READ_CONFIG_BYTE(dev, val, where) \
++	rte_pci_read_config(dev, val, 1, where)
++
++#define PCI_READ_CONFIG_DWORD(dev, val, where) \
++	rte_pci_read_config(dev, val, 4, where)
++
++typedef uint8_t    u8;
++typedef int8_t     s8;
++typedef uint16_t   u16;
++typedef int16_t    s16;
++typedef uint32_t   u32;
++typedef int32_t    s32;
++typedef int64_t    s64;
++typedef uint64_t   u64;
++
++static inline int
++PCI_READ_CONFIG_RANGE(PCI_DEV *dev, uint32_t *val, int size, int where)
++{
++	return rte_pci_read_config(dev, val, size, where);
++}
++
++#endif /* _IFCVF_OSDEP_H_ */
+diff --git a/drivers/net/ifc/ifcvf_vdpa.c b/drivers/net/ifc/ifcvf_vdpa.c
+new file mode 100644
+index 000000000..ff87f5153
+--- /dev/null
++++ b/drivers/net/ifc/ifcvf_vdpa.c
+@@ -0,0 +1,842 @@
++/* SPDX-License-Identifier: BSD-3-Clause
++ * Copyright(c) 2018 Intel Corporation
++ */
++
++#include <unistd.h>
++#include <pthread.h>
++#include <fcntl.h>
++#include <sys/ioctl.h>
++#include <sys/epoll.h>
++
++#include <rte_malloc.h>
++#include <rte_memory.h>
++#include <rte_bus_pci.h>
++#include <rte_vhost.h>
++#include <rte_vdpa.h>
++#include <rte_vfio.h>
++#include <rte_spinlock.h>
++#include <rte_log.h>
++#include <eal_vfio.h>
++
++#include "base/ifcvf.h"
++
++#define DRV_LOG(level, fmt, args...) \
++	rte_log(RTE_LOG_ ## level, ifcvf_vdpa_logtype, \
++		"%s(): " fmt "\n", __func__, ##args)
++
++static int ifcvf_vdpa_logtype;
++
++struct ifcvf_internal {
++	struct rte_vdpa_dev_addr dev_addr;
++	struct rte_pci_device *pdev;
++	struct ifcvf_hw hw;
++	int vfio_container_fd;
++	int vfio_group_fd;
++	int vfio_dev_fd;
++	pthread_t tid;	/* thread for notify relay */
++	int epfd;
++	int vid;
++	int did;
++	uint16_t max_queues;
++	uint64_t features;
++	rte_atomic32_t started;
++	rte_atomic32_t dev_attached;
++	rte_atomic32_t running;
++	rte_spinlock_t lock;
++};
++
++struct internal_list {
++	TAILQ_ENTRY(internal_list) next;
++	struct ifcvf_internal *internal;
++};
++
++TAILQ_HEAD(internal_list_head, internal_list);
++static struct internal_list_head internal_list =
++	TAILQ_HEAD_INITIALIZER(internal_list);
++
++static pthread_mutex_t internal_list_lock = PTHREAD_MUTEX_INITIALIZER;
++
++static struct internal_list *
++find_internal_resource_by_did(int did)
++{
++	int found = 0;
++	struct internal_list *list;
++
++	pthread_mutex_lock(&internal_list_lock);
++
++	TAILQ_FOREACH(list, &internal_list, next) {
++		if (did == list->internal->did) {
++			found = 1;
++			break;
++		}
++	}
++
++	pthread_mutex_unlock(&internal_list_lock);
++
++	if (!found)
++		return NULL;
++
++	return list;
++}
++
++static struct internal_list *
++find_internal_resource_by_dev(struct rte_pci_device *pdev)
++{
++	int found = 0;
++	struct internal_list *list;
++
++	pthread_mutex_lock(&internal_list_lock);
++
++	TAILQ_FOREACH(list, &internal_list, next) {
++		if (pdev == list->internal->pdev) {
++			found = 1;
++			break;
++		}
++	}
++
++	pthread_mutex_unlock(&internal_list_lock);
++
++	if (!found)
++		return NULL;
++
++	return list;
++}
++
++static int
++ifcvf_vfio_setup(struct ifcvf_internal *internal)
++{
++	struct rte_pci_device *dev = internal->pdev;
++	char devname[RTE_DEV_NAME_MAX_LEN] = {0};
++	int iommu_group_no;
++	int ret = 0;
++	int i;
++
++	internal->vfio_dev_fd = -1;
++	internal->vfio_group_fd = -1;
++	internal->vfio_container_fd = -1;
++
++	rte_pci_device_name(&dev->addr, devname, RTE_DEV_NAME_MAX_LEN);
++	vfio_get_group_no(rte_pci_get_sysfs_path(), devname, &iommu_group_no);
++
++	internal->vfio_container_fd = rte_vfio_create_container();
++	if (internal->vfio_container_fd < 0)
++		return -1;
++
++	ret = rte_vfio_bind_group(internal->vfio_container_fd,
++			iommu_group_no);
++	if (ret)
++		goto err;
++
++	if (rte_pci_map_device(dev))
++		goto err;
++
++	internal->vfio_dev_fd = dev->intr_handle.vfio_dev_fd;
++	internal->vfio_group_fd = rte_vfio_get_group_fd(iommu_group_no);
++	if (internal->vfio_group_fd < 0)
++		goto err;
++
++	for (i = 0; i < RTE_MIN(PCI_MAX_RESOURCE, IFCVF_PCI_MAX_RESOURCE);
++			i++) {
++		internal->hw.mem_resource[i].addr =
++			internal->pdev->mem_resource[i].addr;
++		internal->hw.mem_resource[i].phys_addr =
++			internal->pdev->mem_resource[i].phys_addr;
++		internal->hw.mem_resource[i].len =
++			internal->pdev->mem_resource[i].len;
++	}
++	ret = ifcvf_init_hw(&internal->hw, internal->pdev);
++
++	return ret;
++
++err:
++	rte_vfio_destroy_container(internal->vfio_container_fd);
++	return -1;
++}
++
++static int
++ifcvf_dma_map(struct ifcvf_internal *internal)
++{
++	uint32_t i;
++	int ret;
++	struct rte_vhost_memory *mem = NULL;
++	int vfio_container_fd;
++
++	ret = rte_vhost_get_mem_table(internal->vid, &mem);
++	if (ret < 0) {
++		DRV_LOG(ERR, "failed to get VM memory layout.");
++		goto exit;
++	}
++
++	vfio_container_fd = internal->vfio_container_fd;
++
++	for (i = 0; i < mem->nregions; i++) {
++		struct rte_vhost_mem_region *reg;
++		struct rte_memseg ms;
++
++		reg = &mem->regions[i];
++		DRV_LOG(INFO, "region %u: HVA 0x%lx, GPA 0x%lx, "
++			"size 0x%lx.", i, reg->host_user_addr,
++			reg->guest_phys_addr, reg->size);
++
++		ms.addr_64 = reg->host_user_addr;
++		ms.iova = reg->guest_phys_addr;
++		ms.len = reg->size;
++		rte_vfio_dma_map(vfio_container_fd, VFIO_TYPE1_IOMMU, &ms);
++	}
++
++exit:
++	if (mem)
++		free(mem);
++	return ret;
++}
++
++static int
++ifcvf_dma_unmap(struct ifcvf_internal *internal)
++{
++	uint32_t i;
++	int ret = 0;
++	struct rte_vhost_memory *mem = NULL;
++	int vfio_container_fd;
++
++	ret = rte_vhost_get_mem_table(internal->vid, &mem);
++	if (ret < 0) {
++		DRV_LOG(ERR, "failed to get VM memory layout.");
++		goto exit;
++	}
++
++	vfio_container_fd = internal->vfio_container_fd;
++
++	for (i = 0; i < mem->nregions; i++) {
++		struct rte_vhost_mem_region *reg;
++		struct rte_memseg ms;
++
++		reg = &mem->regions[i];
++		ms.addr_64 = reg->host_user_addr;
++		ms.iova = reg->guest_phys_addr;
++		ms.len = reg->size;
++		rte_vfio_dma_unmap(vfio_container_fd, VFIO_TYPE1_IOMMU, &ms);
++	}
++
++exit:
++	if (mem)
++		free(mem);
++	return ret;
++}
++
++static uint64_t
++qva_to_gpa(int vid, uint64_t qva)
++{
++	struct rte_vhost_memory *mem = NULL;
++	struct rte_vhost_mem_region *reg;
++	uint32_t i;
++	uint64_t gpa = 0;
++
++	if (rte_vhost_get_mem_table(vid, &mem) < 0)
++		goto exit;
++
++	for (i = 0; i < mem->nregions; i++) {
++		reg = &mem->regions[i];
++
++		if (qva >= reg->host_user_addr &&
++				qva < reg->host_user_addr + reg->size) {
++			gpa = qva - reg->host_user_addr + reg->guest_phys_addr;
++			break;
++		}
++	}
++
++exit:
++	if (gpa == 0)
++		rte_panic("failed to get gpa\n");
++	if (mem)
++		free(mem);
++	return gpa;
++}
++
++static int
++vdpa_ifcvf_start(struct ifcvf_internal *internal)
++{
++	struct ifcvf_hw *hw = &internal->hw;
++	int i, nr_vring;
++	int vid;
++	struct rte_vhost_vring vq;
++
++	vid = internal->vid;
++	nr_vring = rte_vhost_get_vring_num(vid);
++	rte_vhost_get_negotiated_features(vid, &hw->req_features);
++
++	for (i = 0; i < nr_vring; i++) {
++		rte_vhost_get_vhost_vring(vid, i, &vq);
++		hw->vring[i].desc = qva_to_gpa(vid, (uint64_t)vq.desc);
++		hw->vring[i].avail = qva_to_gpa(vid, (uint64_t)vq.avail);
++		hw->vring[i].used = qva_to_gpa(vid, (uint64_t)vq.used);
++		hw->vring[i].size = vq.size;
++		rte_vhost_get_vring_base(vid, i, &hw->vring[i].last_avail_idx,
++				&hw->vring[i].last_used_idx);
++	}
++	hw->nr_vring = i;
++
++	return ifcvf_start_hw(&internal->hw);
++}
++
++static void
++vdpa_ifcvf_stop(struct ifcvf_internal *internal)
++{
++	struct ifcvf_hw *hw = &internal->hw;
++	int i, j;
++	int vid;
++	uint64_t features, pfn;
++	uint64_t log_base, log_size;
++	uint8_t *log_buf;
++
++	vid = internal->vid;
++	ifcvf_stop_hw(hw);
++
++	for (i = 0; i < hw->nr_vring; i++)
++		rte_vhost_set_vring_base(vid, i, hw->vring[i].last_avail_idx,
++				hw->vring[i].last_used_idx);
++
++	rte_vhost_get_negotiated_features(vid, &features);
++	if (RTE_VHOST_NEED_LOG(features)) {
++		ifcvf_disable_logging(hw);
++		rte_vhost_get_log_base(internal->vid, &log_base, &log_size);
++		/*
++		 * IFCVF marks dirty memory pages for only packet buffer,
++		 * SW helps to mark the used ring as dirty after device stops.
++		 */
++		log_buf = (uint8_t *)(uintptr_t)log_base;
++		for (i = 0; i < hw->nr_vring; i++) {
++			pfn = hw->vring[i].used / 4096;
++			for (j = 0; j <= hw->vring[i].size * 8 / 4096; j++)
++				__sync_fetch_and_or_8(&log_buf[(pfn + j) / 8],
++						 1 << ((pfn + j) % 8));
++		}
++	}
++}
++
++#define MSIX_IRQ_SET_BUF_LEN (sizeof(struct vfio_irq_set) + \
++		sizeof(int) * (IFCVF_MAX_QUEUES * 2 + 1))
++static int
++vdpa_enable_vfio_intr(struct ifcvf_internal *internal)
++{
++	int ret;
++	uint32_t i, nr_vring;
++	char irq_set_buf[MSIX_IRQ_SET_BUF_LEN];
++	struct vfio_irq_set *irq_set;
++	int *fd_ptr;
++	struct rte_vhost_vring vring;
++
++	nr_vring = rte_vhost_get_vring_num(internal->vid);
++
++	irq_set = (struct vfio_irq_set *)irq_set_buf;
++	irq_set->argsz = sizeof(irq_set_buf);
++	irq_set->count = nr_vring + 1;
++	irq_set->flags = VFIO_IRQ_SET_DATA_EVENTFD |
++			 VFIO_IRQ_SET_ACTION_TRIGGER;
++	irq_set->index = VFIO_PCI_MSIX_IRQ_INDEX;
++	irq_set->start = 0;
++	fd_ptr = (int *)&irq_set->data;
++	fd_ptr[RTE_INTR_VEC_ZERO_OFFSET] = internal->pdev->intr_handle.fd;
++
++	for (i = 0; i < nr_vring; i++) {
++		rte_vhost_get_vhost_vring(internal->vid, i, &vring);
++		fd_ptr[RTE_INTR_VEC_RXTX_OFFSET + i] = vring.callfd;
++	}
++
++	ret = ioctl(internal->vfio_dev_fd, VFIO_DEVICE_SET_IRQS, irq_set);
++	if (ret) {
++		DRV_LOG(ERR, "Error enabling MSI-X interrupts: %s",
++				strerror(errno));
++		return -1;
++	}
++
++	return 0;
++}
++
++static int
++vdpa_disable_vfio_intr(struct ifcvf_internal *internal)
++{
++	int ret;
++	char irq_set_buf[MSIX_IRQ_SET_BUF_LEN];
++	struct vfio_irq_set *irq_set;
++
++	irq_set = (struct vfio_irq_set *)irq_set_buf;
++	irq_set->argsz = sizeof(irq_set_buf);
++	irq_set->count = 0;
++	irq_set->flags = VFIO_IRQ_SET_DATA_NONE | VFIO_IRQ_SET_ACTION_TRIGGER;
++	irq_set->index = VFIO_PCI_MSIX_IRQ_INDEX;
++	irq_set->start = 0;
++
++	ret = ioctl(internal->vfio_dev_fd, VFIO_DEVICE_SET_IRQS, irq_set);
++	if (ret) {
++		DRV_LOG(ERR, "Error disabling MSI-X interrupts: %s",
++				strerror(errno));
++		return -1;
++	}
++
++	return 0;
++}
++
++static void *
++notify_relay(void *arg)
++{
++	int i, kickfd, epfd, nfds = 0;
++	uint32_t qid, q_num;
++	struct epoll_event events[IFCVF_MAX_QUEUES * 2];
++	struct epoll_event ev;
++	uint64_t buf;
++	int nbytes;
++	struct rte_vhost_vring vring;
++	struct ifcvf_internal *internal = (struct ifcvf_internal *)arg;
++	struct ifcvf_hw *hw = &internal->hw;
++
++	q_num = rte_vhost_get_vring_num(internal->vid);
++
++	epfd = epoll_create(IFCVF_MAX_QUEUES * 2);
++	if (epfd < 0) {
++		DRV_LOG(ERR, "failed to create epoll instance.");
++		return NULL;
++	}
++	internal->epfd = epfd;
++
++	for (qid = 0; qid < q_num; qid++) {
++		ev.events = EPOLLIN | EPOLLPRI;
++		rte_vhost_get_vhost_vring(internal->vid, qid, &vring);
++		ev.data.u64 = qid | (uint64_t)vring.kickfd << 32;
++		if (epoll_ctl(epfd, EPOLL_CTL_ADD, vring.kickfd, &ev) < 0) {
++			DRV_LOG(ERR, "epoll add error: %s", strerror(errno));
++			return NULL;
++		}
++	}
++
++	for (;;) {
++		nfds = epoll_wait(epfd, events, q_num, -1);
++		if (nfds < 0) {
++			if (errno == EINTR)
++				continue;
++			DRV_LOG(ERR, "epoll_wait return fail\n");
++			return NULL;
++		}
++
++		for (i = 0; i < nfds; i++) {
++			qid = events[i].data.u32;
++			kickfd = (uint32_t)(events[i].data.u64 >> 32);
++			do {
++				nbytes = read(kickfd, &buf, 8);
++				if (nbytes < 0) {
++					if (errno == EINTR ||
++					    errno == EWOULDBLOCK ||
++					    errno == EAGAIN)
++						continue;
++					DRV_LOG(INFO, "Error reading "
++						"kickfd: %s",
++						strerror(errno));
++				}
++				break;
++			} while (1);
++
++			ifcvf_notify_queue(hw, qid);
++		}
++	}
++
++	return NULL;
++}
++
++static int
++setup_notify_relay(struct ifcvf_internal *internal)
++{
++	int ret;
++
++	ret = pthread_create(&internal->tid, NULL, notify_relay,
++			(void *)internal);
++	if (ret) {
++		DRV_LOG(ERR, "failed to create notify relay pthread.");
++		return -1;
++	}
++	return 0;
++}
++
++static int
++unset_notify_relay(struct ifcvf_internal *internal)
++{
++	void *status;
++
++	if (internal->tid) {
++		pthread_cancel(internal->tid);
++		pthread_join(internal->tid, &status);
++	}
++	internal->tid = 0;
++
++	if (internal->epfd >= 0)
++		close(internal->epfd);
++	internal->epfd = -1;
++
++	return 0;
++}
++
++static int
++update_datapath(struct ifcvf_internal *internal)
++{
++	int ret;
++
++	rte_spinlock_lock(&internal->lock);
++
++	if (!rte_atomic32_read(&internal->running) &&
++	    (rte_atomic32_read(&internal->started) &&
++	     rte_atomic32_read(&internal->dev_attached))) {
++		ret = ifcvf_dma_map(internal);
++		if (ret)
++			goto err;
++
++		ret = vdpa_enable_vfio_intr(internal);
++		if (ret)
++			goto err;
++
++		ret = setup_notify_relay(internal);
++		if (ret)
++			goto err;
++
++		ret = vdpa_ifcvf_start(internal);
++		if (ret)
++			goto err;
++
++		rte_atomic32_set(&internal->running, 1);
++	} else if (rte_atomic32_read(&internal->running) &&
++		   (!rte_atomic32_read(&internal->started) ||
++		    !rte_atomic32_read(&internal->dev_attached))) {
++		vdpa_ifcvf_stop(internal);
++
++		ret = unset_notify_relay(internal);
++		if (ret)
++			goto err;
++
++		ret = vdpa_disable_vfio_intr(internal);
++		if (ret)
++			goto err;
++
++		ret = ifcvf_dma_unmap(internal);
++		if (ret)
++			goto err;
++
++		rte_atomic32_set(&internal->running, 0);
++	}
++
++	rte_spinlock_unlock(&internal->lock);
++	return 0;
++err:
++	rte_spinlock_unlock(&internal->lock);
++	return ret;
++}
++
++static int
++ifcvf_dev_config(int vid)
++{
++	int did;
++	struct internal_list *list;
++	struct ifcvf_internal *internal;
++
++	did = rte_vhost_get_vdpa_did(vid);
++	list = find_internal_resource_by_did(did);
++	if (list == NULL) {
++		DRV_LOG(ERR, "Invalid device id: %d", did);
++		return -1;
++	}
++
++	internal = list->internal;
++	internal->vid = vid;
++	rte_atomic32_set(&internal->dev_attached, 1);
++	update_datapath(internal);
++
++	return 0;
++}
++
++static int
++ifcvf_dev_close(int vid)
++{
++	int did;
++	struct internal_list *list;
++	struct ifcvf_internal *internal;
++
++	did = rte_vhost_get_vdpa_did(vid);
++	list = find_internal_resource_by_did(did);
++	if (list == NULL) {
++		DRV_LOG(ERR, "Invalid device id: %d", did);
++		return -1;
++	}
++
++	internal = list->internal;
++	rte_atomic32_set(&internal->dev_attached, 0);
++	update_datapath(internal);
++
++	return 0;
++}
++
++static int
++ifcvf_feature_set(int vid)
++{
++	uint64_t features;
++	int did;
++	struct internal_list *list;
++	struct ifcvf_internal *internal;
++	uint64_t log_base, log_size;
++
++	did = rte_vhost_get_vdpa_did(vid);
++	list = find_internal_resource_by_did(did);
++	if (list == NULL) {
++		DRV_LOG(ERR, "Invalid device id: %d", did);
++		return -1;
++	}
++
++	internal = list->internal;
++	rte_vhost_get_negotiated_features(internal->vid, &features);
++
++	if (RTE_VHOST_NEED_LOG(features)) {
++		rte_vhost_get_log_base(internal->vid, &log_base, &log_size);
++		log_base = rte_mem_virt2phy((void *)(uintptr_t)log_base);
++		ifcvf_enable_logging(&internal->hw, log_base, log_size);
++	}
++
++	return 0;
++}
++
++static int
++ifcvf_get_vfio_group_fd(int vid)
++{
++	int did;
++	struct internal_list *list;
++
++	did = rte_vhost_get_vdpa_did(vid);
++	list = find_internal_resource_by_did(did);
++	if (list == NULL) {
++		DRV_LOG(ERR, "Invalid device id: %d", did);
++		return -1;
++	}
++
++	return list->internal->vfio_group_fd;
++}
++
++static int
++ifcvf_get_vfio_device_fd(int vid)
++{
++	int did;
++	struct internal_list *list;
++
++	did = rte_vhost_get_vdpa_did(vid);
++	list = find_internal_resource_by_did(did);
++	if (list == NULL) {
++		DRV_LOG(ERR, "Invalid device id: %d", did);
++		return -1;
++	}
++
++	return list->internal->vfio_dev_fd;
++}
++
++static int
++ifcvf_get_notify_area(int vid, int qid, uint64_t *offset, uint64_t *size)
++{
++	int did;
++	struct internal_list *list;
++	struct ifcvf_internal *internal;
++	struct vfio_region_info reg = { .argsz = sizeof(reg) };
++	int ret;
++
++	did = rte_vhost_get_vdpa_did(vid);
++	list = find_internal_resource_by_did(did);
++	if (list == NULL) {
++		DRV_LOG(ERR, "Invalid device id: %d", did);
++		return -1;
++	}
++
++	internal = list->internal;
++
++	reg.index = ifcvf_get_notify_region(&internal->hw);
++	ret = ioctl(internal->vfio_dev_fd, VFIO_DEVICE_GET_REGION_INFO, &reg);
++	if (ret) {
++		DRV_LOG(ERR, "Get not get device region info: %s",
++				strerror(errno));
++		return -1;
++	}
++
++	*offset = ifcvf_get_queue_notify_off(&internal->hw, qid) + reg.offset;
++	*size = 0x1000;
++
++	return 0;
++}
++
++static int
++ifcvf_get_queue_num(int did, uint32_t *queue_num)
++{
++	struct internal_list *list;
++
++	list = find_internal_resource_by_did(did);
++	if (list == NULL) {
++		DRV_LOG(ERR, "Invalid device id: %d", did);
++		return -1;
++	}
++
++	*queue_num = list->internal->max_queues;
++
++	return 0;
++}
++
++static int
++ifcvf_get_vdpa_feature(int did, uint64_t *features)
++{
++	struct internal_list *list;
++
++	list = find_internal_resource_by_did(did);
++	if (list == NULL) {
++		DRV_LOG(ERR, "Invalid device id: %d", did);
++		return -1;
++	}
++
++	*features = list->internal->features;
++
++	return 0;
++}
++
++#define VDPA_SUPPORTED_PROTOCOL_FEATURES \
++		(1ULL << VHOST_USER_PROTOCOL_F_REPLY_ACK)
++static int
++ifcvf_get_protocol_feature(int did __rte_unused, uint64_t *features)
++{
++	*features = VDPA_SUPPORTED_PROTOCOL_FEATURES;
++	return 0;
++}
++
++struct rte_vdpa_dev_ops ifcvf_ops = {
++	.queue_num_get = ifcvf_get_queue_num,
++	.feature_get = ifcvf_get_vdpa_feature,
++	.protocol_feature_get = ifcvf_get_protocol_feature,
++	.dev_conf = ifcvf_dev_config,
++	.dev_close = ifcvf_dev_close,
++	.vring_state_set = NULL,
++	.feature_set = ifcvf_feature_set,
++	.migration_done = NULL,
++	.get_vfio_group_fd = ifcvf_get_vfio_group_fd,
++	.get_vfio_device_fd = ifcvf_get_vfio_device_fd,
++	.get_notify_area = ifcvf_get_notify_area,
++};
++
++static int
++ifcvf_pci_probe(struct rte_pci_driver *pci_drv __rte_unused,
++		struct rte_pci_device *pci_dev)
++{
++	uint64_t features;
++	struct ifcvf_internal *internal = NULL;
++	struct internal_list *list = NULL;
++
++	if (rte_eal_process_type() != RTE_PROC_PRIMARY)
++		return 0;
++
++	list = rte_zmalloc("ifcvf", sizeof(*list), 0);
++	if (list == NULL)
++		goto error;
++
++	internal = rte_zmalloc("ifcvf", sizeof(*internal), 0);
++	if (internal == NULL)
++		goto error;
++
++	internal->pdev = pci_dev;
++	rte_spinlock_init(&internal->lock);
++	if (ifcvf_vfio_setup(internal) < 0)
++		return -1;
++
++	internal->max_queues = IFCVF_MAX_QUEUES;
++	features = ifcvf_get_features(&internal->hw);
++	internal->features = (features &
++		~(1ULL << VIRTIO_F_IOMMU_PLATFORM)) |
++		(1ULL << VHOST_USER_F_PROTOCOL_FEATURES);
++
++	internal->dev_addr.pci_addr = pci_dev->addr;
++	internal->dev_addr.type = PCI_ADDR;
++	list->internal = internal;
++
++	pthread_mutex_lock(&internal_list_lock);
++	TAILQ_INSERT_TAIL(&internal_list, list, next);
++	pthread_mutex_unlock(&internal_list_lock);
++
++	if (rte_vdpa_register_device(&internal->dev_addr,
++				&ifcvf_ops) < 0)
++		goto error;
++
++	rte_atomic32_set(&internal->started, 1);
++	update_datapath(internal);
++
++	return 0;
++
++error:
++	rte_free(list);
++	rte_free(internal);
++	return -1;
++}
++
++static int
++ifcvf_pci_remove(struct rte_pci_device *pci_dev)
++{
++	struct ifcvf_internal *internal;
++	struct internal_list *list;
++
++	if (rte_eal_process_type() != RTE_PROC_PRIMARY)
++		return 0;
++
++	list = find_internal_resource_by_dev(pci_dev);
++	if (list == NULL) {
++		DRV_LOG(ERR, "Invalid device: %s", pci_dev->name);
++		return -1;
++	}
++
++	internal = list->internal;
++	rte_atomic32_set(&internal->started, 0);
++	update_datapath(internal);
++
++	rte_pci_unmap_device(internal->pdev);
++	rte_vfio_destroy_container(internal->vfio_container_fd);
++	rte_vdpa_unregister_device(internal->did);
++
++	pthread_mutex_lock(&internal_list_lock);
++	TAILQ_REMOVE(&internal_list, list, next);
++	pthread_mutex_unlock(&internal_list_lock);
++
++	rte_free(list);
++	rte_free(internal);
++
++	return 0;
++}
++
++/*
++ * The set of PCI devices this driver supports.
++ */
++static const struct rte_pci_id pci_id_ifcvf_map[] = {
++	{ .class_id = RTE_CLASS_ANY_ID,
++	  .vendor_id = IFCVF_VENDOR_ID,
++	  .device_id = IFCVF_DEVICE_ID,
++	  .subsystem_vendor_id = IFCVF_SUBSYS_VENDOR_ID,
++	  .subsystem_device_id = IFCVF_SUBSYS_DEVICE_ID,
++	},
++
++	{ .vendor_id = 0, /* sentinel */
++	},
++};
++
++static struct rte_pci_driver rte_ifcvf_vdpa = {
++	.driver = {
++		.name = "net_ifcvf",
++	},
++	.id_table = pci_id_ifcvf_map,
++	.drv_flags = 0,
++	.probe = ifcvf_pci_probe,
++	.remove = ifcvf_pci_remove,
++};
++
++RTE_PMD_REGISTER_PCI(net_ifcvf, rte_ifcvf_vdpa);
++RTE_PMD_REGISTER_PCI_TABLE(net_ifcvf, pci_id_ifcvf_map);
++RTE_PMD_REGISTER_KMOD_DEP(net_ifcvf, "* vfio-pci");
++
++RTE_INIT(ifcvf_vdpa_init_log);
++static void
++ifcvf_vdpa_init_log(void)
++{
++	ifcvf_vdpa_logtype = rte_log_register("net.ifcvf_vdpa");
++	if (ifcvf_vdpa_logtype >= 0)
++		rte_log_set_level(ifcvf_vdpa_logtype, RTE_LOG_NOTICE);
++}
+diff --git a/drivers/net/ifc/rte_ifcvf_version.map b/drivers/net/ifc/rte_ifcvf_version.map
+new file mode 100644
+index 000000000..9b9ab1a4c
+--- /dev/null
++++ b/drivers/net/ifc/rte_ifcvf_version.map
+@@ -0,0 +1,4 @@
++DPDK_18.05 {
++
++	local: *;
++};
+diff --git a/mk/rte.app.mk b/mk/rte.app.mk
+index 3eb41d176..46f76146e 100644
+--- a/mk/rte.app.mk
++++ b/mk/rte.app.mk
+@@ -171,6 +171,9 @@ _LDLIBS-$(CONFIG_RTE_LIBRTE_VDEV_NETVSC_PMD) += -lrte_pmd_vdev_netvsc
+ _LDLIBS-$(CONFIG_RTE_LIBRTE_VIRTIO_PMD)     += -lrte_pmd_virtio
+ ifeq ($(CONFIG_RTE_LIBRTE_VHOST),y)
+ _LDLIBS-$(CONFIG_RTE_LIBRTE_PMD_VHOST)      += -lrte_pmd_vhost
++ifeq ($(CONFIG_RTE_EAL_VFIO),y)
++_LDLIBS-$(CONFIG_RTE_LIBRTE_IFCVF_VDPA)     += -lrte_ifcvf_vdpa
++endif # $(CONFIG_RTE_EAL_VFIO)
+ endif # $(CONFIG_RTE_LIBRTE_VHOST)
+ _LDLIBS-$(CONFIG_RTE_LIBRTE_VMXNET3_PMD)    += -lrte_pmd_vmxnet3_uio
+ 

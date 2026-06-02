@@ -1,0 +1,10 @@
+{
+  "nn": "13",
+  "slug": "13-tencent-dpu",
+  "type": "产品",
+  "name": "腾讯云 DPU（银杉/玄灵）虚拟化卸载",
+  "organization": "Tencent Cloud",
+  "hit_features_initial": "F1,F4,F5,F8",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：腾讯云自研 DPU（银杉/玄灵）虚拟化卸载、黑石\n- vendor：Tencent Cloud\n- 命中 F#（初判）：F1,F4,F5,F8\n- 公开度：低（少量技术分享，实现闭源）\n- 一句话定位：自研 DPU 做虚拟化网络/存储卸载，CVM 走 virtio 前端。"
+}

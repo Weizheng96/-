@@ -1,0 +1,10 @@
+{
+  "nn": "11",
+  "slug": "11-amd-pensando-dsc",
+  "type": "产品",
+  "name": "AMD Pensando DSC 分布式服务卡",
+  "organization": "AMD (Pensando)",
+  "hit_features_initial": "F1,F2,F3,F4",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：AMD Pensando DSC 分布式服务卡（P4 可编程数据面）\n- vendor：AMD (Pensando)\n- 命中 F#（初判）：F1,F2,F3,F4\n- 公开度：中\n- 一句话定位：可编程 P4 流水线 + 主机侧 vSwitch 卸载；架构可能与\"通用 CPU 转发线程\"不同层，Step 6 核验抽象层。"
+}

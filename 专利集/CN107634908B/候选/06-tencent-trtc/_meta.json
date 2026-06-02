@@ -1,0 +1,10 @@
+{
+  "nn": "06",
+  "slug": "06-tencent-trtc",
+  "type": "产品",
+  "name": "TRTC（腾讯实时音视频）",
+  "organization": "腾讯云",
+  "hit_features_initial": "F2, F4, F5",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：TRTC（腾讯实时音视频）\n- vendor：腾讯云\n- 命中 F#（初判）：F2, F4, F5\n- 公开度：中\n- 一句话定位：腾讯云自研实时音视频传输栈，广泛商用于会议 / 教育 / 社交。"
+}

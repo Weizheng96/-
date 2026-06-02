@@ -1,0 +1,10 @@
+{
+  "nn": "10",
+  "slug": "10-amd-alveo-sn1000",
+  "type": "产品",
+  "name": "Alveo SN1000 SmartNIC（OVS 卸载）",
+  "organization": "AMD（Xilinx）",
+  "hit_features_initial": "F1,F2,F4,F5",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：AMD（Xilinx）Alveo SN1000 SmartNIC\n- vendor：AMD（Xilinx）\n- 命中 F#（初判）：F1, F2, F4, F5\n- 公开度：中\n- 一句话定位：FPGA 可编程 SmartNIC，支持 OVS 数据面卸载，面向云/电信。"
+}

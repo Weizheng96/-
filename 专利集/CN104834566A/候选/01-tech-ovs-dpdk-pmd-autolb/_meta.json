@@ -1,0 +1,10 @@
+{
+  "nn": "01",
+  "slug": "01-tech-ovs-dpdk-pmd-autolb",
+  "type": "技术",
+  "name": "Open vSwitch OVS-DPDK `pmd-auto-lb`（RxQ-to-PMD 动态再分配）",
+  "organization": "Open vSwitch 社区 / Linux Foundation",
+  "hit_features_initial": "F1,F2,F3,F4",
+  "publicity": "高",
+  "blurb": "- 类型：技术\n- 名称：Open vSwitch OVS-DPDK `pmd-auto-lb`（PMD 线程自动负载均衡 + RxQ-to-PMD 动态再分配）\n- 组织：Open vSwitch 社区 / Linux Foundation（主要维护者含 Red Hat / Intel）\n- 命中 F#（初判）：F1,F2,F3,F4\n- 公开度：高（开源代码 + 官方文档 + Red Hat 技术博客）\n- 一句话定位：事实标准虚拟交换机的多核数据面；`pmd-auto-lb` 周期性检测各 PMD 线程负载（F1）、估计不均衡是否超阈值（F2）、触发 RxQ 到 PMD 的重新分配（F3），PMD 线程绑核（F4）——F1-F4 的教科书级直接实现。\n- 应用案例（仅\"技术\"类条目）：Red Hat OpenStack（独立成行 04）、NVIDIA BlueField OVS-DOCA（02）、Intel IPU IPDK（03）、Marvell OCTEON（06）、众多直接运行上游 OVS-DPDK 的 DPU/NFVI 平台"
+}

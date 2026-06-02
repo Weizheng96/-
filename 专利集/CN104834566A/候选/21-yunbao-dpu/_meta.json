@@ -1,0 +1,10 @@
+{
+  "nn": "21",
+  "slug": "21-yunbao-dpu",
+  "type": "产品",
+  "name": "云豹智能 DPU",
+  "organization": "云豹智能 Yunbao",
+  "hit_features_initial": "F1,F3",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：云豹智能 DPU（数据中心 DPU 芯片）\n- vendor：云豹智能 Yunbao（独角兽，估值约 140 亿元，冲刺\"国产 DPU 第一股\"）\n- 命中 F#（初判）：F1,F3\n- 公开度：低（产品技术披露少）\n- 一句话定位：高估值国产 DPU 独角兽；vSwitch 转发面细节公开有限，A 高 B 低。"
+}

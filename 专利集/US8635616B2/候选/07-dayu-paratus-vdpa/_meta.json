@@ -1,0 +1,10 @@
+{
+  "nn": "07",
+  "slug": "07-dayu-paratus-vdpa",
+  "type": "产品",
+  "name": "大禹智芯 Paratus 2.0 DPU",
+  "organization": "DaYu 大禹智芯",
+  "hit_features_initial": "F1,F2,F5,F8",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：大禹智芯 Paratus 2.0 DPU\n- vendor：DaYu 大禹智芯（DPU 独角兽）\n- 命中 F#（初判）：F1,F2,F5,F8\n- 公开度：中（公开材料称 Paratus 2.0 可实现 OVS 全卸载、存储客户端全卸载、NVMe 模拟）\n- 一句话定位：国产 DPU 独角兽，网络/存储数据面全卸载，含 virtio/NVMe 设备模拟。"
+}

@@ -1,0 +1,10 @@
+{
+  "nn": "01",
+  "slug": "01-opensource-vdpa-stack",
+  "type": "技术",
+  "name": "开源 vDPA 栈（Linux kernel vDPA + vhost-vdpa + QEMU + DPDK）",
+  "organization": "Linux/QEMU/DPDK 社区（Red Hat 主导）",
+  "hit_features_initial": "F1,F2,F3,F4,F5,F6,F7,F8,F9",
+  "publicity": "高",
+  "blurb": "- 类型：技术\n- 名称：开源 vDPA 栈（Linux kernel `drivers/vdpa` + `vhost-vdpa` + QEMU virtio-net/vhost-vdpa + DPDK `rte_vdpa`）\n- 组织：Linux/QEMU/DPDK 社区（Red Hat 主导提出并合入主线，2020 并入内核主线）\n- 命中 F#（初判）：F1,F2,F3,F4,F5,F6,F7,F8,F9（本体完整实现接收/发送通路、FE/BE 设备模型、VF 软件实例与 VF 设备一一对应、BE 绑定 vDPA 驱动、DMA 直通）\n- 公开度：高（内核源码 + QEMU/DPDK 源码 + Red Hat 系列技术博客全公开）\n- 一句话定位：本专利混合直通架构在产业界的事实标准开源实现，所有硬件厂商驱动挂靠其上。\n- 应用案例（技术类）：RHEL / OpenShift Virtualization、Ubuntu Server、SUSE SLES、Oracle Linux(UEK)、Anolis OS（龙蜥）、Nutanix AHV（均基于 KVM 集成 vDPA，无数据通路独立二次创新）。"
+}

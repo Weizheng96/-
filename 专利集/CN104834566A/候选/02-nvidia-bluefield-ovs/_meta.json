@@ -1,0 +1,10 @@
+{
+  "nn": "02",
+  "slug": "02-nvidia-bluefield-ovs",
+  "type": "产品",
+  "name": "NVIDIA BlueField DPU + OVS-DOCA / ASAP²",
+  "organization": "NVIDIA",
+  "hit_features_initial": "F1,F2,F3,F4",
+  "publicity": "高",
+  "blurb": "- 类型：产品\n- 名称：NVIDIA BlueField DPU + OVS-DOCA / ASAP²\n- vendor：NVIDIA\n- 命中 F#（初判）：F1,F2,F3,F4\n- 公开度：高（DOCA 官方文档详尽）\n- 一句话定位：BlueField DPU 的 ARM 核上跑 OVS 控制 + 硬件加速转发；若运行上游 OVS-DPDK 则继承 pmd-auto-lb，Step 6 核验其线程级再分配是否启用 / 自研等价。"
+}

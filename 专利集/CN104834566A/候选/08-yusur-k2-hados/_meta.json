@@ -1,0 +1,10 @@
+{
+  "nn": "08",
+  "slug": "08-yusur-k2-hados",
+  "type": "产品",
+  "name": "中科驭数 K2/K2Pro DPU + HADOS",
+  "organization": "中科驭数 Yusur",
+  "hit_features_initial": "F1,F2,F3",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：中科驭数 K2/K2Pro DPU + HADOS 软件栈\n- vendor：中科驭数 Yusur（独角兽）\n- 命中 F#（初判）：F1,F2,F3\n- 公开度：中\n- 一句话定位：国产 DPU 头部，自研 HADOS 含 vSwitch 转发面 / 流表卸载；核验其多核转发的负载自适应再分配。"
+}

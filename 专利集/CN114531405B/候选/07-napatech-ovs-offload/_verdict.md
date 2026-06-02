@@ -1,54 +1,41 @@
-# 候选 07 — Napatech 全 OVS 卸载 SmartNIC（FPGA）— 合议结果
+# 07-napatech-ovs-offload verdict
 
-## 一、候选基本信息
-- slug：07-napatech-ovs-offload
+## 候选基本信息
+- 名称：全 OVS 卸载 SmartNIC（FPGA）
+- 组织：Napatech
 - 类型：产品
-- 名称：Napatech 全 OVS 卸载 SmartNIC（FPGA）
-- vendor / 组织：Napatech（Oslo 上市）
-- 一句话定位：FPGA SmartNIC 全 OVS 卸载（含 VXLAN/VLAN），fast path 完全绕过软件 OVS。
-- 命中 F#（初判）：F1, F2, F4, F5
-- 专利公开（授权）日时间窗：2023-06-06（仅此后公开材料计入侵权窗；本案判定不依赖时间窗——见下）
+- 初判命中 F#：F1,F2,F4,F5
+- 专利公开（授权）日：2023-06-06
 
-## 二、检索粗筛留痕（Phase 1）
-- WebSearch #1 `Napatech OVS full offload SmartNIC FPGA flow table VXLAN` → **有信号**：确认 Napatech 提供全 OVS 卸载，OVS 数据面跑在 FPGA、控制面在 SoC，支持 VXLAN/VLAN 卸载，~6x 性能；SmartNIC 内实现 flow table / flow cache，硬件 flow matcher + learning subsystem。
-- WebSearch #2 `Napatech OVS offload link aggregation bonding LACP multiple NIC redundancy` → **无 Napatech 专属信号**：仅返回通用 OVS bond/LACP 文档（Red Hat / Intel / Nutanix），无 Napatech 跨多卡卸载内容。
-- WebSearch #3 `Napatech SmartNIC multiple cards bonding failover flow table synchronization across NICs` → Napatech 多卡能力仅见于"抓包/分析的多卡时间同步与数据 merge"（daisy-chain 时间戳同步、多 SmartNIC 数据合流），**非** OVS 卸载场景下的跨卡 LACP 冗余；"both flow tables" 指卡内学习用双流表，非 N≥2 独立网卡间复制。
+## F# 命中表
 
-## 三、深抓留痕（Phase 2）
-- WebFetch `light-at-the-end-of-the-tunnel-ovs-offload`（2019-02-06）→ OVS 卸载在**单块 SmartNIC** 内完成；**无** LACP / bonding / 跨卡流表复制；verbatim："Packets that can be handled by the SmartNIC fast path never end up in OVS for either ingress or egress."；性能测试用"two servers each running OVS"是两台独立服务器经 VXLAN 隧道互联，**非**单机多网卡聚合。
-- WebFetch `virtual-switch-offload-solution`（solution description）→ 仅讲 CPU 减负 / ROI / 性能，未提单卡 vs 多卡、未提 LACP 多卡聚合、未提跨卡流表同步消除单点故障。
-- 注：受限——Napatech 公开材料未出现"将精确流表同步卸载至 N≥2 块独立网卡 + LACP 聚合为一逻辑端口"的架构描述；其卸载架构一致地呈现为**单 SmartNIC fast-path 卸载**。
+| F# | 判定 | 证据 verbatim | URL | 备注 |
+| --- | --- | --- | --- | --- |
+| F1（虚拟交换机+M VM+N≥2 独立网卡） | 公开资料不足 | "NT200A02 SmartNIC with dual 25Gbps ports"；产品均为单卡（NT200A02 / NT50B01），公开文档仅描述单 SmartNIC 形态，未见"一主机内 N≥2 块独立网卡"拓扑 | https://www.napatech.com/support/resources/solution-descriptions/virtual-switch-offload-solution/ | 单卡多端口≠跨多块独立网卡；整数下界 N≥2 仅描述下界以下形态→判公开资料不足，禁外推为字面命中 |
+| F2（N 逻辑端口聚合为第一端口的端口标识映射） | 公开资料不足 | "Link aggregation (active/active and active/standby)" 仅列为特性，未公开"跨网卡 N 逻辑端口→一目标端口标识映射"机制 | https://www.napatech.com/support/resources/data-sheets/link-virtualization-software-for-napatech/ | 链路聚合特性存在但作用域（卡内/跨卡）未公开 |
+| F3（每网卡逻辑端口由其物理端口经 LACP 聚合形成） | 公开资料不足 | "Link aggregation (active/active and active/standby)"；公开文档仅及单卡 dual-port，未明示"跨多块物理网卡物理端口经 LACP 聚合" | https://www.napatech.com/support/resources/data-sheets/link-virtualization-software-for-napatech/ | 单卡内端口 bond 不满足"跨网卡 LACP"；未见跨卡正向描述 |
+| F4（目标网卡流表 miss 触发） | 等同命中（受限） | "ensuring that only new and unknown flows are resolved in the host CPU"；"The megaflow cache in the SmartNIC hardware is automatically updated when a change is made to the OVS megaflow cache" | https://www.napatech.com/products/link-virtualization-software/ | first-packet miss→host 解析→HW cache 更新，与 miss 触发上送语义同功能；但为 megaflow（非 exact-match）且单卡 cache 同步 |
+| F5（经第一端口将精确流表卸载至全部 N 个网卡） | 公开资料不足 | "Non-degrading HW Megaflow cache"；megaflow cache 自动从 host OVS 同步至 SmartNIC，未公开"经聚合第一端口将精确流表冗余下发至全部 N 块网卡" | https://www.napatech.com/support/resources/data-sheets/link-virtualization-software-for-napatech/ | 单卡 cache 同步≠向 N 块网卡冗余下发；F5 跨卡冗余维度无正向证据 |
 
-## 四、F# 命中表（F1-F5）
-| F# | 判定 | 证据（verbatim / 摘要） | URL | 备注 |
-|----|------|------------------------|-----|------|
-| F1（多虚机+多网卡 N≥2） | **未命中（架构反向）** | Napatech OVS 卸载在单块 SmartNIC 内完成；"the VirtQueues are no longer handled by OVS but by the SmartNIC's Poll Mode Driver (PMD) directly"；多卡能力仅见于抓包时间同步/数据 merge，非卸载冗余 | https://www.napatech.com/light-at-the-end-of-the-tunnel-ovs-offload/ | 权 1 硬限定 N≥2 跨独立网卡；Napatech 为单卡卸载，公开资料无 N≥2 卸载冗余 |
-| F2（N 逻辑端口聚合为"第一端口"） | **未命中** | 无 LACP/bonding 将多块网卡聚合为一逻辑端口的描述 | 同上 + virtual-switch-offload-solution | 单卡架构下不存在跨卡逻辑端口聚合 |
-| F3（每卡逻辑端口基于 LACP 形成） | **未命中** | Napatech OVS 卸载文档零 LACP；LACP 仅在通用 OVS 文档出现，与 Napatech 卸载无关 | https://www.napatech.com/support/resources/solution-descriptions/virtual-switch-offload-solution/ | — |
-| F4（卸载流表 miss 触发） | **命中** | "each new flow is analyzed by the hardware flow matcher … to determine if it matches a record in the flow table … The learning subsystem updates the … flow tables so that subsequent flows … processed on the SmartNIC"——cache-miss-driven offload 语义一致 | WebSearch #1/#3 摘要（Napatech flow cache / learning subsystem） | 仅此特征命中；属硬件卸载通用机制，非专利核心创新点 |
-| F5（精确流表跨全部 N 网卡卸载） | **未命中（架构反向）** | 流表驻留单 SmartNIC；"no mention of synchronizing flow tables across independent cards"；无跨 N≥2 网卡同步复制 | https://www.napatech.com/light-at-the-end-of-the-tunnel-ovs-offload/ | 专利核心创新点（多卡同步卸载消除单点故障）在 Napatech 架构中不存在 |
+## 已检查文档清单
+- Virtual switch offload solution（架构描述：单 SmartNIC，NT200A02 dual-25G） — https://www.napatech.com/support/resources/solution-descriptions/virtual-switch-offload-solution/
+- Light at the end of the tunnel: OVS offload 6x（**发布 2019-02-06，早于授权日，现有技术，仅作架构背景**） — https://www.napatech.com/light-at-the-end-of-the-tunnel-ovs-offload/
+- Link-Virtualization Software 产品页（megaflow cache 自动同步机制） — https://www.napatech.com/products/link-virtualization-software/
+- Link-Virtualization Software 数据表（Link aggregation active/active+active/standby；HW Megaflow cache；Copyright 2026） — https://www.napatech.com/support/resources/data-sheets/link-virtualization-software-for-napatech/
 
-## 五、已检查文档清单
-1. WebSearch：`Napatech OVS full offload SmartNIC FPGA flow table VXLAN`（有信号）
-2. WebSearch：`Napatech OVS offload link aggregation bonding LACP multiple NIC redundancy`（无专属信号）
-3. WebSearch：`Napatech SmartNIC multiple cards bonding failover flow table synchronization across NICs`（多卡仅限抓包时间同步/数据 merge）
-4. WebFetch：https://www.napatech.com/light-at-the-end-of-the-tunnel-ovs-offload/ （2019-02-06，单卡卸载）
-5. WebFetch：https://www.napatech.com/support/resources/solution-descriptions/virtual-switch-offload-solution/ （无多卡/LACP/跨卡同步）
-
-## 六、最终判定
+## 最终判定
 
 **第 4 档：公开资料不足（弱候选）**
 
-> 主 agent 复核更正（原 sub-agent 判第 5 档已排除）：本判定的"反向"依据为"公开材料无跨卡同步的描述"（absence of mention），而非 Napatech 官方对该特征的正向否定。按 SKILL 硬约束"0 命中 ≠ 已排除"——absence ≠ 真反向证据，且 Napatech 与本专利同属 SmartNIC OVS 卸载抽象层（非层级不同）。无产品级正向反证时应判**公开资料不足**而非已排除。
+五档：第1档=确认侵权(高)F1-Fk全字面命中；第2档=确认侵权(中)全命中含≥1等同；第3档=公开资料不足(强候选)≥60%F#命中且剩余无反向；第4档=公开资料不足(弱候选)<60%命中；第5档=已排除（仅当(a)≥1条F#真反向证据，或(b)全部证据<2023-06-06，或(c)架构层级不同）。
+**第5档硬门槛**：必须是针对该候选产品的正向事实（正向否定/正向不同机制/自有文档自有专利写明用另一套手段）；行业通用机制反推、"同类一般这样"、"公开资料未提及"一律不算反向，只算公开资料不足。同抽象层但缺某 F# 正向证据又无反向事实→第4档，不得第5档。**0 命中≠已排除**。
 
-判定依据（1-3 句）：权 1 核心创新 F1/F2/F5（N≥2 块独立网卡经 LACP 聚合为"第一端口" + 精确流表 miss 触发后同步卸载至全部网卡）在 Napatech 公开材料中**0 命中**；其公开材料一致呈现为单 SmartNIC fast-path 卸载，但**未见 Napatech 正向声明"不支持/不做"跨卡同步**——仅是公开资料未覆盖。仅 F4（miss 触发卸载）命中通用语义。故按"单卡只见、不可外推、无真反向证据"落第 4 档（公开资料不足）。
+判定依据（1-3 句，基于上表 F# 分布）：5 个 F# 中仅 F4 达等同命中（megaflow miss→host 解析→HW cache 更新，同功能但非 exact-match、单卡），F1/F2/F3/F5 因公开文档只描述"单 SmartNIC 单卡多端口 + megaflow cache 单卡同步"形态、未公开本专利核心区分点（N≥2 块独立网卡 + 跨卡 LACP 聚合 + 精确流表向全部网卡冗余下发以消除单卡 SPOF），均判公开资料不足。字面/等同命中 <60%，且核心跨卡维度无任何正向证据，落弱候选。注意：未见 Napatech "明示拒绝/正向声明仅单卡"，故不构成第5档反向，仅资料不足。
 
-## 七、升级路径
-- 取 Napatech Link-Capture / OVS 卸载软件栈官方文档或 SDK，确认其是否支持把多块独立 SmartNIC 经 LACP 聚合并同步流表（FPGA 方案理论上可定制）；
-- 或实测双 Napatech SmartNIC bond 配置下流表在两卡的实际分布。
+## 升级路径（仅落第3-4档时填）
+- 取 Napatech Link-Virtualization 部署/集成手册或 OpenStack Nova-spec（specs.openstack.org 已见同主题 spec），核查是否支持一主机内 N≥2 块独立 SmartNIC 做跨卡 LACP bond 且流表向全部卡下发。
+- 检索 Napatech 在 2023-06-06 之后申请的同主题专利（Google Patents，关键词 cross-NIC LACP / redundant flow offload），做机制比对。
+- 找 vendor 配置文档确认 "Link aggregation active/standby" 是否可跨两块物理 SmartNIC 形成单逻辑端口 + 流表冗余——若是→升第3档；若文档明示仅卡内端口聚合→转第5档反向。
 
-## 八、总结一句话
-Napatech 全 OVS 卸载公开材料仅见单 SmartNIC fast-path 卸载、F1/F2/F5 零命中，但无 Napatech 正向否定跨卡同步的反证（仅 absence），**落第 4 档（公开资料不足）**。
-
----
-> 免责声明：本文为侵权线索与证据链梳理，非法律结论，不构成"已构成侵权"之认定。
+## 总结一句话
+候选 07-napatech-ovs-offload 落第 4 档：公开文档仅及单卡 OVS 全卸载 + megaflow cache 单卡同步（F4 等同命中），未公开 N≥2 独立网卡跨卡 LACP 聚合 + 精确流表向全部网卡冗余下发这一核心区分点，跨卡维度无正向也无反向证据，公开资料不足。

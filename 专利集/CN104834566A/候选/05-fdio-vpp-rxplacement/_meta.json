@@ -1,0 +1,10 @@
+{
+  "nn": "05",
+  "slug": "05-fdio-vpp-rxplacement",
+  "type": "产品",
+  "name": "FD.io VPP（worker / rx-placement）",
+  "organization": "FD.io / Linux Foundation",
+  "hit_features_initial": "F1,F3,F4",
+  "publicity": "高",
+  "blurb": "- 类型：产品\n- 名称：FD.io VPP（worker 线程 + `rx-placement`）\n- vendor：FD.io / Linux Foundation（思科发起）\n- 命中 F#（初判）：F1,F3,F4\n- 公开度：高（开源）\n- 一句话定位：矢量包处理框架，worker 线程绑核 + rxq 到 worker 的放置；需核验是否存在\"按负载自动触发再分配\"（F2）还是仅手动 rx-placement。"
+}

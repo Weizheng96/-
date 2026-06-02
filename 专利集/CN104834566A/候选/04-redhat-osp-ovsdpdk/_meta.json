@@ -1,0 +1,10 @@
+{
+  "nn": "04",
+  "slug": "04-redhat-osp-ovsdpdk",
+  "type": "产品",
+  "name": "Red Hat OpenStack Platform OVS-DPDK（NFV fast-datapath）",
+  "organization": "Red Hat (IBM)",
+  "hit_features_initial": "F1,F2,F3,F4",
+  "publicity": "高",
+  "blurb": "- 类型：产品\n- 名称：Red Hat OpenStack Platform OVS-DPDK / RHEL fast-datapath\n- vendor：Red Hat (IBM)\n- 命中 F#（初判）：F1,F2,F3,F4\n- 公开度：高（pmd-auto-lb 多由 Red Hat 工程师贡献并写入官方 NFV 文档）\n- 一句话定位：电信 NFV 场景 OVS-DPDK 主要商用承载方与上游维护者，官方文档明确教用户开启 pmd-auto-lb。"
+}

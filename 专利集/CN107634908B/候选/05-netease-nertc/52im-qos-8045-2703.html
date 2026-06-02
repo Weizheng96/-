@@ -1,0 +1,342 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gbk" />
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=9">
+<title>网易云信 RTC 音频 QoS 综述 - 网易云信的日志 -  即时通讯开发者社区!</title>
+
+<meta name="keywords" content="网易云信 RTC 音频 QoS 综述" />
+<meta name="description" content="RTC、QoS、WebRTC 的定义RTC 实时通信，泛指各种数据的实时传输技术，包括音频，视频，文本，图片等媒体和非媒体数据的实时传输。QoS 服务质量，指一 ... ,即时通讯网" />
+<meta name="generator" content="WordPress 4.7-beta4-39346" />
+<meta name="author" content="52IM.NET" />
+<meta name="copyright" content="2007-2015 (c) Nettime Co. Ltd." />
+<meta name="MSSmartTagsPreventParsing" content="True" />
+<meta http-equiv="MSThemeCompatible" content="Yes" />
+<base href="http://www.52im.net/" /><link rel="stylesheet" type="text/css" href="data/cache/style_7_common.css?rmJ" /><link rel="stylesheet" type="text/css" href="data/cache/style_7_home_space.css?rmJ" /> 
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js" type="text/javascript" type="text/javascript"></script>  
+<script type="text/javascript">var STYLEID = '7', STATICURL = 'static/', IMGDIR = 'template/qu_115style/images', VERHASH = 'rmJ', charset = 'gbk', discuz_uid = '0', cookiepre = '1z6p_446c_', cookiedomain = '.52im.net', cookiepath = '/', showusercard = '1', attackevasive = '0', disallowfloat = 'newthread', creditnotice = '1|威望|,2|金币|,3|贡献|', defaultstyle = '', REPORTURL = 'aHR0cDovL3d3dy41MmltLm5ldC9ibG9nLTgwNDUtMjcwMy5odG1s', SITEURL = 'http://www.52im.net/', JSPATH = 'static/js/', CSSPATH = 'data/cache/style_', DYNAMICURL = '';var q_jq=jQuery.noConflict();</script>
+<script src="static/js/common.js?rmJ" type="text/javascript"></script>
+
+<script src="static/js/home.js?rmJ" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href='data/cache/style_7_css_space.css?rmJ' />
+<link id="style_css" rel="stylesheet" type="text/css" href="static/space/t1/style.css?rmJ">
+<style id="diy_style"></style>
+
+<style>
+.mls img {width: 40px;height: 40px;}
+.block {border: 1px solid #e8e8e8;border-radius: 4px;}
+.block .title {border-bottom: 1px solid #eee;background: #f9f9f9 url() repeat-x 0 0;border-radius: 4px 4px 0 0;}
+.block .title span {font-size:14px;}
+#nv li a {font-size: 16px;}
+#hd h2 strong {font-size: 20px;margin-bottom: 10px !important;color: #555;}
+#nv li a:hover {background-color: rgba(255,255,255,0.7);border-radius:6px 6px 10px 10px;}
+</style>
+
+</head>
+
+<body id="space" onkeydown="if(event.keyCode==27) return false;">
+<div id="append_parent"></div>
+<div id="ajaxwaitid"></div>
+
+
+<div id="toptb" class="cl">
+<div class="y">
+<a href="member.php?mod=register">立即注册</a>
+<a href="member.php?mod=logging&amp;action=login" onclick="showWindow('login', this.href)">登录</a>
+</div>
+<div class="z">
+<a href="./" title="即时通讯网" class="xw1">即时通讯网</a>
+<a href="http://www.52im.net/home.php?mod=space&amp;do=home" id="navs" class="showmenu" onmouseover="showMenu(this.id);">返回首页</a>
+</div>
+</div>
+<div id="hd" class="wp cl">
+
+<h2 id="spaceinfoshow"><strong id="spacename" class="mbn">
+网易云信的个人空间</strong>
+<span class="xs0 xw0">
+<a id="domainurl" href="http://www.52im.net/?8045" onclick="setCopy('http://www.52im.net/?8045', '空间地址复制成功');return false;">http://www.52im.net/?8045</a>
+<a href="javascript:;" onclick="addFavorite(location.href, document.title)">[收藏]</a>
+<a id="domainurl" href="http://www.52im.net/?8045" onclick="setCopy('http://www.52im.net/?8045', '空间地址复制成功');return false;">[复制]</a>
+<a href="http://www.52im.net/home.php?mod=rss&amp;uid=8045">[RSS]</a>
+</span>
+<span id="spacedescription" class="xs1 xw0 mtn"></span>
+</h2><div id="nv">
+<ul>
+<li><a href="http://www.52im.net/home.php?mod=space&amp;uid=8045&amp;do=index">空间首页</a></li>
+<li><a href="http://www.52im.net/home.php?mod=space&amp;uid=8045&amp;do=home&amp;view=me&amp;from=space">动态</a></li>
+<li><a href="http://www.52im.net/home.php?mod=space&amp;uid=8045&amp;do=doing&amp;view=me&amp;from=space">记录</a></li>
+<li><a href="http://www.52im.net/home.php?mod=space&amp;uid=8045&amp;do=blog&amp;view=me&amp;from=space">日志</a></li>
+<li><a href="http://www.52im.net/home.php?mod=space&amp;uid=8045&amp;do=album&amp;view=me&amp;from=space">相册</a></li>
+<li><a href="http://www.52im.net/home.php?mod=space&amp;uid=8045&amp;do=thread&amp;view=me&amp;from=space">主题</a></li>
+<li><a href="http://www.52im.net/home.php?mod=space&amp;uid=8045&amp;do=wall">留言板</a></li>
+<li><a href="http://www.52im.net/home.php?mod=space&amp;uid=8045&amp;do=profile">个人资料</a></li>
+</ul>
+</div></div>
+
+<ul class="p_pop h_pop" id="plugin_menu" style="display: none">          <li><a href="plug-dsu_paulsign-sign.html" id="mn_plink_sign">每日签到</a></li>
+     </ul>
+<div class="p_pop h_pop" id="mn_userapp_menu" style="display: none"></div><ul id="navs_menu" class="p_pop topnav_pop" style="display:none;">                <li id="mn_N696f" ><a href="https://shop143012492.taobao.com/" hidefocus="true" title="即时通讯网官方淘宝店铺！" target="_blank"   style="color: yellow">淘宝店铺<span>即时通讯网官方淘宝店铺！</span></a></li>                <li id="mn_N75e4" ><a href="topic-tcpipvol1.html?mobile=no" hidefocus="true"  >TCP/IP详解</a></li>                <li id="mn_P11" ><a href="http://www.52im.net/pi/" hidefocus="true" title="即时通讯相关的最新资讯。"  >资讯<span>即时通讯相关的最新资讯。</span></a></li>                <li id="mn_home" ><a href="http://www.52im.net/home.php" hidefocus="true" title="Space"  >动态<span>Space</span></a></li>                                <li id="mn_forum_2" ><a href="http://www.52im.net/forum.php" hidefocus="true" title="精品技术讨论和交流专区。"  >社区<span>精品技术讨论和交流专区。</span></a></li>                <li id="mn_forum_11" ><a href="http://www.52im.net/forum.php?mod=collection&op=all" hidefocus="true" title="精选帖子、资料的合辑。"  >合集<span>精选帖子、资料的合辑。</span></a></li>                <li id="mn_portal" ><a href="http://www.52im.net" hidefocus="true" title="即时通讯网门户首页。"  >首页<span>即时通讯网门户首页。</span></a></li>                                                                                                </ul>
+<ul id="myspace_menu" class="p_pop" style="display:none;">
+    <li><a href="http://www.52im.net/home.php?mod=space">我的空间</a></li><li><a href="http://www.52im.net/home.php?mod=medal" style="background-image:url(http://www.52im.net/static/image/feed/medal_b.png) !important">勋章</a></li>
+<li><a href="http://www.52im.net/home.php?mod=space&do=album" style="background-image:url(http://www.52im.net/static/image/feed/album_b.png) !important">相册</a></li>
+<li><a href="http://www.52im.net/home.php?mod=space&do=doing" style="background-image:url(http://www.52im.net/static/image/feed/doing_b.png) !important">记录</a></li>
+<li><a href="http://www.52im.net/home.php?mod=space&do=wall" style="background-image:url(http://www.52im.net/static/image/feed/wall_b.png) !important">留言板</a></li>
+<li><a href="http://www.52im.net/forum.php?mod=guide" style="background-image:url(http://www.52im.net/static/image/feed/guide_b.png) !important">导读</a></li>
+</ul>
+<div id="ct" class="ct2 wp cl">
+<div class="mn">
+<div class="bm">
+<div class="bm_h">
+<h1 class="mt">日志</h1>
+</div>
+<div class="bm_c">
+
+<div class="vw mbm">
+<div class="h pbm">
+<h1 class="ph" >
+网易云信 RTC 音频 QoS 综述</h1>
+<p class="xg2">
+<span class="xg1">已有 1582 次阅读</span><span class="xg1">2023-04-21 16:14</span>
+
+<span class="pipe">|</span><span class="xg1">个人分类:<a href="http://www.52im.net/home.php?mod=space&amp;uid=8045&amp;do=blog&amp;classid=91&amp;view=me">技术干货</a></span>
+</p>
+</div>
+
+<div id="blog_article" class="d cl"><strong>RTC、QoS、WebRTC 的定义</strong><p><br></p><p><strong>RTC 实时通信</strong>，泛指各种数据的实时传输技术，包括音频，视频，文本，图片等媒体和非媒体数据的实时传输。</p><p><strong>QoS 服务质量</strong>，指一个网络能够利用各种基础技术，为指定的网络通信提供更好的服务能力，是网络的一种安全机制， 是用来解决网络延迟和阻塞等问题的一种技术。</p><p>RTC 技术的出现满足了用户通过互联网进行实时音视频通话的需求，在 QoS 技术的加持下，RTC 技术在复杂的网络条件下能达到更高的弱网抗性、更低的延迟，极大地提升用户的实时通话体验。</p><p>WebRTC 是一个由 Google 发起的实时通讯解决方案，其中包含视频音频采集、编解码、传输、QoS、音视频渲染等功能。其名为 WebRTC，但是实际上它不光支持 Web 之间的音视频通讯，还支持 Android 以及 IOS 端。由于该项目是开源的，各即时通讯厂商都基于 WebRTC 进行研究、开发，研制自身的全平台的 RTC 解决方案。</p><p>WebRTC 中有很多优秀的算法、设计值得研究，音频 QoS 技术就是其中之一。</p><p><br></p><strong>音频 QoS 技术</strong><p><br></p><p>音频 QoS 技术主要包括了：<strong>带宽估计及编码码控、DTX、FEC、RED、RTX/NACK、加速/减速/PLC 等。</strong><br></p><p>音频数据虽然没有视频数据那么大的量，但在 QoS 方面同样要面对：带宽、延迟、质量之间的三维平衡。把音频 QoS 技术的各项能力归纳到这三维平衡问题中时，我们可以知道：</p><p><br></p><ul><li><p><strong>带宽估计及编码码控：</strong>在既定的网络带宽情况下，估计的带宽越高、编码码率越高，音频质量越好；</p></li><li><p><strong>DTX</strong>（输入编码器的音量低时编码器编出静音指示数据，后续不出编码数据或出静音指示数据，直到输入音量不再低）：有效节省静音情况下的编码码率；</p></li><li><p><strong>FEC</strong>（通过前向纠错编解码算法，实现丢包恢复）：冗余度越高，恢复率越高，但带宽消耗越大；分组越大，恢复率越高，恢复延迟越大；在低丢包率、非连续丢包情况下，具有码率优势；</p></li><li><p><strong>RED</strong>（原始音频包同时携带冗余的音频包）：冗余层数越多，带宽消耗越大；在低丢包率、非连续丢包、高延迟情况下，具有恢复延迟优势；对于冗余包拓展头的支持程度因实现而异；</p></li><li><p><strong>RTX/NACK</strong>（丢包重传/丢包请求）：丢包重传属于按需重传，丢包越高，重传需求越高，带宽消耗越大，需要避免重传风暴；在高丢包、连续丢包情况下，具有恢复率优势，但有较大的恢复延迟劣势；</p></li><li><p><strong>加速：</strong>接收端缓冲过多时，通过加速降低缓冲量，降低延迟，会带来一定的加速感；</p></li><li><p><strong>减速：</strong>接收端缓冲不足时，通过减速提升缓冲量，增加延迟，会带来一定的减速感；</p></li><li><p><strong>PLC</strong>（丢包补偿）：接收端缓存缺失时，通过收到的前序包模拟丢失包，会带来一定的音质损伤。</p></li><li><p><br></p></li></ul><strong>QoS 分段策略</strong><p><br></p><p>从整体角度看，RTC 实时音视频系统至少会涉及 3 个端：发送端、服务端、接收端。云信 RTC 以 SFU 架构实现客户端媒体流的接入和转发。以此为基础形成了发送端到服务、服务到接收端（服务级联由网易云信 WE-CAN 大网提供）的分段 QoS 策略。</p><p><img data-pm-attrs="{&amp;quot;src&amp;quot;:&amp;quot;https://static001.geekbang.org/infoq/ff/fffc5d24f1451d5032115360d29fbe65.png&amp;quot;,&amp;quot;alt&amp;quot;:null,&amp;quot;title&amp;quot;:&amp;quot;&amp;quot;,&amp;quot;.&amp;quot;:[{&amp;quot;key&amp;quot;:&amp;quot;width&amp;quot;,&amp;quot;value&amp;quot;:&amp;quot;75%&amp;quot;},{&amp;quot;key&amp;quot;:&amp;quot;bordertype&amp;quot;,&amp;quot;value&amp;quot;:&amp;quot;none&amp;quot;}],&amp;quot;href&amp;quot;:&amp;quot;&amp;quot;,&amp;quot;fromPaste&amp;quot;:false,&amp;quot;pastePass&amp;quot;:false}" src="https://static001.geekbang.org/infoq/ff/fffc5d24f1451d5032115360d29fbe65.png" title="" data-pm-slice="0 0 []"></p><p><br></p><p>分段 QoS 的优势在于，上下行独立进行 QoS 策略有利于隔离上行段、下行段不同网络情况，对每条链路适用更佳的应对方法。但其劣势在于，策略的设计、开发、调优会更加复杂，问题排查难度增加，服务端性能可能成为瓶颈。</p><p><br></p><strong>带宽估计</strong><p><br></p><p>带宽估计主要用来对发送端（或服务器的下行转发端）进行码率控制。<br></p><p><strong>上行端侧通过 GCC（Google Congestion Contrl）算法基于接收端的数据反馈对其发送带宽进行估计。</strong>估计出的带宽会分配到编码码率、RED 码率、FEC 码率、RTX 码率、PADDING（填充）码率。虽然带宽估计算法在各公司是大同小异，但是带宽分配策略却是五花八门。因为如何分派编码码率和抗性码率（包括 RED、FEC、RTX）决定了一款 RTC 产品在媒体质量、会话延迟、带宽耗费上的竞争力高低。</p><p><br></p><p><img data-pm-attrs="{&amp;quot;src&amp;quot;:&amp;quot;https://static001.geekbang.org/infoq/92/92d12bce40632e4d7f7643054586e51d.png&amp;quot;,&amp;quot;alt&amp;quot;:null,&amp;quot;title&amp;quot;:&amp;quot;&amp;quot;,&amp;quot;.&amp;quot;:[{&amp;quot;key&amp;quot;:&amp;quot;width&amp;quot;,&amp;quot;value&amp;quot;:&amp;quot;75%&amp;quot;},{&amp;quot;key&amp;quot;:&amp;quot;bordertype&amp;quot;,&amp;quot;value&amp;quot;:&amp;quot;none&amp;quot;}],&amp;quot;href&amp;quot;:&amp;quot;&amp;quot;,&amp;quot;fromPaste&amp;quot;:false,&amp;quot;pastePass&amp;quot;:false}" src="https://static001.geekbang.org/infoq/92/92d12bce40632e4d7f7643054586e51d.png" title="" data-pm-slice="0 0 []"></p><p><strong>服务器下行转发侧同样也有带宽估计算法</strong>。服务端对下行链路的带宽估计结果是基于会话的，但服务端同时接通一个会议中的多个下行会话，因此服务端可以汇总多个下行会话的带宽估计结果，结合场景，利用如 topN 带宽回传上行做<strong>码率约束、VIP 用户 QoS 优先保证</strong>等策略，提升服务端的带宽利用率。<br></p><p>在带宽估计领域还有许多可以优化的方向，比如：反馈的码率纳入带宽估计、基于机器学习进行带宽估计和分配。</p><p><br></p><strong>DTX 编码</strong><p><br></p><p>OPUS&nbsp;音频编码器的 DTX 特性，能够有效降低发声静音时的码率，它利用静音时发送端每 400ms 编码发送一个 DTX 包通知接收端静音状态仍在持续，接收端在接收到首个 DTX 包后，进入 DTX 状态，每次音频设备获取数据时编码器输出一个静音帧。服务端对 DTX 进行透传。<br></p><p>WebRTC 利用&nbsp;OPUS&nbsp;的 DTX 特性引入了一些断流误判、收包反馈的问题。云信对此进行了优化，利用了静音状态码率低的特性，同时保证了数据流的连续性。</p><p><br></p><strong>FEC</strong><p><br></p><p>端侧 FEC 分带内和带外两种，WebRTC 中视频是通过带外 FEC（ULPFEC、FLEXFEC）来产生冗余包，音频则可以通过 OPUS 带内 FEC 、带外 FEC 来生成冗余包。服务端 FEC 是用带外 FEC。<br></p><p>带内 FEC 由于会占用一部分编码码率，所以对音频的音质会有所降低。带外 FEC 不会影响音质，但会额外占用网络带宽，各有优缺点。&nbsp;<br></p><p>FEC 典型的编码方式有 XOR 和 Reed Solomon。WebRTC 的带外 FEC 使用的是 XOR 编码方式，其特点是计算量相对少，但其抗丢包能力有限。&nbsp;<br></p><p>在 WebRTC 中，带外 FEC，不论是 ULPFEC，还是 FLEXFEC 都是根据 MASK 掩码来确定 FEC 包和被保护的源 RTP 包的映射关系，其中定义了两种类型的掩码：RandMask 和 BurstMask，前者在随机丢包中保护效果要好些；后者则是对突发导致连续丢包效果会好些，但是不论哪种，都有其缺点。<br></p><p><strong>FEC 冗余度和原始包分组长度计算准则是：</strong>根据丢包和 rtt 预置分组长度，在该分组长度下，根据贝叶斯定律，在当前丢包率下，确定至少需要多少冗余包能够保证接受到足够的原始包和冗余包来通过 FEC 解码恢复丢包。值得注意的是，分组长度对 FEC 的恢复延迟有决定作用。</p><p><br></p><strong>RED</strong><p><br></p><p><strong>RED 是在一个包中额外携带前序若干包的抗性策略。</strong>其冗余层数以最大包长度为限制，同时也受到耗费带宽的约束。其优势在于 RED 包携带的冗余数据与原始包序号越接近，RED 恢复时延越低；原始包与冗余包的最大序号差，决定了最大恢复延迟。<br></p><p>端侧 RED 打包常采用连续相邻序号作为冗余数据，跳跃序号的打包方式未证明存在明显恢复优势，但会引入更大的平均恢复延迟。<br></p><p>服务端下行侧 RED 打包受到上行弱网、抗性恢复能力、恢复时间影响。若采用连续相邻序号作为打包方式，则需要等待上行丢包的恢复包；若采用跳跃序号的打包方式，则会引入更大的下行侧 RED 恢复延迟。延迟取决于上行丢包恢复的耗时。因此分段 RED 策略下，若上行存在弱网，那么服务端下行侧 RED 的恢复时间优势就不再明显。此时优化上行链路弱网的恢复时间更为有效。</p><p><br></p><strong>RTX</strong><p><br></p><p><strong>RTX 是弱网抗性算法中引入延迟最严重的。</strong>一个包的重传请求到该重传包被成功恢复，至少要经历一个 rtt 耗时，在丢包严重、rtt 较大时，重传包也可能丢失进而造成多次重传，这个耗时将变得不可接受。<br></p><p><strong>重传耗时的主要决定因素是：rtt、丢包率、重传请求时机、重传请求响应策略。</strong>其中 rtt、丢包率可能由于链路带宽拥塞、弱网测试引起的，重传请求时机取决于请求间隔约束、当前数据缓存量、丢包检测机制等；重传请求响应策略取决于发送端缓存、发送端拦截机制、估计带宽、是否有冗余重传机制等。综合考虑以上因素，可以极大地优化重传效果（包括恢复效果、恢复耗时、重传码率）。</p><p><br></p><strong>结语</strong><p><br></p><p>在网络飞速发展的今天，音频 QoS 的优化显得比视频更加容易，因为带宽的顾虑会越来越少。但是从企业运营角度考虑，当 RTC 业务中的音频业务占据主导时，控制音频带宽的成本时非常有价值的。这是音频 QoS 优化中，直接和利润相关的部分。因此上述策略中，有许多都提到了带宽耗用，这意味着我们不能一味追求抗性和实时性，而忽略了带宽成本的增加。<br></p><p>QoS 的终极课题就是在有限的带宽资源下，提升弱网抗性，降低恢复时延。在这条路上，还有非常多的空间等着&nbsp;QoS&nbsp;从业人员去探索。</p></div>
+<div id="click_div"><script type="text/javascript">
+function errorhandle_clickhandle(message, values) {
+if(values['id']) {
+showCreditPrompt();
+show_click(values['idtype'], values['id'], values['clickid']);
+}
+}
+</script>
+
+<div id="trace_div" class="xs1">
+<div class="js-ptl-atcl-zan cl"><a href="http://www.52im.net/home.php?mod=spacecp&amp;ac=click&amp;op=add&amp;clickid=1&amp;idtype=blogid&amp;id=2703&amp;hash=0b2eff0eb1296bc6c222888c4ecc07d4&amp;handlekey=clickhandle"
+id="click_blogid_2703_1" onclick="showWindow(this.id, this.href);doane(event);"
+data-action="ding" data-id="36684" title="点我推荐!"  class="agree">
+<i class="icon-thumbs-up"></i> <span>0</span>
+</a>
+<span class="desc">推荐</span>
+</div>
+<ul id="trace_ul" class="ml mls cl">
+</ul>
+</div>
+
+</div>
+
+<div class="o cl">
+<a href="http://www.52im.net/home.php?mod=spacecp&amp;ac=favorite&amp;type=blog&amp;id=2703&amp;spaceuid=8045&amp;handlekey=favoritebloghk_2703" id="a_favorite" onclick="showWindow(this.id, this.href, 'get', 0);" class="oshr ofav">收藏</a>
+<a href="misc.php?mod=invite&amp;action=blog&amp;id=2703" id="a_invite" onclick="showWindow('invite', this.href, 'get', 0);" class="oshr oivt">邀请</a>
+
+<a href="javascript:;" onclick="showWindow('miscreport2703', 'misc.php?mod=report&rtype=blog&uid=8045&rid=2703', 'get', -1);return false;">举报</a>
+</div>
+
+</div>
+
+<div class="ct_vw cl">
+<div class="ct_vw_sd">
+<div class="mbm cl">
+<h2 class="mbm ptn pbn bbs"><span class="xs1 xw0 y"><a href="http://www.52im.net/home.php?mod=space&amp;uid=8045&amp;do=blog&amp;view=me">全部</a></span>作者的其他最新日志</h2>
+<ul class="xl xl1 cl"><li>&bull; <a href="http://www.52im.net/blog-8045-2883.html" target="_blank">【网易云信】音画同步测试方法的研究与实践</a></li>
+<li>&bull; <a href="http://www.52im.net/blog-8045-2840.html" target="_blank">网易云信回声消除量化评估方法</a></li>
+<li>&bull; <a href="http://www.52im.net/blog-8045-2814.html" target="_blank">【网易云信】直播场景播放侧常见问题分析与实践经验</a></li>
+<li>&bull; <a href="http://www.52im.net/blog-8045-2778.html" target="_blank">已开源！网易云信的热点探测平台实践</a></li>
+<li>&bull; <a href="http://www.52im.net/blog-8045-2744.html" target="_blank">【网易云信】如何定位分析视频异常画面</a></li>
+<li>&bull; <a href="http://www.52im.net/blog-8045-2713.html" target="_blank">网易云信 RTC 音频问题排查的挑战与实践</a></li>
+</ul>
+</div>
+</div>
+
+<div class="ct_vw_mn">
+<div id="div_main_content" class="mbm">
+<h3 class="ptn pbn bbs">
+评论 (<span id="comment_replynum">0</span> 个评论)
+</h3>
+<div id="comment_ul" class="xld xlda"></div>
+</div>
+<form id="quickcommentform_2703" action="home.php?mod=spacecp&amp;ac=comment" method="post" autocomplete="off" onsubmit="ajaxpost('quickcommentform_2703', 'return_qcblog_2703');doane(event);">
+<p>
+<span id="comment_face" title="插入表情" onclick="showFace(this.id, 'comment_message');return false;" class="cur1"><img src="template/qu_115style/images/facelist.gif" alt="facelist" class="vm" /></span>
+</p>
+<div class="tedt mtn mbn">
+<div class="area">
+<div class="pt hm">您需要登录后才可以评论 <a href="member.php?mod=logging&amp;action=login" onclick="showWindow('login', this.href)" class="xi2">登录</a> | <a href="member.php?mod=register" class="xi2">立即注册</a></div>
+</div>
+</div>
+<div class="mtm mbm sec"><span id="seccode_cSmBBBGr"></span>		
+<script type="text/javascript" reload="1">updateseccode('cSmBBBGr', '<sec> <span id="sec<hash>" onclick="showMenu(this.id);"><sec></span><div id="sec<hash>_menu" class="p_pop p_opt" style="display:none"><sec></div>', 'home::space');</script>
+</div>
+<p class="pns">
+<input type="hidden" name="referer" value="home.php?mod=space&amp;uid=8045&amp;do=blog&amp;id=2703" />
+<input type="hidden" name="id" value="2703" />
+<input type="hidden" name="idtype" value="blogid" />
+<input type="hidden" name="handlekey" value="qcblog_2703" />
+<input type="hidden" name="commentsubmit" value="true" />
+<input type="hidden" name="quickcomment" value="true" />
+<button type="submit" name="commentsubmit_btn"value="true" id="commentsubmit_btn" class="pn" onclick="showWindow(this.id, this.form.action);return false;"><strong>评论</strong></button>
+<span id="return_qcblog_2703"></span>
+</p>
+<input type="hidden" name="formhash" value="842bc79c" />
+</form>
+<script type="text/javascript">
+function succeedhandle_qcblog_2703(url, msg, values) {
+if(values['cid']) {
+comment_add(values['cid']);
+} else {
+$('return_qcblog_2703').innerHTML = msg;
+}
+updateseccode('SmBBBGr');
+}
+</script>
+
+<script type="text/javascript">
+function addFriendCall(){
+var el = $('friendinput');
+if(!el || el.value == "")	return;
+var s = '<input type="checkbox" name="fusername[]" class="pc" value="'+el.value+'" id="'+el.value+'" checked="checked">';
+s += '<label for="'+el.value+'">'+el.value+'</label>';
+s += '<br />';
+$('friendscall').innerHTML += s;
+el.value = '';
+}
+resizeImg('div_main_content','450');
+
+var elems = selector('dd[class~=magicflicker]');
+for(var i=0; i<elems.length; i++){
+magicColor(elems[i]);
+}
+</script>
+
+</div>
+</div>
+
+
+
+</div>
+</div>
+</div>
+<div class="sd"><div id="pcd" class="bm cl"><div class="bm_c">
+<div class="hm">
+<p><a href="http://www.52im.net/space-uid-8045.html" class="avtm"><img src="http://www.52im.net/uc_server/avatar.php?uid=8045&size=middle" /></a></p>
+<h2 class="xs2"><a href="http://www.52im.net/space-uid-8045.html">网易云信</a></h2>
+</div>
+<ul class="xl xl2 cl ul_list">
+<li class="ul_add"><a href="http://www.52im.net/home.php?mod=spacecp&amp;ac=friend&amp;op=add&amp;uid=8045&amp;handlekey=addfriendhk_8045" id="a_friend_li_8045" onclick="showWindow(this.id, this.href, 'get', 0);">加为好友</a></li>
+<li class="ul_contect"><a href="http://www.52im.net/home.php?mod=space&amp;uid=8045&amp;do=wall">给我留言</a></li>
+<li class="ul_poke"><a href="http://www.52im.net/home.php?mod=spacecp&amp;ac=poke&amp;op=send&amp;uid=8045&amp;handlekey=propokehk_8045" id="a_poke_8045" onclick="showWindow(this.id, this.href, 'get', 0);">打个招呼</a></li>
+
+<li class="ul_pm"><a href="http://www.52im.net/home.php?mod=spacecp&amp;ac=pm&amp;op=showmsg&amp;handlekey=showmsg_8045&amp;touid=8045&amp;pmid=0&amp;daterange=2" id="a_sendpm_8045" onclick="showWindow('showMsgBox', this.href, 'get', 0)">发送消息</a></li>
+</ul>
+</div>
+</div>
+</div>
+<script type="text/javascript">
+function succeedhandle_followmod(url, msg, values) {
+var fObj = $('followmod');
+if(values['type'] == 'add') {
+fObj.innerHTML = '取消收听';
+fObj.href = 'home.php?mod=spacecp&ac=follow&op=del&fuid='+values['fuid'];
+} else if(values['type'] == 'del') {
+fObj.innerHTML = '收听TA';
+fObj.href = 'home.php?mod=spacecp&ac=follow&op=add&hash=842bc79c&fuid='+values['fuid'];
+}
+}
+</script></div>
+</div>
+
+	</div>
+
+
+
+<div id="ft" class="wp">
+<div id="js_ift_placehold"></div>
+<div id="js_ift" class="js-clearfix js-saya-footer">
+  <div class="js-clearfix js-saya cl">
+<div class="js-clearfix js-footer hidden-xs cl">
+  <div class="js-sspai hidden-xs">
+<h4>即时通讯网　</h4>
+<div style="padding-right:30px;">
+  <p>实时推送、IM等即时通讯相关技术的学习、交流与分享的平台。专业的资料、专业的人、专业的社区！让即时通讯技术能更好传播与分享。</p>
+  <div class="color-slogan"> 
+<span class="js-slogan js-slogan-1" >平等</span> 
+<span class="js-slogan js-slogan-2" >开放</span> 
+<span class="js-slogan js-slogan-3" >分享</span> 
+<span class="js-slogan js-slogan-4" >传承</span>
+  </div>
+  <p>
+商务/合作：<a href="#">business@52im.net</a><br>
+投稿/报道：<a href="#">contact@52im.net</a>
+  </p>
+
+
+</div>
+  </div>
+  <div class="js-functions hidden-xs">
+<h4>友情链接<a href="http://www.52im.net/thread-402-1-1.html" class="friend_link">[友链交换]</a></h4>
+<ul>
+  <li> <a href="http://www.opensns.cn" target="_blank" title="OpenSNS是基于OneThink的轻量级社交化用户中心框架，系统秉持简约的设计风格，注重交流，为用户提供了一套轻量级的社交方案。"> OpenSNS </a> </li>
+  <li> <a href="https://dun.163.com/" target="_blank" title="网易易盾-智能可靠的内容安全&业务安全服务"> 网易易盾 </a> </li>
+  <li> <a href="https://www.anyrtc.io/" target="_blank" title="anyRTC--全球WebRTC先行者"> anyRTC </a> </li>
+  <li> <a href="http://www.rongcloud.cn/" target="_blank" title="安全，可靠的全球互联网通信云服务商"> 融云 </a> </li>
+  <li> <a href="http://www.easemob.com" target="_blank" title="即时通讯云服务商，连接人与人，连接人与商业"> 环信 </a> </li
+</ul>
+  </div>
+  <div class="js-about hidden-xs">
+<h4>关于</h4>
+<ul class="">
+  <li> <a href="topic-about.html?mobile=no"> 关于我们 </a> </li>
+  <li> <a href="topic-qqgroup.html?mobile=no"> 技术交流群 <sup style="color:rgb(221,0,0);">hot</sup> </a> </li>
+  <li> <a href="topic-docs.html?mobile=no"> 在线文档 </a> </li>
+  <li> <a href="topic-sitelist.html?mobile=no"> 网址导航 </a> </li>
+  <li> <a href="http://www.52im.net/thread-1188-1-1.html" target="_blank"> 广告投放 <sup style="color:rgb(221,0,0);">new</sup> </a> </li>
+</ul>
+  </div>
+  <div class="js-mysite-qr hidden-xs">
+<h4>关注我们<span class="js-f-h-flag">new</span></h4>
+<p><img src="template/qu_115style/img/52im_qr_4tiezi3.png?v=2025" alt="即时通讯网" title="扫码关注即时通讯网！"></p>
+<p class="js-mysite-qr_bottom_hint">&nbsp;—————— 扫一扫，关注本站 —————</p>
+  </div>
+  <!--
+  <div class="js-weixin-qr hidden-xs">
+<h4>手机访问本站</h4>
+<p><img src="template/qu_115style/img/cngeeker_weixin2.png" alt="即时通讯网手机版" title="扫码打开即时通讯网手机版！"></p>
+  </div>
+   <div class="js-weixin-qr hidden-xs">
+<h4>微信公众号<span class="js-f-h-flag">new</span></h4>
+<p><img src="template/qu_115style/img/52im_weixingonzhong.jpg" alt="即时通讯网微信公众号" title="扫码关注即时通讯网微信公众号！"></p>
+  </div>
+  -->
+</div>
+
+
+  </div>
+  <div class="js-clearfix js-copyright">
+<div class="js-clearfix js-saya">
+  <div class="js-copyright-text">
+<div class="js-text">
+  <p class="js-site">Copyright &copy; 2014-2026 即时通讯网 - 即时通讯开发者社区 <span class="hidden-xs">/ 版本 V4.4</span></p>
+  <p class="js-ipc">苏州网际时代信息科技有限公司 <a href="https://beian.miit.gov.cn/" getarticles="" target="_blank">(苏ICP备16005070号-1）</a></p>
+</div>
+  </div>
+</div>
+  </div>
+</div>
+
+
+<p class="xs0">
+
+<span id="debuginfo" style="display:none;">
+Processed in 0.064456 second(s), 18 queries
+, Gzip On.
+</span>
+</p></div>
+<script src="home.php?mod=misc&ac=sendmail&rand=1780315546" type="text/javascript"></script>
+<div id="scrolltop">
+<span hidefocus="true"><a title="返回顶部" onclick="window.scrollTo('0','0')" class="scrolltopa" ><b>返回顶部</b></a></span>
+</div>
+<script type="text/javascript">_attachEvent(window, 'scroll', function () { showTopLink(); });checkBlind();</script>
+</body>
+</html>

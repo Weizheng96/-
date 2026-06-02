@@ -1,0 +1,10 @@
+{
+  "nn": "14",
+  "slug": "14-gcp-titanium",
+  "type": "产品",
+  "name": "Google Cloud gVNIC / Titanium offload",
+  "organization": "Google Cloud",
+  "hit_features_initial": "F1,F4,F6,F8",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：Google Cloud gVNIC / Titanium offload\n- vendor：Google Cloud\n- 命中 F#（初判）：F1,F4,F6,F8\n- 公开度：低（gVNIC 驱动开源，Titanium 卸载架构披露有限）\n- 一句话定位：自研虚拟化栈 + IPU/Titanium 卸载，gVNIC 半虚拟化前端 + 硬件数据面。"
+}

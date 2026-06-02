@@ -1,0 +1,10 @@
+{
+  "nn": "05",
+  "slug": "05-yusur-k2-vdpa",
+  "type": "产品",
+  "name": "YUSUR K2 DPU (virtio/vDPA 卸载)",
+  "organization": "中科驭数 YUSUR",
+  "hit_features_initial": "F1,F2,F5,F8",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：YUSUR K2 / K2-Pro DPU（KPU 架构）\n- vendor：中科驭数 YUSUR（DPU 独角兽）\n- 命中 F#（初判）：F1,F2,F5,F8\n- 公开度：中（官网/CSDN 技术博客描述网络与存储卸载，硬件细节部分公开）\n- 一句话定位：国产 DPU 独角兽，主打云网络/存储 I/O 卸载，公开材料提及 virtio/vDPA 数据面卸载。"
+}

@@ -1,0 +1,10 @@
+{
+  "nn": "09",
+  "slug": "09-marvell-octeon-vdpa",
+  "type": "产品",
+  "name": "Marvell OCTEON 10 DPU (virtio-net 卸载)",
+  "organization": "Marvell",
+  "hit_features_initial": "F1,F2,F5,F8",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：Marvell OCTEON 10 DPU\n- vendor：Marvell\n- 命中 F#（初判）：F1,F2,F5,F8\n- 公开度：中（产品页 + 文档提及 virtio-net 硬件卸载）\n- 一句话定位：芯片大厂 DPU，支持 virtio-net 硬件卸载数据面。"
+}

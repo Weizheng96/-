@@ -1,0 +1,10 @@
+{
+  "nn": "10",
+  "slug": "10-vmware-nsxt-datapath",
+  "type": "产品",
+  "name": "VMware NSX-T / vSphere DPDK datapath",
+  "organization": "VMware (Broadcom)",
+  "hit_features_initial": "F1,F2,F3",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：VMware NSX-T / vSphere DPDK datapath（Edge / EDP）\n- vendor：VMware (Broadcom)\n- 命中 F#（初判）：F1,F2,F3\n- 公开度：中\n- 一句话定位：NSX-T Edge 增强数据面（DPDK），多核转发与 flow cache；核验 rxq/核分配是否按负载动态调整。"
+}

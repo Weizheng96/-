@@ -1,0 +1,10 @@
+{
+  "nn": "03",
+  "slug": "03-tech-corigine-agilio-ovs",
+  "type": "技术",
+  "name": "Agilio CX SmartNIC + Agilio OVS Software（完整 OVS 数据面卸载）",
+  "organization": "芯启源 Corigine",
+  "hit_features_initial": "F1,F2,F4,F5",
+  "publicity": "高",
+  "blurb": "- 类型：技术\n- 名称：芯启源 Corigine Agilio CX SmartNIC + Agilio OVS Software\n- 组织：芯启源 Corigine\n- 命中 F#（初判）：F1, F2, F4, F5\n- 公开度：高\n- 一句话定位：第一个从底层完整、透明卸载 OVS 数据面的软硬一体方案，已在中国移动网络云 / 浙江移动 SD-WAN 商用替换 PoP 节点服务器网卡。\n- 应用案例（仅\"技术\"类条目）：浙江移动 SD-WAN PoP 节点、中国移动核心网网络云。"
+}

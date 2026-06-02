@@ -1,0 +1,10 @@
+{
+  "nn": "03",
+  "slug": "03-tencent-gme",
+  "type": "产品",
+  "name": "GME（腾讯游戏多媒体引擎）",
+  "organization": "腾讯",
+  "hit_features_initial": "F1, F2, F4, F5",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：GME（腾讯游戏多媒体引擎）\n- vendor：腾讯\n- 命中 F#（初判）：F1, F2, F4, F5\n- 公开度：中\n- 一句话定位：面向游戏 / 实时语音的多媒体引擎，按业务类型（语音 / 游戏）做差异化传输，F1 业务类型识别契合度较高。"
+}

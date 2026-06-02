@@ -1,0 +1,10 @@
+{
+  "nn": "18",
+  "slug": "18-yunsilicon-xfusion50",
+  "type": "产品",
+  "name": "云脉芯联 xFusion50 DPU（vSwitch 全卸载）",
+  "organization": "云脉芯联 YunSilicon",
+  "hit_features_initial": "F1,F3",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：云脉芯联 xFusion50 DPU（vSwitch 全卸载 + RDMA）\n- vendor：云脉芯联 YunSilicon（独角兽候选）\n- 命中 F#（初判）：F1,F3\n- 公开度：低\n- 一句话定位：国内首款多场景 RDMA DPU，支持 vSwitch 全卸载；核验是否含线程级负载再分配。"
+}

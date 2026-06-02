@@ -1,0 +1,10 @@
+{
+  "nn": "08",
+  "slug": "08-baidu-rtc",
+  "type": "产品",
+  "name": "百度智能云 RTC",
+  "organization": "百度智能云",
+  "hit_features_initial": "F2, F4, F5",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：百度智能云 RTC\n- vendor：百度智能云（NASDAQ:BIDU）\n- 命中 F#（初判）：F2, F4, F5\n- 公开度：中（文档明示\"自研抗弱网，NACK 与 FEC 结合、按网络环境动态调整 NACK/FEC 比例\"）\n- 一句话定位：自研抗弱网算法，动态平衡 NACK/FEC 比例与带宽 / 延时——与 F2 三输入自适应冗余高度契合。"
+}

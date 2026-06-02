@@ -1,0 +1,10 @@
+{
+  "nn": "05",
+  "slug": "05-netease-nertc",
+  "type": "产品",
+  "name": "NeRTC（网易云信音视频）",
+  "organization": "网易云信",
+  "hit_features_initial": "F2, F4, F5",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：NeRTC（网易云信音视频）\n- vendor：网易云信\n- 命中 F#（初判）：F2, F4, F5\n- 公开度：中（公开 NACK+FEC 弱网优化）\n- 一句话定位：国内 RTC 头部，弱网优化突出（80% 丢包 / 强抖动仍可用）。"
+}

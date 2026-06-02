@@ -1,0 +1,10 @@
+{
+  "nn": "07",
+  "slug": "07-corigine-smartnic",
+  "type": "产品",
+  "name": "芯启源 Corigine 第四代 SmartNIC / DPU（NP-SoC 多线程）",
+  "organization": "芯启源 Corigine",
+  "hit_features_initial": "F1,F3,F4",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：芯启源 Corigine 第四代 SmartNIC / DPU（NP-SoC 多线程处理）\n- vendor：芯启源 Corigine（独角兽，估值约 150 亿元）\n- 命中 F#（初判）：F1,F3,F4\n- 公开度：中（公开 SmartNIC 第四代架构、CODIVA 平台，已在移动云 / 天翼云 / 浙江移动 SD-WAN 商用）\n- 一句话定位：NP-SoC 多线程包处理 + vSwitch 卸载，已多场景商用；需核验线程↔端口的动态负载再分配是否构成 F2/F3。"
+}
