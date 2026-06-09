@@ -1,0 +1,10 @@
+{
+  "nn": "03",
+  "slug": "03-tech-gecko",
+  "type": "技术",
+  "name": "Gecko 渲染引擎",
+  "organization": "Mozilla",
+  "hit_features_initial": "F1,F2,F3,F4,F5,F6",
+  "publicity": "高",
+  "blurb": "- 类型：技术\n- 名称：Gecko 渲染引擎\n- 组织：Mozilla（开源，主 maintainer）\n- 命中 F#（初判）：F1,F2,F3,F4,F5,F6\n- 公开度：高（源码开放）\n- 一句话定位：Firefox 系引擎，自有资源调度与 lazy-loading（无视口边距，1px 可见即加载）；F1-F6 基线齐备，F7 需核。\n- 应用案例（仅\"技术\"类条目）：Firefox for Android, GeckoView。"
+}

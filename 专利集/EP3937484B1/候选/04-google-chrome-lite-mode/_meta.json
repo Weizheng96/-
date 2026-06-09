@@ -1,0 +1,10 @@
+{
+  "nn": "04",
+  "slug": "04-google-chrome-lite-mode",
+  "type": "产品",
+  "name": "Chrome Lite mode / Data Saver",
+  "organization": "Google",
+  "hit_features_initial": "F1,F2,F5,F6,F7",
+  "publicity": "高",
+  "blurb": "- 类型：产品\n- 名称：Chrome Lite mode / Data Saver（含离屏图片自动懒加载、代理压缩）\n- vendor：Google\n- 命中 F#（初判）：F1,F2,F5,F6,F7\n- 公开度：高（Chromium 博客 + 源码）\n- 一句话定位：Chrome 的省流模式，对离屏图片/iframe 自动懒加载、经代理压缩；最可能含\"延迟/分批显示低优先内容\"语义，是 F7 的重点核查对象（注：该模式已于 2022 起逐步下线，需核时间窗与具体行为）。"
+}

@@ -1,0 +1,10 @@
+{
+  "nn": "12",
+  "slug": "12-tdengine-stream",
+  "type": "产品",
+  "name": "TDengine 流计算引擎",
+  "organization": "涛思数据 TDengine",
+  "hit_features_initial": "F1,F2,F4,F5",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：TDengine 流计算引擎（Stream Processing）\n- 组织：涛思数据 TDengine\n- 命中 F#（初判）：F1,F2,F4,F5\n- 公开度：中（开源 + 文档）\n- 一句话定位：时序数据库内置流计算，以 SQL 定义实时流变换，毫秒级延迟；\"逻辑流图→分组选算子→第二流图\"两级 + 算子合并是否对应需核实（F3 初判留空）。"
+}

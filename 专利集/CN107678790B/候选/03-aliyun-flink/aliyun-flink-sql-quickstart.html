@@ -1,0 +1,222 @@
+
+
+
+<!DOCTYPE html>
+<html lang="zh" class="transparent alicloud back-to-top new_default">
+<link rel="stylesheet" href="//g.alicdn.com/aliyun-help/help-portal-fe/0.12.39/css/index.css" />
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+<meta name="spm-id" content="a2c63">
+<meta name="data-spm" content="a2c63" />
+<meta name="aplus-core" content="aplus.js">
+<meta name="aplus-ajax" content="chksum">
+<meta name="aplus-waiting" content="MAN">
+<meta name="aplus-pvhash" content="1">
+ <meta name="kloud:supported-langs" content="en,zh,tc,ja,id"/>
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="applicable-device" content="pc,mobile">
+<meta name="aplus-rhost-v" content="sg.mmstat.com">
+<meta name="aplus-rhost-g" content="sg.mmstat.com">
+<title>
+ Flink SQL快速入门 - 实时计算Flink版 - 阿里云
+
+</title>
+ <meta name="keywords" content="教程,零基础,入门,开发流程">
+ <meta name="description" content="Flink SQL快速入门，实时计算Flink版：本文通过简单的示例，带您快速体验Flink SQL作业的创建、部署和启动等操作，以了解Flink SQL作业的操作流程。 如果您使用RAM用户或RAM角色等身份访问，需要确认已具有Flink控制台相关权限，详情请参见权限管理。">
+ <script>
+window.globalData = {
+website: "intl",
+language: "zh",
+nodeId:"333392",
+channel: "",
+notfound: "",
+statusCode: "",
+errorType: ""
+};
+// UT的全局配置变量，在CDN加载前配置
+window.$ACE_TRACKER_CONFIG = {
+enableHistory: true,
+enableHash: false
+};
+</script>
+<!-- <base href="https://www.alibabacloud.com">-->
+<link rel="canonical" href="https://www.alibabacloud.com/help/zh/flink/realtime-flink/getting-started/getting-started-for-a-flink-sql-deployment"/>
+ <meta property="og:title" content="Flink SQL作业快速入门 - Alibaba Cloud" />
+ <meta property="og:type" content="website" />
+ <meta property="og:url" content="https://www.alibabacloud.com/help/zh/flink/realtime-flink/getting-started/getting-started-for-a-flink-sql-deployment" />
+ <meta property="og:image" content="https://img.alicdn.com/tfs/TB1xpNqnmslXu8jSZFuXXXg7FXa-1200-630.png_.webp" />
+ <meta property="og:description" content="Flink SQL快速入门，实时计算Flink版：本文通过简单的示例，带您快速体验Flink SQL作业的创建、部署和启动等操作，以了解Flink SQL作业的操作流程。 如果您使用RAM用户或RAM角色等身份访问，需要确认已具有Flink控制台相关权限，详情请参见权限管理。" />
+ <link rel="shortcut icon" href="//img.alicdn.com/tfs/TB1ugg7M9zqK1RjSZPxXXc4tVXa-32-32.png"/>
+<link rel="stylesheet" href="https://o.alicdn.com/fund/alicloud-pure-layout/css/index.min.css" />
+ <link
+rel="icon"
+href="https://img.alicdn.com/imgextra/i2/O1CN01TFs5Qw27uYvfA6gib_!!6000000007857-55-tps-32-32.svg"
+type="image/x-icon"
+/>
+</head>
+<body data-spm="" class="HAS_ALPS_RESOURCE"><script  type="text/javascript">
+(function  (d)  {
+var  t=d.createElement("script");t.type="text/javascript";t.async=true;t.id="tb-beacon-aplus";
+t.setAttribute("exparams","category=&userid=&aplus&yunid=&yunpk=&channel=&cps=");
+t.src="//g.alicdn.com/alilog/mlog/aplus_v2.js";
+d.getElementsByTagName("head")[0].appendChild(t);
+})(document);
+</script><script>
+with(document)with(body)with(insertBefore(createElement("script"),firstChild))setAttribute("exparams","category=&userid=&aplus&yunid=&&trid=0a58313d17804042923385847ee208&asid=AQAAAABE0B5qc3ZoBQAAAAA1hswgNMub7A==",id="tb-beacon-aplus",src=(location>"https"?"//g":"//g")+".alicdn.com/alilog/mlog/aplus_v2.js")
+</script>
+
+ <script async src="https://o.alicdn.com/fund/alicloud-pure-layout/index.js"></script>
+
+<div id="app">
+<div class="aliyun-app-layout">
+
+<!-- docId:333392 -->
+<input type="hidden" id="website" value="intl">
+<div class="products-wrapper$tip" data-spm="879954">
+<section id="products" class="intl-product container">
+<div class="row">
+<div class="col-lg-3 col-md-3 col-sm-4 col-xs-12" id="navDocument">
+<div class="doc-nav">
+<a class="doc-center" href="/help/zh">
+<i class="icon-docs icon-docs-back"></i>
+文档中心
+</a>
+</div>
+<div class="placeholder-ele">&nbsp;</div>
+</div>
+<div class="col-lg-7 col-md-7 col-sm-8 col-xs-12 doc-content">
+<div class="all-products action" id="J_AllProducts">
+<div class="all-products-head">
+<div class="all-products-title">全部产品</div>
+<div class="all-products-search-wrapper">
+<div class="all-products-search focus">
+<input autocomplete="off" class="all-products-search-box-input" id="J_AllProductsSearch" placeholder="请输入产品名称" data-spm-anchor-id="a2c4g.11186623.6.i0.1f753945H9RVzu">
+<i class="icon-search icon-docs icon-docs-search"></i>
+<ul class="all-products-search-result" style="display: none;">
+</ul>
+</div>
+</div>
+</div>
+<div class="all-products-body" id="J_AllProductsBody"></div>
+</div>
+<div class="search-product-modal">
+Search
+</div>
+<div class="breadcrumbs-top" data-spm="a1">
+<div class="row nav-breadcrumb">
+ <div class="col-md-12 hidden-sm hidden-xs">
+<ul class="breadcrumb text-sm">
+<li><a class="active" title="文档中心" href="/help/zh">文档中心</a></li>
+ <li><a class="active" title="实时计算Flink版" href="/help/zh/flink/">实时计算Flink版</a></li>
+ <li><a class="active" title="流计算Flink" href="/help/zh/flink/realtime-flink/">流计算Flink</a></li>
+ <li><a class="active" title="快速入门" href="/help/zh/flink/realtime-flink/getting-started/">快速入门</a></li>
+ <li><a class="active" title="Flink SQL作业快速入门" href="/help/zh/flink/realtime-flink/getting-started/getting-started-for-a-flink-sql-deployment">Flink SQL作业快速入门</a></li>
+ </ul>
+</div>
+ <div class="col-md-4 col-sm-12">
+<button type="button" class="navbar-toggle bc mr0" data-toggle="collapse"
+data-target="#sideMenu-mobile">
+<span class="icon-bar"></span>
+<span class="icon-bar"></span>
+all-products-head <span class="icon-bar"></span>
+</button>
+</div>
+</div>
+<form class="search-bar clearfix" method="GET" action="/s/zh">
+<input type="hidden" name="type" value="doc"/>
+<div class="select">
+<p class="select-text">
+<span class="placeholder">搜索本产品</span>
+<i class="icon-docs icon-docs-selected"></i>
+</p>
+<ul class="select-options" style="display:none;">
+<li class="option selected" data-value="h_pid_$productId">搜索本产品</li>
+<li class="option" data-value="">全部产品</li>
+</ul>
+<input type="hidden" name="rangeinfo" value="h_pid_45029"/>
+</div>
+<input autocomplete="off" class="search-key" type="text" placeholder="请输入关键字" name="k"/>
+<ul class="help-top-search-result" style="display: block;"></ul>
+<button class="search-submit" type="submit">
+<i class="icon-docs icon-docs-search"></i>
+</button>
+<div class="collapse-menus select">
+<p class="select-text">
+<span class="placeholder">实时计算Flink版：Flink SQL作业快速入门</span>
+<i class="icon-docs icon-docs-more"></i>
+</p>
+</div>
+</form>
+</div>
+<header id="header-faq" class="clearfix">
+<a class="doc-center" href="/help/zh">
+<i class="icon-docs icon-docs-back"></i>
+文档中心
+</a>
+<div class="download-links">
+ </div>
+<h1 class="page-title">实时计算Flink版：Flink SQL作业快速入门</h1>
+<div class="doc-status">
+更新时间：Jan 23, 2026
+</div>
+</header>
+<article class="product-description markdown-body">
+<div lang="zh" class="icms-help-docs-content">
+<main id="task-2126725"><p id="shortdesc-hx6-13c-zg2" data-tag="shortdesc" class="shortdesc">本文通过简单的示例，带您快速体验Flink SQL作业的创建、部署和启动等操作，以了解Flink SQL作业的操作流程。</p><div data-tag="taskbody" id="taskbody-hl7-x95-68g" class="taskbody"><section data-tag="section" id="section-x9o-ie7-eyp" data-type="section" class="section"><h2 data-tag="title" id="title-w74-nio-t9i" class="title">前提条件</h2><ul id="ul-wvi-s54-023" data-tag="ul" class="ul"><li data-tag="li" id="li-n7t-5jn-6j6" class="li"><p id="a006dc536e5uw">如果您使用RAM用户或RAM角色等身份访问，需要确认已具有Flink控制台相关权限，详情请参见<a href="/help/zh/flink/realtime-flink/user-guide/permission-management/" id="c9cc90c06brvf" title="" class="xref">权限管理</a>。</p></li><li id="a290b005b83wk"><p id="f690b145ceujf">已创建Flink工作空间，详情请参见<a href="/help/zh/flink/realtime-flink/getting-started/activate-fully-managed-flink#task-2506778" id="4aa9d71443gfe" title="" class="xref">开通实时计算Flink版</a>。</p></li></ul></section><section data-tag="section" id="section-owu-fem-f30" data-type="section" class="section"><h2 data-tag="title" id="title-jhe-qdk-eyp" class="title">步骤一：创建作业</h2><ol data-tag="steps" id="steps-jev-63n-lrl" class="steps"><li data-tag="step" id="step-kh7-mgg-qht" class="step"><p id="b000842005hwi">进入SQL作业创建页面。</p><ol id="38f6008113hxn"><li id="2aa39ec013bml"><p id="2aa377b013dpm">登录<a href="https://realtime-compute.console.alibabacloud.com/regions/cn-shanghai" id="xref-z8a-24w-4as" class="" target="_blank">实时计算控制台</a>。</p></li><li data-tag="step" id="step-te3-ck0-j7c" class="step"><p id="b001206005rp8">单击目标工作空间<b data-tag="uicontrol" id="uicontrol-c0c-0tw-28g" class="uicontrol">操作</b>列下的<b data-tag="uicontrol" id="uicontrol-yjz-ir8-lnl" class="uicontrol">控制台</b>。</p></li><li data-tag="step" id="step-8g1-a00-xdi" class="step"><p id="b0016e8005tn2">在左侧导航栏，单击<span data-tag="menucascade" id="a5447b60d5l56" class="menucascade"><b data-tag="uicontrol" id="0c625a22b37qr" class="uicontrol">数据开发</b> &gt; <b data-tag="uicontrol" id="3e84151e6398c" class="uicontrol">ETL</b></span>。</p></li></ol></li><li data-tag="step" id="step-ll6-zmv-cpm" class="step"><p id="e6d603fc26n0i">单击<img id="e75242d133wz0" src="https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/2658726571/p999985.png" alt="image" placement="inline" class="image inline">后，单击<b data-tag="uicontrol" id="fce1481c0dgt6" class="uicontrol">新建流作业</b>，填写<b data-tag="uicontrol" id="cf5c530deffpt" class="uicontrol">文件名称</b>并选择<b data-tag="uicontrol" id="b9044b123crf4" class="uicontrol">引擎版本</b>。</p><p id="cb1fa59e6e20a">Flink也为您提供了丰富的代码模板和数据同步，每种代码模板都为您提供了具体的使用场景、代码示例和使用指导。您可以直接单击对应的模板快速地了解Flink产品功能和相关语法，实现您的业务逻辑，详情请参见<a href="/help/zh/flink/realtime-flink/user-guide/code-templates#task-2181825" id="e1c5c42512xpt" title="" class="xref">代码模板</a>和<a href="/help/zh/flink/realtime-flink/user-guide/data-synchronization-templates#task-2181838" id="a9a276bbd78a9" title="" class="xref">数据同步模板</a>。</p><p id="294800d5afifu"><img id="83993c9ceaixj" src="https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/9068981671/p1022489.png" alt="image" placement="break" width="614" class="image break"></p><table id="table-h13-pj9-lyt" tablewidth="624" tablecolswidth="91 380 153" autofit="false" class="table"><colgroup colwidth="0.44*" style="width:14.58%"></colgroup><colgroup colwidth="1.83*" style="width:60.90%"></colgroup><colgroup colwidth="0.74*" style="width:24.52%"></colgroup><tbody class="tbody"><tr id="row-s74-kox-3s4"><td id="task-2126725-entry-jpq-5qt-wzq" rowspan="1" style="background-color:#e5e5e5;vertical-align:middle" colspan="1"><p id="b00258e005p90"><b>作业参数</b></p></td><td id="task-2126725-entry-jy1-2tx-p2e" rowspan="1" style="background-color:#e5e5e5;vertical-align:middle" colspan="1"><p id="b0027ff005wu4"><b>说明</b></p></td><td id="task-2126725-entry-zu1-9yz-wfy" rowspan="1" style="background-color:#e5e5e5;vertical-align:middle" colspan="1"><p id="b0027ff1052ql"><b>示例</b></p></td></tr><tr id="row-w3c-85j-pjj"><td id="entry-7or-la5-xpi" rowspan="1" style="vertical-align:middle" colspan="1"><p id="b0027ff205y88"><b data-tag="uicontrol" id="uicontrol-px9-uwb-cy1" class="uicontrol">文件名称</b></p></td><td id="entry-eyp-nbj-d6e" rowspan="1" style="vertical-align:middle" colspan="1"><p id="b002a70005vp1">作业的名称。 </p><div data-tag="note" id="note-3n5-3nc-hp5" class="note note-note"><div class="note-icon-wrapper"><i class="icon-note note note"></i></div><div class="noteContentSpan"><strong>说明 </strong><p id="b002a70105jqp">作业名称在当前项目中必须保持唯一。</p></div></div></td><td id="entry-wgm-6ld-jq2" rowspan="1" style="vertical-align:middle" colspan="1"><p id="b002ce1005qpc">flink-test</p></td></tr><tr id="row-dk4-73q-7wm"><td id="entry-zlc-wej-urv" rowspan="1" style="vertical-align:middle" colspan="1"><p id="b0034341057ng"><b data-tag="uicontrol" id="uicontrol-m4x-v1z-5qo" class="uicontrol">引擎版本</b></p></td><td id="entry-4fx-6mq-rk4" rowspan="1" style="vertical-align:middle" colspan="1"><p id="b0036a5005wmj">当前作业使用的Flink引擎版本。</p><p id="baf8941c9dz7n">建议使用带有<b data-tag="uicontrol" id="cca114ceadsyg" class="uicontrol">推荐</b>、<b data-tag="uicontrol" id="fd01e9fda1160" class="uicontrol">稳定</b>标签的版本，这些版本具有更高的可靠性和性能表现，引擎版本详情请参见<a href="/help/zh/flink/realtime-flink/product-overview/release-notes/" id="073f3e5864ive" title="" class="xref">功能发布记录</a>和<a href="/help/zh/flink/realtime-flink/product-overview/engine-version" id="34e4a4414fzen" title="" class="xref">引擎版本介绍</a>。</p></td><td id="entry-oba-z17-zgk" rowspan="1" style="vertical-align:middle" colspan="1"><p id="b003916005iun">vvr-8.0.8-flink-1.17</p></td></tr></tbody></table></li><li data-tag="step" id="step-ppp-fhx-5m8" class="step"><p id="b003916105aql">单击<b data-tag="uicontrol" id="uicontrol-k7u-885-jry" class="uicontrol">创建</b>。</p></li></ol></section><section data-tag="section" id="section-do2-yxf-hxk" data-type="section" class="section"><h2 data-tag="title" id="title-u6s-jqt-iqb" class="title">步骤二：编写SQL作业并查看配置信息</h2><ol id="41b098f458j36" start="1"><li id="ce678c649axix"><p id="9f15b5dde4j45"> 编写SQL作业。</p><section id="d71d6e37c8znv" class="section"><p id="698d45c82fv87">拷贝如下SQL到SQL编辑区域。本SQL示例使用<a href="/help/zh/flink/realtime-flink/developer-reference/datagen-connector" id="1cea4cc29975h" title="" class="xref">Datagen</a>连接器生成随机的数据流，并通过<a href="/help/zh/flink/realtime-flink/developer-reference/print-connector" id="d356cb3d45918" title="" class="xref">Print</a>连接器将计算结果打印到实时计算开发控制台上。支持的更多连接器请参见<a href="/help/zh/flink/realtime-flink/developer-reference/supported-connectors" id="dd901ff677gd9" title="" class="xref">支持的连接器</a>。</p><pre id="ec9a8c91a0s7w" data-tag="codeblock" outputclass="language-sql" code-type="xCode" class="pre codeblock language-sql"><code>--创建临时源表datagen_source。
+CREATE TEMPORARY TABLE datagen_source(
+  randstr VARCHAR
+) WITH (
+  'connector' = 'datagen' -- datagen连接器
+);
+
+--创建临时结果表print_table。
+CREATE TEMPORARY TABLE print_table(
+  randstr  VARCHAR
+) WITH (
+  'connector' = 'print',   -- print连接器
+  'logger' = 'true'        -- 控制台显示计算结果
+);
+
+--将randstr字段截取后打印出来。
+INSERT INTO print_table
+SELECT SUBSTRING(randstr,0,8) from datagen_source;</code></pre><div type="note" id="6a527820136k7" class="note note-note"><div class="note-icon-wrapper"><i class="icon-note note note"></i></div><div class="noteContentSpan"><strong>说明 </strong><ul id="4d1b1de579cb4"><li id="b02665dc6f48f"><p id="90f89ee106fbz">本SQL示例给出了用<code data-tag="code" code-type="xCode" id="eee9aff859dkl" class="code">INSERT INTO</code>写入一个Sink，<code data-tag="code" code-type="xCode" id="24d46c57f0z39" class="code">INSERT INTO</code>也可以写入多个Sink，有关详情请参见<a href="/help/zh/flink/realtime-flink/developer-reference/insert-into-statement" id="8ed9846c96j2z" title="" class="xref">INSERT INTO语句</a>。</p></li><li id="943bf4485996j"><p id="6be43bb013w3b">在实际生产作业中，建议您尽量减少临时表的使用，直接使用元数据管理中已经注册的表，详情请参见<a href="/help/zh/flink/realtime-flink/user-guide/manage-catalogs/" id="aa92d896fa2zf" title="" class="xref">数据管理</a>。</p></li></ul></div></div></section></li><li id="4995f074e5ewj"><p id="512335c851nwt">查看配置信息。</p><section id="1d51861c16ly0" class="section"><p id="b0040690054qq">在SQL编辑区域右侧页签，您可以查看或上传相关配置。</p><table id="3152e03f8cyjt" tablewidth="607" tablecolswidth="89 518" autofit="false" class="table"><colgroup colwidth="0.29*" style="width:14.66%"></colgroup><colgroup colwidth="1.71*" style="width:85.34%"></colgroup><tbody class="tbody"><tr id="row-bl8-z6a-n9g"><td id="task-2046613-entry-2we-8v1-10y" rowspan="1" style="background-color:rgb(229, 229, 229)" colspan="1"><p jc="left" id="5ba14fae56fja" style="text-align:left"><b>页签名称</b></p></td><td id="task-2046613-entry-7dq-27b-5pk" rowspan="1" style="background-color:rgb(229, 229, 229)" colspan="1"><p jc="left" id="1a46dc5888kyc" style="text-align:left"><b>配置说明</b></p></td></tr><tr id="row-sdr-qg7-88t"><td id="entry-pg8-iim-m6j" rowspan="1" colspan="1"><p jc="left" id="07bb467764mw6" style="text-align:left"><b data-tag="uicontrol" id="uicontrol-ql9-qhz-4lc" class="uicontrol">更多配置</b></p></td><td id="entry-zzc-3xr-c06" rowspan="1" colspan="1"><ul data-tag="ul" id="ul-fma-qog-1d6" class="ul"><li data-tag="li" id="li-5le-grz-bsq" class="li"><p id="e823a364e5frh"><b data-tag="uicontrol" id="uicontrol-m3p-if6-ylc" class="uicontrol">引擎版本</b>：引擎版本详情请参见<a href="/help/zh/flink/realtime-flink/product-overview/engine-version#concept-2206172" id="080055b009w2l" title="" class="xref">引擎版本介绍</a>和<a href="/help/zh/flink/realtime-flink/product-overview/lifecycle-policies#task-2206171" id="080055b109okt" title="" class="xref">生命周期策略</a>。建议您使用推荐版本或稳定版本，引擎版本标记含义详情如下：</p><ul id="337b5851096r0"><li id="32c4b280096hp"><p id="e1bf4b37eaqca">推荐版本（Recommend）：当前最新大版本下的最新小版本。</p></li><li id="5e873e1009qnc"><p id="5ae515c86fuxu">稳定版本（Stable）：还在产品服务期内的大版本下最新的小版本，已修复历史版本缺陷。</p></li><li id="61bc034009ocd"><p id="68bbea79eakln">普通版本（Normal）：还在产品服务期内的其他小版本。</p></li><li id="63ce417009h3w"><p id="f7aea14bbe1s7">EOS版本（Deprecated）：超过产品服务期限的版本。</p></li></ul></li><li id="9b9404110907l"><p id="5a62197904dj6"><b data-tag="uicontrol" id="9b940413091xe" class="uicontrol">附加依赖文件</b>：作业中需要使用到的附加依赖，例如临时函数等。</p></li><li id="7955c52f67hor"><p id="b2d20343ba82o">Kerberos 认证：开启Kerberos认证，配置已注册的Kerberos集群和Principal用户信息。如尚未注册Kerberos集群，请参考<a href="/help/zh/flink/realtime-flink/user-guide/register-the-hive-kerberos-cluster" id="8458b302a0nn5" title="" class="xref">注册Hive Kerberos集群</a>。</p></li></ul></td></tr><tr id="row-ylw-6jo-ar0"><td id="entry-j6i-iu1-ph2" rowspan="1" colspan="1"><p jc="left" id="927ac8280deu8" style="text-align:left"><b data-tag="uicontrol" id="uicontrol-cgk-7u6-bsc" class="uicontrol">代码结构</b></p></td><td id="entry-osy-j5f-pch" rowspan="1" colspan="1"><ul data-tag="ul" id="ul-nli-ob0-oko" class="ul"><li data-tag="li" id="li-453-z99-lbj" class="li"><p id="cdcccbb7a7tr7"><b data-tag="uicontrol" id="uicontrol-auj-jbw-yif" class="uicontrol">数据流向图</b>：您可以通过数据流向图快速查看数据的流向。</p></li><li data-tag="li" id="li-5r2-k3c-ncw" class="li"><p id="34b0befb4dtvq"><b data-tag="uicontrol" id="uicontrol-q98-0h0-yg0" class="uicontrol">树状结构图</b>：您可以通过树状结构图快速查看数据的来源。</p></li></ul></td></tr><tr id="row-zn2-2pz-oc6"><td id="entry-sib-7ik-zf5" rowspan="1" colspan="1"><p jc="left" id="20aa9ef19eqib" style="text-align:left"><b data-tag="uicontrol" id="uicontrol-rkq-v4h-6so" class="uicontrol">版本信息</b></p></td><td id="entry-iiy-1s6-8t5" rowspan="1" colspan="1"><p jc="left" id="52f2a139d9xfg" style="text-align:left">您可以在此处查看作业版本信息，<b data-tag="uicontrol" id="uicontrol-ubp-gcr-lah" class="uicontrol">操作</b>列下的功能详情请参见<a href="/help/zh/flink/realtime-flink/user-guide/manage-job-versions#task-2002031" id="xref-7tp-101-yiz" title="" class="xref">管理作业版本</a>。</p></td></tr></tbody></table></section></li></ol></section><section id="section-8ya-6cd-6sp" data-tag="section" data-type="section" class="section"><h2 data-tag="title" id="title-oo5-tvt-40v" class="title">（可选）步骤三：作业深度检查与调试</h2><ol id="4105e5298baoj" start="1"><li id="f53f427a000yq"><p id="6e6d18b403i15">作业深度检查。</p><section id="32c1763d7cfa6" class="section"><p id="70d3fb17957o8">深度检查能够检查作业的SQL语义、网络连通性以及作业使用的表的元数据信息。同时，您可以单击结果区域的<b data-tag="uicontrol" id="235f98403da1o" class="uicontrol">SQL优化</b>，展开查看SQL风险问题提示以及对应的SQL优化建议。</p><ol id="c5204c1fadozj"><li id="1f845d2b95dg3"><p data-tag="p" id="p-k70-bcc-3ys" class="p">在SQL编辑区域右上方，单击<b data-tag="uicontrol" id="uicontrol-8g5-s2y-fa4" class="uicontrol">深度检查</b>。</p></li><li id="41fa8d280fisg"><p id="f1e2abe886b6c">在<b data-tag="uicontrol" id="9fd2455c13x71" class="uicontrol">深度检查</b>对话框，单击<b data-tag="uicontrol" id="c888604a81j8r" class="uicontrol">确认</b>。</p></li></ol><div type="note" id="21b06a54bcyqx" class="note note-note"><div class="note-icon-wrapper"><i class="icon-note note note"></i></div><div class="noteContentSpan"><strong>说明 </strong><p id="2691b81246hec">在作业深度检查时出现超时错误，报错信息如下：</p><p id="d9ec833f1en1j">The RPC times out maybe because the SQL parsing is too complicated. Please consider enlarging the `flink.sqlserver.rpc.execution.timeout` option in flink-configuration, which by default is `120 s`.</p><p id="36d910f139z8j">解决方案：您需要在作业编辑页面的最上面添加以下参数配置。</p><pre id="59835f7db5stw" code-type="xCode" data-tag="codeblock" outputclass="language-sql" class="pre codeblock language-sql"><code>SET 'flink.sqlserver.rpc.execution.timeout' = '600s';</code></pre></div></div></section></li><li id="fd0e7662549i7"><p id="8224bb57c5i38">作业调试。</p><section id="50d479cd730pp" class="section"><p id="f7d593bd675us">您可以使用作业调试功能模拟作业运行、检查输出结果，验证SELECT或INSERT业务逻辑的正确性，提升开发效率，降低数据质量风险。</p><div id="8dee6f1866z9q" type="note" class="note note-note"><div class="note-icon-wrapper"><i class="icon-note note note"></i></div><div class="noteContentSpan"><strong>说明 </strong><p id="bc42e961bdpah">作业调试功能不会将产生的数据写入到下游结果表中。</p></div></div><ol id="c228f9da62la3"><li id="2af00b0a4f6rq"><p data-tag="p" id="p-y2i-ekh-09y" class="p">在SQL编辑区域右上方，单击<b data-tag="uicontrol" id="uicontrol-9x5-sym-hty" class="uicontrol">调试</b>。</p></li><li id="81c90446848at"><p id="6c16577ccasxx">在<b data-tag="uicontrol" id="ca35dcf5d7l58" class="uicontrol">调试</b>对话框，选择调试集群后，单击<b data-tag="uicontrol" id="75e3ef7ac3uud" class="uicontrol">下一步</b>。</p><p id="038ec9018bzox">如果没有可用集群则需要创建新的Session集群，Session集群与SQL作业引擎版本需要保持一致并处于运行中，详情请参见<a href="/help/zh/flink/realtime-flink/user-guide/debug-a-deployment#5cc30130e00bs" id="4f5032f729uwa" title="" class="xref">步骤一：创建Session集群</a>。</p></li><li id="571ff3c2f3edv"><p id="771bbccc8fvln">配置调试数据，单击<b data-tag="uicontrol" id="0f8aa3a5799r8" class="uicontrol">确定</b>。</p><p id="b27eee4192yun">配置详情请参见<a href="/help/zh/flink/realtime-flink/user-guide/debug-a-deployment#1a82bfd0e0qv6" id="3a25a204a4k1y" title="" class="xref">步骤二：作业调试</a>。</p></li></ol></section></li></ol></section><section id="section-ch5-uax-wo6" data-tag="section" data-type="section" class="section"><h2 data-tag="title" id="title-oez-jh9-vds" class="title">步骤四：作业部署</h2><p id="b004a2d005moq">在SQL编辑区域右上方，单击<b data-tag="uicontrol" id="uicontrol-rp3-jth-bdt" class="uicontrol">部署</b>，在<b data-tag="uicontrol" id="uicontrol-adn-x99-upb" class="uicontrol">部署新版本</b>对话框，可根据需要填写或选中相关内容，单击<b data-tag="uicontrol" id="uicontrol-goa-0la-p1d" class="uicontrol">确定</b>。</p><p id="bb4220d247cz0">在部署作业时<b data-tag="uicontrol" id="508f8718c68rv" class="uicontrol">部署目标</b>可以选择<b data-tag="uicontrol" id="6267cb877fl3r" class="uicontrol">资源队列</b>或者<b data-tag="uicontrol" id="5753b08178xi8" class="uicontrol">Session集群</b>，具体如下：</p><table id="3ec6972c1cw6w" tablewidth="100" tablecolswidth="14.49 15.36 70.15" autofit="true" class="table"><colgroup colwidth="0.44*" style="width:14.49%"></colgroup><colgroup colwidth="0.47*" style="width:15.36%"></colgroup><colgroup colwidth="2.13*" style="width:70.15%"></colgroup><tbody class="tbody"><tr id="bf49ffc030lvj"><td id="9e194622455gz" rowspan="1" style="background-color:#e5e5e5" colspan="1"><p id="47514a6e8012y"><b>部署目标</b></p></td><td id="58b38bb85cox5" rowspan="1" style="background-color:#e5e5e5" colspan="1"><p id="d9e6a82a3bj8f"><b>适用环境</b></p></td><td id="b383dce5f31g4" rowspan="1" style="background-color:#e5e5e5" colspan="1"><p id="f2db172e532mq"><b>核心特性</b></p></td></tr><tr id="3a25ef2165k2n"><td id="f27c05d2d7f91" rowspan="1" colspan="1"><p id="fdc5a102a20wi">资源队列</p></td><td id="9becee5b741uc" rowspan="1" colspan="1"><p id="6ab966a8743ir">正式生产环境</p></td><td id="80535e301d6q3" rowspan="1" colspan="1"><ul id="fc1c113e20cve"><li id="630765f358ray"><p id="cf25f81222506">资源独享：任务资源不会被抢占，保障稳定性。</p></li><li id="b76abe4c8d8vj"><p id="5f6965b9fceum">资源隔离：通过添加资源队列可以实现对资源的隔离与管理。</p></li><li id="d978e89521teo"><p id="65a60b32550vg">适用场景：适用于长期运行或高优先级任务。</p></li></ul></td></tr><tr id="1d15097671bxn"><td id="384a039a0ext9" rowspan="1" colspan="1"><p id="03bbb18324iyc">Session集群</p></td><td id="4cfef437afnrz" rowspan="1" colspan="1"><p id="2623056672apk">开发测试环境</p></td><td id="e748987ff055p" rowspan="1" colspan="1"><ul id="6056c5c295uiw"><li id="93a7d5da45avs"><p id="987f5a7a38eur">资源共享：多个作业共享同一个JM（Job Manager），提高作业JM资源利用率。</p></li><li id="2f598f22b2x33"><p id="d3262d34acbk4">启动快速：通过多个作业复用已初始化的资源实例，提高作业启动速度。</p></li><li id="947f74c7bcbfl"><p id="8ed03c801c7c5">适用场景：适用于开发测试、轻量级任务，需合理规划资源配额，避免JM的复用机制对作业间的稳定性产生负面影响。</p></li></ul><div type="important" id="fcf8a25f4f2nk" class="note note-important"><div class="note-icon-wrapper"><i class="icon-note note important"></i></div><div class="noteContentSpan"><strong>重要 </strong><p id="d8cf6dea8a7qj">Session集群运行的作业无法进行作业日志查看。</p></div></div></td></tr></tbody></table></section><section data-tag="section" id="section-ue1-822-3n4" data-type="section" class="section"><h2 data-tag="title" id="title-ju6-ka7-ryv" class="title">步骤五：启动作业并查看结果</h2><ol id="steps-ay6-9rp-ukn" data-tag="steps" class="steps"><li data-tag="step" id="step-yp7-tjk-tkq" class="step"><p id="b004f0f005mkt">在左侧导航栏，单击<span data-tag="menucascade" id="f9e276fcac2h0" class="menucascade"><b data-tag="uicontrol" id="1a7e949d14615" class="uicontrol">运维中心</b> &gt; <b data-tag="uicontrol" id="af4edc5524gsd" class="uicontrol">作业运维</b></span>。</p></li><li data-tag="step" id="step-zmp-8w3-of3" class="step"><p id="b0051800053vj">单击目标作业名称<b data-tag="uicontrol" id="uicontrol-jfi-re8-og2" class="uicontrol">操作</b>列中的<b data-tag="uicontrol" id="uicontrol-gls-hdr-cpu" class="uicontrol">启动</b>。</p><div data-tag="info" id="info-y1a-jbs-yzd" class="info"><p id="b0053f1005vd4">选择<b data-tag="uicontrol" id="f1bc4d4013cr3" class="uicontrol">无状态启动</b>后，单击<b data-tag="uicontrol" id="f49d261013fss" class="uicontrol">启动。</b>当您看到作业状态变为<b data-tag="uicontrol" id="uicontrol-68w-55e-ke5" class="uicontrol">运行中</b>，则代表作业运行正常。作业启动参数配置，详情请参见<a href="/help/zh/doc-detail/207352.html#task-2047214" id="eeae981013ol9" title="" class="xref">作业启动</a>。</p></div></li><li data-tag="step" id="step-421-w2g-uzj" class="step"><p id="b0058d3005ev3">在<b data-tag="uicontrol" id="e98d106699bqt" class="uicontrol">作业运维</b>详情页面，查看Flink计算结果。</p><ol type="a" data-tag="substeps" id="substeps-b7z-naw-ghj" class="substeps"><li data-tag="substep" id="substep-h42-kxm-zry" class="substep"><p id="b005b44005a4w">在<span data-tag="menucascade" id="971cae8d7fldz" class="menucascade"><b data-tag="uicontrol" id="4bc7330f3ekzt" class="uicontrol">运维中心</b> &gt; <b data-tag="uicontrol" id="6ccafd89b7lxd" class="uicontrol">作业运维</b></span>页面，单击目标作业名称。</p></li><li data-tag="substep" id="substep-bo4-pcz-gci" class="substep"><p id="b005b441058ue">在<b data-tag="uicontrol" id="uicontrol-j0r-co6-ika" class="uicontrol">作业日志</b>页签，单击<b data-tag="uicontrol" id="6767bda0424j7" class="uicontrol">运行Task Managers</b>页签下的<b data-tag="uicontrol" id="0e94117d8bpbz" class="uicontrol">Path, ID</b>的任务。</p></li><li data-tag="substep" id="substep-s57-e5j-ppe" class="substep"><p id="b006026005cu3">单击<b data-tag="uicontrol" id="uicontrol-dks-mqf-sug" class="uicontrol">日志</b>，在页面搜索PrintSinkOutputWriter相关的日志信息。</p><div data-tag="info" id="info-yhe-cyp-83p" class="info"><p id="b006297005mlo"><img id="5c433cbd98iks" src="https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/2218973271/p827418.jpg" alt="flinksql作业快速启动.jpg" placement="break" class="image break"></p></div></li></ol></li></ol></section><section data-tag="section" id="section-4g4-vad-qgm" data-type="section" class="section"><h2 data-tag="title" id="title-tcb-hbc-k72" class="title">（可选）步骤六：停止作业</h2><p id="p-tci-hni-btd" data-tag="p" class="p">如果您对作业进行了修改（例如更改代码、增删改WITH参数、更改作业版本等），且希望修改生效，则需要重新部署作业，然后停止再启动。另外，如果作业无法复用State，希望作业全新启动时，或者更新非动态生效的参数配置时，也需要停止后再启动作业。作业停止详情请参见<a href="/help/zh/flink/realtime-flink/user-guide/cancel-a-deployment#task-2021003" id="xref-3bk-anp-dcv" title="" class="xref">作业停止</a>。</p><ol id="8f9210ce169e6" start="1"><li id="021a7c61dae03"><p id="1809a852329fd">在<span data-tag="menucascade" id="e4a65bc95a8rs" class="menucascade"><b data-tag="uicontrol" id="ecc86dfb79j44" class="uicontrol">运维中心</b> &gt; <b data-tag="uicontrol" id="5bd7db1eade68" class="uicontrol">作业运维</b></span>页面，单击目标作业<b data-tag="uicontrol" id="uicontrol-4xx-t4a-hni" class="uicontrol">操作</b>列下的<b data-tag="uicontrol" id="uicontrol-00z-m0r-ptr" class="uicontrol">停止</b>。</p></li><li id="43d0765430mjp"><p id="c79e0efcdf50p">单击<b data-tag="uicontrol" id="e05e3af64153w" class="uicontrol">确定</b>。</p></li></ol></section><section id="81c9f62a14yel" class="section"><h2 id="5eb604a6f4v5m"><b>相关文档</b></h2><ul id="aa41f2dfb5pzk"><li id="18c3035a881mm"><p id="57fe823280ltf">作业开发&amp;作业运维常见问题</p><ul id="b8d49149d3tgz"><li id="1a1a96da4f6b9"><p id="cd8d0f8be223e"><a href="/help/zh/flink/realtime-flink/support/troubleshooting-during-development/" id="92b59471b6x8z" title="" class="xref">作业开发</a></p></li><li id="1ccb26b5500nn"><p id="1b019226cdj9d"><a href="/help/zh/flink/realtime-flink/support/troubleshooting-during-o-and-m/" id="729514d8baxs4" title="" class="xref">作业运维</a></p></li></ul></li><li id="a7d9955cdc0r6"><p id="c5edbb15b4hdd">配置作业相关信息</p><ul id="96b95dd45dsx8"><li id="e61560a40fj95"><p id="8eaf8eabf4q3t">您可以在作业启动前配置作业资源或者作业上线后修改作业资源，支持基础模式（粗粒度）和专家模式（细粒度）两种资源模式，详情请参见<a href="/help/zh/flink/realtime-flink/user-guide/configure-deployment-resources" id="d5acf4394duf9" title="" class="xref">配置作业资源</a>。</p></li><li id="5111c32250zby"><p id="a7192f7588tdw">配置作业日志级别以及配置不同级别日志分别输出，详情请参见<a href="/help/zh/flink/realtime-flink/user-guide/configure-parameters-to-export-logs-of-a-deployment" id="f1f7464be7e3s" title="" class="xref">配置作业日志输出</a>。</p></li></ul></li><li id="1fb5ccd3cfx30"><p id="c626aa9ce414n">其他类型作业开发流程</p><ul id="d406e249bczxh"><li id="ef9047265byth"><p id="dece15fa5aquv"><a href="/help/zh/flink/realtime-flink/getting-started/getting-started-for-a-flink-jar-deployment" id="0e333642b3jqy" title="" class="xref">Flink JAR作业快速入门</a></p></li><li id="fbab87ff34t7p"><p id="4fb5a66678qku"><a href="/help/zh/flink/realtime-flink/getting-started/getting-started-for-a-flink-python-deployment" id="20ee184382ezi" title="" class="xref">Flink Python作业快速入门</a></p></li><li id="c549198502peq"><p id="7a35d96d89kbp"><a href="/help/zh/flink/realtime-flink/getting-started/ingest-data-into-data-warehouses-in-real-time" id="47642d0cbf15l" title="" class="xref">数据库实时入仓快速入门</a></p></li></ul></li><li id="419e8da9f2j69"><p id="51391824dbpd5">Flink相关的最佳实践</p><ul id="3f86c2a8584h7"><li id="e173484396sig"><p id="ddb8f975fdt7c"><a href="/help/zh/flink/realtime-flink/use-cases/build-real-time-data-warehouse-based-on-flink-hologres" id="21b5fa14223m4" title="" class="xref">Hologres实时数仓搭建</a></p></li><li id="df02df090ba5v"><p id="0034a2e417aq0"><a href="/help/zh/flink/realtime-flink/use-cases/build-a-streaming-data-warehouse-based-on-flink-and-apache-paimon" id="af23009e09zcc" title="" class="xref">Paimon+StarRocks流式湖仓构建</a></p></li></ul></li></ul></section><p id="dffea98a5bkpw"></p></div></main>
+
+</div>
+</article>
+<script type="text/javascript">
+window.storeDocs = {
+language: '$lang',
+docGithubLink: '$!githubInfo.url'
+}
+</script>
+<div class="nav-footer">
+ </div>
+<div class="alicloud-document-ask clearfix"></div>
+<div class="feedback-message" style="display:none;">
+<span class="hasfeedback acon acon-done-16"></span>
+谢谢！我们已经收到了您的反馈。
+</div>
+</div>
+<div class="col-log-2 col-md-2 col-sm-0 col-xs-0 nav-catalog">
+<div class="article-catalog" id="articleCatalog"></div>
+</div>
+</div>
+</section>
+</div>
+</div>
+</div>
+<script
+crossorigin
+src="https://g.alicdn.com/code/lib/??react/16.8.6/umd/react.production.min.js,react-dom/16.8.6/umd/react-dom.production.min.js"
+></script>
+<script
+src="https://g.alicdn.com/code/lib/lodash.js/4.17.21/lodash.min.js"
+crossorigin="anonymous"
+></script>
+<script src="//g.alicdn.com/aliyun-help/help-portal-fe/0.12.39/js/vendor.js"></script>
+<script src="//g.alicdn.com/aliyun-help/help-portal-fe/0.12.39/js/index.js"></script>
+<script defer src="https://cloud-assets.alicdn.com/alicdn/dawn/user-tracker/latest/js/index.js"></script>
+</body>
+</html>

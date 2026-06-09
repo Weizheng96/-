@@ -1,0 +1,10 @@
+{
+  "nn": "01",
+  "slug": "01-tech-apache-flink",
+  "type": "技术",
+  "name": "Apache Flink（Flink SQL）",
+  "organization": "Apache 基金会 / 主贡献阿里巴巴等",
+  "hit_features_initial": "F1,F2,F3,F4,F5",
+  "publicity": "高",
+  "blurb": "- 类型：技术\n- 名称：Apache Flink（Flink SQL / Table API）\n- 组织：Apache 软件基金会（核心贡献含阿里巴巴等）\n- 命中 F#（初判）：F1,F2,F3,F4,F5\n- 公开度：高（开源，源码 + 官方文档 + 论文齐全）\n- 一句话定位：分布式流处理框架；Flink SQL 把 SQL 经 Calcite 解析为逻辑计划（RelNode）→ 优化为物理 StreamGraph → 编译成 JobGraph（含 **operator chaining** 算子链合并）→ JobManager 调度到 TaskManager 执行，是 F1–F5 的教科书式对应。\n- 应用案例（仅\"技术\"类条目）：阿里云实时计算 Flink 版、腾讯云流计算 Oceanus、AWS Managed Service for Apache Flink（原 Kinesis Data Analytics）、Confluent Cloud for Apache Flink、Cloudera SQL Stream Builder、火山引擎流式计算 Flink 版、Aiven for Apache Flink、Decodable、Ververica Platform"
+}

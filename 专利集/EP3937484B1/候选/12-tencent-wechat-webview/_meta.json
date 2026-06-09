@@ -1,0 +1,10 @@
+{
+  "nn": "12",
+  "slug": "12-tencent-wechat-webview",
+  "type": "产品",
+  "name": "微信内置浏览器 (TBS/X5)",
+  "organization": "Tencent",
+  "hit_features_initial": "F1,F2,F3,F5,F6",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：微信内置浏览器（TBS/X5）\n- vendor：Tencent\n- 命中 F#（初判）：F1,F2,F3,F5,F6\n- 公开度：低\n- 一句话定位：微信超级 App 内嵌网页渲染，复用 X5/TBS 内核；跨\"独立浏览器 + App 内 WebView\"第二条产品线。"
+}

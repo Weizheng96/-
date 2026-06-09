@@ -1,0 +1,10 @@
+{
+  "nn": "13",
+  "slug": "13-baidu-browser",
+  "type": "产品",
+  "name": "百度浏览器 / 百度 App 内核",
+  "organization": "Baidu",
+  "hit_features_initial": "F1,F2,F5,F6",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：百度浏览器 / 百度 App 内置浏览内核\n- vendor：Baidu\n- 命中 F#（初判）：F1,F2,F5,F6\n- 公开度：低\n- 一句话定位：百度移动浏览及百度 App 内嵌浏览内核。"
+}

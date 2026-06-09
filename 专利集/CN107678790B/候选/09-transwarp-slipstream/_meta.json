@@ -1,0 +1,10 @@
+{
+  "nn": "09",
+  "slug": "09-transwarp-slipstream",
+  "type": "产品",
+  "name": "Slipstream / 实时流计算引擎",
+  "organization": "星环科技 Transwarp",
+  "hit_features_initial": "F1,F2,F3,F4,F5",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：Slipstream / 实时流计算引擎\n- 组织：星环科技 Transwarp（科创板 688031.SH）\n- 命中 F#（初判）：F1,F2,F3,F4,F5\n- 公开度：中\n- 一句话定位：以 SQL（兼容 ANSI SQL 2003）提供流计算开发接口，底层 Spark-based，逻辑→物理执行计划 + 分布式执行。"
+}

@@ -1,0 +1,10 @@
+{
+  "nn": "09",
+  "slug": "09-opera-mini",
+  "type": "产品",
+  "name": "Opera Mini",
+  "organization": "Opera Limited",
+  "hit_features_initial": "F1,F2,F5,F6,F7",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：Opera Mini（Turbo/极速模式，服务端渲染压缩）\n- vendor：Opera Limited\n- 命中 F#（初判）：F1,F2,F5,F6,F7\n- 公开度：中\n- 一句话定位：数据节省浏览器标杆，极速模式在服务端渲染并压缩；需核端侧是否做元素级\"按序延迟显示\"还是仅显示云端图像流（同抽象层存疑）。"
+}

@@ -1,0 +1,10 @@
+{
+  "nn": "06",
+  "slug": "06-confluent-ksqldb",
+  "type": "产品",
+  "name": "ksqlDB",
+  "organization": "Confluent",
+  "hit_features_initial": "F1,F2,F3,F4,F5",
+  "publicity": "高",
+  "blurb": "- 类型：产品\n- 名称：ksqlDB（Confluent）\n- 组织：Confluent（NASDAQ:CFLT）\n- 命中 F#（初判）：F1,F2,F3,F4,F5\n- 公开度：高（开源 + 文档）\n- 一句话定位：Kafka 之上的 SQL 流处理引擎，SQL→逻辑计划→物理执行计划（topology）→ Kafka Streams 实例执行。需核实其 master-worker 与算子合并是否对应 F3/F4。"
+}

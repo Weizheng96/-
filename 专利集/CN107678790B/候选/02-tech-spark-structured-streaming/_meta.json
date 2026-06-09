@@ -1,0 +1,10 @@
+{
+  "nn": "02",
+  "slug": "02-tech-spark-structured-streaming",
+  "type": "技术",
+  "name": "Apache Spark Structured Streaming（Spark SQL）",
+  "organization": "Apache 基金会 / 主贡献 Databricks 等",
+  "hit_features_initial": "F1,F2,F3,F4,F5",
+  "publicity": "高",
+  "blurb": "- 类型：技术\n- 名称：Apache Spark Structured Streaming（Spark SQL）\n- 组织：Apache 软件基金会（核心贡献含 Databricks 等）\n- 命中 F#（初判）：F1,F2,F3,F4,F5\n- 公开度：高（开源）\n- 一句话定位：SQL/DataFrame 流式查询经 Catalyst 生成逻辑计划→物理计划，**whole-stage codegen 将多算子融合**为单段代码（对应 F3\"一个算子实现多个逻辑节点\"），由 Driver 调度到 Executor 执行。\n- 应用案例（仅\"技术\"类条目）：Databricks（DLT）、AWS EMR / Glue Streaming、各云托管 Spark"
+}

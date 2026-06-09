@@ -1,0 +1,10 @@
+{
+  "nn": "08",
+  "slug": "08-microsoft-edge-mobile",
+  "type": "产品",
+  "name": "Microsoft Edge (mobile)",
+  "organization": "Microsoft",
+  "hit_features_initial": "F1,F2,F3,F5,F6",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：Microsoft Edge（移动版）\n- vendor：Microsoft\n- 命中 F#（初判）：F1,F2,F3,F5,F6\n- 公开度：中\n- 一句话定位：Chromium 内核移动浏览器，叠加效率/睡眠标签等省电特性。"
+}

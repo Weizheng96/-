@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="profile" href="http://gmpg.org/xfn/11">
+<link rel="pingback" href="https://dataninjago.com/xmlrpc.php">
+
+<title>Spark Structured Streaming Deep Dive (5) &#8211; IncrementalExecution &#8211; Data Ninjago (Finsight-Tech Blogs)</title>
+<meta name='robots' content='max-image-preview:large' />
+<meta name="google-site-verification" content="LgKfhTaMeRBBlFZhcM1d01xoQdSLofdnse2qBvRo1ck" />
+
+<!-- Async WordPress.com Remote Login -->
+<script id="wpcom_remote_login_js">
+var wpcom_remote_login_extra_auth = '';
+function wpcom_remote_login_remove_dom_node_id( element_id ) {
+	var dom_node = document.getElementById( element_id );
+	if ( dom_node ) { dom_node.parentNode.removeChild( dom_node ); }
+}
+function wpcom_remote_login_remove_dom_node_classes( class_name ) {
+	var dom_nodes = document.querySelectorAll( '.' + class_name );
+	for ( var i = 0; i < dom_nodes.length; i++ ) {
+		dom_nodes[ i ].parentNode.removeChild( dom_nodes[ i ] );
+	}
+}
+function wpcom_remote_login_final_cleanup() {
+	wpcom_remote_login_remove_dom_node_classes( "wpcom_remote_login_msg" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_key" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_validate" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_js" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_request_access_iframe" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_request_access_styles" );
+}
+
+// Watch for messages back from the remote login
+window.addEventListener( "message", function( e ) {
+	if ( e.origin === "https://r-login.wordpress.com" ) {
+		var data = {};
+		try {
+			data = JSON.parse( e.data );
+		} catch( e ) {
+			wpcom_remote_login_final_cleanup();
+			return;
+		}
+
+		if ( data.msg === 'LOGIN' ) {
+			// Clean up the login check iframe
+			wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_key" );
+
+			var id_regex = new RegExp( /^[0-9]+$/ );
+			var token_regex = new RegExp( /^.*|.*|.*$/ );
+			if (
+				token_regex.test( data.token )
+				&& id_regex.test( data.wpcomid )
+			) {
+				// We have everything we need to ask for a login
+				var script = document.createElement( "script" );
+				script.setAttribute( "id", "wpcom_remote_login_validate" );
+				script.src = '/remote-login.php?wpcom_remote_login=validate'
+					+ '&wpcomid=' + data.wpcomid
+					+ '&token=' + encodeURIComponent( data.token )
+					+ '&host=' + window.location.protocol
+					+ '//' + window.location.hostname
+					+ '&postid=8424'
+					+ '&is_singular=1';
+				document.body.appendChild( script );
+			}
+
+			return;
+		}
+
+		// Safari ITP, not logged in, so redirect
+		if ( data.msg === 'LOGIN-REDIRECT' ) {
+			window.location = 'https://wordpress.com/log-in?redirect_to=' + window.location.href;
+			return;
+		}
+
+		// Safari ITP, storage access failed, remove the request
+		if ( data.msg === 'LOGIN-REMOVE' ) {
+			var css_zap = 'html { -webkit-transition: margin-top 1s; transition: margin-top 1s; } /* 9001 */ html { margin-top: 0 !important; } * html body { margin-top: 0 !important; } @media screen and ( max-width: 782px ) { html { margin-top: 0 !important; } * html body { margin-top: 0 !important; } }';
+			var style_zap = document.createElement( 'style' );
+			style_zap.type = 'text/css';
+			style_zap.appendChild( document.createTextNode( css_zap ) );
+			document.body.appendChild( style_zap );
+
+			var e = document.getElementById( 'wpcom_request_access_iframe' );
+			e.parentNode.removeChild( e );
+
+			document.cookie = 'wordpress_com_login_access=denied; path=/; max-age=31536000';
+
+			return;
+		}
+
+		// Safari ITP
+		if ( data.msg === 'REQUEST_ACCESS' ) {
+			console.log( 'request access: safari' );
+
+			// Check ITP iframe enable/disable knob
+			if ( wpcom_remote_login_extra_auth !== 'safari_itp_iframe' ) {
+				return;
+			}
+
+			// If we are in a "private window" there is no ITP.
+			var private_window = false;
+			try {
+				var opendb = window.openDatabase( null, null, null, null );
+			} catch( e ) {
+				private_window = true;
+			}
+
+			if ( private_window ) {
+				console.log( 'private window' );
+				return;
+			}
+
+			var iframe = document.createElement( 'iframe' );
+			iframe.id = 'wpcom_request_access_iframe';
+			iframe.setAttribute( 'scrolling', 'no' );
+			iframe.setAttribute( 'sandbox', 'allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-top-navigation-by-user-activation' );
+			iframe.src = 'https://r-login.wordpress.com/remote-login.php?wpcom_remote_login=request_access&origin=' + encodeURIComponent( data.origin ) + '&wpcomid=' + encodeURIComponent( data.wpcomid );
+
+			var css = 'html { -webkit-transition: margin-top 1s; transition: margin-top 1s; } /* 9001 */ html { margin-top: 46px !important; } * html body { margin-top: 46px !important; } @media screen and ( max-width: 660px ) { html { margin-top: 71px !important; } * html body { margin-top: 71px !important; } #wpcom_request_access_iframe { display: block; height: 71px !important; } } #wpcom_request_access_iframe { border: 0px; height: 46px; position: fixed; top: 0; left: 0; width: 100%; min-width: 100%; z-index: 99999; background: #23282d; } ';
+
+			var style = document.createElement( 'style' );
+			style.type = 'text/css';
+			style.id = 'wpcom_request_access_styles';
+			style.appendChild( document.createTextNode( css ) );
+			document.body.appendChild( style );
+
+			document.body.appendChild( iframe );
+		}
+
+		if ( data.msg === 'DONE' ) {
+			wpcom_remote_login_final_cleanup();
+		}
+	}
+}, false );
+
+// Inject the remote login iframe after the page has had a chance to load
+// more critical resources
+window.addEventListener( "DOMContentLoaded", function( e ) {
+	var iframe = document.createElement( "iframe" );
+	iframe.style.display = "none";
+	iframe.setAttribute( "scrolling", "no" );
+	iframe.setAttribute( "id", "wpcom_remote_login_key" );
+	iframe.src = "https://r-login.wordpress.com/remote-login.php"
+		+ "?wpcom_remote_login=key"
+		+ "&origin=aHR0cHM6Ly9kYXRhbmluamFnby5jb20%3D"
+		+ "&wpcomid=22024266"
+		+ "&time=" + Math.floor( Date.now() / 1000 );
+	document.body.appendChild( iframe );
+}, false );
+</script>
+<link rel='dns-prefetch' href='//s2.wp.com' />
+<link rel='dns-prefetch' href='//widgets.wp.com' />
+<link rel='dns-prefetch' href='//fonts-api.wp.com' />
+<link rel='dns-prefetch' href='//s1.wp.com' />
+<link rel='dns-prefetch' href='//s0.wp.com' />
+<link rel="alternate" type="application/rss+xml" title="Data Ninjago (Finsight-Tech Blogs) &raquo; Feed" href="https://dataninjago.com/feed/" />
+<link rel="alternate" type="application/rss+xml" title="Data Ninjago (Finsight-Tech Blogs) &raquo; Comments Feed" href="https://dataninjago.com/comments/feed/" />
+<link rel="alternate" type="application/rss+xml" title="Data Ninjago (Finsight-Tech Blogs) &raquo; Spark Structured Streaming Deep Dive (5) &#8211; IncrementalExecution Comments Feed" href="https://dataninjago.com/2022/07/11/spark-structured-streaming-deep-dive-5-incrementalexecution/feed/" />
+	<script type="text/javascript">
+		/* <![CDATA[ */
+		function addLoadEvent(func) {
+			var oldonload = window.onload;
+			if (typeof window.onload != 'function') {
+				window.onload = func;
+			} else {
+				window.onload = function () {
+					oldonload();
+					func();
+				}
+			}
+		}
+		/* ]]> */
+	</script>
+	<link crossorigin='anonymous' rel='stylesheet' id='all-css-0-1' href='/_static/??-eJxtzN0KQEAQQOEXssaKcCHPsq1Jy+xPZjavL1JKLr86HTiSsjEIBgGfVaK8uMCwoiRjt8fAOYCPcyZk2JGM4KxSZPmotMwF/B/Jbfh+b1355EfdddWg26av1xMpeTR5&cssminify=yes' type='text/css' media='all' />
+<style id="wp-emoji-styles-inline-css">
+
+	img.wp-smiley, img.emoji {
+		display: inline !important;
+		border: none !important;
+		box-shadow: none !important;
+		height: 1em !important;
+		width: 1em !important;
+		margin: 0 0.07em !important;
+		vertical-align: -0.1em !important;
+		background: none !important;
+		padding: 0 !important;
+	}
+/*# sourceURL=wp-emoji-styles-inline-css */
+</style>
+<style id="wp-block-library-inline-css">
+:root{--wp-block-synced-color:#7a00df;--wp-block-synced-color--rgb:122,0,223;--wp-bound-block-color:var(--wp-block-synced-color);--wp-editor-canvas-background:#ddd;--wp-admin-theme-color:#007cba;--wp-admin-theme-color--rgb:0,124,186;--wp-admin-theme-color-darker-10:#006ba1;--wp-admin-theme-color-darker-10--rgb:0,107,160.5;--wp-admin-theme-color-darker-20:#005a87;--wp-admin-theme-color-darker-20--rgb:0,90,135;--wp-admin-border-width-focus:2px}@media (min-resolution:192dpi){:root{--wp-admin-border-width-focus:1.5px}}.wp-element-button{cursor:pointer}:root .has-very-light-gray-background-color{background-color:#eee}:root .has-very-dark-gray-background-color{background-color:#313131}:root .has-very-light-gray-color{color:#eee}:root .has-very-dark-gray-color{color:#313131}:root .has-vivid-green-cyan-to-vivid-cyan-blue-gradient-background{background:linear-gradient(135deg,#00d084,#0693e3)}:root .has-purple-crush-gradient-background{background:linear-gradient(135deg,#34e2e4,#4721fb 50%,#ab1dfe)}:root .has-hazy-dawn-gradient-background{background:linear-gradient(135deg,#faaca8,#dad0ec)}:root .has-subdued-olive-gradient-background{background:linear-gradient(135deg,#fafae1,#67a671)}:root .has-atomic-cream-gradient-background{background:linear-gradient(135deg,#fdd79a,#004a59)}:root .has-nightshade-gradient-background{background:linear-gradient(135deg,#330968,#31cdcf)}:root .has-midnight-gradient-background{background:linear-gradient(135deg,#020381,#2874fc)}:root{--wp--preset--font-size--normal:16px;--wp--preset--font-size--huge:42px}.has-regular-font-size{font-size:1em}.has-larger-font-size{font-size:2.625em}.has-normal-font-size{font-size:var(--wp--preset--font-size--normal)}.has-huge-font-size{font-size:var(--wp--preset--font-size--huge)}:root .has-text-align-center{text-align:center}:root .has-text-align-left{text-align:left}:root .has-text-align-right{text-align:right}.has-fit-text{white-space:nowrap!important}#end-resizable-editor-section{display:none}.aligncenter{clear:both}.items-justified-left{justify-content:flex-start}.items-justified-center{justify-content:center}.items-justified-right{justify-content:flex-end}.items-justified-space-between{justify-content:space-between}.screen-reader-text{word-wrap:normal!important;border:0;clip-path:inset(50%);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;word-break:normal!important}.screen-reader-text:focus{background-color:#ddd;clip-path:none;color:#444;display:block;font-size:1em;height:auto;left:5px;line-height:normal;padding:15px 23px 14px;text-decoration:none;top:5px;width:auto;z-index:100000}html :where(.has-border-color){border-style:solid}html :where([style*=border-color]){border-style:solid}html :where([style*=border-top-color]){border-top-style:solid}html :where([style*=border-right-color]){border-right-style:solid}html :where([style*=border-bottom-color]){border-bottom-style:solid}html :where([style*=border-left-color]){border-left-style:solid}html :where([style*=border-width]){border-style:solid}html :where([style*=border-top-width]){border-top-style:solid}html :where([style*=border-right-width]){border-right-style:solid}html :where([style*=border-bottom-width]){border-bottom-style:solid}html :where([style*=border-left-width]){border-left-style:solid}html :where(img[class*=wp-image-]){height:auto;max-width:100%}:where(figure){margin:0 0 1em}html :where(.is-position-sticky){--wp-admin--admin-bar--position-offset:var(--wp-admin--admin-bar--height,0px)}@media screen and (max-width:600px){html :where(.is-position-sticky){--wp-admin--admin-bar--position-offset:0px}}
+
+/*# sourceURL=/wp-content/plugins/gutenberg-core/v23.2.2/build/styles/block-library/common.min.css */
+</style>
+<style id="wp-block-avatar-inline-css">
+.wp-block-avatar{line-height:0}.wp-block-avatar,.wp-block-avatar img{box-sizing:border-box}.wp-block-avatar.aligncenter{text-align:center}
+/*# sourceURL=/wp-content/plugins/gutenberg-core/v23.2.2/build/styles/block-library/avatar/style.min.css */
+</style>
+<style id="wp-block-categories-inline-css">
+.wp-block-categories{box-sizing:border-box}.wp-block-categories.alignleft{margin-right:2em}.wp-block-categories.alignright{margin-left:2em}.wp-block-categories.wp-block-categories-dropdown.aligncenter{text-align:center}.wp-block-categories .wp-block-categories__label:not(.screen-reader-text){display:block;width:100%}
+/*# sourceURL=/wp-content/plugins/gutenberg-core/v23.2.2/build/styles/block-library/categories/style.min.css */
+</style>
+<style id="wp-block-image-inline-css">
+.wp-block-image>a,.wp-block-image>figure>a{display:inline-block}.wp-block-image img{box-sizing:border-box;height:auto;max-width:100%;vertical-align:bottom}@media not (prefers-reduced-motion){.wp-block-image img.hide{visibility:hidden}.wp-block-image img.show{animation:show-content-image .4s}}.wp-block-image[style*=border-radius] img,.wp-block-image[style*=border-radius]>a{border-radius:inherit}.wp-block-image.has-custom-border img{box-sizing:border-box}.wp-block-image.aligncenter{text-align:center}.wp-block-image.alignfull>a,.wp-block-image.alignwide>a{width:100%}.wp-block-image.alignfull img,.wp-block-image.alignwide img{height:auto;width:100%}.wp-block-image .aligncenter,.wp-block-image .alignleft,.wp-block-image .alignright,.wp-block-image.aligncenter,.wp-block-image.alignleft,.wp-block-image.alignright{display:table}.wp-block-image .aligncenter>figcaption,.wp-block-image .alignleft>figcaption,.wp-block-image .alignright>figcaption,.wp-block-image.aligncenter>figcaption,.wp-block-image.alignleft>figcaption,.wp-block-image.alignright>figcaption{caption-side:bottom;display:table-caption}.wp-block-image .alignleft{float:left;margin:.5em 1em .5em 0}.wp-block-image .alignright{float:right;margin:.5em 0 .5em 1em}.wp-block-image .aligncenter{margin-left:auto;margin-right:auto}.wp-block-image :where(figcaption){margin-bottom:1em;margin-top:.5em}.wp-block-image.is-style-circle-mask img{border-radius:9999px}@supports ((-webkit-mask-image:none) or (mask-image:none)) or (-webkit-mask-image:none){.wp-block-image.is-style-circle-mask img{border-radius:0;-webkit-mask-image:url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="50"/></svg>');mask-image:url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="50"/></svg>');mask-mode:alpha;-webkit-mask-position:center;mask-position:center;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-size:contain;mask-size:contain}}:root :where(.wp-block-image.is-style-rounded img,.wp-block-image .is-style-rounded img){border-radius:9999px}.wp-block-image figure{margin:0}.wp-lightbox-container{display:flex;flex-direction:column;position:relative}.wp-lightbox-container img{cursor:zoom-in}.wp-lightbox-container img:hover+button{opacity:1}.wp-lightbox-container button{align-items:center;backdrop-filter:blur(16px) saturate(180%);background-color:#5a5a5a40;border:none;border-radius:4px;cursor:zoom-in;display:flex;height:20px;justify-content:center;opacity:0;padding:0;position:absolute;right:16px;text-align:center;top:16px;width:20px;z-index:100}@media not (prefers-reduced-motion){.wp-lightbox-container button{transition:opacity .2s ease}}.wp-lightbox-container button:focus-visible{outline:3px auto #5a5a5a40;outline:3px auto -webkit-focus-ring-color;outline-offset:3px}.wp-lightbox-container button:hover{cursor:pointer;opacity:1}.wp-lightbox-container button:focus{opacity:1}.wp-lightbox-container button:focus,.wp-lightbox-container button:hover,.wp-lightbox-container button:not(:hover):not(:active):not(.has-background){background-color:#5a5a5a40;border:none}.wp-lightbox-overlay{box-sizing:border-box;cursor:zoom-out;height:100vh;left:0;overflow:hidden;position:fixed;top:0;visibility:hidden;width:100%;z-index:100000}.wp-lightbox-overlay .wp-lightbox-close-button{align-items:center;cursor:pointer;display:flex;font-family:inherit;gap:8px;justify-content:center;line-height:1;min-height:40px;min-width:40px;padding:0 4px;position:absolute;right:calc(env(safe-area-inset-right) + 16px);top:calc(env(safe-area-inset-top) + 16px);z-index:5000000}.wp-lightbox-overlay .wp-lightbox-close-button:focus,.wp-lightbox-overlay .wp-lightbox-close-button:hover,.wp-lightbox-overlay .wp-lightbox-close-button:not(:hover):not(:active):not(.has-background){background:none;border:none}.wp-lightbox-overlay .wp-lightbox-close-button:has(.wp-lightbox-close-text:not([hidden])) .wp-lightbox-close-icon svg{height:1em;width:1em}.wp-lightbox-overlay .wp-lightbox-close-icon svg{display:block}.wp-lightbox-overlay .wp-lightbox-navigation-button-next,.wp-lightbox-overlay .wp-lightbox-navigation-button-prev{align-items:center;bottom:16px;cursor:pointer;display:flex;font-family:inherit;gap:4px;justify-content:center;line-height:1;min-height:40px;min-width:40px;padding:0 8px;position:absolute;z-index:2000002}.wp-lightbox-overlay .wp-lightbox-navigation-button-next[hidden],.wp-lightbox-overlay .wp-lightbox-navigation-button-prev[hidden]{display:none}@media (min-width:960px){.wp-lightbox-overlay .wp-lightbox-navigation-button-next,.wp-lightbox-overlay .wp-lightbox-navigation-button-prev{bottom:50%;transform:translateY(-50%)}}.wp-lightbox-overlay .wp-lightbox-navigation-button-next:focus,.wp-lightbox-overlay .wp-lightbox-navigation-button-next:hover,.wp-lightbox-overlay .wp-lightbox-navigation-button-next:not(:hover):not(:active):not(.has-background),.wp-lightbox-overlay .wp-lightbox-navigation-button-prev:focus,.wp-lightbox-overlay .wp-lightbox-navigation-button-prev:hover,.wp-lightbox-overlay .wp-lightbox-navigation-button-prev:not(:hover):not(:active):not(.has-background){background:none;border:none;padding:0 8px}.wp-lightbox-overlay .wp-lightbox-navigation-button-next:has(.wp-lightbox-navigation-text:not([hidden])) .wp-lightbox-navigation-icon svg,.wp-lightbox-overlay .wp-lightbox-navigation-button-prev:has(.wp-lightbox-navigation-text:not([hidden])) .wp-lightbox-navigation-icon svg{display:block;height:1.5em;width:1.5em}.wp-lightbox-overlay .wp-lightbox-navigation-button-prev{left:calc(env(safe-area-inset-left) + 16px)}.wp-lightbox-overlay .wp-lightbox-navigation-button-next{right:calc(env(safe-area-inset-right) + 16px)}.wp-lightbox-overlay .wp-lightbox-navigation-icon svg{vertical-align:middle}.wp-lightbox-overlay .lightbox-image-container{height:var(--wp--lightbox-container-height);left:50%;overflow:hidden;position:absolute;top:50%;transform:translate(-50%,-50%);transform-origin:top left;width:var(--wp--lightbox-container-width);z-index:2000001}.wp-lightbox-overlay .wp-block-image{align-items:center;box-sizing:border-box;display:flex;height:100%;justify-content:center;margin:0;position:relative;transform-origin:0 0;width:100%;z-index:3000000}.wp-lightbox-overlay .wp-block-image img{height:var(--wp--lightbox-image-height);min-height:var(--wp--lightbox-image-height);min-width:var(--wp--lightbox-image-width);width:var(--wp--lightbox-image-width)}.wp-lightbox-overlay .wp-block-image figcaption{display:none}.wp-lightbox-overlay button{background:none;border:none}.wp-lightbox-overlay .scrim{background-color:#fff;height:100%;opacity:.9;position:absolute;width:100%;z-index:2000000}.wp-lightbox-overlay.active{visibility:visible}@media not (prefers-reduced-motion){.wp-lightbox-overlay.active{animation:turn-on-visibility .25s both}.wp-lightbox-overlay.active img{animation:turn-on-visibility .35s both}.wp-lightbox-overlay.show-closing-animation:not(.active){animation:turn-off-visibility .35s both}.wp-lightbox-overlay.show-closing-animation:not(.active) img{animation:turn-off-visibility .25s both}.wp-lightbox-overlay.zoom.active{animation:none;opacity:1;visibility:visible}.wp-lightbox-overlay.zoom.active .lightbox-image-container{animation:lightbox-zoom-in .4s}.wp-lightbox-overlay.zoom.active .lightbox-image-container img{animation:none}.wp-lightbox-overlay.zoom.active .scrim{animation:turn-on-visibility .4s forwards}.wp-lightbox-overlay.zoom.show-closing-animation:not(.active){animation:none}.wp-lightbox-overlay.zoom.show-closing-animation:not(.active) .lightbox-image-container{animation:lightbox-zoom-out .4s}.wp-lightbox-overlay.zoom.show-closing-animation:not(.active) .lightbox-image-container img{animation:none}.wp-lightbox-overlay.zoom.show-closing-animation:not(.active) .scrim{animation:turn-off-visibility .4s forwards}}@keyframes show-content-image{0%{visibility:hidden}99%{visibility:hidden}to{visibility:visible}}@keyframes turn-on-visibility{0%{opacity:0}to{opacity:1}}@keyframes turn-off-visibility{0%{opacity:1;visibility:visible}99%{opacity:0;visibility:visible}to{opacity:0;visibility:hidden}}@keyframes lightbox-zoom-in{0%{transform:translate(calc((-100vw + var(--wp--lightbox-scrollbar-width))/2 + var(--wp--lightbox-initial-left-position)),calc(-50vh + var(--wp--lightbox-initial-top-position))) scale(var(--wp--lightbox-scale))}to{transform:translate(-50%,-50%) scale(1)}}@keyframes lightbox-zoom-out{0%{transform:translate(-50%,-50%) scale(1);visibility:visible}99%{visibility:visible}to{transform:translate(calc((-100vw + var(--wp--lightbox-scrollbar-width))/2 + var(--wp--lightbox-initial-left-position)),calc(-50vh + var(--wp--lightbox-initial-top-position))) scale(var(--wp--lightbox-scale));visibility:hidden}}
+/*# sourceURL=/wp-content/plugins/gutenberg-core/v23.2.2/build/styles/block-library/image/style.min.css */
+</style>
+<style id="wp-block-latest-posts-inline-css">
+.wp-block-latest-posts{box-sizing:border-box}.wp-block-latest-posts.alignleft{margin-right:2em}.wp-block-latest-posts.alignright{margin-left:2em}.wp-block-latest-posts.wp-block-latest-posts__list{list-style:none}.wp-block-latest-posts.wp-block-latest-posts__list li{clear:both;overflow-wrap:break-word}.wp-block-latest-posts.is-grid{display:flex;flex-wrap:wrap}.wp-block-latest-posts.is-grid li{margin:0 1.25em 1.25em 0;width:100%}@media (min-width:600px){.wp-block-latest-posts.columns-2 li{width:calc(50% - .625em)}.wp-block-latest-posts.columns-2 li:nth-child(2n){margin-right:0}.wp-block-latest-posts.columns-3 li{width:calc(33.33333% - .83333em)}.wp-block-latest-posts.columns-3 li:nth-child(3n){margin-right:0}.wp-block-latest-posts.columns-4 li{width:calc(25% - .9375em)}.wp-block-latest-posts.columns-4 li:nth-child(4n){margin-right:0}.wp-block-latest-posts.columns-5 li{width:calc(20% - 1em)}.wp-block-latest-posts.columns-5 li:nth-child(5n){margin-right:0}.wp-block-latest-posts.columns-6 li{width:calc(16.66667% - 1.04167em)}.wp-block-latest-posts.columns-6 li:nth-child(6n){margin-right:0}}:root :where(.wp-block-latest-posts.is-grid){padding:0}:root :where(.wp-block-latest-posts.wp-block-latest-posts__list){padding-left:0}.wp-block-latest-posts__post-author,.wp-block-latest-posts__post-date{display:block;font-size:.8125em}.wp-block-latest-posts__post-excerpt,.wp-block-latest-posts__post-full-content{margin-bottom:1em;margin-top:.5em}.wp-block-latest-posts__featured-image a{display:inline-block}.wp-block-latest-posts__featured-image img{height:auto;max-width:100%;width:auto}.wp-block-latest-posts__featured-image.alignleft{float:left;margin-right:1em}.wp-block-latest-posts__featured-image.alignright{float:right;margin-left:1em}.wp-block-latest-posts__featured-image.aligncenter{margin-bottom:1em;text-align:center}
+/*# sourceURL=/wp-content/plugins/gutenberg-core/v23.2.2/build/styles/block-library/latest-posts/style.min.css */
+</style>
+<style id="wp-block-paragraph-inline-css">
+.is-small-text{font-size:.875em}.is-regular-text{font-size:1em}.is-large-text{font-size:2.25em}.is-larger-text{font-size:3em}.has-drop-cap:not(:focus):first-letter{float:left;font-size:8.4em;font-style:normal;font-weight:100;line-height:.68;margin:.05em .1em 0 0;text-transform:uppercase}body.rtl .has-drop-cap:not(:focus):first-letter{float:none;margin-left:.1em}p.has-drop-cap.has-background{overflow:hidden}:root :where(p.has-background){padding:1.25em 2.375em}:where(p.has-text-color:not(.has-link-color)) a{color:inherit}p.has-text-align-left[style*="writing-mode:vertical-lr"],p.has-text-align-right[style*="writing-mode:vertical-rl"]{rotate:180deg}
+/*# sourceURL=/wp-content/plugins/gutenberg-core/v23.2.2/build/styles/block-library/paragraph/style.min.css */
+</style>
+<style id="wp-block-tag-cloud-inline-css">
+.wp-block-tag-cloud{box-sizing:border-box}.wp-block-tag-cloud.aligncenter{justify-content:center;text-align:center}.wp-block-tag-cloud a{display:inline-block;margin-right:5px}.wp-block-tag-cloud span{display:inline-block;margin-left:5px;text-decoration:none}:root :where(.wp-block-tag-cloud.is-style-outline){display:flex;flex-wrap:wrap;gap:1ch}:root :where(.wp-block-tag-cloud.is-style-outline a){border:1px solid;font-size:unset!important;margin-right:0;padding:1ch 2ch;text-decoration:none!important}
+/*# sourceURL=/wp-content/plugins/gutenberg-core/v23.2.2/build/styles/block-library/tag-cloud/style.min.css */
+</style>
+<style id="wp-block-library-inline-css-extra">
+.has-text-align-justify {
+	text-align:justify;
+}
+.has-text-align-justify{text-align:justify;}
+/*# sourceURL=wp-block-library-inline-css */
+</style>
+
+<style id="classic-theme-styles-inline-css">
+.wp-block-button__link{background-color:#32373c;border-radius:9999px;box-shadow:none;color:#fff;font-size:1.125em;padding:calc(.667em + 2px) calc(1.333em + 2px);text-decoration:none}.wp-block-file__button{background:#32373c;color:#fff}.wp-block-accordion-heading{margin:0}.wp-block-accordion-heading__toggle{background-color:inherit!important;color:inherit!important}.wp-block-accordion-heading__toggle:not(:focus-visible){outline:none}.wp-block-accordion-heading__toggle:focus,.wp-block-accordion-heading__toggle:hover{background-color:inherit!important;border:none;box-shadow:none;color:inherit;padding:var(--wp--preset--spacing--20,1em) 0;text-decoration:none}.wp-block-accordion-heading__toggle:focus-visible{outline:auto;outline-offset:0}.wp-block-tab:not(.has-text-color){color:inherit!important}.wp-block-tab:not(.has-background){background-color:inherit!important}.wp-block-tab:focus,.wp-block-tab:hover{text-decoration:none}.wp-block-tab:focus-visible{outline:auto;outline-offset:0}
+/*# sourceURL=/wp-content/plugins/gutenberg-core/v23.2.2/build/styles/block-library/classic.min.css */
+</style>
+
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-8-1' href='/_static/??-eJx9jEEOAiEQBD/kQECjeDC+ZWEnijIwYWA3/l72op689KFTVXplCCU3zE1z6reYRYfiUwlP0VYZpwxIJE4IFRd10HOU9iFA2iuhCiI7/ROiDt9WxfETT20jCOc4YUIa2D9t5eGA91xRBMZS7ATtPkTZvCtdzNEZt7f2fHq8Afl7R7w=&cssminify=yes' type='text/css' media='all' />
+<style id="global-styles-inline-css">
+:root{--wp--preset--aspect-ratio--square: 1;--wp--preset--aspect-ratio--4-3: 4/3;--wp--preset--aspect-ratio--3-4: 3/4;--wp--preset--aspect-ratio--3-2: 3/2;--wp--preset--aspect-ratio--2-3: 2/3;--wp--preset--aspect-ratio--16-9: 16/9;--wp--preset--aspect-ratio--9-16: 9/16;--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #ffffff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgb(6,147,227) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgb(252,185,0) 0%,rgb(255,105,0) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgb(255,105,0) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--font-family--albert-sans: 'Albert Sans', sans-serif;--wp--preset--font-family--alegreya: Alegreya, serif;--wp--preset--font-family--arvo: Arvo, serif;--wp--preset--font-family--bodoni-moda: 'Bodoni Moda', serif;--wp--preset--font-family--bricolage-grotesque: 'Bricolage Grotesque', sans-serif;--wp--preset--font-family--cabin: Cabin, sans-serif;--wp--preset--font-family--chivo: Chivo, sans-serif;--wp--preset--font-family--commissioner: Commissioner, sans-serif;--wp--preset--font-family--cormorant: Cormorant, serif;--wp--preset--font-family--courier-prime: 'Courier Prime', monospace;--wp--preset--font-family--crimson-pro: 'Crimson Pro', serif;--wp--preset--font-family--dm-mono: 'DM Mono', monospace;--wp--preset--font-family--dm-sans: 'DM Sans', sans-serif;--wp--preset--font-family--dm-serif-display: 'DM Serif Display', serif;--wp--preset--font-family--domine: Domine, serif;--wp--preset--font-family--eb-garamond: 'EB Garamond', serif;--wp--preset--font-family--epilogue: Epilogue, sans-serif;--wp--preset--font-family--fahkwang: Fahkwang, sans-serif;--wp--preset--font-family--figtree: Figtree, sans-serif;--wp--preset--font-family--fira-sans: 'Fira Sans', sans-serif;--wp--preset--font-family--fjalla-one: 'Fjalla One', sans-serif;--wp--preset--font-family--fraunces: Fraunces, serif;--wp--preset--font-family--gabarito: Gabarito, system-ui;--wp--preset--font-family--ibm-plex-mono: 'IBM Plex Mono', monospace;--wp--preset--font-family--ibm-plex-sans: 'IBM Plex Sans', sans-serif;--wp--preset--font-family--ibarra-real-nova: 'Ibarra Real Nova', serif;--wp--preset--font-family--instrument-serif: 'Instrument Serif', serif;--wp--preset--font-family--inter: Inter, sans-serif;--wp--preset--font-family--josefin-sans: 'Josefin Sans', sans-serif;--wp--preset--font-family--jost: Jost, sans-serif;--wp--preset--font-family--libre-baskerville: 'Libre Baskerville', serif;--wp--preset--font-family--libre-franklin: 'Libre Franklin', sans-serif;--wp--preset--font-family--literata: Literata, serif;--wp--preset--font-family--lora: Lora, serif;--wp--preset--font-family--merriweather: Merriweather, serif;--wp--preset--font-family--montserrat: Montserrat, sans-serif;--wp--preset--font-family--newsreader: Newsreader, serif;--wp--preset--font-family--noto-sans-mono: 'Noto Sans Mono', sans-serif;--wp--preset--font-family--nunito: Nunito, sans-serif;--wp--preset--font-family--open-sans: 'Open Sans', sans-serif;--wp--preset--font-family--overpass: Overpass, sans-serif;--wp--preset--font-family--pt-serif: 'PT Serif', serif;--wp--preset--font-family--petrona: Petrona, serif;--wp--preset--font-family--piazzolla: Piazzolla, serif;--wp--preset--font-family--playfair-display: 'Playfair Display', serif;--wp--preset--font-family--plus-jakarta-sans: 'Plus Jakarta Sans', sans-serif;--wp--preset--font-family--poppins: Poppins, sans-serif;--wp--preset--font-family--raleway: Raleway, sans-serif;--wp--preset--font-family--roboto: Roboto, sans-serif;--wp--preset--font-family--roboto-slab: 'Roboto Slab', serif;--wp--preset--font-family--rubik: Rubik, sans-serif;--wp--preset--font-family--rufina: Rufina, serif;--wp--preset--font-family--sora: Sora, sans-serif;--wp--preset--font-family--source-sans-3: 'Source Sans 3', sans-serif;--wp--preset--font-family--source-serif-4: 'Source Serif 4', serif;--wp--preset--font-family--space-mono: 'Space Mono', monospace;--wp--preset--font-family--syne: Syne, sans-serif;--wp--preset--font-family--texturina: Texturina, serif;--wp--preset--font-family--urbanist: Urbanist, sans-serif;--wp--preset--font-family--work-sans: 'Work Sans', sans-serif;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgb(255, 255, 255), 6px 6px rgb(0, 0, 0);--wp--preset--shadow--crisp: 6px 6px 0px rgb(0, 0, 0);}.wp-block-button{--wp--preset--dimension--25: 25%;--wp--preset--dimension--50: 50%;--wp--preset--dimension--75: 75%;--wp--preset--dimension--100: 100%;}:where(body) { margin: 0; }:where(.is-layout-flex){gap: 0.5em;}:where(.is-layout-grid){gap: 0.5em;}body .is-layout-flex{display: flex;}.is-layout-flex{flex-wrap: wrap;align-items: center;}.is-layout-flex > :is(*, div){margin: 0;}body .is-layout-grid{display: grid;}.is-layout-grid > :is(*, div){margin: 0;}body{padding-top: 0px;padding-right: 0px;padding-bottom: 0px;padding-left: 0px;}:root :where(.wp-element-button, .wp-block-button__link){background-color: #32373c;border-width: 0;color: #fff;font-family: inherit;font-size: inherit;font-style: inherit;font-weight: inherit;letter-spacing: inherit;line-height: inherit;padding-top: calc(0.667em + 2px);padding-right: calc(1.333em + 2px);padding-bottom: calc(0.667em + 2px);padding-left: calc(1.333em + 2px);text-decoration: none;text-transform: inherit;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}.has-albert-sans-font-family{font-family: var(--wp--preset--font-family--albert-sans) !important;}.has-alegreya-font-family{font-family: var(--wp--preset--font-family--alegreya) !important;}.has-arvo-font-family{font-family: var(--wp--preset--font-family--arvo) !important;}.has-bodoni-moda-font-family{font-family: var(--wp--preset--font-family--bodoni-moda) !important;}.has-bricolage-grotesque-font-family{font-family: var(--wp--preset--font-family--bricolage-grotesque) !important;}.has-cabin-font-family{font-family: var(--wp--preset--font-family--cabin) !important;}.has-chivo-font-family{font-family: var(--wp--preset--font-family--chivo) !important;}.has-commissioner-font-family{font-family: var(--wp--preset--font-family--commissioner) !important;}.has-cormorant-font-family{font-family: var(--wp--preset--font-family--cormorant) !important;}.has-courier-prime-font-family{font-family: var(--wp--preset--font-family--courier-prime) !important;}.has-crimson-pro-font-family{font-family: var(--wp--preset--font-family--crimson-pro) !important;}.has-dm-mono-font-family{font-family: var(--wp--preset--font-family--dm-mono) !important;}.has-dm-sans-font-family{font-family: var(--wp--preset--font-family--dm-sans) !important;}.has-dm-serif-display-font-family{font-family: var(--wp--preset--font-family--dm-serif-display) !important;}.has-domine-font-family{font-family: var(--wp--preset--font-family--domine) !important;}.has-eb-garamond-font-family{font-family: var(--wp--preset--font-family--eb-garamond) !important;}.has-epilogue-font-family{font-family: var(--wp--preset--font-family--epilogue) !important;}.has-fahkwang-font-family{font-family: var(--wp--preset--font-family--fahkwang) !important;}.has-figtree-font-family{font-family: var(--wp--preset--font-family--figtree) !important;}.has-fira-sans-font-family{font-family: var(--wp--preset--font-family--fira-sans) !important;}.has-fjalla-one-font-family{font-family: var(--wp--preset--font-family--fjalla-one) !important;}.has-fraunces-font-family{font-family: var(--wp--preset--font-family--fraunces) !important;}.has-gabarito-font-family{font-family: var(--wp--preset--font-family--gabarito) !important;}.has-ibm-plex-mono-font-family{font-family: var(--wp--preset--font-family--ibm-plex-mono) !important;}.has-ibm-plex-sans-font-family{font-family: var(--wp--preset--font-family--ibm-plex-sans) !important;}.has-ibarra-real-nova-font-family{font-family: var(--wp--preset--font-family--ibarra-real-nova) !important;}.has-instrument-serif-font-family{font-family: var(--wp--preset--font-family--instrument-serif) !important;}.has-inter-font-family{font-family: var(--wp--preset--font-family--inter) !important;}.has-josefin-sans-font-family{font-family: var(--wp--preset--font-family--josefin-sans) !important;}.has-jost-font-family{font-family: var(--wp--preset--font-family--jost) !important;}.has-libre-baskerville-font-family{font-family: var(--wp--preset--font-family--libre-baskerville) !important;}.has-libre-franklin-font-family{font-family: var(--wp--preset--font-family--libre-franklin) !important;}.has-literata-font-family{font-family: var(--wp--preset--font-family--literata) !important;}.has-lora-font-family{font-family: var(--wp--preset--font-family--lora) !important;}.has-merriweather-font-family{font-family: var(--wp--preset--font-family--merriweather) !important;}.has-montserrat-font-family{font-family: var(--wp--preset--font-family--montserrat) !important;}.has-newsreader-font-family{font-family: var(--wp--preset--font-family--newsreader) !important;}.has-noto-sans-mono-font-family{font-family: var(--wp--preset--font-family--noto-sans-mono) !important;}.has-nunito-font-family{font-family: var(--wp--preset--font-family--nunito) !important;}.has-open-sans-font-family{font-family: var(--wp--preset--font-family--open-sans) !important;}.has-overpass-font-family{font-family: var(--wp--preset--font-family--overpass) !important;}.has-pt-serif-font-family{font-family: var(--wp--preset--font-family--pt-serif) !important;}.has-petrona-font-family{font-family: var(--wp--preset--font-family--petrona) !important;}.has-piazzolla-font-family{font-family: var(--wp--preset--font-family--piazzolla) !important;}.has-playfair-display-font-family{font-family: var(--wp--preset--font-family--playfair-display) !important;}.has-plus-jakarta-sans-font-family{font-family: var(--wp--preset--font-family--plus-jakarta-sans) !important;}.has-poppins-font-family{font-family: var(--wp--preset--font-family--poppins) !important;}.has-raleway-font-family{font-family: var(--wp--preset--font-family--raleway) !important;}.has-roboto-font-family{font-family: var(--wp--preset--font-family--roboto) !important;}.has-roboto-slab-font-family{font-family: var(--wp--preset--font-family--roboto-slab) !important;}.has-rubik-font-family{font-family: var(--wp--preset--font-family--rubik) !important;}.has-rufina-font-family{font-family: var(--wp--preset--font-family--rufina) !important;}.has-sora-font-family{font-family: var(--wp--preset--font-family--sora) !important;}.has-source-sans-3-font-family{font-family: var(--wp--preset--font-family--source-sans-3) !important;}.has-source-serif-4-font-family{font-family: var(--wp--preset--font-family--source-serif-4) !important;}.has-space-mono-font-family{font-family: var(--wp--preset--font-family--space-mono) !important;}.has-syne-font-family{font-family: var(--wp--preset--font-family--syne) !important;}.has-texturina-font-family{font-family: var(--wp--preset--font-family--texturina) !important;}.has-urbanist-font-family{font-family: var(--wp--preset--font-family--urbanist) !important;}.has-work-sans-font-family{font-family: var(--wp--preset--font-family--work-sans) !important;}
+/*# sourceURL=global-styles-inline-css */
+</style>
+
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-10-1' href='/wp-content/mu-plugins/jetpack-mu-wpcom-plugin/sun/jetpack_vendor/automattic/jetpack-mu-wpcom/src/build/verbum-comments/verbum-comments.css?m=1777406400i&cssminify=yes' type='text/css' media='all' />
+<link rel='stylesheet' id='verbum-gutenberg-css-css' href='https://widgets.wp.com/verbum-block-editor/block-editor.css?ver=1771405207' media='all' />
+<link rel='stylesheet' id='franklin-fonts-css' href='https://fonts-api.wp.com/css?family=Open+Sans%3A400%2C600%7CSource+Sans+Pro%3A400%2C700%2C900&#038;subset=latin%2Clatin-ext' media='all' />
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-14-1' href='/_static/??-eJyNjkEOwiAQRS8kTruorIxHMZRMkRYGAkMaby8YFxiNcfd/8t6fgT0KHYiRGHwR0RVjKcOKHJXeXh1yIbha0mCQMNkq5O/xqHM+QLfJN/SYIZYZlqRoc22N7w7/ItvJJy32qIP/cLqPE84umBoNVKqrvySDQbigFdtAb0UsTtnU1Is/j1KOp0FOw7Q+AKjycY0=&cssminify=yes' type='text/css' media='all' />
+<link crossorigin='anonymous' rel='stylesheet' id='print-css-15-1' href='/wp-content/mu-plugins/global-print/global-print.css?m=1465851035i&cssminify=yes' type='text/css' media='print' />
+<style id="jetpack-global-styles-frontend-style-inline-css">
+:root { --font-headings: unset; --font-base: unset; --font-headings-default: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif; --font-base-default: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;}
+/*# sourceURL=jetpack-global-styles-frontend-style-inline-css */
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-18-1' href='/_static/??-eJyNjcsKAjEMRX/IGgaqgwvxU6TTlDZjmhTTIv69D9yIG3f3wOUcuDUXVXqSDnW4xiOTGKyptxAvHwYbAlVxcDKwEq4JA+L9PUnyNppt4G/RmSTCMogRTCMFdqxZ7Qt+lL2k+owXD5l1Cfw6nOpxmme/837aH9YHfvpKpw==&cssminify=yes' type='text/css' media='all' />
+<script id="jetpack_related-posts-js-extra">
+var related_posts_js_options = {"post_heading":"h4"};
+//# sourceURL=jetpack_related-posts-js-extra
+</script>
+<script id="wpcom-actionbar-placeholder-js-extra">
+var actionbardata = {"siteID":"22024266","postID":"8424","siteURL":"https://dataninjago.com","xhrURL":"https://dataninjago.com/wp-admin/admin-ajax.php","nonce":"d432725501","isLoggedIn":"","statusMessage":"","subsEmailDefault":"instantly","proxyScriptUrl":"https://s0.wp.com/wp-content/js/wpcom-proxy-request.js?m=1513050504i&amp;ver=20211021","shortlink":"https://wp.me/p1upw6-2bS","i18n":{"followedText":"New posts from this site will now appear in your \u003Ca href=\"https://wordpress.com/reader\"\u003EReader\u003C/a\u003E","foldBar":"Collapse this bar","unfoldBar":"Expand this bar","shortLinkCopied":"Shortlink copied to clipboard."}};
+//# sourceURL=wpcom-actionbar-placeholder-js-extra
+</script>
+<script id="jetpack-mu-wpcom-settings-js-before">
+var JETPACK_MU_WPCOM_SETTINGS = {"assetsUrl":"https://s1.wp.com/wp-content/mu-plugins/jetpack-mu-wpcom-plugin/sun/jetpack_vendor/automattic/jetpack-mu-wpcom/src/build/"};
+//# sourceURL=jetpack-mu-wpcom-settings-js-before
+</script>
+<script crossorigin='anonymous' type='text/javascript'  src='/_static/??-eJx1jcEOwiAQRH9IunJo2ovxU0yFTQPCguyS2r8XE0zqwdNkMi9vYMvKJBIkgVhVDnV1xOBR8mIevQNXgpsjA/fqgoWCYRG0KicW/m1DdDR4PsHB6xsTROWSXvt3a7JQLfJn9M+KZe9xFPyFVHRraacdvsaLnsbxrPU0z/4NC+ROAA=='></script>
+<script id="rlt-proxy-js-after">
+	rltInitialize( {"token":null,"iframeOrigins":["https:\/\/widgets.wp.com"]} );
+//# sourceURL=rlt-proxy-js-after
+</script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://malinxiao.wordpress.com/xmlrpc.php?rsd" />
+<meta name="generator" content="WordPress.com" />
+<link rel="canonical" href="https://dataninjago.com/2022/07/11/spark-structured-streaming-deep-dive-5-incrementalexecution/" />
+<link rel='shortlink' href='https://wp.me/p1upw6-2bS' />
+<link rel="alternate" type="application/json+oembed" href="https://public-api.wordpress.com/oembed/?format=json&amp;url=https%3A%2F%2Fdataninjago.com%2F2022%2F07%2F11%2Fspark-structured-streaming-deep-dive-5-incrementalexecution%2F&amp;for=wpcom-auto-discovery" /><link rel="alternate" type="application/xml+oembed" href="https://public-api.wordpress.com/oembed/?format=xml&amp;url=https%3A%2F%2Fdataninjago.com%2F2022%2F07%2F11%2Fspark-structured-streaming-deep-dive-5-incrementalexecution%2F&amp;for=wpcom-auto-discovery" />
+<!-- Jetpack Open Graph Tags -->
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Spark Structured Streaming Deep Dive (5) &#8211; IncrementalExecution" />
+<meta property="og:url" content="https://dataninjago.com/2022/07/11/spark-structured-streaming-deep-dive-5-incrementalexecution/" />
+<meta property="og:description" content="Spark Structured Streaming reuses the Spark SQL execution engine, including the analyser, optimiser, planner, and runtime code generator. QueryExecution is the core component of the Spark SQL execu…" />
+<meta property="article:published_time" content="2022-07-11T22:14:13+00:00" />
+<meta property="article:modified_time" content="2022-07-11T22:17:15+00:00" />
+<meta property="og:site_name" content="Data Ninjago (Finsight-Tech Blogs)" />
+<meta property="og:image" content="https://dataninjago.com/wp-content/uploads/2022/07/capture.png" />
+<meta property="og:image:width" content="843" />
+<meta property="og:image:height" content="545" />
+<meta property="og:image:alt" content="" />
+<meta property="og:locale" content="en_US" />
+<meta property="article:publisher" content="https://www.facebook.com/WordPresscom" />
+<meta name="twitter:creator" content="@linxiao_ma" />
+<meta name="twitter:site" content="@linxiao_ma" />
+<meta name="twitter:text:title" content="Spark Structured Streaming Deep Dive (5) &#8211; IncrementalExecution" />
+<meta name="twitter:image" content="https://dataninjago.com/wp-content/uploads/2022/07/capture.png?w=640" />
+<meta name="twitter:card" content="summary_large_image" />
+
+<!-- End Jetpack Open Graph Tags -->
+<link rel='openid.server' href='https://dataninjago.com/?openidserver=1' />
+<link rel='openid.delegate' href='https://dataninjago.com/' />
+<link rel="search" type="application/opensearchdescription+xml" href="https://dataninjago.com/osd.xml" title="Data Ninjago (Finsight-Tech Blogs)" />
+<link rel="search" type="application/opensearchdescription+xml" href="https://s1.wp.com/opensearch.xml" title="WordPress.com" />
+		<style type="text/css">
+			.recentcomments a {
+				display: inline !important;
+				padding: 0 !important;
+				margin: 0 !important;
+			}
+
+			table.recentcommentsavatartop img.avatar, table.recentcommentsavatarend img.avatar {
+				border: 0px;
+				margin: 0;
+			}
+
+			table.recentcommentsavatartop a, table.recentcommentsavatarend a {
+				border: 0px !important;
+				background-color: transparent !important;
+			}
+
+			td.recentcommentsavatarend, td.recentcommentsavatartop {
+				padding: 0px 0px 1px 0px;
+				margin: 0px;
+			}
+
+			td.recentcommentstextend {
+				border: none !important;
+				padding: 0px 0px 2px 10px;
+			}
+
+			.rtl td.recentcommentstextend {
+				padding: 0px 10px 2px 0px;
+			}
+
+			td.recentcommentstexttop {
+				border: none;
+				padding: 0px 0px 0px 10px;
+			}
+
+			.rtl td.recentcommentstexttop {
+				padding: 0px 10px 0px 0px;
+			}
+		</style>
+		<meta name="description" content="Spark Structured Streaming reuses the Spark SQL execution engine, including the analyser, optimiser, planner, and runtime code generator. QueryExecution is the core component of the Spark SQL execution engine, which manages the primary workflow of a relational query execution using Spark. IncrementalExecution is a variant of QueryExecution that supports the execution of a logical plan&hellip;" />
+<style type="text/css" id="custom-colors-css">	.site-info,
+	.site-title a,
+	.desktop #primary-menu > li > a,
+	.site-description,
+	.site-header-top a,
+	.site-footer-bottom a,
+	.sticky-post-label.on-image,
+	#page #header-search button:before {
+		text-shadow: none;
+	}
+	.desktop #primary-menu > li > a {
+		box-shadow: none;
+	}
+	.desktop #page #primary-menu > li:hover > a,
+	.desktop #page #primary-menu > li.current-menu-item > a {
+		background-color: #fff;
+	}
+	#content {
+		border-color: transparent;
+	}
+	.comment-metadata a {
+		opacity: 0.55;
+	}
+	.comment-metadata a:hover {
+		opacity: 0.85;
+	}
+	.widget_calendar tbody td a { color: #ffffff;}
+#page input[type="submit"],
+					#page input[type="reset"],
+					#page form button:not(.search-button):not(.menu-toggle):not(.dropdown-toggle) { color: #FFFFFF;}
+#page .site-title a { color: #FFFFFF;}
+.desktop #primary-menu > li > a { border-color: #FFFFFF;}
+.sticky-post-label.on-image { color: #FFFFFF;}
+.widget_tag_cloud a:hover,
+					.widget_tag_cloud a:active,
+					.widget_tag_cloud a:focus,
+					.wp_widget_tag_cloud a:active,
+					.wp_widget_tag_cloud a:hover,
+					.wp_widget_tag_cloud a:focus { color: #FFFFFF;}
+.widget_calendar tbody td a { color: #FFFFFF;}
+</style>
+<link rel="icon" href="https://dataninjago.com/wp-content/uploads/2017/10/ninja_s4_180x180_headpicker.png?w=32" sizes="32x32" />
+<link rel="icon" href="https://dataninjago.com/wp-content/uploads/2017/10/ninja_s4_180x180_headpicker.png?w=180" sizes="192x192" />
+<link rel="apple-touch-icon" href="https://dataninjago.com/wp-content/uploads/2017/10/ninja_s4_180x180_headpicker.png?w=180" />
+<meta name="msapplication-TileImage" content="https://dataninjago.com/wp-content/uploads/2017/10/ninja_s4_180x180_headpicker.png?w=180" />
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-0-5' href='/_static/??-eJyNjMEKgzAQBX+o9qUgzan4KWLXRRKTTXCz+Psi1J49zjAM9tpRkcbSkK2ryZYgisitTrT+GGqCMQjhmwqtCt1D5e1Jqg/cHuQyW2IFTVsx5fRvLnH+hvx5ee979+6diweuWDqh&cssminify=yes' type='text/css' media='all' />
+
+</head>
+
+<body class="wp-singular post-template-default single single-post postid-8424 single-format-standard wp-theme-pubfranklin customizer-styles-applied jetpack-reblog-enabled custom-colors">
+<div id="page" class="hfeed site">
+	<a class="skip-link screen-reader-text" href="#content">Skip to content</a>
+	<header id="masthead" class="site-header" role="banner">
+
+		<div class="site-header-top">
+			<div class="inner">
+				<p class="site-description">Blog articles over Data Architecture, Data Engineering, Business Intelligence, Machine Learning, and Data Quality Improvement</p>
+
+				<form id="header-search" action="https://dataninjago.com/">
+					<input type="search" class="search-field" name="s" value="" />
+					<button type="submit" class="search-button">Search</button>
+				</form><!-- #header-search -->
+
+				
+			</div><!-- .inner -->
+		</div><!-- .site-header-top -->
+
+		<div class="site-header-main">
+			<div class="inner">
+				<div class="site-branding">
+					<a href="https://dataninjago.com/" class="site-logo-link" rel="home" itemprop="url"></a>					<h1 class="site-title"><a href="https://dataninjago.com/" rel="home">Data Ninjago (Finsight-Tech Blogs)</a></h1>
+				</div><!-- .site-branding -->
+
+								<nav id="site-navigation" class="main-navigation" role="navigation">
+					<button class="menu-toggle" aria-controls="primary-menu" aria-expanded="false" data-close-label="Close">Menu</button>
+					<ul id="primary-menu" class="menu"><li id="menu-item-5572" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-5572"><a href="https://www.linkedin.com/in/linxiao-ma-aaa95026/">About</a></li>
+</ul>				</nav><!-- #site-navigation -->
+							</div><!-- .inner -->
+		</div><!-- .site-header-main -->
+	</header><!-- #masthead -->
+
+	<div id="content" class="site-content">
+	<div id="primary" class="content-area">
+		<main id="main" class="site-main" role="main">
+
+		
+			
+<article id="post-8424" class="post-8424 post type-post status-publish format-standard has-post-thumbnail hentry category-deep-dive-spark-structured-streaming tag-databricks-spark tag-streaming">
+	<img width="843" height="545" src="https://dataninjago.com/wp-content/uploads/2022/07/capture.png?w=843&amp;h=545&amp;crop=1" class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="Spark Structured Streaming Deep Dive (5) &#8211; IncrementalExecution" decoding="async" srcset="https://dataninjago.com/wp-content/uploads/2022/07/capture.png 843w, https://dataninjago.com/wp-content/uploads/2022/07/capture.png?w=150&amp;h=97&amp;crop=1 150w, https://dataninjago.com/wp-content/uploads/2022/07/capture.png?w=300&amp;h=194&amp;crop=1 300w, https://dataninjago.com/wp-content/uploads/2022/07/capture.png?w=768&amp;h=497&amp;crop=1 768w" sizes="(max-width: 843px) 100vw, 843px" data-attachment-id="8448" data-permalink="https://dataninjago.com/2022/07/11/spark-structured-streaming-deep-dive-5-incrementalexecution/capture-33/" data-orig-file="https://dataninjago.com/wp-content/uploads/2022/07/capture.png" data-orig-size="843,545" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;,&quot;orientation&quot;:&quot;0&quot;}" data-image-title="Capture" data-image-description="" data-image-caption="" data-large-file="https://dataninjago.com/wp-content/uploads/2022/07/capture.png?w=843" />
+	<header class="entry-header">
+		<h1 class="entry-title">Spark Structured Streaming Deep Dive (5) &#8211; IncrementalExecution</h1>	</header><!-- .entry-header -->
+
+	<div class="entry-content">
+		
+<p class="wp-block-paragraph">Spark Structured Streaming reuses the Spark SQL execution engine, including the analyser, optimiser, planner, and runtime code generator. <strong><em>QueryExecution </em></strong>is the core component of the Spark SQL execution engine, which manages the primary workflow of a relational query execution using Spark. <strong><em>IncrementalExecution </em></strong>is a variant of QueryExecution that supports the execution of a logical plan incrementally, which is the backbone of the micro-batch based streaming query executions. </p>
+
+
+
+<p class="wp-block-paragraph">Internally, the IncrementalExecution is a sub-class of the QueryExecution, which is designed to reuse the core analysis, optimisation, and planning components and rules that are initially developed for executing one-off batch queries. In the meantime, the IncrementalExecution extends the QueryExecution to enable the update of the execution plan with a new batch of data and maintain query states between batches. </p>
+
+
+
+<p class="wp-block-paragraph">Before looking into the IncrementalExecution, let&#8217;s briefly revisit the QueryExecution (more details can be found from my Spark SQL Query Engine deep dive series). </p>
+
+
+
+<figure class="wp-block-image size-large"><a href="https://dataninjago.com/wp-content/uploads/2021/12/image-72.png"><img data-attachment-id="6252" data-permalink="https://dataninjago.com/image-72/" data-orig-file="https://dataninjago.com/wp-content/uploads/2021/12/image-72.png" data-orig-size="1072,407" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;,&quot;orientation&quot;:&quot;0&quot;}" data-image-title="image-72" data-image-description="" data-image-caption="" data-large-file="https://dataninjago.com/wp-content/uploads/2021/12/image-72.png?w=1024" loading="lazy" width="1024" height="388" src="https://dataninjago.com/wp-content/uploads/2021/12/image-72.png?w=1024" alt="" class="wp-image-6252" srcset="https://dataninjago.com/wp-content/uploads/2021/12/image-72.png?w=1024 1024w, https://dataninjago.com/wp-content/uploads/2021/12/image-72.png?w=150 150w, https://dataninjago.com/wp-content/uploads/2021/12/image-72.png?w=300 300w, https://dataninjago.com/wp-content/uploads/2021/12/image-72.png?w=768 768w, https://dataninjago.com/wp-content/uploads/2021/12/image-72.png 1072w" sizes="(max-width: 1024px) 100vw, 1024px" /></a></figure>
+
+
+
+<p class="wp-block-paragraph">For a one-off batch query, the QueryExecution first analyses the parsed query, resolving the relation and attribute names and validating the syntactical correctness of operators and expressions. The resolved logical plan is then optimised by the Spark Catalyst Optimizer, a rule-based optimizer that applies a set of pre-defined rules to transform a logical plan to an optimised status expected by those rules. The optimised logical plan is then converted into one or more candidate physical plan based a set of predefined Spark query planning strategies. The best physical plan is expected be selected based on a cost model approach.  The runtime code is then generated from the selected physical plan and is executed in Spark cluster. </p>
+
+
+
+<p class="wp-block-paragraph">Here, I refer this type of query execution described above as &#8220;<strong><em>one-off</em></strong>&#8221; which implies that all the data to process is available to process and is processed in one query execution lifecycle. All the data is read, transformed and write in one go and no intermediate status needs to be maintained.  The &#8220;<strong><em>incremental</em></strong>&#8221; query execution is different where the input data will continuously reach the source and become available to process. Compared to the &#8220;one-off&#8221; query execution, the &#8220;incremental&#8221; query execution needs to handle some additional requirements, such as updating the execution plan with a new batch of source data and maintaining the states of stateful operations between micro-batches. </p>
+
+
+
+<p class="wp-block-paragraph">For the Spark micro-batch based &#8220;incremental&#8221; query execution, a streaming query is created and is continuously running that makes repeated attempts to run micro batches as data arrives. The logical plan of the streaming query is created, analysed and initialised before the streaming query starts to run. When a streaming query is started, for each micro-batch run, the new batch data and source attributes are rewired to the logical plan, and a new IncrementalExecution instance is created using the updated logical plan. As mentioned above, the IncrementalExecution is a sub-class of the QueryExecution. It reuses the primary workflow of the QueryExecution and extend it with additional streaming processing specific rules and strategies. </p>
+
+
+
+<figure class="wp-block-image size-large"><a href="https://dataninjago.com/wp-content/uploads/2022/07/image-10.png"><img data-attachment-id="8446" data-permalink="https://dataninjago.com/2022/07/11/spark-structured-streaming-deep-dive-5-incrementalexecution/image-10-8/" data-orig-file="https://dataninjago.com/wp-content/uploads/2022/07/image-10.png" data-orig-size="843,545" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;,&quot;orientation&quot;:&quot;0&quot;}" data-image-title="image-10" data-image-description="" data-image-caption="" data-large-file="https://dataninjago.com/wp-content/uploads/2022/07/image-10.png?w=843" loading="lazy" width="843" height="545" src="https://dataninjago.com/wp-content/uploads/2022/07/image-10.png?w=843" alt="" class="wp-image-8446" srcset="https://dataninjago.com/wp-content/uploads/2022/07/image-10.png 843w, https://dataninjago.com/wp-content/uploads/2022/07/image-10.png?w=150 150w, https://dataninjago.com/wp-content/uploads/2022/07/image-10.png?w=300 300w, https://dataninjago.com/wp-content/uploads/2022/07/image-10.png?w=768 768w" sizes="(max-width: 843px) 100vw, 843px" /></a></figure>
+
+
+
+<p class="wp-block-paragraph"><strong>Analysis</strong></p>
+
+
+
+<p class="wp-block-paragraph">Spark Structured Streaming reuses the existing analysis rules of the <strong><em>Spark SQL Catalyst Analyzer</em></strong> for resolving the attributes and types defined in the streaming query. More details of the Spark SQL Catalyst Analyzer can be found in my previous blog post. </p>
+
+
+
+<p class="wp-block-paragraph">In addition, Spark Structured Streaming extends the analysis rules for checking whether the operations of a streaming query can be executed in incremental mode or not, such as distinct aggregations, chained aggregations, and DDL commands. Spark Structured Streaming also provides analysis rules for validating the streaming output mode of the specific queries, For example, &#8220;Complete&#8221; output mode is not supported when there is no streaming aggregations on the streaming dataframe.</p>
+
+
+
+<p class="wp-block-paragraph"><strong>Rewiring</strong></p>
+
+
+
+<p class="wp-block-paragraph">This is an additional step, exclusively for incremental streaming execution, that replaces source data and rewires source attributes of the logical plan for each micro-batch execution. After a streaming query is started, each source is checked for new data arrived. For the new data available, depending on the max batch size per trigger limit, the new micro-batch is constructed and the dataframe represents the micro-batch data is returned. The streaming query replaces sources in its logical plan with new micro-batch data to get the&nbsp;<strong><em>newBatchesPlan</em></strong> and also rewire the newBatchesPlan to use the new attributes that were returned by the sources to get the&nbsp;<strong><em>newAttributePlan</em></strong>. With the rewired logical plan, an IncrementalExecution instance is created for the current micro-batch execution. </p>
+
+
+
+<p class="wp-block-paragraph"><strong>Optimisation</strong></p>
+
+
+
+<p class="wp-block-paragraph">Spark Structured Streaming reuses the existing optimisation rules of the <strong><em>Spark SQL Catalyst Optimizer </em></strong>for optimizing the logical plan. More details of the Spark SQL Catalyst Optimizer can be found in my previous blog post.</p>
+
+
+
+<p class="wp-block-paragraph"><strong>Physical Planning</strong></p>
+
+
+
+<p class="wp-block-paragraph">The IncrementalExecution class extends the SparkPlanner of the QueryExecution to include the extra planning strategies for planning physical execution of stateful operations. </p>
+
+
+<div class="wp-block-image">
+<figure class="aligncenter size-large"><a href="https://dataninjago.com/wp-content/uploads/2022/07/image-11.png"><img data-attachment-id="8471" data-permalink="https://dataninjago.com/2022/07/11/spark-structured-streaming-deep-dive-5-incrementalexecution/image-11-8/" data-orig-file="https://dataninjago.com/wp-content/uploads/2022/07/image-11.png" data-orig-size="512,346" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;,&quot;orientation&quot;:&quot;0&quot;}" data-image-title="image-11" data-image-description="" data-image-caption="" data-large-file="https://dataninjago.com/wp-content/uploads/2022/07/image-11.png?w=512" loading="lazy" width="512" height="346" src="https://dataninjago.com/wp-content/uploads/2022/07/image-11.png?w=512" alt="" class="wp-image-8471" srcset="https://dataninjago.com/wp-content/uploads/2022/07/image-11.png 512w, https://dataninjago.com/wp-content/uploads/2022/07/image-11.png?w=150 150w, https://dataninjago.com/wp-content/uploads/2022/07/image-11.png?w=300 300w" sizes="(max-width: 512px) 100vw, 512px" /></a></figure>
+</div>
+
+
+<p class="wp-block-paragraph">As mentioned above, processing stateful operations where intermediate states are required to be maintained across micro-batches is one of the core requirements for incremental streaming executions. Up to the Spark V3.2, six planning strategies are provided by the Spark Structured Streaming. </p>
+
+
+<div class="wp-block-image">
+<figure class="aligncenter size-large"><a href="https://dataninjago.com/wp-content/uploads/2022/07/image-3.png"><img data-attachment-id="8431" data-permalink="https://dataninjago.com/2022/07/11/spark-structured-streaming-deep-dive-5-incrementalexecution/image-3-11/" data-orig-file="https://dataninjago.com/wp-content/uploads/2022/07/image-3.png" data-orig-size="664,256" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;,&quot;orientation&quot;:&quot;0&quot;}" data-image-title="image-3" data-image-description="" data-image-caption="" data-large-file="https://dataninjago.com/wp-content/uploads/2022/07/image-3.png?w=664" loading="lazy" width="664" height="256" src="https://dataninjago.com/wp-content/uploads/2022/07/image-3.png?w=664" alt="" class="wp-image-8431" srcset="https://dataninjago.com/wp-content/uploads/2022/07/image-3.png 664w, https://dataninjago.com/wp-content/uploads/2022/07/image-3.png?w=150 150w, https://dataninjago.com/wp-content/uploads/2022/07/image-3.png?w=300 300w" sizes="(max-width: 664px) 100vw, 664px" /></a></figure>
+</div>
+
+
+<p class="wp-block-paragraph">Those planning strategies transform platform-independent LogicalPlans to SparkPlan for executing on Spark cluster. The SparkPlans for the stateful operations implement the logical for state management. Spark Structured Streaming provides the <strong><em>StateStoreOps </em></strong>class with the <strong><em>mapPartitionsWithStateStore</em></strong> and the <strong><em>mapPartitionsWithReadStateStore </em></strong>that creates the <strong><em>StateStoreRDD </em></strong>and <strong><em>ReadStateStoreRDD</em></strong> which executes the physical write and read of the state store. </p>
+
+
+
+<p class="wp-block-paragraph">I will discuss those strategies and the related physical SparkPlans in details in the next few blog posts.</p>
+
+
+<div class="wp-block-image">
+<figure class="aligncenter size-large"><a href="https://dataninjago.com/wp-content/uploads/2022/07/image-4.png"><img data-attachment-id="8433" data-permalink="https://dataninjago.com/2022/07/11/spark-structured-streaming-deep-dive-5-incrementalexecution/image-4-11/" data-orig-file="https://dataninjago.com/wp-content/uploads/2022/07/image-4.png" data-orig-size="580,198" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;,&quot;orientation&quot;:&quot;0&quot;}" data-image-title="image-4" data-image-description="" data-image-caption="" data-large-file="https://dataninjago.com/wp-content/uploads/2022/07/image-4.png?w=580" loading="lazy" width="580" height="198" src="https://dataninjago.com/wp-content/uploads/2022/07/image-4.png?w=580" alt="" class="wp-image-8433" srcset="https://dataninjago.com/wp-content/uploads/2022/07/image-4.png 580w, https://dataninjago.com/wp-content/uploads/2022/07/image-4.png?w=150 150w, https://dataninjago.com/wp-content/uploads/2022/07/image-4.png?w=300 300w" sizes="(max-width: 580px) 100vw, 580px" /></a></figure>
+</div>
+
+<div class="wp-block-image">
+<figure class="aligncenter size-large"><a href="https://dataninjago.com/wp-content/uploads/2022/07/image-5.png"><img data-attachment-id="8435" data-permalink="https://dataninjago.com/2022/07/11/spark-structured-streaming-deep-dive-5-incrementalexecution/image-5-11/" data-orig-file="https://dataninjago.com/wp-content/uploads/2022/07/image-5.png" data-orig-size="576,201" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;,&quot;orientation&quot;:&quot;0&quot;}" data-image-title="image-5" data-image-description="" data-image-caption="" data-large-file="https://dataninjago.com/wp-content/uploads/2022/07/image-5.png?w=576" loading="lazy" width="576" height="201" src="https://dataninjago.com/wp-content/uploads/2022/07/image-5.png?w=576" alt="" class="wp-image-8435" srcset="https://dataninjago.com/wp-content/uploads/2022/07/image-5.png 576w, https://dataninjago.com/wp-content/uploads/2022/07/image-5.png?w=150 150w, https://dataninjago.com/wp-content/uploads/2022/07/image-5.png?w=300 300w" sizes="(max-width: 576px) 100vw, 576px" /></a></figure>
+</div>
+
+<div class="wp-block-image">
+<figure class="aligncenter size-large"><a href="https://dataninjago.com/wp-content/uploads/2022/07/image-6.png"><img data-attachment-id="8436" data-permalink="https://dataninjago.com/2022/07/11/spark-structured-streaming-deep-dive-5-incrementalexecution/image-6-11/" data-orig-file="https://dataninjago.com/wp-content/uploads/2022/07/image-6.png" data-orig-size="569,143" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;,&quot;orientation&quot;:&quot;0&quot;}" data-image-title="image-6" data-image-description="" data-image-caption="" data-large-file="https://dataninjago.com/wp-content/uploads/2022/07/image-6.png?w=569" loading="lazy" width="569" height="143" src="https://dataninjago.com/wp-content/uploads/2022/07/image-6.png?w=569" alt="" class="wp-image-8436" srcset="https://dataninjago.com/wp-content/uploads/2022/07/image-6.png 569w, https://dataninjago.com/wp-content/uploads/2022/07/image-6.png?w=150 150w, https://dataninjago.com/wp-content/uploads/2022/07/image-6.png?w=300 300w" sizes="(max-width: 569px) 100vw, 569px" /></a></figure>
+</div>
+
+<div class="wp-block-image">
+<figure class="aligncenter size-large"><a href="https://dataninjago.com/wp-content/uploads/2022/07/image-7.png"><img data-attachment-id="8438" data-permalink="https://dataninjago.com/2022/07/11/spark-structured-streaming-deep-dive-5-incrementalexecution/image-7-12/" data-orig-file="https://dataninjago.com/wp-content/uploads/2022/07/image-7.png" data-orig-size="622,361" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;,&quot;orientation&quot;:&quot;0&quot;}" data-image-title="image-7" data-image-description="" data-image-caption="" data-large-file="https://dataninjago.com/wp-content/uploads/2022/07/image-7.png?w=622" loading="lazy" width="622" height="361" src="https://dataninjago.com/wp-content/uploads/2022/07/image-7.png?w=622" alt="" class="wp-image-8438" srcset="https://dataninjago.com/wp-content/uploads/2022/07/image-7.png 622w, https://dataninjago.com/wp-content/uploads/2022/07/image-7.png?w=150 150w, https://dataninjago.com/wp-content/uploads/2022/07/image-7.png?w=300 300w" sizes="(max-width: 622px) 100vw, 622px" /></a></figure>
+</div>
+
+<div class="wp-block-image">
+<figure class="aligncenter size-large"><a href="https://dataninjago.com/wp-content/uploads/2022/07/image-8.png"><img data-attachment-id="8440" data-permalink="https://dataninjago.com/2022/07/11/spark-structured-streaming-deep-dive-5-incrementalexecution/image-8-10/" data-orig-file="https://dataninjago.com/wp-content/uploads/2022/07/image-8.png" data-orig-size="577,146" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;,&quot;orientation&quot;:&quot;0&quot;}" data-image-title="image-8" data-image-description="" data-image-caption="" data-large-file="https://dataninjago.com/wp-content/uploads/2022/07/image-8.png?w=577" loading="lazy" width="577" height="146" src="https://dataninjago.com/wp-content/uploads/2022/07/image-8.png?w=577" alt="" class="wp-image-8440" srcset="https://dataninjago.com/wp-content/uploads/2022/07/image-8.png 577w, https://dataninjago.com/wp-content/uploads/2022/07/image-8.png?w=150 150w, https://dataninjago.com/wp-content/uploads/2022/07/image-8.png?w=300 300w" sizes="(max-width: 577px) 100vw, 577px" /></a></figure>
+</div>
+
+<div class="wp-block-image">
+<figure class="aligncenter size-large"><a href="https://dataninjago.com/wp-content/uploads/2022/07/image-9.png"><img data-attachment-id="8441" data-permalink="https://dataninjago.com/2022/07/11/spark-structured-streaming-deep-dive-5-incrementalexecution/image-9-8/" data-orig-file="https://dataninjago.com/wp-content/uploads/2022/07/image-9.png" data-orig-size="571,137" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;,&quot;orientation&quot;:&quot;0&quot;}" data-image-title="image-9" data-image-description="" data-image-caption="" data-large-file="https://dataninjago.com/wp-content/uploads/2022/07/image-9.png?w=571" loading="lazy" width="571" height="137" src="https://dataninjago.com/wp-content/uploads/2022/07/image-9.png?w=571" alt="" class="wp-image-8441" srcset="https://dataninjago.com/wp-content/uploads/2022/07/image-9.png 571w, https://dataninjago.com/wp-content/uploads/2022/07/image-9.png?w=150 150w, https://dataninjago.com/wp-content/uploads/2022/07/image-9.png?w=300 300w" sizes="(max-width: 571px) 100vw, 571px" /></a></figure>
+</div>
+
+
+<p class="wp-block-paragraph"><strong>Execution Preparation</strong></p>
+
+
+
+<p class="wp-block-paragraph">After the SparkPlanner converts the logical plan into the physical plan, a list of preparation rules needs to be executed to prepare the physical plan for execution. The Spark Structured Streaming reuses the preparation rules defined in the QueryExecution, such as EnsureRequirements which inserts the exchange or sort operators when required. </p>
+
+
+
+<p class="wp-block-paragraph">Apart from the preparation rules inherited from the QueryExecution, the IncrementalExecution also defines rules for preparing stateful operations that add the state info to the stateful operators. As mentioned above, for each micro-batch execution, an IncrementalExecution instance is created. The metadata or the streaming query and the current batch, such as runId, currentBatchId, and checkpointLocation are passed in the IncrementalExecution instance when it is created. In addition, an IncrementalExecution instance maintains an incremental integer, <strong><em>statefulOperatorId</em></strong>, and a <strong><em>nextStatefulOperationStateInfo </em></strong>method. When the nextStatefulOperationStateInfo method is called, the statefulOperatorId is auto incremented by 1 and is used along with the other metadata mentioned above for defining an StatefulOperatorStateInfo instance, which is used to identify the state store for a given operator.</p>
+
+
+<div class="wp-block-image">
+<figure class="aligncenter size-large"><a href="https://dataninjago.com/wp-content/uploads/2022/07/image-12.png"><img data-attachment-id="8477" data-permalink="https://dataninjago.com/2022/07/11/spark-structured-streaming-deep-dive-5-incrementalexecution/image-12-8/" data-orig-file="https://dataninjago.com/wp-content/uploads/2022/07/image-12.png" data-orig-size="731,321" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;,&quot;orientation&quot;:&quot;0&quot;}" data-image-title="image-12" data-image-description="" data-image-caption="" data-large-file="https://dataninjago.com/wp-content/uploads/2022/07/image-12.png?w=731" loading="lazy" width="731" height="321" src="https://dataninjago.com/wp-content/uploads/2022/07/image-12.png?w=731" alt="" class="wp-image-8477" srcset="https://dataninjago.com/wp-content/uploads/2022/07/image-12.png 731w, https://dataninjago.com/wp-content/uploads/2022/07/image-12.png?w=150 150w, https://dataninjago.com/wp-content/uploads/2022/07/image-12.png?w=300 300w" sizes="(max-width: 731px) 100vw, 731px" /></a></figure>
+</div>
+
+
+<p class="wp-block-paragraph">The preparation rules for preparing stateful operations walk through the query plan, pattern match the stateful operators, and call the nextStatefulOperationStateInfo method to get the state info for each stateful operators. </p>
+
+
+
+<p class="wp-block-paragraph"></p>
+<div id="jp-post-flair" class="sharedaddy sd-like-enabled sd-sharing-enabled"><div class="sharedaddy sd-sharing-enabled"><div class="robots-nocontent sd-block sd-social sd-social-icon-text sd-sharing"><h3 class="sd-title">Share this:</h3><div class="sd-content"><ul><li class="share-email"><a rel="nofollow noopener noreferrer"
+				data-shared="sharing-email-8424"
+				class="share-email sd-button share-icon"
+				href="mailto:?subject=%5BShared%20Post%5D%20Spark%20Structured%20Streaming%20Deep%20Dive%20%285%29%20-%20IncrementalExecution&#038;body=https%3A%2F%2Fdataninjago.com%2F2022%2F07%2F11%2Fspark-structured-streaming-deep-dive-5-incrementalexecution%2F&#038;share=email"
+				target="_blank"
+				aria-labelledby="sharing-email-8424"
+				data-email-share-error-title="Do you have email set up?" data-email-share-error-text="If you&#039;re having problems sharing via email, you might not have email set up for your browser. You may need to create a new email yourself." data-email-share-nonce="c81abddf02" data-email-share-track-url="https://dataninjago.com/2022/07/11/spark-structured-streaming-deep-dive-5-incrementalexecution/?share=email">
+				<span id="sharing-email-8424" hidden>Email a link to a friend (Opens in new window)</span>
+				<span>Email</span>
+			</a></li><li class="share-twitter"><a rel="nofollow noopener noreferrer"
+				data-shared="sharing-twitter-8424"
+				class="share-twitter sd-button share-icon"
+				href="https://dataninjago.com/2022/07/11/spark-structured-streaming-deep-dive-5-incrementalexecution/?share=twitter"
+				target="_blank"
+				aria-labelledby="sharing-twitter-8424"
+				>
+				<span id="sharing-twitter-8424" hidden>Share on X (Opens in new window)</span>
+				<span>X</span>
+			</a></li><li class="share-linkedin"><a rel="nofollow noopener noreferrer"
+				data-shared="sharing-linkedin-8424"
+				class="share-linkedin sd-button share-icon"
+				href="https://dataninjago.com/2022/07/11/spark-structured-streaming-deep-dive-5-incrementalexecution/?share=linkedin"
+				target="_blank"
+				aria-labelledby="sharing-linkedin-8424"
+				>
+				<span id="sharing-linkedin-8424" hidden>Share on LinkedIn (Opens in new window)</span>
+				<span>LinkedIn</span>
+			</a></li><li class="share-end"></li></ul></div></div></div><div class='sharedaddy sd-block sd-like jetpack-likes-widget-wrapper jetpack-likes-widget-unloaded' id='like-post-wrapper-22024266-8424-6a1ed067bb502' data-src='//widgets.wp.com/likes/index.html?ver=20260602#blog_id=22024266&amp;post_id=8424&amp;origin=malinxiao.wordpress.com&amp;obj_id=22024266-8424-6a1ed067bb502&amp;domain=dataninjago.com' data-name='like-post-frame-22024266-8424-6a1ed067bb502' data-title='Like or Reblog'><div class='likes-widget-placeholder post-likes-widget-placeholder' style='height: 55px;'><span class='button'><span>Like</span></span> <span class='loading'>Loading...</span></div><span class='sd-text-color'></span><a class='sd-link-color'></a></div>
+<div id='jp-relatedposts' class='jp-relatedposts' >
+	<h3 class="jp-relatedposts-headline"><em>Related</em></h3>
+</div></div>						<ul class="post-categories"><li><a href="https://dataninjago.com/category/deep-dive-spark-structured-streaming/" rel="category tag">*Deep Dive - Spark Structured Streaming</a></ul><!-- .post-categories -->	</div><!-- .entry-content -->
+
+	<footer class="entry-footer">
+		<ul class="post-meta"><li class="author vcard"><a class="url fn n" href="https://dataninjago.com/author/malinxiao/">Linxiao Ma</a></li><li class="posted-on"><time class="entry-date published" datetime="2022-07-11T22:14:13+00:00">July 11, 2022</time><time class="updated" datetime="2022-07-11T22:17:15+00:00">July 11, 2022</time></li></ul><!-- .post-metadata -->			<div class="meta-wrapper">
+		<ul class="post-tags"><li><a href="https://dataninjago.com/tag/databricks-spark/" rel="tag">Databricks / Spark</a></li><li><a href="https://dataninjago.com/tag/streaming/" rel="tag">Streaming</a></li></ul><!-- .post-tags -->			</div><!-- .meta-wrapper -->
+			
+	<nav class="navigation post-navigation" aria-label="Posts">
+		<h2 class="screen-reader-text">Post navigation</h2>
+		<div class="nav-links"><div class="nav-previous"><a href="https://dataninjago.com/2022/07/01/spark-structured-streaming-deep-dive-4-azure-event-hub-integration/" rel="prev">Spark Structured Streaming Deep Dive (4) &#8211; Azure Event Hub&nbsp;Integration</a></div><div class="nav-next"><a href="https://dataninjago.com/2022/07/16/spark-structured-streaming-deep-dive-6-stateful-operations/" rel="next">Spark Structured Streaming Deep Dive (6) &#8211; Stateful&nbsp;Operations</a></div></div>
+	</nav>	</footer><!-- .entry-footer -->
+</article><!-- #post-## -->
+			
+<div id="comments" class="comments-area">
+
+	
+	
+	
+		<div id="respond" class="comment-respond">
+		<h3 id="reply-title" class="comment-reply-title">Leave a comment <small><a rel="nofollow" id="cancel-comment-reply-link" href="/2022/07/11/spark-structured-streaming-deep-dive-5-incrementalexecution/#respond" style="display:none;">Cancel reply</a></small></h3><form action="https://dataninjago.com/wp-comments-post.php" method="post" id="commentform" class="comment-form"><div class="comment-form__verbum transparent"></div><div class="verbum-form-meta"><input type='hidden' name='comment_post_ID' value='8424' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+
+			<input type="hidden" name="highlander_comment_nonce" id="highlander_comment_nonce" value="49a1ae796c" />
+			<input type="hidden" name="verbum_show_subscription_modal" value="" /></div></form>	</div><!-- #respond -->
+	
+</div><!-- #comments -->
+		
+		</main><!-- #main -->
+	</div><!-- #primary -->
+
+
+<div id="secondary" class="widget-area" role="complementary">
+	<aside id="follow_button_widget-3" class="widget widget_follow_button_widget">
+		<a class="wordpress-follow-button" href="https://dataninjago.com" data-blog="22024266" data-lang="en" >Follow Data Ninjago (Finsight-Tech Blogs) on WordPress.com</a>
+		<script type="text/javascript">(function(d){ window.wpcomPlatform = {"titles":{"timelines":"Embeddable Timelines","followButton":"Follow Button","wpEmbeds":"WordPress Embeds"}}; var f = d.getElementsByTagName('SCRIPT')[0], p = d.createElement('SCRIPT');p.type = 'text/javascript';p.async = true;p.src = '//widgets.wp.com/platform.js';f.parentNode.insertBefore(p,f);}(document));</script>
+
+		</aside><aside id="block-17" class="widget widget_block"><h2 class="widget-title">Author</h2><div class="wp-widget-group__inner-blocks"><div class="wp-block-avatar"><a href="https://dataninjago.com/author/malinxiao/" target="_blank" aria-label="(Linxiao Ma author archive, opens in a new tab)" class="wp-block-avatar__link"><img referrerpolicy="no-referrer" alt='Linxiao Ma Avatar' src='https://0.gravatar.com/avatar/6ca75d3761872161c2141b9129d5b0a8a58542a4467223c0c6d7e887bf1bf2eb?s=108&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/6ca75d3761872161c2141b9129d5b0a8a58542a4467223c0c6d7e887bf1bf2eb?s=108&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/6ca75d3761872161c2141b9129d5b0a8a58542a4467223c0c6d7e887bf1bf2eb?s=162&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/6ca75d3761872161c2141b9129d5b0a8a58542a4467223c0c6d7e887bf1bf2eb?s=216&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/6ca75d3761872161c2141b9129d5b0a8a58542a4467223c0c6d7e887bf1bf2eb?s=324&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/6ca75d3761872161c2141b9129d5b0a8a58542a4467223c0c6d7e887bf1bf2eb?s=432&#038;d=identicon&#038;r=G 4x' class='avatar avatar-108 wp-block-avatar__image' height='108' width='108' decoding='async' /></a></div></div></aside><aside id="block-15" class="widget widget_block"><h2 class="widget-title">Categories</h2><div class="wp-widget-group__inner-blocks"><ul style="line-height:0.8" class="wp-block-categories-list wp-block-categories-taxonomy-category wp-block-categories">	<li class="cat-item cat-item-728439040"><a href="https://dataninjago.com/category/deep-dive-parquet-for-spark/">*Deep Dive &#8211; Parquet for Spark</a> (4)
+</li>
+	<li class="cat-item cat-item-728439046"><a href="https://dataninjago.com/category/deep-dive-spark-sql-query-engine/">*Deep Dive &#8211; Spark SQL Query Engine</a> (20)
+</li>
+	<li class="cat-item cat-item-752421406"><a href="https://dataninjago.com/category/deep-dive-spark-structured-streaming/">*Deep Dive &#8211; Spark Structured Streaming</a> (8)
+</li>
+	<li class="cat-item cat-item-750964725"><a href="https://dataninjago.com/category/dolphindb/">*DolphinDB</a> (12)
+</li>
+	<li class="cat-item cat-item-775647689"><a href="https://dataninjago.com/category/financial-data-engineering/">*Financial Data Engineering</a> (6)
+</li>
+	<li class="cat-item cat-item-789184530"><a href="https://dataninjago.com/category/quantflow/">*QuantFlow</a> (4)
+</li>
+	<li class="cat-item cat-item-369207246"><a href="https://dataninjago.com/category/azure-data-platform/">Azure Data Platform</a> (25)
+</li>
+	<li class="cat-item cat-item-776406680"><a href="https://dataninjago.com/category/coding-towards-cfa/">Coding towards CFA</a> (44)
+</li>
+	<li class="cat-item cat-item-728438995"><a href="https://dataninjago.com/category/data-quality-dqops/">Data Quality / dqops</a> (11)
+</li>
+	<li class="cat-item cat-item-679251241"><a href="https://dataninjago.com/category/databricks-spark/">Databricks / Spark</a> (30)
+</li>
+	<li class="cat-item cat-item-460422"><a href="https://dataninjago.com/category/machine-learning-data-mining/">Machine Learning / Data Mining</a> (10)
+</li>
+	<li class="cat-item cat-item-598894852"><a href="https://dataninjago.com/category/power-bi-dax-m/">Power BI/DAX/M</a> (18)
+</li>
+	<li class="cat-item cat-item-204228598"><a href="https://dataninjago.com/category/python-r/">Python/R</a> (11)
+</li>
+	<li class="cat-item cat-item-208818"><a href="https://dataninjago.com/category/quantlib/">QuantLib</a> (10)
+</li>
+	<li class="cat-item cat-item-604111234"><a href="https://dataninjago.com/category/ssis-ssas-ssrs-mdx/">SSIS/SSAS/SSRS/MDX</a> (17)
+</li>
+	<li class="cat-item cat-item-6666"><a href="https://dataninjago.com/category/the-others/">The Others</a> (8)
+</li>
+</ul></div></aside><aside id="block-12" class="widget widget_block"><h2 class="widget-title">Tags</h2><div class="wp-widget-group__inner-blocks"><p style="line-height:1.2;letter-spacing:1px" class="is-style-default wp-block-tag-cloud"><a href="https://dataninjago.com/tag/arbitrage/" class="tag-cloud-link tag-link-154709 tag-link-position-1" style="font-size: 10pt;" aria-label="Arbitrage (1 item)">Arbitrage</a>
+<a href="https://dataninjago.com/tag/azure-analysis-services/" class="tag-cloud-link tag-link-545219796 tag-link-position-2" style="font-size: 10pt;" aria-label="Azure Analysis Services (1 item)">Azure Analysis Services</a>
+<a href="https://dataninjago.com/tag/azure-data-factory/" class="tag-cloud-link tag-link-274777321 tag-link-position-3" style="font-size: 16.481751824818pt;" aria-label="Azure Data Factory (10 items)">Azure Data Factory</a>
+<a href="https://dataninjago.com/tag/azure-data-lake-store/" class="tag-cloud-link tag-link-403030826 tag-link-position-4" style="font-size: 16.131386861314pt;" aria-label="Azure Data Lake Store (9 items)">Azure Data Lake Store</a>
+<a href="https://dataninjago.com/tag/azure-data-warehouse/" class="tag-cloud-link tag-link-403819062 tag-link-position-5" style="font-size: 10pt;" aria-label="Azure Data Warehouse (1 item)">Azure Data Warehouse</a>
+<a href="https://dataninjago.com/tag/azure-stream-analytics/" class="tag-cloud-link tag-link-293452337 tag-link-position-6" style="font-size: 12.627737226277pt;" aria-label="Azure Stream Analytics (3 items)">Azure Stream Analytics</a>
+<a href="https://dataninjago.com/tag/best-practises/" class="tag-cloud-link tag-link-371777 tag-link-position-7" style="font-size: 12.627737226277pt;" aria-label="Best Practises (3 items)">Best Practises</a>
+<a href="https://dataninjago.com/tag/c/" class="tag-cloud-link tag-link-2426 tag-link-position-8" style="font-size: 11.576642335766pt;" aria-label="C# (2 items)">C#</a>
+<a href="https://dataninjago.com/tag/databricks-spark/" class="tag-cloud-link tag-link-679251241 tag-link-position-9" style="font-size: 19.459854014599pt;" aria-label="Databricks / Spark (23 items)">Databricks / Spark</a>
+<a href="https://dataninjago.com/tag/data-governance/" class="tag-cloud-link tag-link-1587831 tag-link-position-10" style="font-size: 10pt;" aria-label="Data Governance (1 item)">Data Governance</a>
+<a href="https://dataninjago.com/tag/data-models/" class="tag-cloud-link tag-link-154239 tag-link-position-11" style="font-size: 10pt;" aria-label="Data Models (1 item)">Data Models</a>
+<a href="https://dataninjago.com/tag/data-profiling/" class="tag-cloud-link tag-link-1587754 tag-link-position-12" style="font-size: 10pt;" aria-label="data profiling (1 item)">data profiling</a>
+<a href="https://dataninjago.com/tag/data-quality-dqops/" class="tag-cloud-link tag-link-728438995 tag-link-position-13" style="font-size: 15.693430656934pt;" aria-label="Data Quality / dqops (8 items)">Data Quality / dqops</a>
+<a href="https://dataninjago.com/tag/dax/" class="tag-cloud-link tag-link-181161 tag-link-position-14" style="font-size: 13.503649635036pt;" aria-label="DAX (4 items)">DAX</a>
+<a href="https://dataninjago.com/tag/dolphindb-2/" class="tag-cloud-link tag-link-776164470 tag-link-position-15" style="font-size: 17.70802919708pt;" aria-label="DolphinDB (14 items)">DolphinDB</a>
+<a href="https://dataninjago.com/tag/domain-knowledge/" class="tag-cloud-link tag-link-2370564 tag-link-position-16" style="font-size: 11.576642335766pt;" aria-label="Domain Knowledge (2 items)">Domain Knowledge</a>
+<a href="https://dataninjago.com/tag/dqops/" class="tag-cloud-link tag-link-722825176 tag-link-position-17" style="font-size: 11.576642335766pt;" aria-label="dqops (2 items)">dqops</a>
+<a href="https://dataninjago.com/tag/etl/" class="tag-cloud-link tag-link-223321 tag-link-position-18" style="font-size: 15.693430656934pt;" aria-label="ETL (8 items)">ETL</a>
+<a href="https://dataninjago.com/tag/feature-engineering/" class="tag-cloud-link tag-link-17698846 tag-link-position-19" style="font-size: 13.503649635036pt;" aria-label="Feature Engineering (4 items)">Feature Engineering</a>
+<a href="https://dataninjago.com/tag/financial/" class="tag-cloud-link tag-link-7489 tag-link-position-20" style="font-size: 14.204379562044pt;" aria-label="Financial (5 items)">Financial</a>
+<a href="https://dataninjago.com/tag/fixed-income/" class="tag-cloud-link tag-link-3105 tag-link-position-21" style="font-size: 17.70802919708pt;" aria-label="Fixed Income (14 items)">Fixed Income</a>
+<a href="https://dataninjago.com/tag/forex/" class="tag-cloud-link tag-link-15647 tag-link-position-22" style="font-size: 15.693430656934pt;" aria-label="Forex (8 items)">Forex</a>
+<a href="https://dataninjago.com/tag/high-frequency-tradinf/" class="tag-cloud-link tag-link-776164465 tag-link-position-23" style="font-size: 11.576642335766pt;" aria-label="High-Frequency Tradinf (2 items)">High-Frequency Tradinf</a>
+<a href="https://dataninjago.com/tag/machine-learning-data-mining/" class="tag-cloud-link tag-link-460422 tag-link-position-24" style="font-size: 16.131386861314pt;" aria-label="Machine Learning / Data Mining (9 items)">Machine Learning / Data Mining</a>
+<a href="https://dataninjago.com/tag/mdx/" class="tag-cloud-link tag-link-165781 tag-link-position-25" style="font-size: 14.817518248175pt;" aria-label="MDX (6 items)">MDX</a>
+<a href="https://dataninjago.com/tag/microsoft-cognitive-services/" class="tag-cloud-link tag-link-478436059 tag-link-position-26" style="font-size: 11.576642335766pt;" aria-label="Microsoft Cognitive Services (2 items)">Microsoft Cognitive Services</a>
+<a href="https://dataninjago.com/tag/pandas/" class="tag-cloud-link tag-link-32629 tag-link-position-27" style="font-size: 11.576642335766pt;" aria-label="pandas (2 items)">pandas</a>
+<a href="https://dataninjago.com/tag/parquet/" class="tag-cloud-link tag-link-1147890 tag-link-position-28" style="font-size: 12.627737226277pt;" aria-label="Parquet (3 items)">Parquet</a>
+<a href="https://dataninjago.com/tag/performance-tuning/" class="tag-cloud-link tag-link-161679 tag-link-position-29" style="font-size: 10pt;" aria-label="Performance Tuning (1 item)">Performance Tuning</a>
+<a href="https://dataninjago.com/tag/power-bi/" class="tag-cloud-link tag-link-181483039 tag-link-position-30" style="font-size: 18.14598540146pt;" aria-label="Power BI (16 items)">Power BI</a>
+<a href="https://dataninjago.com/tag/power-query/" class="tag-cloud-link tag-link-181618148 tag-link-position-31" style="font-size: 13.503649635036pt;" aria-label="Power Query (4 items)">Power Query</a>
+<a href="https://dataninjago.com/tag/powershell/" class="tag-cloud-link tag-link-178495 tag-link-position-32" style="font-size: 11.576642335766pt;" aria-label="PowerShell (2 items)">PowerShell</a>
+<a href="https://dataninjago.com/tag/python/" class="tag-cloud-link tag-link-832 tag-link-position-33" style="font-size: 16.832116788321pt;" aria-label="Python (11 items)">Python</a>
+<a href="https://dataninjago.com/tag/quantflow-2/" class="tag-cloud-link tag-link-789184535 tag-link-position-34" style="font-size: 11.576642335766pt;" aria-label="QuantFlow (2 items)">QuantFlow</a>
+<a href="https://dataninjago.com/tag/quantitative-analysis/" class="tag-cloud-link tag-link-314815 tag-link-position-35" style="font-size: 10pt;" aria-label="Quantitative Analysis (1 item)">Quantitative Analysis</a>
+<a href="https://dataninjago.com/tag/quantitative-finance/" class="tag-cloud-link tag-link-23326 tag-link-position-36" style="font-size: 22pt;" aria-label="Quantitative Finance (46 items)">Quantitative Finance</a>
+<a href="https://dataninjago.com/tag/quantlib/" class="tag-cloud-link tag-link-208818 tag-link-position-37" style="font-size: 16.481751824818pt;" aria-label="QuantLib (10 items)">QuantLib</a>
+<a href="https://dataninjago.com/tag/r/" class="tag-cloud-link tag-link-10189 tag-link-position-38" style="font-size: 15.255474452555pt;" aria-label="R (7 items)">R</a>
+<a href="https://dataninjago.com/tag/scikit-learn/" class="tag-cloud-link tag-link-59016089 tag-link-position-39" style="font-size: 10pt;" aria-label="scikit-learn (1 item)">scikit-learn</a>
+<a href="https://dataninjago.com/tag/spark-catalyst/" class="tag-cloud-link tag-link-727760175 tag-link-position-40" style="font-size: 15.255474452555pt;" aria-label="Spark Catalyst (7 items)">Spark Catalyst</a>
+<a href="https://dataninjago.com/tag/spark-sql/" class="tag-cloud-link tag-link-238394323 tag-link-position-41" style="font-size: 15.693430656934pt;" aria-label="Spark SQL (8 items)">Spark SQL</a>
+<a href="https://dataninjago.com/tag/sql/" class="tag-cloud-link tag-link-10346 tag-link-position-42" style="font-size: 16.832116788321pt;" aria-label="SQL (11 items)">SQL</a>
+<a href="https://dataninjago.com/tag/ssas-mdx/" class="tag-cloud-link tag-link-55605825 tag-link-position-43" style="font-size: 12.627737226277pt;" aria-label="SSAS/MDX (3 items)">SSAS/MDX</a>
+<a href="https://dataninjago.com/tag/ssdt/" class="tag-cloud-link tag-link-2176619 tag-link-position-44" style="font-size: 11.576642335766pt;" aria-label="SSDT (2 items)">SSDT</a>
+<a href="https://dataninjago.com/tag/streaming/" class="tag-cloud-link tag-link-45141 tag-link-position-45" style="font-size: 15.693430656934pt;" aria-label="Streaming (8 items)">Streaming</a>
+<a href="https://dataninjago.com/tag/tableau/" class="tag-cloud-link tag-link-852300 tag-link-position-46" style="font-size: 12.627737226277pt;" aria-label="Tableau (3 items)">Tableau</a></p></div></aside><aside id="block-11" class="widget widget_block"><h2 class="widget-title">Latest Blogs</h2><div class="wp-widget-group__inner-blocks"><ul style="line-height:1" class="wp-block-latest-posts__list wp-block-latest-posts"><li><a class="wp-block-latest-posts__post-title" href="https://dataninjago.com/2026/05/31/quantflow-detecting-trading-opportunities-through-market-lead-lag-profiling/">QuantFlow: Detecting Trading Opportunities Through Market Lead-Lag&nbsp;Profiling</a></li>
+<li><a class="wp-block-latest-posts__post-title" href="https://dataninjago.com/2026/05/24/s3-parquet-iceberg-trino-a-poor-mans-market-data-platform/">S3 + Parquet + Iceberg + Trino: A Poor Man’s Market Data&nbsp;Platform</a></li>
+<li><a class="wp-block-latest-posts__post-title" href="https://dataninjago.com/2026/05/13/how-quantflow-handles-large-scale-market-data/">How QuantFlow Handles Large-Scale Market&nbsp;Data</a></li>
+<li><a class="wp-block-latest-posts__post-title" href="https://dataninjago.com/2026/05/05/quantflow-fun-build-a-low-latency-feature-monitor-dashboard/">QuantFlow Fun &#8211; Build a Low-Latency Feature Monitor&nbsp;Dashboard</a></li>
+<li><a class="wp-block-latest-posts__post-title" href="https://dataninjago.com/2025/01/30/coding-towards-cfa-44-general-residual-income-model-for-equity-valuation/">Coding towards CFA (44) &#8211; General Residual Income Model for Equity&nbsp;Valuation</a></li>
+<li><a class="wp-block-latest-posts__post-title" href="https://dataninjago.com/2025/01/27/coding-towards-cfa-43-equity-risk-premium-estimates-using-forward-looking-approach/">Coding towards CFA (43) &#8211; Equity Risk Premium Estimates using Forward-Looking&nbsp;Approach</a></li>
+<li><a class="wp-block-latest-posts__post-title" href="https://dataninjago.com/2025/01/26/coding-towards-cfa-42-equity-risk-premium-estimates-using-historical-approach/">Coding towards CFA (42) &#8211; Equity Risk Premium Estimates using Historical&nbsp;Approach</a></li>
+<li><a class="wp-block-latest-posts__post-title" href="https://dataninjago.com/2025/01/25/coding-towards-cfa-41-cobb-douglas-production-function-and-neoclassical-growth-model/">Coding towards CFA (41) &#8211; Cobb-Douglas Production Function and Neoclassical Growth&nbsp;Model</a></li>
+<li><a class="wp-block-latest-posts__post-title" href="https://dataninjago.com/2025/01/24/coding-towards-cfa-40-fx-carry-trade/">Coding towards CFA (40) &#8211; FX Carry&nbsp;Trade</a></li>
+<li><a class="wp-block-latest-posts__post-title" href="https://dataninjago.com/2025/01/22/coding-towards-cfa-39-international-parity-conditions/">Coding towards CFA (39) &#8211; International Parity&nbsp;Conditions</a></li>
+</ul></div></aside></div><!-- #secondary -->
+	</div><!-- #content -->
+
+	<footer id="colophon" class="site-footer" role="contentinfo">
+		
+		<div class="site-footer-bottom">
+			<div class="inner">
+
+				
+				<div class="site-info">
+					<a href="https://wordpress.com/?ref=footer_custom_powered" rel="nofollow">Website Powered by WordPress.com</a>.
+					
+									</div><!-- .site-info -->
+
+			</div><!-- .inner -->
+		</div><!-- .site-footer-bottom -->
+	</footer><!-- #colophon -->
+</div><!-- #page -->
+
+<!--  -->
+<script type="speculationrules">
+{"prefetch":[{"source":"document","where":{"and":[{"href_matches":"/*"},{"not":{"href_matches":["/wp-*.php","/wp-admin/*","/files/*","/wp-content/*","/wp-content/plugins/*","/wp-content/themes/pub/franklin/*","/*\\?(.+)"]}},{"not":{"selector_matches":"a[rel~=\"nofollow\"]"}},{"not":{"selector_matches":".no-prefetch, .no-prefetch a"}}]},"eagerness":"conservative"}]}
+</script>
+<script id="grofiles-cards-js" src="//0.gravatar.com/js/hovercards/hovercards.min.js?ver=202623d1133547e8a1f2801609f51cef12522abe7f6647d869e9fbc974fe356a37e613"></script>
+<script id="wpgroho-js-extra">
+var WPGroHo = {"my_hash":""};
+//# sourceURL=wpgroho-js-extra
+</script>
+<script crossorigin='anonymous' type='text/javascript'  src='/wp-content/mu-plugins/gravatar-hovercards/wpgroho.js?m=1610363240i'></script>
+
+	<script>
+		// Initialize and attach hovercards to all gravatars
+		( function() {
+			function init() {
+				if ( typeof Gravatar === 'undefined' ) {
+					return;
+				}
+
+				if ( typeof Gravatar.init !== 'function' ) {
+					return;
+				}
+
+				Gravatar.profile_cb = function ( hash, id ) {
+					WPGroHo.syncProfileData( hash, id );
+				};
+
+				Gravatar.my_hash = WPGroHo.my_hash;
+				Gravatar.init(
+					'body',
+					'#wp-admin-bar-my-account',
+					{
+						i18n: {
+							'Edit your profile →': 'Edit your profile →',
+							'View profile →': 'View profile →',
+							'Contact': 'Contact',
+							'Send money': 'Send money',
+							'Sorry, we are unable to load this Gravatar profile.': 'Sorry, we are unable to load this Gravatar profile.',
+							'Gravatar not found.': 'Gravatar not found.',
+							'Too Many Requests.': 'Too Many Requests.',
+							'Internal Server Error.': 'Internal Server Error.',
+							'Is this you?': 'Is this you?',
+							'Claim your free profile.': 'Claim your free profile.',
+							'Email': 'Email',
+							'Home Phone': 'Home Phone',
+							'Work Phone': 'Work Phone',
+							'Cell Phone': 'Cell Phone',
+							'Contact Form': 'Contact Form',
+							'Calendar': 'Calendar',
+						},
+					}
+				);
+			}
+
+			if ( document.readyState !== 'loading' ) {
+				init();
+			} else {
+				document.addEventListener( 'DOMContentLoaded', init );
+			}
+		} )();
+	</script>
+
+		<div style="display:none">
+	<div class="grofile-hash-map-a80060bcbe1fcb27d9b364afc6294883">
+	</div>
+	</div>
+		<div id="actionbar" dir="ltr" style="display: none;"
+			class="actnbr-pub-franklin actnbr-has-follow actnbr-has-actions">
+		<ul>
+								<li class="actnbr-btn actnbr-hidden">
+						<a class="actnbr-action actnbr-actn-comment" href="https://dataninjago.com/2022/07/11/spark-structured-streaming-deep-dive-5-incrementalexecution/#respond">
+							<svg class="gridicon gridicons-comment" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M12 16l-5 5v-5H5c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h14c1.1 0 2 .9 2 2v9c0 1.1-.9 2-2 2h-7z"/></g></svg>							<span>Comment						</span>
+						</a>
+					</li>
+									<li class="actnbr-btn actnbr-hidden">
+						<a class="actnbr-action actnbr-actn-reblog" href="">
+							<svg class="gridicon gridicons-reblog" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M22.086 9.914L20 7.828V18c0 1.105-.895 2-2 2h-7v-2h7V7.828l-2.086 2.086L14.5 8.5 19 4l4.5 4.5-1.414 1.414zM6 16.172V6h7V4H6c-1.105 0-2 .895-2 2v10.172l-2.086-2.086L.5 15.5 5 20l4.5-4.5-1.414-1.414L6 16.172z"/></g></svg><span>Reblog</span>
+						</a>
+					</li>
+									<li class="actnbr-btn actnbr-hidden">
+								<a class="actnbr-action actnbr-actn-follow " href="">
+			<svg class="gridicon" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path clip-rule="evenodd" d="m4 4.5h12v6.5h1.5v-6.5-1.5h-1.5-12-1.5v1.5 10.5c0 1.1046.89543 2 2 2h7v-1.5h-7c-.27614 0-.5-.2239-.5-.5zm10.5 2h-9v1.5h9zm-5 3h-4v1.5h4zm3.5 1.5h-1v1h1zm-1-1.5h-1.5v1.5 1 1.5h1.5 1 1.5v-1.5-1-1.5h-1.5zm-2.5 2.5h-4v1.5h4zm6.5 1.25h1.5v2.25h2.25v1.5h-2.25v2.25h-1.5v-2.25h-2.25v-1.5h2.25z"  fill-rule="evenodd"></path></svg>
+			<span>Subscribe</span>
+		</a>
+		<a class="actnbr-action actnbr-actn-following  no-display" href="">
+			<svg class="gridicon" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill-rule="evenodd" clip-rule="evenodd" d="M16 4.5H4V15C4 15.2761 4.22386 15.5 4.5 15.5H11.5V17H4.5C3.39543 17 2.5 16.1046 2.5 15V4.5V3H4H16H17.5V4.5V12.5H16V4.5ZM5.5 6.5H14.5V8H5.5V6.5ZM5.5 9.5H9.5V11H5.5V9.5ZM12 11H13V12H12V11ZM10.5 9.5H12H13H14.5V11V12V13.5H13H12H10.5V12V11V9.5ZM5.5 12H9.5V13.5H5.5V12Z" fill="#008A20"></path><path class="following-icon-tick" d="M13.5 16L15.5 18L19 14.5" stroke="#008A20" stroke-width="1.5"></path></svg>
+			<span>Subscribed</span>
+		</a>
+							<div class="actnbr-popover tip tip-top-left actnbr-notice" id="follow-bubble">
+							<div class="tip-arrow"></div>
+							<div class="tip-inner actnbr-follow-bubble">
+															<ul>
+											<li class="actnbr-sitename">
+			<a href="https://dataninjago.com">
+				<img loading='lazy' alt='' src='https://dataninjago.com/wp-content/uploads/2017/10/ninja_s4_180x180_headpicker.png?w=50' srcset='https://dataninjago.com/wp-content/uploads/2017/10/ninja_s4_180x180_headpicker.png?w=50 1x, https://dataninjago.com/wp-content/uploads/2017/10/ninja_s4_180x180_headpicker.png?w=75 1.5x, https://dataninjago.com/wp-content/uploads/2017/10/ninja_s4_180x180_headpicker.png?w=100 2x, https://dataninjago.com/wp-content/uploads/2017/10/ninja_s4_180x180_headpicker.png?w=150 3x, https://dataninjago.com/wp-content/uploads/2017/10/ninja_s4_180x180_headpicker.png?w=180 4x' class='avatar avatar-50' height='50' width='50' />				Data Ninjago (Finsight-Tech Blogs)			</a>
+		</li>
+										<div class="actnbr-message no-display"></div>
+									<form method="post" action="https://subscribe.wordpress.com" accept-charset="utf-8" style="display: none;">
+																						<div class="actnbr-follow-count">Join 34 other subscribers</div>
+																					<div>
+										<input type="email" name="email" placeholder="Enter your email address" class="actnbr-email-field" aria-label="Enter your email address" />
+										</div>
+										<input type="hidden" name="action" value="subscribe" />
+										<input type="hidden" name="blog_id" value="22024266" />
+										<input type="hidden" name="source" value="https://dataninjago.com/2022/07/11/spark-structured-streaming-deep-dive-5-incrementalexecution/" />
+										<input type="hidden" name="sub-type" value="actionbar-follow" />
+										<input type="hidden" id="_wpnonce" name="_wpnonce" value="78d86d7edf" />										<div class="actnbr-button-wrap">
+											<button type="submit" value="Sign me up">
+												Sign me up											</button>
+										</div>
+									</form>
+									<li class="actnbr-login-nudge">
+										<div>
+											Already have a WordPress.com account? <a href="https://wordpress.com/log-in?redirect_to=https%3A%2F%2Fr-login.wordpress.com%2Fremote-login.php%3Faction%3Dlink%26back%3Dhttps%253A%252F%252Fdataninjago.com%252F2022%252F07%252F11%252Fspark-structured-streaming-deep-dive-5-incrementalexecution%252F">Log in now.</a>										</div>
+									</li>
+								</ul>
+															</div>
+						</div>
+					</li>
+							<li class="actnbr-ellipsis actnbr-hidden">
+				<svg class="gridicon gridicons-ellipsis" height="24" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M7 12c0 1.104-.896 2-2 2s-2-.896-2-2 .896-2 2-2 2 .896 2 2zm12-2c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2zm-7 0c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2z"/></g></svg>				<div class="actnbr-popover tip tip-top-left actnbr-more">
+					<div class="tip-arrow"></div>
+					<div class="tip-inner">
+						<ul>
+								<li class="actnbr-sitename">
+			<a href="https://dataninjago.com">
+				<img loading='lazy' alt='' src='https://dataninjago.com/wp-content/uploads/2017/10/ninja_s4_180x180_headpicker.png?w=50' srcset='https://dataninjago.com/wp-content/uploads/2017/10/ninja_s4_180x180_headpicker.png?w=50 1x, https://dataninjago.com/wp-content/uploads/2017/10/ninja_s4_180x180_headpicker.png?w=75 1.5x, https://dataninjago.com/wp-content/uploads/2017/10/ninja_s4_180x180_headpicker.png?w=100 2x, https://dataninjago.com/wp-content/uploads/2017/10/ninja_s4_180x180_headpicker.png?w=150 3x, https://dataninjago.com/wp-content/uploads/2017/10/ninja_s4_180x180_headpicker.png?w=180 4x' class='avatar avatar-50' height='50' width='50' />				Data Ninjago (Finsight-Tech Blogs)			</a>
+		</li>
+								<li class="actnbr-folded-follow">
+										<a class="actnbr-action actnbr-actn-follow " href="">
+			<svg class="gridicon" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path clip-rule="evenodd" d="m4 4.5h12v6.5h1.5v-6.5-1.5h-1.5-12-1.5v1.5 10.5c0 1.1046.89543 2 2 2h7v-1.5h-7c-.27614 0-.5-.2239-.5-.5zm10.5 2h-9v1.5h9zm-5 3h-4v1.5h4zm3.5 1.5h-1v1h1zm-1-1.5h-1.5v1.5 1 1.5h1.5 1 1.5v-1.5-1-1.5h-1.5zm-2.5 2.5h-4v1.5h4zm6.5 1.25h1.5v2.25h2.25v1.5h-2.25v2.25h-1.5v-2.25h-2.25v-1.5h2.25z"  fill-rule="evenodd"></path></svg>
+			<span>Subscribe</span>
+		</a>
+		<a class="actnbr-action actnbr-actn-following  no-display" href="">
+			<svg class="gridicon" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill-rule="evenodd" clip-rule="evenodd" d="M16 4.5H4V15C4 15.2761 4.22386 15.5 4.5 15.5H11.5V17H4.5C3.39543 17 2.5 16.1046 2.5 15V4.5V3H4H16H17.5V4.5V12.5H16V4.5ZM5.5 6.5H14.5V8H5.5V6.5ZM5.5 9.5H9.5V11H5.5V9.5ZM12 11H13V12H12V11ZM10.5 9.5H12H13H14.5V11V12V13.5H13H12H10.5V12V11V9.5ZM5.5 12H9.5V13.5H5.5V12Z" fill="#008A20"></path><path class="following-icon-tick" d="M13.5 16L15.5 18L19 14.5" stroke="#008A20" stroke-width="1.5"></path></svg>
+			<span>Subscribed</span>
+		</a>
+								</li>
+														<li class="actnbr-signup"><a href="https://wordpress.com/start/">Sign up</a></li>
+							<li class="actnbr-login"><a href="https://wordpress.com/log-in?redirect_to=https%3A%2F%2Fr-login.wordpress.com%2Fremote-login.php%3Faction%3Dlink%26back%3Dhttps%253A%252F%252Fdataninjago.com%252F2022%252F07%252F11%252Fspark-structured-streaming-deep-dive-5-incrementalexecution%252F">Log in</a></li>
+																<li class="actnbr-shortlink">
+										<a href="https://wp.me/p1upw6-2bS">
+											<span class="actnbr-shortlink__text">Copy shortlink</span>
+											<span class="actnbr-shortlink__icon"><svg class="gridicon gridicons-checkmark" height="16" width="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M9 19.414l-6.707-6.707 1.414-1.414L9 16.586 20.293 5.293l1.414 1.414"/></g></svg></span>
+										</a>
+									</li>
+																<li class="flb-report">
+									<a href="https://wordpress.com/abuse/?report_url=https://dataninjago.com/2022/07/11/spark-structured-streaming-deep-dive-5-incrementalexecution/" target="_blank" rel="noopener noreferrer">
+										Report this content									</a>
+								</li>
+															<li class="actnbr-reader">
+									<a href="https://wordpress.com/reader/blogs/22024266/posts/8424">
+										View post in Reader									</a>
+								</li>
+															<li class="actnbr-subs">
+									<a href="https://subscribe.wordpress.com/">Manage subscriptions</a>
+								</li>
+																<li class="actnbr-fold"><a href="">Collapse this bar</a></li>
+														</ul>
+					</div>
+				</div>
+			</li>
+		</ul>
+	</div>
+	
+<script>
+window.addEventListener( "DOMContentLoaded", function( event ) {
+	var link = document.createElement( "link" );
+	link.href = "/wp-content/mu-plugins/actionbar/actionbar.css?v=20250116";
+	link.type = "text/css";
+	link.rel = "stylesheet";
+	document.head.appendChild( link );
+
+	var script = document.createElement( "script" );
+	script.src = "/wp-content/mu-plugins/actionbar/actionbar.js?v=20250204";
+	document.body.appendChild( script );
+} );
+</script>
+
+			<div id="jp-carousel-loading-overlay">
+			<div id="jp-carousel-loading-wrapper">
+				<span id="jp-carousel-library-loading"><svg class="jetpack-spinner" width="40" height="40" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><circle cx="50" cy="50" r="46" fill="none" stroke="#ddd" stroke-width="8"/><path d="M 50 4 A 46 46 0 0 1 96 50" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" dur="1.4s" from="0 50 50" to="360 50 50" repeatCount="indefinite"/></path></svg></span>
+			</div>
+		</div>
+		<div class="jp-carousel-overlay" style="display: none;">
+
+		<div class="jp-carousel-container">
+			<!-- The Carousel Swiper -->
+			<div
+				class="jp-carousel-wrap swiper jp-carousel-swiper-container jp-carousel-transitions"
+				itemscope
+				itemtype="https://schema.org/ImageGallery">
+				<div class="jp-carousel swiper-wrapper"></div>
+				<div class="jp-swiper-button-prev swiper-button-prev">
+					<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<mask id="maskPrev" mask-type="alpha" maskUnits="userSpaceOnUse" x="8" y="6" width="9" height="12">
+							<path d="M16.2072 16.59L11.6496 12L16.2072 7.41L14.8041 6L8.8335 12L14.8041 18L16.2072 16.59Z" fill="white"/>
+						</mask>
+						<g mask="url(#maskPrev)">
+							<rect x="0.579102" width="23.8823" height="24" fill="#FFFFFF"/>
+						</g>
+					</svg>
+				</div>
+				<div class="jp-swiper-button-next swiper-button-next">
+					<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<mask id="maskNext" mask-type="alpha" maskUnits="userSpaceOnUse" x="8" y="6" width="8" height="12">
+							<path d="M8.59814 16.59L13.1557 12L8.59814 7.41L10.0012 6L15.9718 12L10.0012 18L8.59814 16.59Z" fill="white"/>
+						</mask>
+						<g mask="url(#maskNext)">
+							<rect x="0.34375" width="23.8822" height="24" fill="#FFFFFF"/>
+						</g>
+					</svg>
+				</div>
+			</div>
+			<!-- The main close buton -->
+			<div class="jp-carousel-close-hint">
+				<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<mask id="maskClose" mask-type="alpha" maskUnits="userSpaceOnUse" x="5" y="5" width="15" height="14">
+						<path d="M19.3166 6.41L17.9135 5L12.3509 10.59L6.78834 5L5.38525 6.41L10.9478 12L5.38525 17.59L6.78834 19L12.3509 13.41L17.9135 19L19.3166 17.59L13.754 12L19.3166 6.41Z" fill="white"/>
+					</mask>
+					<g mask="url(#maskClose)">
+						<rect x="0.409668" width="23.8823" height="24" fill="#FFFFFF"/>
+					</g>
+				</svg>
+			</div>
+			<!-- Image info, comments and meta -->
+			<div class="jp-carousel-info">
+				<div class="jp-carousel-info-footer">
+					<div class="jp-carousel-pagination-container">
+						<div class="jp-swiper-pagination swiper-pagination"></div>
+						<div class="jp-carousel-pagination"></div>
+					</div>
+					<div class="jp-carousel-photo-title-container">
+						<h2 class="jp-carousel-photo-caption"></h2>
+					</div>
+					<div class="jp-carousel-photo-icons-container">
+						<a href="#" class="jp-carousel-icon-btn jp-carousel-icon-info" aria-label="Toggle photo metadata visibility">
+							<span class="jp-carousel-icon">
+								<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<mask id="maskInfo" mask-type="alpha" maskUnits="userSpaceOnUse" x="2" y="2" width="21" height="20">
+										<path fill-rule="evenodd" clip-rule="evenodd" d="M12.7537 2C7.26076 2 2.80273 6.48 2.80273 12C2.80273 17.52 7.26076 22 12.7537 22C18.2466 22 22.7046 17.52 22.7046 12C22.7046 6.48 18.2466 2 12.7537 2ZM11.7586 7V9H13.7488V7H11.7586ZM11.7586 11V17H13.7488V11H11.7586ZM4.79292 12C4.79292 16.41 8.36531 20 12.7537 20C17.142 20 20.7144 16.41 20.7144 12C20.7144 7.59 17.142 4 12.7537 4C8.36531 4 4.79292 7.59 4.79292 12Z" fill="white"/>
+									</mask>
+									<g mask="url(#maskInfo)">
+										<rect x="0.8125" width="23.8823" height="24" fill="#FFFFFF"/>
+									</g>
+								</svg>
+							</span>
+						</a>
+												<a href="#" class="jp-carousel-icon-btn jp-carousel-icon-comments" aria-label="Toggle photo comments visibility">
+							<span class="jp-carousel-icon">
+								<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<mask id="maskComments" mask-type="alpha" maskUnits="userSpaceOnUse" x="2" y="2" width="21" height="20">
+										<path fill-rule="evenodd" clip-rule="evenodd" d="M4.3271 2H20.2486C21.3432 2 22.2388 2.9 22.2388 4V16C22.2388 17.1 21.3432 18 20.2486 18H6.31729L2.33691 22V4C2.33691 2.9 3.2325 2 4.3271 2ZM6.31729 16H20.2486V4H4.3271V18L6.31729 16Z" fill="white"/>
+									</mask>
+									<g mask="url(#maskComments)">
+										<rect x="0.34668" width="23.8823" height="24" fill="#FFFFFF"/>
+									</g>
+								</svg>
+
+								<span class="jp-carousel-has-comments-indicator" aria-label="This image has comments."></span>
+							</span>
+						</a>
+											</div>
+				</div>
+				<div class="jp-carousel-info-extra">
+					<div class="jp-carousel-info-content-wrapper">
+						<div class="jp-carousel-photo-title-container">
+							<h2 class="jp-carousel-photo-title"></h2>
+						</div>
+						<div class="jp-carousel-comments-wrapper">
+															<div id="jp-carousel-comments-loading">
+									<span>Loading Comments...</span>
+								</div>
+								<div class="jp-carousel-comments"></div>
+								<div id="jp-carousel-comment-form-container">
+									<span id="jp-carousel-comment-form-spinner"><svg class="jetpack-spinner" width="20" height="20" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><circle cx="50" cy="50" r="46" fill="none" stroke="#ddd" stroke-width="8"/><path d="M 50 4 A 46 46 0 0 1 96 50" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" dur="1.4s" from="0 50 50" to="360 50 50" repeatCount="indefinite"/></path></svg></span>
+									<div id="jp-carousel-comment-post-results"></div>
+																														<div id="jp-carousel-comment-form-commenting-as">
+												<p id="jp-carousel-commenting-as">
+													You must be <a href="#" class="jp-carousel-comment-login">logged in</a> to post a comment.												</p>
+											</div>
+																											</div>
+													</div>
+						<div class="jp-carousel-image-meta">
+							<div class="jp-carousel-title-and-caption">
+								<div class="jp-carousel-photo-info">
+									<h3 class="jp-carousel-caption" itemprop="caption description"></h3>
+								</div>
+
+								<div class="jp-carousel-photo-description"></div>
+							</div>
+							<ul class="jp-carousel-image-exif" style="display: none;"></ul>
+							<a class="jp-carousel-image-download" href="#" target="_blank" style="display: none;">
+								<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<mask id="mask0" mask-type="alpha" maskUnits="userSpaceOnUse" x="3" y="3" width="19" height="18">
+										<path fill-rule="evenodd" clip-rule="evenodd" d="M5.84615 5V19H19.7775V12H21.7677V19C21.7677 20.1 20.8721 21 19.7775 21H5.84615C4.74159 21 3.85596 20.1 3.85596 19V5C3.85596 3.9 4.74159 3 5.84615 3H12.8118V5H5.84615ZM14.802 5V3H21.7677V10H19.7775V6.41L9.99569 16.24L8.59261 14.83L18.3744 5H14.802Z" fill="white"/>
+									</mask>
+									<g mask="url(#mask0)">
+										<rect x="0.870605" width="23.8823" height="24" fill="#FFFFFF"/>
+									</g>
+								</svg>
+								<span class="jp-carousel-download-text"></span>
+							</a>
+							<div class="jp-carousel-image-map" style="display: none;"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		</div>
+		
+	<script type="text/javascript">
+		window.WPCOM_sharing_counts = {"https://dataninjago.com/2022/07/11/spark-structured-streaming-deep-dive-5-incrementalexecution/":8424};
+	</script>
+				
+	<script type="text/javascript">
+		(function () {
+			var wpcom_reblog = {
+				source: 'toolbar',
+
+				toggle_reblog_box_flair: function (obj_id, post_id) {
+
+					// Go to site selector. This will redirect to their blog if they only have one.
+					const postEndpoint = `https://wordpress.com/post`;
+
+					// Ideally we would use the permalink here, but fortunately this will be replaced with the 
+					// post permalink in the editor.
+					const originalURL = `${ document.location.href }?page_id=${ post_id }`; 
+					
+					const url =
+						postEndpoint +
+						'?url=' +
+						encodeURIComponent( originalURL ) +
+						'&is_post_share=true' +
+						'&v=5';
+
+					const redirect = function () {
+						if (
+							! window.open( url, '_blank' )
+						) {
+							location.href = url;
+						}
+					};
+
+					if ( /Firefox/.test( navigator.userAgent ) ) {
+						setTimeout( redirect, 0 );
+					} else {
+						redirect();
+					}
+				},
+			};
+
+			window.wpcom_reblog = wpcom_reblog;
+		})();
+	</script>
+<script crossorigin='anonymous' type='text/javascript'  src='/wp-content/mu-plugins/likes/queuehandler.js?m=1741961244i'></script>
+<script id="wp-hooks-js" src="/wp-content/plugins/gutenberg-core/v23.2.2/build/scripts/hooks/index.min.js?m=1779418693i&#038;ver=7496969728ca0f95732d"></script>
+<script id="wp-i18n-js" src="/wp-content/plugins/gutenberg-core/v23.2.2/build/scripts/i18n/index.min.js?m=1779418693i&#038;ver=125448662852c5e18937"></script>
+<script id="wp-i18n-js-after">
+wp.i18n.setLocaleData( { 'text direction\u0004ltr': [ 'ltr' ] } );
+//# sourceURL=wp-i18n-js-after
+</script>
+<script id="verbum-settings-js-before">
+window.VerbumComments = {"Log in or provide your name and email to leave a reply.":"Log in or provide your name and email to leave a reply.","Log in or provide your name and email to leave a comment.":"Log in or provide your name and email to leave a comment.","Receive web and mobile notifications for posts on this site.":"Receive web and mobile notifications for posts on this site.","Name":"Name","Email (address never made public)":"Email (address never made public)","Website (optional)":"Website (optional)","Leave a reply. (log in optional)":"Leave a reply. (log in optional)","Leave a comment. (log in optional)":"Leave a comment. (log in optional)","Log in to leave a reply.":"Log in to leave a reply.","Log in to leave a comment.":"Log in to leave a comment.","Logged in via %s":"Logged in via %s","Log out":"Log out","Email":"Email","(Address never made public)":"(Address never made public)","Instantly":"Instantly","Daily":"Daily","Reply":"Reply","Comment":"Comment","WordPress":"WordPress","Weekly":"Weekly","Notify me of new posts":"Notify me of new posts","Email me new posts":"Email me new posts","Email me new comments":"Email me new comments","Cancel":"Cancel","Write a comment...":"Write a comment...","Write a reply...":"Write a reply...","Website":"Website","Optional":"Optional","We'll keep you in the loop!":"We'll keep you in the loop!","Loading your comment...":"Loading your comment...","Discover more from":"Discover more from Data Ninjago (Finsight-Tech Blogs)","Subscribe now to keep reading and get access to the full archive.":"Subscribe now to keep reading and get access to the full archive.","Continue reading":"Continue reading","Never miss a beat!":"Never miss a beat!","Interested in getting blog post updates? Simply click the button below to stay in the loop!":"Interested in getting blog post updates? Simply click the button below to stay in the loop!","Enter your email address":"Enter your email address","Subscribe":"Subscribe","Comment sent successfully":"Comment sent successfully","Save my name, email, and website in this browser for the next time I comment.":"Save my name, email, and website in this browser for the next time I comment.","hovercardi18n":{"Edit your profile \u2192":"Edit your profile \u2192","View profile \u2192":"View profile \u2192","Contact":"Contact","Send money":"Send money","Gravatar not found.":"Gravatar not found.","This profile is private.":"This profile is private.","Too Many Requests.":"Too Many Requests.","Internal Server Error.":"Internal Server Error.","Sorry, we are unable to load this Gravatar profile.":"Sorry, we are unable to load this Gravatar profile."},"siteId":22024266,"postId":8424,"mustLogIn":true,"requireNameEmail":false,"commentRegistration":true,"connectURL":"https://malinxiao.wordpress.com/public.api/connect/?action=request\u0026domain=dataninjago.com","logoutURL":"https://malinxiao.wordpress.com/wp-login.php?action=logout\u0026_wpnonce=157afeb8bc","homeURL":"https://dataninjago.com/","subscribeToBlog":true,"subscribeToComment":true,"isJetpackCommentsLoggedIn":false,"jetpackUsername":"","jetpackUserId":0,"jetpackSignature":"","jetpackAvatar":"https://0.gravatar.com/avatar/?s=96\u0026amp;d=identicon\u0026amp;r=G","enableBlocks":true,"enableSubscriptionModal":true,"currentLocale":"en","isJetpackComments":false,"allowedBlocks":["core/paragraph","core/list","core/code","core/list-item","core/quote","core/image","core/embed","core/quote","core/code"],"embedNonce":"5e7b7612a5","verbumBundleUrl":"/wp-content/mu-plugins/jetpack-mu-wpcom-plugin/sun/jetpack_vendor/automattic/jetpack-mu-wpcom/src/features/verbum-comments/dist/index.js","isRTL":false,"vbeCacheBuster":1771405207,"iframeUniqueId":0,"colorScheme":false}
+//# sourceURL=verbum-settings-js-before
+</script>
+<script data-wp-strategy="defer" defer id="verbum-dynamic-loader-js" src="/wp-content/mu-plugins/jetpack-mu-wpcom-plugin/sun/jetpack_vendor/automattic/jetpack-mu-wpcom/src/build/verbum-comments/assets/dynamic-loader.js?m=1772522099i&#038;minify=false&#038;ver=8b5296f9195db92c42e4"></script>
+<script id="coblocks-loader-js-extra">
+var wpcom_coblocks_js = {"coblocks_masonry_js":"https://s2.wp.com/wp-content/plugins/coblocks/2.18.1-simple-rev.4/dist/js/coblocks-masonry.min.js?m=1681832297i","coblocks_lightbox_js":"https://s2.wp.com/wp-content/plugins/coblocks/2.18.1-simple-rev.4/dist/js/coblocks-lightbox.min.js?m=1681832297i","jquery_core_js":"/wp-includes/js/jquery/jquery.min.js","jquery_migrate_js":"/wp-includes/js/jquery/jquery-migrate.min.js","masonry_js":"/wp-includes/js/masonry.min.js","imagesloaded_js":"/wp-includes/js/imagesloaded.min.js"};
+var coblocksLigthboxData = {"closeLabel":"Close Gallery","leftLabel":"Previous","rightLabel":"Next"};
+//# sourceURL=coblocks-loader-js-extra
+</script>
+<script id="jetpack-carousel-js-extra">
+var jetpackSwiperLibraryPath = {"url":"/wp-content/mu-plugins/jetpack-plugin/sun/_inc/blocks/swiper.js"};
+var jetpackCarouselStrings = {"widths":[370,700,1000,1200,1400,2000],"is_logged_in":"","lang":"en","ajaxurl":"https://dataninjago.com/wp-admin/admin-ajax.php","nonce":"bb8c1cef0c","display_exif":"1","display_comments":"1","single_image_gallery":"1","single_image_gallery_media_file":"","background_color":"black","comment":"Comment","post_comment":"Post Comment","write_comment":"Write a Comment...","loading_comments":"Loading Comments...","image_label":"Open image in full-screen.","download_original":"View full size \u003Cspan class=\"photo-size\"\u003E{0}\u003Cspan class=\"photo-size-times\"\u003E\u00d7\u003C/span\u003E{1}\u003C/span\u003E","no_comment_text":"Please be sure to submit some text with your comment.","no_comment_email":"Please provide an email address to comment.","no_comment_author":"Please provide your name to comment.","comment_post_error":"Sorry, but there was an error posting your comment. Please try again later.","comment_approved":"Your comment was approved.","comment_unapproved":"Your comment is in moderation.","camera":"Camera","aperture":"Aperture","shutter_speed":"Shutter Speed","focal_length":"Focal Length","copyright":"Copyright","comment_registration":"1","require_name_email":"0","login_url":"https://malinxiao.wordpress.com/wp-login.php?redirect_to=https%3A%2F%2Fdataninjago.com%2F2022%2F07%2F11%2Fspark-structured-streaming-deep-dive-5-incrementalexecution%2F","blog_id":"22024266","meta_data":["camera","aperture","shutter_speed","focal_length","copyright"],"stats_query_args":"blog=22024266&v=wpcom&tz=0&user_id=0&subd=malinxiao","is_public":"1"};
+//# sourceURL=jetpack-carousel-js-extra
+</script>
+<script id="sharing-js-js-extra">
+var sharing_js_options = {"lang":"en","counts":"1","is_stats_active":"1"};
+//# sourceURL=sharing-js-js-extra
+</script>
+<script id="jetpack-script-data-js-before">
+window.JetpackScriptData = {"site":{"host":"wpcom","is_wpcom_platform":true}};
+//# sourceURL=jetpack-script-data-js-before
+</script>
+<script crossorigin='anonymous' type='text/javascript'  src='/_static/??-eJydkNFuwyAMRX9oxMu0rn2Z9imVAyR1AgZhaNe/H02brqr2EO0N7Huurw2nqHTgbDlDdGUgFtChc0FPAm9Nu2taJeSjsyrZY/MOhiTD+CtSLqCxqfHEzSgv8OCXD9ZbgVg66BPy5IgvZF9YZwosK/WMRxrwQqwEZKKo6ntSfdBFVE/fC0msXTGVmTfwvrrUvaI7r81fDUB0opjVKVaHZ8YXtZxxtDminlQtzdJbA6Tw0tsfLZuQAEsOHnMmfadQxGaBrpAz9+JtssGMKwY/zNtfcl+9NKZQxLq7bCn8dYIH10V2Xebp++80csBkDRpznp/Ewy3Gl/9st9vNx67dvLbjD35H/ic='></script>
+<script id="sharing-js-js-after">
+var windowOpen;
+			( function () {
+				function matches( el, sel ) {
+					return !! (
+						el.matches && el.matches( sel ) ||
+						el.msMatchesSelector && el.msMatchesSelector( sel )
+					);
+				}
+
+				document.body.addEventListener( 'click', function ( event ) {
+					if ( ! event.target ) {
+						return;
+					}
+
+					var el;
+					if ( matches( event.target, 'a.share-twitter' ) ) {
+						el = event.target;
+					} else if ( event.target.parentNode && matches( event.target.parentNode, 'a.share-twitter' ) ) {
+						el = event.target.parentNode;
+					}
+
+					if ( el ) {
+						event.preventDefault();
+
+						// If there's another sharing window open, close it.
+						if ( typeof windowOpen !== 'undefined' ) {
+							windowOpen.close();
+						}
+						windowOpen = window.open( el.getAttribute( 'href' ), 'wpcomtwitter', 'menubar=1,resizable=1,width=600,height=350' );
+						return false;
+					}
+				} );
+			} )();
+var windowOpen;
+			( function () {
+				function matches( el, sel ) {
+					return !! (
+						el.matches && el.matches( sel ) ||
+						el.msMatchesSelector && el.msMatchesSelector( sel )
+					);
+				}
+
+				document.body.addEventListener( 'click', function ( event ) {
+					if ( ! event.target ) {
+						return;
+					}
+
+					var el;
+					if ( matches( event.target, 'a.share-linkedin' ) ) {
+						el = event.target;
+					} else if ( event.target.parentNode && matches( event.target.parentNode, 'a.share-linkedin' ) ) {
+						el = event.target.parentNode;
+					}
+
+					if ( el ) {
+						event.preventDefault();
+
+						// If there's another sharing window open, close it.
+						if ( typeof windowOpen !== 'undefined' ) {
+							windowOpen.close();
+						}
+						windowOpen = window.open( el.getAttribute( 'href' ), 'wpcomlinkedin', 'menubar=1,resizable=1,width=580,height=450' );
+						return false;
+					}
+				} );
+			} )();
+//# sourceURL=sharing-js-js-after
+</script>
+<script id="wp-emoji-settings" type="application/json">
+{"baseUrl":"https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/72x72/","ext":".png","svgUrl":"https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/","svgExt":".svg","source":{"concatemoji":"/wp-includes/js/wp-emoji-release.min.js?m=1764078722i&ver=7.0-RC4-62382"}}
+</script>
+<script type="module">
+/*! This file is auto-generated */
+const a=JSON.parse(document.getElementById("wp-emoji-settings").textContent),o=(window._wpemojiSettings=a,"wpEmojiSettingsSupports"),s=["flag","emoji"];function i(e){try{var t={supportTests:e,timestamp:(new Date).valueOf()};sessionStorage.setItem(o,JSON.stringify(t))}catch(e){}}function c(e,t,n){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);t=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data);e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(n,0,0);const a=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data);return t.every((e,t)=>e===a[t])}function p(e,t){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);var n=e.getImageData(16,16,1,1);for(let e=0;e<n.data.length;e++)if(0!==n.data[e])return!1;return!0}function u(e,t,n,a){switch(t){case"flag":return n(e,"\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f","\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f")?!1:!n(e,"\ud83c\udde8\ud83c\uddf6","\ud83c\udde8\u200b\ud83c\uddf6")&&!n(e,"\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f","\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f");case"emoji":return!a(e,"\ud83e\u1fac8")}return!1}function f(e,t,n,a){let r;const o=(r="undefined"!=typeof WorkerGlobalScope&&self instanceof WorkerGlobalScope?new OffscreenCanvas(300,150):document.createElement("canvas")).getContext("2d",{willReadFrequently:!0}),s=(o.textBaseline="top",o.font="600 32px Arial",{});return e.forEach(e=>{s[e]=t(o,e,n,a)}),s}function r(e){var t=document.createElement("script");t.src=e,t.defer=!0,document.head.appendChild(t)}a.supports={everything:!0,everythingExceptFlag:!0},new Promise(t=>{let n=function(){try{var e=JSON.parse(sessionStorage.getItem(o));if("object"==typeof e&&"number"==typeof e.timestamp&&(new Date).valueOf()<e.timestamp+604800&&"object"==typeof e.supportTests)return e.supportTests}catch(e){}return null}();if(!n){if("undefined"!=typeof Worker&&"undefined"!=typeof OffscreenCanvas&&"undefined"!=typeof URL&&URL.createObjectURL&&"undefined"!=typeof Blob)try{var e="postMessage("+f.toString()+"("+[JSON.stringify(s),u.toString(),c.toString(),p.toString()].join(",")+"));",a=new Blob([e],{type:"text/javascript"});const r=new Worker(URL.createObjectURL(a),{name:"wpTestEmojiSupports"});return void(r.onmessage=e=>{i(n=e.data),r.terminate(),t(n)})}catch(e){}i(n=f(s,u,c,p))}t(n)}).then(e=>{for(const n in e)a.supports[n]=e[n],a.supports.everything=a.supports.everything&&a.supports[n],"flag"!==n&&(a.supports.everythingExceptFlag=a.supports.everythingExceptFlag&&a.supports[n]);var t;a.supports.everythingExceptFlag=a.supports.everythingExceptFlag&&!a.supports.flag,a.supports.everything||((t=a.source||{}).concatemoji?r(t.concatemoji):t.wpemoji&&t.twemoji&&(r(t.twemoji),r(t.wpemoji)))});
+//# sourceURL=/wp-includes/js/wp-emoji-loader.min.js
+</script>
+	<iframe src='https://widgets.wp.com/likes/master.html?ver=20260602#ver=20260602' scrolling='no' id='likes-master' name='likes-master' style='display:none;'></iframe>
+	<div id='likes-other-gravatars' role="dialog" aria-hidden="true" tabindex="-1"><div class="likes-text"><span>%d</span></div><ul class="wpl-avatars sd-like-gravatars"></ul></div>
+	<script src="//stats.wp.com/w.js?68" defer></script> <script type="text/javascript">
+_tkq = window._tkq || [];
+_stq = window._stq || [];
+_tkq.push(['storeContext', {'blog_id':'22024266','blog_tz':'0','user_lang':'en','blog_lang':'en','user_id':'0'}]);
+		// Prevent sending pageview tracking from WP-Admin pages.
+		_stq.push(['view', {'blog':'22024266','v':'wpcom','tz':'0','user_id':'0','post':'8424','subd':'malinxiao'}]);
+		_stq.push(['extra', {'crypt':'UE5tW3cvZGRlTjZJLUd1fjYuT3g0b1BjRW5OTFdSQ0RheG09UFNyMGJdWFZ1ZCxdeERba1c2WiZjY1J0Sjhselo9P3RYWEw0VDlza1RiR3pzL3xpR0ZEdGFRP3VdL2otYmIlbHJsMiZBMFJ5aTd5Q3ZaZWUrRS9URGF6V1J+a1JvWT8tbEFbKyw0VzhlLEZiUi84S3xdMz8tejJBU3x4W0RkZnBQS3RYSzVaNjh4cklDX04yZm8wMEFtc282L3NbZkg/SHFOMWp8Ji9fdSxRaVR5RSVxVlRfRWhEQXM5ZXY5fA=='}]);
+_stq.push([ 'clickTrackerInit', '22024266', '8424' ]);
+</script>
+<noscript><img src="https://pixel.wp.com/b.gif?v=noscript" style="height:1px;width:1px;overflow:hidden;position:absolute;bottom:1px;" alt="" /></noscript>
+<meta id="bilmur" property="bilmur:data" content="" data-provider="wordpress.com" data-service="simple" data-site-tz="Etc/GMT-0" data-custom-props="{&quot;enq_jquery&quot;:&quot;1&quot;,&quot;logged_in&quot;:&quot;0&quot;,&quot;wptheme&quot;:&quot;pub\/franklin&quot;,&quot;wptheme_is_block&quot;:&quot;0&quot;}"  >
+		<script defer src="/wp-content/js/bilmur.min.js?i=17&amp;m=202623"></script> 	
+<script>
+(function() {
+	'use strict';
+
+	const fetches = {};
+	const promises = {};
+	const urls = {
+		'wp-polyfill': '/wp-includes/js/dist/vendor/wp-polyfill.min.js?m=1775575011i&ver=3.15.0',
+		'verbum': '/wp-content/mu-plugins/jetpack-mu-wpcom-plugin/sun/jetpack_vendor/automattic/jetpack-mu-wpcom/src/build/verbum-comments/verbum-comments.js?m=1777406400i&minify=false&ver=daa565a7d230e522cf9c'
+	};
+	const loaders = {
+		'verbum': () => {
+			fetchExternalScript('wp-polyfill');
+			fetchExternalScript('verbum');
+			promises['wp-polyfill'] = promises['wp-polyfill'] || loadWPScript('wp-polyfill');
+			promises['verbum'] = promises['verbum'] || promises['wp-polyfill'].then( () => loadWPScript('verbum') );
+			return promises['verbum'];
+		},
+		
+	};
+	const scriptExtras = {
+		
+	};
+
+	window.WP_Enqueue_Dynamic_Script = {
+		loadScript: (handle) => {
+			if (!loaders[handle]) {
+				console.error('WP_Enqueue_Dynamic_Script: unregistered script `' + handle + '`.');
+			}
+			return loaders[handle]();
+		}
+	};
+
+	function fetchExternalScript(handle) {
+		if (!urls[handle]) {
+			return Promise.resolve();
+		}
+
+		fetches[handle] = fetches[handle] || fetch(urls[handle], { mode: 'no-cors' });
+		return fetches[handle];
+	}
+
+	function runExtraScript(handle, type, index) {
+		const id = 'wp-enqueue-dynamic-script:' + handle + ':' + type + ':' + (index + 1);
+		const template = document.getElementById(id);
+		if (!template) {
+			return Promise.reject();
+		}
+
+		const script = document.createElement( 'script' );
+		script.innerHTML = template.innerHTML;
+		document.body.appendChild( script );
+		return Promise.resolve();
+	}
+
+	function loadExternalScript(handle) {
+		if (!urls[handle]) {
+			return Promise.resolve();
+		}
+
+		return fetches[handle].then(() => {
+			return new Promise((resolve, reject) => {
+				const script = document.createElement('script');
+				script.onload = () => resolve();
+				script.onerror = (e) => reject(e);
+				script.src = urls[handle];
+				document.body.appendChild(script);
+			});
+		});
+	}
+
+	function loadExtra(handle, pos) {
+		const count = (scriptExtras[handle] && scriptExtras[handle][pos]) || 0;
+		let promise = Promise.resolve();
+
+		for (let i = 0; i < count; i++) {
+			promise = promise.then(() => runExtraScript(handle, pos, i));
+		}
+
+		return promise;
+	}
+
+	function loadWPScript(handle) {
+		// Core loads scripts in this order. See: https://github.com/WordPress/WordPress/blob/a59eb9d39c4fcba834b70c9e8dfd64feeec10ba6/wp-includes/class-wp-scripts.php#L428.
+		return loadExtra(handle, 'translations')
+			.then(() => loadExtra(handle, 'before'))
+			.then(() => loadExternalScript(handle))
+			.then(() => loadExtra(handle, 'after'));
+	}
+} )();
+</script>
+
+</body>
+</html>

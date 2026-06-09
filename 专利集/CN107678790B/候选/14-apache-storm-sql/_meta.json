@@ -1,0 +1,10 @@
+{
+  "nn": "14",
+  "slug": "14-apache-storm-sql",
+  "type": "技术",
+  "name": "Apache Storm SQL（含腾讯云 EMR 等托管分发）",
+  "organization": "Apache 基金会 / 腾讯云 EMR 等",
+  "hit_features_initial": "F1,F2,F3,F4,F5",
+  "publicity": "中",
+  "blurb": "- 类型：技术\n- 名称：Apache Storm SQL（含腾讯云 EMR 等托管分发）\n- 组织：Apache 软件基金会 / 腾讯云 EMR 等\n- 命中 F#（初判）：F1,F2,F3,F4,F5\n- 公开度：中（开源，官方 storm-sql-internal 文档公开）\n- 一句话定位：Storm SQL 以 Apache Calcite 把 SQL 编译为 Calcite 逻辑计划（逻辑算子序列）→ Trident 物理计划（Filter/Projection/GroupBy 等物理算子）→ 提交到 Nimbus(主)/Supervisor-Worker(从) 集群执行；机制上对应 F1–F5。\n- 应用案例（仅\"技术\"类条目）：腾讯云 EMR（Storm 组件，当前在售状态待核）、其他打包 Apache Storm 的大数据平台\n- **时间窗高风险注记**：Storm SQL 该机制于 Storm 1.0/1.1.0（2016–2017，STORM-1446）公开，早于/接近本专利申请日 2016.07.29 → 更可能是**现有技术**（影响专利有效性），而非干净的侵权对象。Step 6 须核实\"被诉的具体分发是否在 2020.05.08 授权日后仍持续提供 + 是否有授权日后的新版本证据\"。"
+}

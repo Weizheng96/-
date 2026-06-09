@@ -1,0 +1,394 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-us" lang="en-us" data-whc_version="27.1">
+    <head><link rel="shortcut icon" href="../favicon.ico"/><link rel="icon" href="../favicon.ico"/><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="Since version 3.00.4, DolphinDB provides streaming SQL to enable continuous queries and instant updates of real-time data. Users can declare shared tables as streaming SQL tables, on which register ..."/><meta name="DC.rights.owner" content="(C) Copyright 2026"/><meta name="copyright" content="(C) Copyright 2026"/><meta name="generator" content="DITA-OT"/><meta name="DC.type" content="topic"/><meta name="DC.coverage" content=""/><meta name="DC.relation" content="../Streaming/chap_streaming.html"/><meta name="DC.relation" content="../Streaming/orca.html"/><meta name="DC.relation" content="../Migration/chap_data_migration.html"/><meta name="prodname" content="DolphinDB"/><meta name="brand" content="DolphinDB"/><meta name="DC.creator" content="DolphinDB"/><meta name="DC.publisher" content="DDB N/A DDB 200"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="Streaming_SQL"/><title>Streaming SQL</title><!--  Generated with Oxygen version 27.1, build number 2025063009.  --><meta name="wh-path2root" content="../"/><meta name="wh-toc-id" content="Streaming_SQL-d11004e14991"/><meta name="wh-source-relpath" content="Streaming/Streaming_SQL.dita"/><meta name="wh-out-relpath" content="Streaming/Streaming_SQL.html"/>
+
+    <link rel="stylesheet" type="text/css" href="../oxygen-webhelp/app/commons.css?buildId=2025063009"/>
+    <link rel="stylesheet" type="text/css" href="../oxygen-webhelp/app/topic.css?buildId=2025063009"/>
+
+    <script src="../oxygen-webhelp/app/options/properties.js?buildId=20260601095602"></script>
+    <script src="../oxygen-webhelp/app/localization/strings.js?buildId=2025063009"></script>
+    <script src="../oxygen-webhelp/app/search/index/keywords.js?buildId=20260601095602"></script>
+    <script defer="defer" src="../oxygen-webhelp/app/commons.js?buildId=2025063009"></script>
+    <script defer="defer" src="../oxygen-webhelp/app/topic.js?buildId=2025063009"></script>
+<link rel="stylesheet" type="text/css" href="../oxygen-webhelp/template/styles.css?buildId=2025063009"/><script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script><script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script></head>
+
+    <body id="Streaming_SQL" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="visually-hidden visually-hidden-focusable">
+            Jump to main content
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid navbar-expand-md">
+        <div xmlns:whc="http://www.oxygenxml.com/webhelp/components" class="wh_header_flex_container navbar-nav navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="https://www.dolphindb.com" class=" wh_logo d-none d-sm-block "><img src="../logo.png" alt="  Documentation  "/></a>
+                    <div class=" wh_publication_title "><a href="../index.html"><span class="booktitle">  <span class="ph mainbooktitle">Documentation</span>  </span></a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="../search.html"><div><input type="search" placeholder="Search " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="Search query" required="required"/><button type="submit" class="wh_search_button" aria-label="Search"><span class="search_input_text">Search</span></button></div></form>
+            
+            <script src="/zh/index.js" type="module"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" defer="defer"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML" defer="defer"><!--
+
+
+--></script>
+<script defer="defer"><!--
+ 
+
+const currentUrl = window.location.href;
+
+
+if (currentUrl.endsWith('index.html')) {
+    
+    const baseUrl = currentUrl.split('/index.html')[0]; 
+    const redirectUrl = `${baseUrl}/about_dolphindb.html`; 
+    window.location.href = redirectUrl; 
+}
+
+--></script>
+
+<script><!--
+
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?448bae02d58d4951fedf518565682545";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+--></script>
+            
+        </div></div>
+    </div>
+</header>
+        
+        
+         
+        
+        
+        
+        <div class="container-fluid navbar-expand-md" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="../index.html"><span>Home</span></a></span></li><li><div class="topicref" data-id="chap_streaming"><div class="title"><a href="../Streaming/chap_streaming.html">Streaming</a><div class="wh-tooltip"><p class="shortdesc">Publish, subscribe to, and process streaming data</p></div></div></div></li><li class="active"><div class="topicref" data-id="Streaming_SQL"><div class="title"><a href="../Streaming/Streaming_SQL.html">Streaming SQL</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="Toggle search highlights" title="Toggle search highlights"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="Collapse sections" title="Collapse sections"></button>
+                        <div class=" wh_navigation_links "><span id="topic_navigation_links" class="navheader">
+  
+<span class="navprev"><a class="- topic/link link" href="../Streaming/orca.html" title="Orca Real-time Computing Platform" aria-label="Previous topic: Orca Real-time Computing Platform" rel="prev"></a></span>  
+<span class="navnext"><a class="- topic/link link" href="../Migration/chap_data_migration.html" title="Migration" aria-label="Next topic: Migration" rel="next"></a></span>  </span></div>
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="Print this page" aria-label="Print this page"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+	                            <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+		                            <span class="close-toc-icon-container">
+		                                <span class="close-toc-icon"></span>     
+		                            </span>
+		                        </button>
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem"><div data-tocid="about_dolphindb-d11004e87" class="topicref" data-id="about_dolphindb" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../about_dolphindb.html" id="about_dolphindb-d11004e87-link">About DolphinDB </a></div></div></li><li role="treeitem"><div data-tocid="getting_started-d11004e133" class="topicref" data-id="getting_started" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../getting_started.html" id="getting_started-d11004e133-link">Getting Started</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="sectionddb_deployment-d11004e180" class="topicref" data-id="sectionddb_deployment" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action sectionddb_deployment-d11004e180-link" class="wh-expand-btn"></span><div class="title"><a href="../Deployment/chap_ddb_deployment.html" id="sectionddb_deployment-d11004e180-link">Deployment</a><div class="wh-tooltip"><p class="shortdesc">Deploy and upgrade DolphinDB on premise or in the cloud</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chap7_tutorials_programming-d11004e2446" class="topicref" data-id="chap7_tutorials_programming" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chap7_tutorials_programming-d11004e2446-link" class="wh-expand-btn"></span><div class="title"><a href="../Programming/programming_basics.html" id="chap7_tutorials_programming-d11004e2446-link">Programming Guide</a><div class="wh-tooltip"><p class="shortdesc">DolphinDB scripting language and SQL reference</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="database_landing-d11004e11203" class="topicref" data-id="database_landing" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action database_landing-d11004e11203-link" class="wh-expand-btn"></span><div class="title"><a href="../Database/chap_database.html" id="database_landing-d11004e11203-link">Database</a><div class="wh-tooltip"><p class="shortdesc">Core features of DolphinDB's distributed architecture, basic database operations, and         configuration setup.</p></div></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="chap_streaming-d11004e12684" class="topicref" data-id="chap_streaming" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action chap_streaming-d11004e12684-link" class="wh-expand-btn"></span><div class="title"><a href="../Streaming/chap_streaming.html" id="chap_streaming-d11004e12684-link">Streaming</a><div class="wh-tooltip"><p class="shortdesc">Publish, subscribe to, and process streaming data</p></div></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="streamfunctions-d11004e12734" class="topicref" data-id="streamfunctions" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action streamfunctions-d11004e12734-link" class="wh-expand-btn"></span><div class="title"><a href="../Streaming/str_funcs.html" id="streamfunctions-d11004e12734-link">Fundamentals</a></div></div></li><li role="treeitem"><div data-tocid="quick_examples-d11004e12964" class="topicref" data-id="quick_examples" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../Streaming/quick_examples.html" id="quick_examples-d11004e12964-link">Quick Examples</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="tocId-d11004e13010" class="topicref" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action tocId-d11004e13010-link" class="wh-expand-btn"></span><div class="title"><a href="../Streaming/stateless_operators.html" id="tocId-d11004e13010-link">Streaming Operators</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="streaming-engines-d11004e13103" class="topicref" data-id="streaming-engines" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action streaming-engines-d11004e13103-link" class="wh-expand-btn"></span><div class="title"><a href="../Streaming/streaming_engines.html" id="streaming-engines-d11004e13103-link">Streaming Engines</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="join_engines-d11004e13609" class="topicref" data-id="join_engines" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action join_engines-d11004e13609-link" class="wh-expand-btn"></span><div class="title"><a href="../Streaming/join_engines.html" id="join_engines-d11004e13609-link">Join Engines</a></div></div></li><li role="treeitem"><div data-tocid="stream-engine-parser-d11004e13977" class="topicref" data-id="stream-engine-parser" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../Tutorials/StreamEngineParser.html" id="stream-engine-parser-d11004e13977-link">Stream Engine Parser</a></div></div></li><li role="treeitem"><div data-tocid="streamingHA-d11004e14023" class="topicref" data-id="streamingHA" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../Tutorials/streamingHA.html" id="streamingHA-d11004e14023-link">Stream High Availability</a></div></div></li><li role="treeitem"><div data-tocid="unified_batch_and_stream_processing-d11004e14069" class="topicref" data-id="unified_batch_and_stream_processing" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../Streaming/unified_batch_and_stream_processing.html" id="unified_batch_and_stream_processing-d11004e14069-link">Unified Batch and Stream Processing</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="str_replay-d11004e14115" class="topicref" data-id="str_replay" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action str_replay-d11004e14115-link" class="wh-expand-btn"></span><div class="title"><a href="../Streaming/str_replay.html" id="str_replay-d11004e14115-link">Historical Data Replay</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="tocId-d11004e14299" class="topicref" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action tocId-d11004e14299-link" class="wh-expand-btn"></span><div class="title"><a href="../Streaming/intra_node_subscription.html" id="tocId-d11004e14299-link">Stream Subscription</a></div></div></li><li role="treeitem"><div data-tocid="stream_monitoring-d11004e14485" class="topicref" data-id="stream_monitoring" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../Streaming/stream_monitoring.html" id="stream_monitoring-d11004e14485-link">Stream Monitoring</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="complex_event_processing-d11004e14531" class="topicref" data-id="complex_event_processing" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action complex_event_processing-d11004e14531-link" class="wh-expand-btn"></span><div class="title"><a href="../Streaming/ComplexEventProcessing.html" id="complex_event_processing-d11004e14531-link">Complex Event Processing</a></div></div></li><li role="treeitem"><div data-tocid="orca-d11004e14945" class="topicref" data-id="orca" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../Streaming/orca.html" id="orca-d11004e14945-link">Orca Real-time Computing Platform</a></div></div></li><li role="treeitem" class="active"><div data-tocid="Streaming_SQL-d11004e14991" class="topicref" data-id="Streaming_SQL" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="../Streaming/Streaming_SQL.html" id="Streaming_SQL-d11004e14991-link">Streaming SQL</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="chap_data_migration-d11004e15038" class="topicref" data-id="chap_data_migration" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chap_data_migration-d11004e15038-link" class="wh-expand-btn"></span><div class="title"><a href="../Migration/chap_data_migration.html" id="chap_data_migration-d11004e15038-link">Migration</a><div class="wh-tooltip"><p class="shortdesc">Import and migrate data from various data sources to DolphinDB databases</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="database-maintenance-d11004e15505" class="topicref" data-id="database-maintenance" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action database-maintenance-d11004e15505-link" class="wh-expand-btn"></span><div class="title"><a href="../Maintenance/chap_maintenance.html" id="database-maintenance-d11004e15505-link">Maintenance</a><div class="wh-tooltip"><p class="shortdesc">Database maintenance and system management</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chap_troubleshooting-d11004e16113" class="topicref" data-id="chap_troubleshooting" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chap_troubleshooting-d11004e16113-link" class="wh-expand-btn"></span><div class="title"><a href="../Troubleshooting/chap_troubleshooting.html" id="chap_troubleshooting-d11004e16113-link">Troubleshooting</a><div class="wh-tooltip"><p class="shortdesc">Common errors and corresponding solutions</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="function_references-d11004e28152" class="topicref" data-id="function_references" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action function_references-d11004e28152-link" class="wh-expand-btn"></span><div class="title"><a href="../Functions/chap_function_references.html" id="function_references-d11004e28152-link">Function References</a><div class="wh-tooltip"><p class="shortdesc">Reference for all built-in functions</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chap5_api-d11004e105700" class="topicref" data-id="chap5_api" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chap5_api-d11004e105700-link" class="wh-expand-btn"></span><div class="title"><a href="../API/chap_api.html" id="chap5_api-d11004e105700-link">API &amp; Connector</a><div class="wh-tooltip"><p class="shortdesc">API in different languages for users to call DolphinDB from their programs</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chap_plugin-d11004e106240" class="topicref" data-id="chap_plugin" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chap_plugin-d11004e106240-link" class="wh-expand-btn"></span><div class="title"><a href="../Plugins/chap_plugin.html" id="chap_plugin-d11004e106240-link">Plugins</a><div class="wh-tooltip"><p class="shortdesc">Guidance on the use of plugins and plugin development for multiple application scenarios</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="about_tutorials-d11004e108226" class="topicref" data-id="about_tutorials" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action about_tutorials-d11004e108226-link" class="wh-expand-btn"></span><div class="title"><a href="../Tutorials/chap_tutorials.html" id="about_tutorials-d11004e108226-link">Tutorials</a><div class="wh-tooltip"><p class="shortdesc">Tutorials on database concepts and application scenarios</p></div></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="chap9_rn_sect_dolphindb-d11004e113950" class="topicref" data-id="chap9_rn_sect_dolphindb" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action chap9_rn_sect_dolphindb-d11004e113950-link" class="wh-expand-btn"></span><div class="title"><a href="../ReleaseNotes/chap_release_notes.html" id="chap9_rn_sect_dolphindb-d11004e113950-link">Release Notes</a><div class="wh-tooltip"><p class="shortdesc">Release notes and compatibility changes for DolphinDB server, plugins and APIs</p></div></div></div></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article class="- topic/topic topic" role="article" aria-labelledby="ariaid-title1">
+    <h1 class="- topic/title title topictitle1" id="ariaid-title1">Streaming SQL</h1>
+    <article class="- topic/topic topic nested1" aria-labelledby="ariaid-title2" id="topic_jlc_chc_ngc">
+        <h2 class="- topic/title title topictitle2" id="ariaid-title2">1. Overview</h2>
+        <div class="- topic/body body">
+            <p class="- topic/p p">Since version 3.00.4, DolphinDB provides streaming SQL to enable continuous queries
+                and instant updates of real-time data. Users can declare shared tables as streaming
+                SQL tables, on which register streaming SQL queries. The system only performs
+                calculations on newly arrived data or modified data (rather than a full
+                recalculation), and pushes only the incremental results to the subscriber,
+                significantly reducing computational overhead and network transmission costs to
+                achieve low latency and real-time responsiveness.</p>
+            <p class="- topic/p p">The key features of DolphinDB streaming SQL include:</p>
+            <ul class="- topic/ul ul" id="topic_jlc_chc_ngc__ul_bv4_chc_ngc" data-ofbid="topic_jlc_chc_ngc__ul_bv4_chc_ngc">
+                <li class="- topic/li li">Support for complex SQL queries, including SELECT, WHERE, JOIN, ORDER BY,
+                    etc.</li>
+                <li class="- topic/li li">Incremental updates to avoid full scans, reducing computation overhead and
+                    latency.</li>
+                <li class="- topic/li li">Subscription-based mechanism to transmit only incremental results, reducing
+                    network overhead.</li>
+            </ul>
+        </div>
+    </article>
+    <article class="- topic/topic topic nested1" aria-labelledby="ariaid-title3" id="topic_m1m_dhc_ngc">
+        <h2 class="- topic/title title topictitle2" id="ariaid-title3">2. Architecture and Principles</h2>
+        <article class="- topic/topic topic nested2" aria-labelledby="ariaid-title4" id="topic_f13_2hc_ngc">
+            <h3 class="- topic/title title topictitle3" id="ariaid-title4">2.1 Streaming SQL Architecture</h3>
+            <div class="- topic/body body">
+                <p class="- topic/p p"> DolphinDB streaming SQL architecture involves three major mechanisms:</p>
+                <ul class="- topic/ul ul" id="topic_f13_2hc_ngc__ul_elx_2hc_ngc" data-ofbid="topic_f13_2hc_ngc__ul_elx_2hc_ngc">
+                    <li class="- topic/li li"><strong class="+ topic/ph hi-d/b ph b">Job management</strong>: Each registered streaming SQL query is an independent
+                        job with centralized management of the queries' metadata and execution
+                        states.</li>
+                    <li class="- topic/li li"><strong class="+ topic/ph hi-d/b ph b">Continuous stream processing</strong>: The SQL engine runs continuously,
+                        capturing data changes in real time and feeding incremental data into the
+                        query processing pipeline.</li>
+                    <li class="- topic/li li"><strong class="+ topic/ph hi-d/b ph b">Incremental Update Push</strong>: The query results use an incremental update
+                        strategy. The system compares new and previous results and sends only the
+                        changes to the subscriber when there is a substantive difference. This
+                        mechanism significantly reduces network traffic and client load, improving
+                        overall system responsiveness.</li>
+                </ul>
+            </div>
+        </article>
+        <article class="- topic/topic topic nested2" aria-labelledby="ariaid-title5" id="topic_kv5_fhc_ngc">
+            <h3 class="- topic/title title topictitle3" id="ariaid-title5">2.2 Incremental Computing Process</h3>
+            <div class="- topic/body body">
+                <p class="- topic/p p">After a streaming SQL query is submitted, the system creates an execution plan
+                    and initializes operator states. As new data arrives, operators compute
+                    increments and generate change logs, which are passed up the execution chain to
+                    update results. Only deltas are pushed to subscribers, minimizing network and
+                    compute overhead for efficient real-time updates.</p>
+            </div>
+        </article>
+        <article class="- topic/topic topic nested2" aria-labelledby="ariaid-title6" id="topic_k2b_vjc_ngc">
+            <h3 class="- topic/title title topictitle3" id="ariaid-title6">2.3 Pub-Sub Mechanism</h3>
+            <div class="- topic/body body">
+                <p class="- topic/p p">When the streaming SQL query is registered, the system generates a result change
+                    log stream table to record the incremental changes of the query results.
+                    Subscribers receive real-time changes by subscribing to this table.</p>
+                <p class="- topic/p p">When a subscriber unsubscribes, the system stops pushing incremental updates to
+                    it and releases related resources. If all subscribers unsubscribe, the change
+                    log stream table stops updating and job resources are reclaimed.</p>
+            </div>
+        </article>
+    </article>
+    <article class="- topic/topic topic nested1" aria-labelledby="ariaid-title7" id="topic_tc4_wjc_ngc">
+        <h2 class="- topic/title title topictitle2" id="ariaid-title7">3. Considerations</h2>
+        <div class="- topic/body body">
+            <p class="- topic/p p">The join operation in streaming SQL requires storing the table data and intermediate
+                results in memory, thus consuming considerable memory resources. To ensure system
+                stability, consider the following points:</p>
+            <ul class="- topic/ul ul" id="topic_tc4_wjc_ngc__ul_trr_xjc_ngc" data-ofbid="topic_tc4_wjc_ngc__ul_trr_xjc_ngc">
+                <li class="- topic/li li">To maintain performance, queries involving joins of up to three tables are
+                    currently supported. Complex queries with more than three tables are not
+                    supported at this time.</li>
+                <li class="- topic/li li">When join conditions change, the relevant computations are re-executed.</li>
+            </ul>
+            <p class="- topic/p p">Other than join operations, other operators (such as filtering and sorting) can be
+                processed in parallel, supporting multiple independent query pipelines.</p>
+        </div>
+    </article>
+    <article class="- topic/topic topic nested1" aria-labelledby="ariaid-title8" id="topic_bkm_yjc_ngc">
+        <h2 class="- topic/title title topictitle2" id="ariaid-title8">4. Interface Description</h2>
+        <div class="- topic/body body">
+            <div class="table-container"><table class="- topic/table table frame-all" id="topic_bkm_yjc_ngc__table_qlg_zjc_ngc" data-ofbid="topic_bkm_yjc_ngc__table_qlg_zjc_ngc" data-cols="2"><caption></caption><colgroup><col/><col/></colgroup><thead class="- topic/thead thead">
+                        <tr class="- topic/row">
+                            <th class="- topic/entry entry colsep-1 rowsep-1" id="topic_bkm_yjc_ngc__table_qlg_zjc_ngc__entry__1">Function</th>
+                            <th class="- topic/entry entry colsep-0 rowsep-1" id="topic_bkm_yjc_ngc__table_qlg_zjc_ngc__entry__2">Description</th>
+                        </tr>
+                    </thead><tbody class="- topic/tbody tbody">
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_bkm_yjc_ngc__table_qlg_zjc_ngc__entry__1"><a class="- topic/xref xref" href="../Functions/d/declareStreamingSQLTable.html">declareStreamingSQLTable</a></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_bkm_yjc_ngc__table_qlg_zjc_ngc__entry__2">Declare a specified table as an the input streaming SQL table.
+                                Only declared tables can be used to register streaming SQL queries.
+                                Declaration does not affect the table's use in regular SQL
+                                operations.</td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_bkm_yjc_ngc__table_qlg_zjc_ngc__entry__1"><a class="- topic/xref xref" href="../Functions/g/getStreamingSQLStatus.html">getStreamingSQLStatus</a></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_bkm_yjc_ngc__table_qlg_zjc_ngc__entry__2">Query the status of streaming SQL queries, supporting retrieval
+                                of a single query or all queries. The admin can view queries from
+                                all users.</td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_bkm_yjc_ngc__table_qlg_zjc_ngc__entry__1"><a class="- topic/xref xref" href="../Functions/l/listStreamingSQLTables.html">listStreamingSQLTables</a></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_bkm_yjc_ngc__table_qlg_zjc_ngc__entry__2">List all streaming SQL tables declared by the current user. The
+                                admin can view declarations from all users. The returned table
+                                contains the table name, shared status, and list of declaring
+                                users.</td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_bkm_yjc_ngc__table_qlg_zjc_ngc__entry__1"><a class="- topic/xref xref" href="../Functions/r/registerStreamingSQL.html">registerStreamingSQL</a></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_bkm_yjc_ngc__table_qlg_zjc_ngc__entry__2">Register a streaming SQL query and return a query ID, and
+                                automatically create a result change log stream table. Supports
+                                keywords such as SELECT, WHERE, JOIN (only equality joins are
+                                supported, and only for types ej, lj, rj, fj), and ORDER BY.</td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_bkm_yjc_ngc__table_qlg_zjc_ngc__entry__1"><a class="- topic/xref xref" href="../Functions/r/revokeStreamingSQL.html">revokeStreamingSQL</a></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_bkm_yjc_ngc__table_qlg_zjc_ngc__entry__2">Revoke the registered streaming SQL query.</td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_bkm_yjc_ngc__table_qlg_zjc_ngc__entry__1"><a class="- topic/xref xref" href="../Functions/r/revokeStreamingSQLTable.html">revokeStreamingSQLTable</a></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_bkm_yjc_ngc__table_qlg_zjc_ngc__entry__2">Revoke the declared streaming SQL query table. Revoke all
+                                streaming SQL queries on the table before revoking the table. Only
+                                the table declared by the current user can be revoked. Only removes
+                                the streaming SQL feature; the table and its data remain.</td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-1" headers="topic_bkm_yjc_ngc__table_qlg_zjc_ngc__entry__1"><a class="- topic/xref xref" href="../Functions/s/subscribeStreamingSQL.html">subscribeStreamingSQL</a></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-1" headers="topic_bkm_yjc_ngc__table_qlg_zjc_ngc__entry__2">Subscribe to the results of a specified streaming SQL query. The
+                                subscriber executes the query and maintains a shared result table
+                                that is updated in real time.</td>
+                        </tr>
+                        <tr class="- topic/row">
+                            <td class="- topic/entry entry colsep-1 rowsep-0" headers="topic_bkm_yjc_ngc__table_qlg_zjc_ngc__entry__1"><a class="- topic/xref xref" href="../Functions/u/unsubscribeStreamingSQL.html">unsubscribeStreamingSQL</a></td>
+                            <td class="- topic/entry entry colsep-0 rowsep-0" headers="topic_bkm_yjc_ngc__table_qlg_zjc_ngc__entry__2">Unsubscribe from the results of a specified streaming SQL query.
+                                The subscriber's real-time result table stops updating.</td>
+                        </tr>
+                    </tbody></table></div>
+        </div>
+    </article>
+    <article class="- topic/topic topic nested1" aria-labelledby="ariaid-title9" id="topic_rd4_bkc_ngc">
+        <h2 class="- topic/title title topictitle2" id="ariaid-title9">5. Examples</h2>
+        <div class="- topic/body body">
+            <p class="- topic/p p">Streaming SQL should be enabled before use. Set the <em class="+ topic/ph hi-d/i ph i">streamingSQLExecutors</em>
+                parameter to an integer greater than 0. Adjust the
+                    <em class="+ topic/ph hi-d/i ph i">maxStreamingSQLQueriesPerTable</em> parameter as needed. Configure
+                dolphindb.cfg in the standalone deployment, while configure cluster.cfg in the
+                cluster deployment.</p>
+            <p class="- topic/p p">The following scripts compute the sum of value of the same id in two tables in
+                real-time. As the data updates, the query results are automatically incrementally
+                refreshed.</p>
+            <pre class="+ topic/pre pr-d/codeblock pre codeblock" id="topic_rd4_bkc_ngc__codeblock_pmc_ckc_ngc" data-ofbid="topic_rd4_bkc_ngc__codeblock_pmc_ckc_ngc"><code>// define keyedTables
+share keyedTable(`id, 1:0, `id`value, [INT, DOUBLE]) as leftTable;
+share keyedTable(`id, 1:0, `id`value, [INT, DOUBLE]) as rightTable;
+go;
+// declare two shared keyed tables as streaming SQL input tables
+declareStreamingSQLTable(leftTable); 
+declareStreamingSQLTable(rightTable);
+
+// register streaming SQL queries
+queryId = registerStreamingSQL("select id, leftTable.value + rightTable.value from leftTable left join rightTable on leftTable.id=rightTable.id");
+
+// get the status of registered streaming SQL queries
+getStreamingSQLStatus()
+
+// subscribe to the query registered above
+table = subscribeStreamingSQL(,queryId)
+
+// insert data into the left and right tables
+t = table(1 2 3 4 5 as id, 0.1 0.2 0.3 0.4 0.5 as value);
+leftTable.append!(t);
+t = table(1 2 3 4 5 as id, 0.1 0.2 0.3 0.4 0.5 as value)
+rightTable.append!(t)
+
+// get the latest values in the subscription results table
+sleep(20)
+select * from table
+
+// insert data into the left and right tables again
+t = table(2 3 6 as id, 2.0 3.0 6.0 as value);
+leftTable.append!(t);
+t = table(6 as id, 6.0 as value);
+rightTable.append!(t);
+
+// get the latest values in the subscription results table
+sleep(20)
+select * from table
+
+// clean up the environment
+unsubscribeStreamingSQL(queryId=queryId)
+revokeStreamingSQL(queryId)
+revokeStreamingSQLTable("leftTable")
+revokeStreamingSQLTable("rightTable")</code></pre>
+        </div>
+    </article>
+</article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+              	                <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+		                            <span class="close-toc-icon-container">
+		                                <span class="close-toc-icon"></span>     
+		                            </span>
+		                        </button>
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">On this page</div><ul><li class="topic-item"><a href="#topic_jlc_chc_ngc" data-tocid="topic_jlc_chc_ngc">1. Overview</a></li><li class="topic-item"><a href="#topic_m1m_dhc_ngc" data-tocid="topic_m1m_dhc_ngc">2. Architecture and Principles</a><ul><li class="topic-item"><a href="#topic_f13_2hc_ngc" data-tocid="topic_f13_2hc_ngc">2.1 Streaming SQL Architecture</a></li><li class="topic-item"><a href="#topic_kv5_fhc_ngc" data-tocid="topic_kv5_fhc_ngc">2.2 Incremental Computing Process</a></li><li class="topic-item"><a href="#topic_k2b_vjc_ngc" data-tocid="topic_k2b_vjc_ngc">2.3 Pub-Sub Mechanism</a></li></ul></li><li class="topic-item"><a href="#topic_tc4_wjc_ngc" data-tocid="topic_tc4_wjc_ngc">3. Considerations</a></li><li class="topic-item"><a href="#topic_bkm_yjc_ngc" data-tocid="topic_bkm_yjc_ngc">4. Interface Description</a></li><li class="topic-item"><a href="#topic_rd4_bkc_ngc" data-tocid="topic_rd4_bkc_ngc">5. Examples</a></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    
+        <title>Copyright</title>
+    
+        <p><b>
+            Copyright ©2026 DolphinDB, Inc. All rights reserved.
+        </b></p>
+    
+  </div>
+</footer>
+        
+        <button id="go2top" class="d-print-none" title="Go to top">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </button>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+        
+    </body>
+</html>

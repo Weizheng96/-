@@ -1,0 +1,10 @@
+{
+  "nn": "07",
+  "slug": "07-samsung-internet",
+  "type": "产品",
+  "name": "Samsung Internet Browser",
+  "organization": "Samsung Electronics",
+  "hit_features_initial": "F1,F2,F3,F5,F6",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：Samsung Internet Browser\n- vendor：Samsung Electronics\n- 命中 F#（初判）：F1,F2,F3,F5,F6\n- 公开度：中\n- 一句话定位：三星设备内置浏览器（Chromium 基础 + 自有高对比/省电/数据节省模块）。"
+}

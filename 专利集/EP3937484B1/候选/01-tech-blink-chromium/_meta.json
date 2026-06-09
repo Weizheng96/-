@@ -1,0 +1,10 @@
+{
+  "nn": "01",
+  "slug": "01-tech-blink-chromium",
+  "type": "技术",
+  "name": "Blink / Chromium 渲染引擎",
+  "organization": "Google",
+  "hit_features_initial": "F1,F2,F3,F4,F5,F6",
+  "publicity": "高",
+  "blurb": "- 类型：技术\n- 名称：Blink / Chromium 渲染引擎\n- 组织：Google（开源，主 maintainer）\n- 命中 F#（初判）：F1,F2,F3,F4,F5,F6\n- 公开度：高（源码全开放，可对 F1-F7 定论）\n- 一句话定位：全球占有率最高的浏览器引擎，含资源调度器、priority hints（fetchpriority）、lazy-loading、Lite mode 离屏图片自动懒加载；F1-F6 基线能力齐备，F7\"元素间预定延迟\"需核源码是否存在。\n- 应用案例（仅\"技术\"类条目）：Chrome for Android, Android System WebView, Microsoft Edge, Samsung Internet, Brave, Opera, QQ Browser(X5), UC(U4 为 Blink 分支), Mi/vivo/OPPO 浏览器等几乎所有非 Apple 系移动浏览器。"
+}

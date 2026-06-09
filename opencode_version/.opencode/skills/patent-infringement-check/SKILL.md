@@ -1,25 +1,42 @@
 ---
 name: patent-infringement-check
-description: Detect whether a given patent is being used (infringed) by other organizations. Use this skill whenever the user provides a patent ID or path, or asks to check / 排查 / 检测 / 调查 a patent for unauthorized use, infringement (侵权 / 违约), or third-party usage. Triggers on phrases like "检测这个专利有没有被其他公司使用", "排查 X 的侵权情况", "看看谁在用这个专利". Produces a 7-step chain of analysis reports next to the input patent file (潜在应用场景及侵权特征 → 潜在使用组织 → 潜在侵权产品初选 → 潜在侵权产品-全 → 候选/*/_verdict.md → 违约列表). Step 1 / init / Step 7 are Python scripts (no LLM); Steps 2-5 run as Claude's main agent; Step 6 spawns one general-purpose sub-agent per investigated candidate (by default the top-10 by infringement likelihood) in react mode for evidence collection + verdict.
+description: Detect whether a given patent is being used (infringed) by other organizations. Use this skill whenever the user provides a patent ID or path, or asks to check / 排查 / 检测 / 调查 a patent for unauthorized use, infringement (侵权 / 违约), or third-party usage. Triggers on phrases like "检测这个专利有没有被其他公司使用", "排查 X 的侵权情况", "看看谁在用这个专利". Produces a 7-step chain of analysis reports next to the input patent file (潜在应用场景及侵权特征 → 潜在使用组织 → 潜在侵权产品初选 → 潜在侵权产品-全 → 候选/*/_verdict.md → 违约列表). Step 1 / init / Step 7 are Python scripts (no LLM); Steps 2-5 run as the primary agent; Step 6 spawns one `general` subagent (via the `task` tool) per investigated candidate (by default the top-20 by infringement likelihood) in react mode for evidence collection + verdict.
 ---
 
 # Patent Infringement Check — 7-step pipeline
 
-每一步要么落一份 markdown 报告到 `专利集/<PATENT_ID>/`，要么填充 `候选/<slug>/` 子目录。**所有 LLM 推理由 Claude 完成**——主 agent 负责 Steps 2-5，sub-agent 负责 Step 6 每个**被取证**候选（默认按侵权可能性排序的前 20）独立的取证+判定。Python 脚本仅做 HTTP 抓取、文件切片、模板汇总三类无 LLM 工作。
+每一步要么落一份 markdown 报告到 `专利集/<PATENT_ID>/`，要么填充 `候选/<slug>/` 子目录。**所有 LLM 推理由模型本身完成**——主（primary）agent 负责 Steps 2-5，subagent 负责 Step 6 每个**被取证**候选（默认按侵权可能性排序的前 20）独立的取证+判定。Python 脚本仅做 HTTP 抓取、文件切片、模板汇总三类无 LLM 工作。
 
 **职责分工**：
 
 | 工种 | 哪些步骤 |
 |---|---|
 | Python 脚本（无 LLM） | Step 1 (`fetch_patent.py`) · Step 2 切片 (`slice_patent.py`) · Step 6 候选目录初始化 (`init_candidates.py`) · Step 7 (`compile_step7.py`) · 全角引号文件写入 (`write_report.py`) |
-| Claude 主 agent | Steps 2-5 推理 + Step 6 sub-agent 编排 + 全程复核 |
-| Claude sub-agent（general-purpose, react 模式） | Step 6 每候选独立的 WebSearch + WebFetch 迭代 + 直接写 `_verdict.md` |
+| 主（primary）agent | Steps 2-5 推理 + Step 6 subagent 编排 + 全程复核 |
+| subagent（opencode 内置 `general`，经 `task` 工具调用，react 模式） | Step 6 每候选独立的 `websearch` + `webfetch` 迭代 + 直接写 `_verdict.md` |
 
 **依赖**：
 
 ```bash
 pip install requests beautifulsoup4 lxml pdfplumber pypdf
 ```
+
+---
+
+## opencode 运行说明（工具名映射 + subagent）
+
+本 skill 原为 Claude Code 编写，在 opencode 下语义不变，仅工具名/调用方式映射如下（正文出现的工具名按此对应即可）：
+
+| 正文写法（Claude 习惯名） | opencode 实际工具 |
+|---|---|
+| `WebSearch` | `websearch`（Exa 检索，需 opencode 侧已配置可用） |
+| `WebFetch` | `webfetch` |
+| `Read` / `Write` / `Edit` / `Grep` | `read` / `write` / `edit` / `grep` |
+| `TodoWrite` | `todowrite` |
+| Bash / PowerShell 命令 | `bash` |
+| spawn `subagent_type: general-purpose` | 用 `task` 工具，`subagent_type`/agent 名填 `general` |
+
+**Step 6 关键前提**：opencode 默认对 subagent **禁用 `bash`**，而本 skill 的 Step 6 subagent 需要 `bash`（curl 兜底抓取、读本地 PDF、写候选目录）。本工作区已在 `opencode.json` 里为 `general` subagent 开启 `bash`——若换环境运行，须确保同样开启，否则 Phase 2 取证与落盘会失败。`websearch` 走 Exa，需 opencode 侧已配置（缺失时按全局约束写"未检索到公开来源"，不要伪造）。
 
 ---
 
@@ -55,7 +72,7 @@ pip install requests beautifulsoup4 lxml pdfplumber pypdf
 ## Step 1 — 取专利原文 → `<PATENT_ID>.md`
 
 ```bash
-python .claude/skills/patent-infringement-check/scripts/fetch_patent.py <PATENT_ID>
+python .opencode/skills/patent-infringement-check/scripts/fetch_patent.py <PATENT_ID>
 ```
 
 抓 `https://patents.google.com/patent/<PATENT_ID>/zh`（CN 用 `/zh`，其他用 `/en`），BeautifulSoup 直抽所有权利要求 verbatim + 说明书全文 + 基本信息（含**公开/授权日**——Step 6 时间窗判定的关键字段）。
@@ -69,7 +86,7 @@ python .claude/skills/patent-infringement-check/scripts/fetch_patent.py <PATENT_
 **避免读全文**：先用 slice 脚本把 `<PATENT_ID>.md` 削成仅含基本信息 + 摘要 + 背景技术 + 所有独立权的精简版（典型 1.5-4k 字符，原文常超过 30k）：
 
 ```bash
-python .claude/skills/patent-infringement-check/scripts/slice_patent.py <PATENT_ID> --out /tmp/<PATENT_ID>_slice.md
+python .opencode/skills/patent-infringement-check/scripts/slice_patent.py <PATENT_ID> --out 专利集/<PATENT_ID>/_slice.md
 ```
 
 Claude `Read` 这个切片（**不要再 Read 原 `<PATENT_ID>.md`**——浪费 token），按下方模板写到 `_scratch_step2.md`，再 `write_report.py` 重命名为带全角引号的最终文件。
@@ -273,14 +290,14 @@ Claude `Read` 这个切片（**不要再 Read 原 `<PATENT_ID>.md`**——浪费
 ### 6.0 初始化候选文件夹
 
 ```bash
-python .claude/skills/patent-infringement-check/scripts/init_candidates.py <PATENT_ID>
+python .opencode/skills/patent-infringement-check/scripts/init_candidates.py <PATENT_ID>
 ```
 
 按 Step 5 候选总表为每个候选建 `候选/NN-<slug>/`，写 `_meta.json`（slug / type / name / organization / hit_features_initial / publicity / blurb）+ 占位 `_verdict.md`。幂等；`--force` 覆盖。
 
 ### 6.1 Sub-agent react 协议（每候选一个独立 agent）
 
-主 agent **批量并行 spawn** `subagent_type: general-purpose` agent（建议每批 3-5 个；不要一次 spawn 几十个——工具并发会被节流）。
+主 agent 用 `task` 工具 **批量并行 spawn** `general` subagent（`subagent_type` / agent 名 = `general`；建议每批 3-5 个；不要一次 spawn 几十个——工具并发会被节流）。每个 subagent 须能用 `bash`（见上方"opencode 运行说明"——已在 `opencode.json` 为 `general` 开启）。
 
 **关键：每批 spawn 完后等待该批全部返回再启动下一批**——否则 Step 6 没完成就跑 Step 7 会读到空 `_verdict.md`。Step 7 不能在 Step 6 全部**已排查**候选的 sub-agent 返回前启动。
 
@@ -473,7 +490,7 @@ curl 仍失败再放弃。抓到的本地 PDF 用 `pdf` skill 读，本地 HTML 
 ## Step 7 — 终筛 → `<PATENT_ID>"违约列表".md`
 
 ```bash
-python .claude/skills/patent-infringement-check/scripts/compile_step7.py <PATENT_ID>
+python .opencode/skills/patent-infringement-check/scripts/compile_step7.py <PATENT_ID>
 ```
 
 无 LLM 调用——读所有 `_verdict.md` + `_meta.json`，按"最终判定"段的"第 N 档"标签排序输出状态总表 + 候选明细 + 统计 + 免责声明。

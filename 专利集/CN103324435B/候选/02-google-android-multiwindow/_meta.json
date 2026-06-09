@@ -1,0 +1,10 @@
+{
+  "nn": "02",
+  "slug": "02-google-android-multiwindow",
+  "type": "技术",
+  "name": "Android / AOSP 多窗口框架（含 Pixel 原生分屏、双击分隔条对调）",
+  "organization": "谷歌 Google",
+  "hit_features_initial": "F1, F2, F4",
+  "publicity": "高",
+  "blurb": "- 类型：技术\n- 名称：Android / AOSP 多窗口框架（含 Pixel 原生分屏）\n- 组织：谷歌 Google\n- 命中 F#（初判）：F1, F2, F4\n- 公开度：高\n- 一句话定位：Android/AOSP 提供基础分屏框架，Android 13+ 原生支持\"双击分隔条对调上下应用\"（疑似 F4 但触发方式为双击而非滑动）；多数安卓 OEM 基础分屏继承自此。\n- 应用案例（仅\"技术\"类条目）：下游各安卓 OEM（三星/小米/OPPO/vivo/荣耀/一加/摩托/索尼/中兴/魅族/华硕/联想/TCL/传音/Nothing/Amazon）的基础分屏多源于 AOSP，但各家 F3/F4「滑动互换」交互为自有增量、单独成行评估。"
+}

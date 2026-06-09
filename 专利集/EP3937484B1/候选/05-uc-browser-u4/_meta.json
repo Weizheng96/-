@@ -1,0 +1,10 @@
+{
+  "nn": "05",
+  "slug": "05-uc-browser-u4",
+  "type": "产品",
+  "name": "UC Browser (U4 kernel)",
+  "organization": "Alibaba/UCWeb",
+  "hit_features_initial": "F1,F2,F3,F5,F6,F7",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：UC Browser（U4 内核，智能/分级加载 + 压缩）\n- vendor：Alibaba / UCWeb\n- 命中 F#（初判）：F1,F2,F3,F5,F6,F7\n- 公开度：低（内核闭源，仅有营销/技术博客）\n- 一句话定位：主打\"先文字后图片\"的分级加载与云端压缩，\"先文后图\"在语义上接近\"按优先级错峰显示元素\"，F7 重点核查对象，但闭源取证难。"
+}

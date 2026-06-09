@@ -1,0 +1,10 @@
+{
+  "nn": "14",
+  "slug": "14-qihoo-360-browser",
+  "type": "产品",
+  "name": "360 手机浏览器",
+  "organization": "Qihoo 360",
+  "hit_features_initial": "F1,F2,F5,F6",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：360 手机浏览器\n- vendor：Qihoo 360\n- 命中 F#（初判）：F1,F2,F5,F6\n- 公开度：低\n- 一句话定位：360 移动浏览器（Chromium 内核 + 自有省流/安全层）。"
+}

@@ -1,0 +1,10 @@
+{
+  "nn": "19",
+  "slug": "19-aloha-browser",
+  "type": "产品",
+  "name": "Aloha Browser (Aloha Core)",
+  "organization": "Aloha Mobile",
+  "hit_features_initial": "F1,F2,F5,F6",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：Aloha Browser（宣称自研 Aloha Core 引擎）\n- vendor：Aloha Mobile\n- 命中 F#（初判）：F1,F2,F5,F6\n- 公开度：低\n- 一句话定位：隐私/VPN 浏览器，宣称自研 Aloha Core 渲染引擎，需核其是否自有 F1-F7 调度。"
+}

@@ -1,0 +1,10 @@
+{
+  "nn": "11",
+  "slug": "11-snowflake-dynamic-tables",
+  "type": "产品",
+  "name": "Snowflake Dynamic Tables / Snowpipe Streaming",
+  "organization": "Snowflake",
+  "hit_features_initial": "F1,F2,F5",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：Snowflake Dynamic Tables / Snowpipe Streaming\n- 组织：Snowflake（NYSE:SNOW）\n- 命中 F#（初判）：F1,F2,F5\n- 公开度：中\n- 一句话定位：声明式 SQL 定义增量物化（Dynamic Tables）；是否落\"逐 SQL 规则生成逻辑节点 + 算子 DAG 调度到工作节点\"两级结构存疑，F3/F4 初判保守，留待核实。"
+}

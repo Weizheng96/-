@@ -1,0 +1,10 @@
+{
+  "nn": "13",
+  "slug": "13-dolphindb-streaming-sql",
+  "type": "产品",
+  "name": "DolphinDB 流式 SQL",
+  "organization": "浙江智臾科技 DolphinDB",
+  "hit_features_initial": "F1,F2,F4,F5",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：DolphinDB 流式 SQL（流计算引擎）\n- 组织：浙江智臾科技 DolphinDB\n- 命中 F#（初判）：F1,F2,F4,F5\n- 公开度：中（文档公开）\n- 一句话定位：面向金融/物联网的高性能时序数据库，提供流式 SQL/流计算引擎；两级流图 + 算子合并对应性需核实（F3 初判留空）。"
+}

@@ -1,0 +1,10 @@
+{
+  "nn": "06",
+  "slug": "06-brave-browser",
+  "type": "产品",
+  "name": "Brave Browser",
+  "organization": "Brave Software",
+  "hit_features_initial": "F1,F2,F3,F4,F5,F6",
+  "publicity": "高",
+  "blurb": "- 类型：产品\n- 名称：Brave Browser（Chromium 内核 + 自有省流/拦截层）\n- vendor：Brave Software\n- 命中 F#（初判）：F1,F2,F3,F4,F5,F6\n- 公开度：高（开源）\n- 一句话定位：隐私浏览器头部，Chromium 基础上叠加广告/追踪拦截与数据节省；F1-F6 随引擎齐备，开源可核。"
+}

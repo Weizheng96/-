@@ -1,0 +1,10 @@
+{
+  "nn": "04",
+  "slug": "04-risingwave",
+  "type": "产品",
+  "name": "RisingWave",
+  "organization": "RisingWave Labs",
+  "hit_features_initial": "F1,F2,F3,F4,F5",
+  "publicity": "高",
+  "blurb": "- 类型：产品\n- 名称：RisingWave\n- 组织：RisingWave Labs\n- 命中 F#（初判）：F1,F2,F3,F4,F5\n- 公开度：高（开源 + 技术博客/论文）\n- 一句话定位：PostgreSQL 兼容的 streaming SQL 数据库，SQL→优化逻辑计划→物理流式计划（fragment/actor）→分布式 worker 执行，自研引擎。"
+}

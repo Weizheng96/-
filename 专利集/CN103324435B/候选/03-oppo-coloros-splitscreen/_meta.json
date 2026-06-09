@@ -1,0 +1,10 @@
+{
+  "nn": "03",
+  "slug": "03-oppo-coloros-splitscreen",
+  "type": "产品",
+  "name": "ColorOS 分屏 / 灵动窗口（长按分界处交换、一键对调）",
+  "organization": "OPPO",
+  "hit_features_initial": "F1, F2, F3, F4",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：ColorOS 分屏 / 灵动窗口\n- 组织：OPPO\n- 命中 F#（初判）：F1, F2, F3, F4\n- 公开度：中\n- 一句话定位：头部安卓厂商，ColorOS 支持长按分屏分界处\"交换左右布置\"、点击分隔符\"一键对调\"分屏应用——swap（F4）信号明确，待核实触发是否为滑动手势（F3）。"
+}

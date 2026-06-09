@@ -1,0 +1,10 @@
+{
+  "nn": "10",
+  "slug": "10-azure-stream-analytics",
+  "type": "产品",
+  "name": "Azure Stream Analytics",
+  "organization": "Microsoft",
+  "hit_features_initial": "F1,F2,F4,F5",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：Azure Stream Analytics\n- 组织：Microsoft（NASDAQ:MSFT）\n- 命中 F#（初判）：F1,F2,F4,F5\n- 公开度：中（SQL-like 查询语言公开，内部物理计划/算子融合公开度低）\n- 一句话定位：以 SQL-like 查询定义流作业 → job topology → streaming nodes 执行；F3 两级映射/算子融合是否成立公开度低，初判保守。"
+}

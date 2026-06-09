@@ -1,0 +1,19 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "permission": {
+    "bash": "allow",
+    "edit": "allow",
+    "webfetch": "allow"
+  },
+  "agent": {
+    "general": {
+      "description": "通用 subagent：用于 patent-infringement-check 的 Step 6 每候选取证（websearch + webfetch + curl 兜底 + 写 _verdict.md）。",
+      "mode": "subagent",
+      "permission": {
+        "bash": "allow",
+        "edit": "allow",
+        "webfetch": "allow"
+      }
+    }
+  }
+}

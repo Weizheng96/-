@@ -1,0 +1,10 @@
+{
+  "nn": "10",
+  "slug": "10-opera-android",
+  "type": "产品",
+  "name": "Opera for Android",
+  "organization": "Opera Limited",
+  "hit_features_initial": "F1,F2,F5,F6",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：Opera for Android（含电池保护模式）\n- vendor：Opera Limited\n- 命中 F#（初判）：F1,F2,F5,F6\n- 公开度：中\n- 一句话定位：Opera 桌面/移动浏览器的安卓版，Chromium 内核 + 自有电池保护 / 广告拦截。"
+}

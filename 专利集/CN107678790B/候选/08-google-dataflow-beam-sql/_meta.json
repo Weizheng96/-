@@ -1,0 +1,10 @@
+{
+  "nn": "08",
+  "slug": "08-google-dataflow-beam-sql",
+  "type": "产品",
+  "name": "Google Cloud Dataflow + Apache Beam SQL",
+  "organization": "Google Cloud",
+  "hit_features_initial": "F1,F2,F3,F4,F5",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：Google Cloud Dataflow + Apache Beam SQL\n- 组织：Google Cloud\n- 命中 F#（初判）：F1,F2,F3,F4,F5\n- 公开度：中（Beam 开源、Dataflow 内部部分公开）\n- 一句话定位：Beam SQL→pipeline（PTransform 图），Dataflow runner 做 **fusion**（融合相邻 stage）后下发到 worker，对应 F3 算子融合。"
+}

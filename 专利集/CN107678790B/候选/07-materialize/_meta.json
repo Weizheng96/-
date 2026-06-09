@@ -1,0 +1,10 @@
+{
+  "nn": "07",
+  "slug": "07-materialize",
+  "type": "产品",
+  "name": "Materialize",
+  "organization": "Materialize Inc.",
+  "hit_features_initial": "F1,F2,F4,F5",
+  "publicity": "高",
+  "blurb": "- 类型：产品\n- 名称：Materialize\n- 组织：Materialize Inc.\n- 命中 F#（初判）：F1,F2,F4,F5\n- 公开度：高（开源核心 + 文档）\n- 一句话定位：基于 differential/timely dataflow 的增量 streaming SQL 数据库；其\"逻辑计划→物理 dataflow + worker\"是否对应专利\"第一流图→分组选算子→第二流图\"两级结构 + 算子合并，需 Step 6 核实（故 F3 初判暂留空）。"
+}

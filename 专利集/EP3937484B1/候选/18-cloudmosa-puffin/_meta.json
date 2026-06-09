@@ -1,0 +1,10 @@
+{
+  "nn": "18",
+  "slug": "18-cloudmosa-puffin",
+  "type": "产品",
+  "name": "Puffin Browser（云渲染）",
+  "organization": "CloudMosa",
+  "hit_features_initial": "F1,F2,F5,F6",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：Puffin Browser（云端渲染）\n- vendor：CloudMosa\n- 命中 F#（初判）：F1,F2,F5,F6\n- 公开度：低\n- 一句话定位：云端渲染数据节省浏览器，端侧主要显示云端渲染流；端侧是否做元素级延迟显示存疑（同抽象层待核）。"
+}

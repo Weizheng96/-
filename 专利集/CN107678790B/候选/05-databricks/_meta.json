@@ -1,0 +1,10 @@
+{
+  "nn": "05",
+  "slug": "05-databricks",
+  "type": "产品",
+  "name": "Databricks（Structured Streaming / DLT / Photon）",
+  "organization": "Databricks",
+  "hit_features_initial": "F1,F2,F3,F4,F5",
+  "publicity": "高",
+  "blurb": "- 类型：产品\n- 名称：Databricks（Spark Structured Streaming / Delta Live Tables / Photon）\n- 组织：Databricks\n- 命中 F#（初判）：F1,F2,F3,F4,F5\n- 公开度：高\n- 一句话定位：基于 Spark 的商用数据智能平台，DLT 以声明式 SQL 定义流式管线；Photon 为自研向量化引擎，含独立二次开发故单独成行。"
+}

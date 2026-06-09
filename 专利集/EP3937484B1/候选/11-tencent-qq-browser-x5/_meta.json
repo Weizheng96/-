@@ -1,0 +1,10 @@
+{
+  "nn": "11",
+  "slug": "11-tencent-qq-browser-x5",
+  "type": "产品",
+  "name": "QQ Browser (X5/TBS kernel)",
+  "organization": "Tencent",
+  "hit_features_initial": "F1,F2,F3,F5,F6",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：QQ 浏览器（X5/TBS 内核）\n- vendor：Tencent\n- 命中 F#（初判）：F1,F2,F3,F5,F6\n- 公开度：低\n- 一句话定位：腾讯自研 X5(TBS) 内核（Blink 分支），同时供 QQ 浏览器与微信复用。"
+}

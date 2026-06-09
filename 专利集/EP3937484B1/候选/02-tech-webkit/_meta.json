@@ -1,0 +1,10 @@
+{
+  "nn": "02",
+  "slug": "02-tech-webkit",
+  "type": "技术",
+  "name": "WebKit 渲染引擎",
+  "organization": "Apple",
+  "hit_features_initial": "F1,F2,F3,F4,F5,F6",
+  "publicity": "高",
+  "blurb": "- 类型：技术\n- 名称：WebKit 渲染引擎\n- 组织：Apple（开源，主 maintainer）\n- 命中 F#（初判）：F1,F2,F3,F4,F5,F6\n- 公开度：高（源码开放）\n- 一句话定位：iOS 唯一允许的底层渲染内核，以省电著称，自有资源加载/渲染调度；F1-F6 基线齐备，F7 需核。\n- 应用案例（仅\"技术\"类条目）：Safari for iOS, WKWebView，及所有 iOS 第三方浏览器（受 App Store 政策强制使用 WebKit）。"
+}

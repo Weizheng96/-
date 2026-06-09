@@ -1,0 +1,10 @@
+{
+  "nn": "08",
+  "slug": "08-apple-ipados-splitview",
+  "type": "产品",
+  "name": "iPadOS Split View / Slide Over / Stage Manager",
+  "organization": "苹果 Apple",
+  "hit_features_initial": "F1, F2, F3",
+  "publicity": "高",
+  "blurb": "- 类型：产品\n- 名称：iPadOS Split View / Slide Over / Stage Manager\n- 组织：苹果 Apple\n- 命中 F#（初判）：F1, F2, F3\n- 公开度：高\n- 一句话定位：iPad 触控分屏多任务，支持跨应用拖放内容、拖动分隔条调整与对调；但分屏触发与方向映射的交互模型与权利要求\"横向/纵向滑动→上下/左右\"差异较大，等同与否为核心争点。"
+}

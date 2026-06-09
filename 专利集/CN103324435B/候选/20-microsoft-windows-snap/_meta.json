@@ -1,0 +1,10 @@
+{
+  "nn": "20",
+  "slug": "20-microsoft-windows-snap",
+  "type": "产品",
+  "name": "Windows Snap / Surface Duo 多任务",
+  "organization": "微软 Microsoft",
+  "hit_features_initial": "F1, F2",
+  "publicity": "高",
+  "blurb": "- 类型：产品\n- 名称：Windows Snap / Surface Duo 多任务\n- 组织：微软 Microsoft\n- 命中 F#（初判）：F1, F2\n- 公开度：高\n- 一句话定位：Windows Snap 贴靠分屏以鼠标/键盘为主、与\"触摸屏滑动手势\"抽象层差异最大；Surface Duo 为 Android 双屏。基础分屏确认，与权利要求同抽象层与否为核心争点（排序最末）。"
+}
