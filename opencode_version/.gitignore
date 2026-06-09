@@ -1,3 +1,9 @@
 # skill 运行时的中间临时文件 — 不入库
 专利集/*/_slice.md
 专利集/*/_scratch*.md
+
+# opencode 运行时自动生成物（删掉了 .opencode/.gitignore 后由父仓忽略）— 不入库
+.opencode/node_modules/
+.opencode/package.json
+.opencode/package-lock.json
+.opencode/bun.lock

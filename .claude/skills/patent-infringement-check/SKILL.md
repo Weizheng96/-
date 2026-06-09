@@ -69,7 +69,7 @@ python .claude/skills/patent-infringement-check/scripts/fetch_patent.py <PATENT_
 **避免读全文**：先用 slice 脚本把 `<PATENT_ID>.md` 削成仅含基本信息 + 摘要 + 背景技术 + 所有独立权的精简版（典型 1.5-4k 字符，原文常超过 30k）：
 
 ```bash
-python .claude/skills/patent-infringement-check/scripts/slice_patent.py <PATENT_ID> --out /tmp/<PATENT_ID>_slice.md
+python .claude/skills/patent-infringement-check/scripts/slice_patent.py <PATENT_ID> --out 专利集/<PATENT_ID>/_slice.md
 ```
 
 Claude `Read` 这个切片（**不要再 Read 原 `<PATENT_ID>.md`**——浪费 token），按下方模板写到 `_scratch_step2.md`，再 `write_report.py` 重命名为带全角引号的最终文件。

@@ -5,6 +5,10 @@
 .claude/settings.local.json
 .claude/scheduled_tasks.lock
 
+# skill 运行时的中间临时文件（落在专利目录内）— 不入库
+专利集/*/_slice.md
+专利集/*/_scratch*.md
+
 # Python 缓存
 __pycache__/
 *.pyc
