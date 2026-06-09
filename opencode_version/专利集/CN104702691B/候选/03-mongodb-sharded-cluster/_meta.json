@@ -1,0 +1,10 @@
+{
+  "nn": "03",
+  "slug": "03-mongodb-sharded-cluster",
+  "type": "产品",
+  "name": "MongoDB Sharded Cluster",
+  "organization": "MongoDB Inc.",
+  "hit_features_initial": "F1, F2, F3, F4",
+  "publicity": "高",
+  "blurb": "- 类型：产品\n- 名称：MongoDB Sharded Cluster\n- vendor：MongoDB Inc.\n- 命中 F#（初判）：F1, F2, F3, F4\n- 公开度：高\n- 一句话定位：分布式文档数据库，分片集群自动管理 chunk 分配和 rebalancing"
+}

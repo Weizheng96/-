@@ -1,0 +1,10 @@
+{
+  "nn": "15",
+  "slug": "15-google-spanner",
+  "type": "产品",
+  "name": "Google Spanner",
+  "organization": "Google Cloud",
+  "hit_features_initial": "F1, F2, F3, F4",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：Google Spanner\n- vendor：Google Cloud\n- 命中 F#（初判）：F1, F2, F3, F4\n- 公开度：中\n- 一句话定位：全球分布式关系数据库，使用 splits（分区）+ Paxos 多副本 + 自动 rebalancing"
+}

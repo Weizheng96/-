@@ -27,7 +27,7 @@ RQ = "”"   # U+201D
 
 
 def _find_repo_root(start: Path | None = None) -> Path:
-    p = (start or Path(__file__)).resolve()
+    p = (start or Path.cwd()).resolve()
     for parent in [p, *p.parents]:
         if (parent / "专利集").exists():
             return parent

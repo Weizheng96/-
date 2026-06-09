@@ -1,0 +1,10 @@
+{
+  "nn": "18",
+  "slug": "18-oracle-sharding",
+  "type": "技术",
+  "name": "Oracle Globally Distributed DB Sharding",
+  "organization": "Oracle",
+  "hit_features_initial": "F1, F2, F3, F4",
+  "publicity": "中",
+  "blurb": "- 类型：技术\n- 名称：Oracle Globally Distributed DB Sharding\n- 组织：Oracle\n- 命中 F#（初判）：F1, F2, F3, F4\n- 公开度：中\n- 一句话定位：Oracle 全球分布式数据库，chunk 管理 + 自动 resharding + 拓扑 rebalance\n- 应用案例：Oracle Globally Distributed Database on Exascale"
+}

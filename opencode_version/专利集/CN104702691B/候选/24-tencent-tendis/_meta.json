@@ -1,0 +1,10 @@
+{
+  "nn": "24",
+  "slug": "24-tencent-tendis",
+  "type": "产品",
+  "name": "Tendis 集群版",
+  "organization": "Tencent Cloud",
+  "hit_features_initial": "F1, F2, F3, F4",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：Tendis 集群版\n- vendor：Tencent Cloud\n- 命中 F#（初判）：F1, F2, F3, F4\n- 公开度：低\n- 一句话定位：腾讯云自研分布式 KV 存储，兼容 Redis，集群版支持分片"
+}

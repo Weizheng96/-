@@ -1,0 +1,10 @@
+{
+  "nn": "01",
+  "slug": "01-hazelcast-partition-balance",
+  "type": "技术",
+  "name": "Hazelcast 分区分配与负载均衡",
+  "organization": "Hazelcast",
+  "hit_features_initial": "F1, F2, F3, F4",
+  "publicity": "高",
+  "blurb": "- 类型：技术\n- 名称：Hazelcast 分区分配与负载均衡\n- 组织：Hazelcast\n- 命中 F#（初判）：F1, F2, F3, F4\n- 公开度：高\n- 一句话定位：开源内存数据网格，专利背景技术直接引用其分区分配方法作为现有方案，技术重叠度最高\n- 应用案例：Hazelcast Platform, Hazelcast IMDG"
+}

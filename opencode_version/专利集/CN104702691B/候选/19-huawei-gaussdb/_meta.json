@@ -1,0 +1,10 @@
+{
+  "nn": "19",
+  "slug": "19-huawei-gaussdb",
+  "type": "产品",
+  "name": "GaussDB(for openGauss) 分布式版",
+  "organization": "Huawei Cloud",
+  "hit_features_initial": "F1, F2, F3, F4",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：GaussDB(for openGauss) 分布式版\n- vendor：Huawei Cloud\n- 命中 F#（初判）：F1, F2, F3, F4\n- 公开度：中\n- 一句话定位：华为云分布式数据库，分区 + 多副本 + 自动故障恢复"
+}

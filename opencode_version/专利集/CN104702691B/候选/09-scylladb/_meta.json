@@ -1,0 +1,10 @@
+{
+  "nn": "09",
+  "slug": "09-scylladb",
+  "type": "产品",
+  "name": "ScyllaDB",
+  "organization": "ScyllaDB",
+  "hit_features_initial": "F1, F2, F3, F4",
+  "publicity": "高",
+  "blurb": "- 类型：产品\n- 名称：ScyllaDB\n- vendor：ScyllaDB\n- 命中 F#（初判）：F1, F2, F3, F4\n- 公开度：高\n- 一句话定位：兼容 Cassandra 的高性能分布式数据库，shard-aware 分区分布 + 副本感知调度"
+}

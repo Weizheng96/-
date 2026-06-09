@@ -1,0 +1,10 @@
+{
+  "nn": "08",
+  "slug": "08-redis-cluster",
+  "type": "产品",
+  "name": "Redis Cluster",
+  "organization": "Redis Ltd.",
+  "hit_features_initial": "F1, F2, F3, F4",
+  "publicity": "高",
+  "blurb": "- 类型：产品\n- 名称：Redis Cluster\n- vendor：Redis Ltd.\n- 命中 F#（初判）：F1, F2, F3, F4\n- 公开度：高\n- 一句话定位：开源分布式缓存，使用 hash slot（分区）分布 + 主从副本 + 自动故障转移"
+}

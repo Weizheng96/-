@@ -1,0 +1,10 @@
+{
+  "nn": "07",
+  "slug": "07-kafka-partition-rebalance",
+  "type": "技术",
+  "name": "Apache Kafka 分区重平衡",
+  "organization": "Confluent",
+  "hit_features_initial": "F1, F2, F3, F4",
+  "publicity": "高",
+  "blurb": "- 类型：技术\n- 名称：Apache Kafka 分区重平衡\n- 组织：Confluent / Apache Software Foundation\n- 命中 F#（初判）：F1, F2, F3, F4\n- 公开度：高\n- 一句话定位：分布式消息系统，Topic 分区分布 + 副本分配 + 消费者组重平衡 + 分区迁移\n- 应用案例：Apache Kafka, Confluent Platform"
+}

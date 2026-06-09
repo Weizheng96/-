@@ -1,0 +1,10 @@
+{
+  "nn": "23",
+  "slug": "23-alibaba-tair",
+  "type": "产品",
+  "name": "Tair (云Redis)",
+  "organization": "Alibaba Cloud",
+  "hit_features_initial": "F1, F2, F3, F4",
+  "publicity": "低",
+  "blurb": "- 类型：产品\n- 名称：Tair (云Redis)\n- vendor：Alibaba Cloud\n- 命中 F#（初判）：F1, F2, F3, F4\n- 公开度：低\n- 一句话定位：阿里云自研分布式 KV 缓存，兼容 Redis 协议，集群版支持分片"
+}

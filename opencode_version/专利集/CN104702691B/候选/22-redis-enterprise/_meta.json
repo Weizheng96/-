@@ -1,0 +1,10 @@
+{
+  "nn": "22",
+  "slug": "22-redis-enterprise",
+  "type": "产品",
+  "name": "Redis Enterprise",
+  "organization": "Redis Ltd.",
+  "hit_features_initial": "F1, F2, F3, F4",
+  "publicity": "高",
+  "blurb": "- 类型：产品\n- 名称：Redis Enterprise\n- vendor：Redis Ltd.\n- 命中 F#（初判）：F1, F2, F3, F4\n- 公开度：高\n- 一句话定位：Redis 企业版，支持自动分片、跨区域复制和 rebalancing"
+}

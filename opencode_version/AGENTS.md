@@ -29,6 +29,8 @@ opencode 在本工作区的运行指引。本文件等价于 Claude Code 的 `CL
 
 每步从磁盘读上一步输出，所以必须先写盘再进下一步。用 `todowrite` 跟踪 7 步。
 
+> **⚠️ 最重要：每步产物必须用工具写入磁盘文件，不能只在对话框输出。** 本 skill 的交付物是落在 `专利集/<PATENT_ID>/` 里的文件链，不是聊天文字。Step 2-5 用 `write` 写 ASCII 草稿 `_scratch_stepN.md` 再跑 `write_report.py` 生成带全角引号的报告文件（别手敲全角文件名），Step 1/init/Step 7 跑 `python` 脚本写盘，Step 6 由 subagent 写 `_verdict.md`。**只把内容打印到对话框、没写盘 = 该步未完成（错误）**；对话框只回"一句话摘要 + 文件路径"，每步写完用 `read`/`ls` 确认文件存在再进下一步。详见 SKILL.md 顶部"⚠️ 最重要的一条"。
+
 **LLM 分工**：所有 LLM 推理由模型自己做——主（primary）agent 跑 Steps 2-5，每候选一个 `general` subagent 跑 Step 6。Step 1 / Step 6.0 init / Step 7 是纯 Python。
 
 ## opencode 专属注意事项
@@ -36,11 +38,15 @@ opencode 在本工作区的运行指引。本文件等价于 Claude Code 的 `CL
 - **工具名**：SKILL.md 正文沿用 Claude 习惯名（`WebSearch` / `WebFetch` / `Read` / `Write` / `Edit` / `Grep` / `TodoWrite`），对应 opencode 的 `websearch` / `webfetch` / `read` / `write` / `edit` / `grep` / `todowrite`，语义一致。SKILL.md 顶部"opencode 运行说明"有完整映射表。
 - **subagent**：Step 6 用 `task` 工具，`subagent_type` / agent 名填 `general`。`opencode.json` 已为 `general` 开启 `bash`——这是 Step 6 能 curl 兜底、读本地 PDF、写候选目录的前提。
 - **websearch**：opencode 的 `websearch` 走 Exa，需 opencode 侧已配置可用。若不可用，按全局约束写"未检索到公开来源"，**不要伪造**。
+- **产物落在哪**：所有脚本把 `专利集/<ID>/` 解析为**「你在 opencode 里打开的项目根」下的 `专利集/`**（脚本用 `Path.cwd()` 向上找，不再用脚本自身位置）。所以**务必把 `opencode_version` 作为项目根打开**，产物就会写进 `opencode_version/专利集/<ID>/`。若打开了别的目录作根，产物会跟着跑到那个根下——这是之前"产物跑到父目录"的根因，现已修正。
+- **读写限定在项目内**：硬保证来自上一条的 **cwd 锚定**——脚本只会写到「打开的项目根」下的 `专利集/`，加上 skill 全程用相对路径，产物 / 取证下载都落在本项目内。
+  - ⚠️ **不要在 `opencode.json` 里设 `external_directory: "deny"`**：实测这版 opencode 用 `deny` 会把运行时读系统证书库的操作也挡掉，导致启动即报 `unknown certificate verification error`（TLS 失败）。opencode 对项目外访问的**默认行为是 `ask`**（碰到项目外路径会弹确认），已足够做软围栏，无需也不要硬 `deny`。
+- **可独立分享**：本目录自包含（skill / 脚本 / 配置 / 输入 PDF 全在内，路径全相对），打包发给别人解压后**作为独立项目根**打开即可运行，不依赖任何父仓库。对方只需装上面的 Python 依赖 + 配好 opencode 模型/websearch。
 - 首次运行前装依赖：`pip install requests beautifulsoup4 lxml pdfplumber pypdf`。
 
 ## 容易踩错的约定
 
-- **文件名用中文全角引号** — 具体是 **U+201C（`"`）+ U+201D（`"`）**，不是 ASCII `"`、不是「」/《》/`''`。字形在多数字体下几乎一样，靠肉眼分辨不可靠；所有带全角引号的报告一律由 Python 脚本（`write_report.py`）写出，模型只需对这些文件做 `read` / `edit`。
+- **文件名用中文全角引号** — 具体是 **U+201C（`"`）+ U+201D（`"`）**，不是 ASCII `"`、不是「」/《》/`''`。字形在多数字体下几乎一样，靠肉眼分辨不可靠，**手敲极易写成 ASCII 引号**。所以这些全角引号文件名**一律由 `write_report.py` 脚本生成**：模型只需 `write` 出 ASCII 草稿 `_scratch_stepN.md`，再跑脚本重命名（见 SKILL.md "0. 输入与落盘约定"）。生成后模型对这些文件只做 `read` / `edit`。
 - 报告永远写在**专利自己的子文件夹内**（`专利集/<patent_id>/`），不在仓库根或 `专利集/` 根。若输入 PDF 在 `专利集/` 根，skill 先建子文件夹并把 PDF 移进去。
 - 输出语言跟随专利原文语言（中文专利 → 中文报告；仅 `<PATENT_ID>.md` 保留专利原文）。
 - 侵权候选的时间闸：只有发表于**专利授权日之后**的材料才算数；现有技术（prior art）无关。

@@ -1,0 +1,10 @@
+{
+  "nn": "10",
+  "slug": "10-redpanda-partition-balance",
+  "type": "产品",
+  "name": "Redpanda 分区副本平衡",
+  "organization": "Redpanda",
+  "hit_features_initial": "F1, F2, F3, F4",
+  "publicity": "高",
+  "blurb": "- 类型：产品\n- 名称：Redpanda 分区副本平衡\n- vendor：Redpanda\n- 命中 F#（初判）：F1, F2, F3, F4\n- 公开度：高\n- 一句话定位：Kafka 兼容的流数据平台，topic-aware partition replica balancing + continuous data balancing + 故障自愈"
+}

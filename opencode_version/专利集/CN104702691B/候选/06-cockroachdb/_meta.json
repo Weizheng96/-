@@ -1,0 +1,10 @@
+{
+  "nn": "06",
+  "slug": "06-cockroachdb",
+  "type": "产品",
+  "name": "CockroachDB",
+  "organization": "Cockroach Labs",
+  "hit_features_initial": "F1, F2, F3, F4",
+  "publicity": "高",
+  "blurb": "- 类型：产品\n- 名称：CockroachDB\n- vendor：Cockroach Labs\n- 命中 F#（初判）：F1, F2, F3, F4\n- 公开度：高\n- 一句话定位：分布式 SQL 数据库，使用 range 分区 + 多副本 + 自动 rebalancing 和故障恢复"
+}

@@ -1,0 +1,10 @@
+{
+  "nn": "12",
+  "slug": "12-gridgain-ignite",
+  "type": "技术",
+  "name": "GridGain / Apache Ignite",
+  "organization": "GridGain",
+  "hit_features_initial": "F1, F2, F3, F4",
+  "publicity": "高",
+  "blurb": "- 类型：技术\n- 名称：GridGain / Apache Ignite\n- 组织：GridGain\n- 命中 F#（初判）：F1, F2, F3, F4\n- 公开度：高\n- 一句话定位：分布式内存数据网格和计算平台，affinity collocation + 分区自动分布 + 副本管理\n- 应用案例：GridGain Enterprise, Apache Ignite"
+}

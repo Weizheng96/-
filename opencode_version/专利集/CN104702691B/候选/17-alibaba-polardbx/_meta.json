@@ -1,0 +1,10 @@
+{
+  "nn": "17",
+  "slug": "17-alibaba-polardbx",
+  "type": "技术",
+  "name": "PolarDB-X 分片分配",
+  "organization": "Alibaba Cloud",
+  "hit_features_initial": "F1, F2, F3, F4",
+  "publicity": "中",
+  "blurb": "- 类型：技术\n- 名称：PolarDB-X 分片分配\n- 组织：Alibaba Cloud\n- 命中 F#（初判）：F1, F2, F3, F4\n- 公开度：中\n- 一句话定位：阿里云分布式数据库，分片 + 多副本 + 自动重均衡\n- 应用案例：PolarDB-X, PolarDB 分布式版"
+}

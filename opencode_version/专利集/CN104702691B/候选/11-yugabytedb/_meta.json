@@ -1,0 +1,10 @@
+{
+  "nn": "11",
+  "slug": "11-yugabytedb",
+  "type": "产品",
+  "name": "YugabyteDB",
+  "organization": "Yugabyte",
+  "hit_features_initial": "F1, F2, F3, F4",
+  "publicity": "高",
+  "blurb": "- 类型：产品\n- 名称：YugabyteDB\n- vendor：Yugabyte\n- 命中 F#（初判）：F1, F2, F3, F4\n- 公开度：高\n- 一句话定位：分布式 SQL 数据库，使用 tablet 分区 + Raft 复制 + 自动 rebalancing"
+}

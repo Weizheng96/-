@@ -1,0 +1,10 @@
+{
+  "nn": "02",
+  "slug": "02-cassandra-dse",
+  "type": "产品",
+  "name": "Apache Cassandra",
+  "organization": "DataStax / Apache",
+  "hit_features_initial": "F1, F2, F3, F4",
+  "publicity": "高",
+  "blurb": "- 类型：产品\n- 名称：Apache Cassandra\n- vendor：DataStax / Apache Software Foundation\n- 命中 F#（初判）：F1, F2, F3, F4\n- 公开度：高\n- 一句话定位：分布式 NoSQL 数据库，使用 consistent hashing + virtual nodes 自动管理分区分布和副本放置"
+}

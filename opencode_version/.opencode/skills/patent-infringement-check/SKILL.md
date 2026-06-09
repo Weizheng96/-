@@ -38,6 +38,21 @@ pip install requests beautifulsoup4 lxml pdfplumber pypdf
 
 **Step 6 关键前提**：opencode 默认对 subagent **禁用 `bash`**，而本 skill 的 Step 6 subagent 需要 `bash`（curl 兜底抓取、读本地 PDF、写候选目录）。本工作区已在 `opencode.json` 里为 `general` subagent 开启 `bash`——若换环境运行，须确保同样开启，否则 Phase 2 取证与落盘会失败。`websearch` 走 Exa，需 opencode 侧已配置（缺失时按全局约束写"未检索到公开来源"，不要伪造）。
 
+### ⚠️ 最重要的一条：每步产物必须写入磁盘文件，不能只在对话框输出
+
+本 skill 的交付物是**落在 `专利集/<PATENT_ID>/` 里的文件**，不是对话框里的文字。每一步（Step 1-7）都**必须用工具把结果写入对应磁盘文件**：
+
+- Step 2-5：用 `write` 把报告正文写到 ASCII 临时名 `_scratch_stepN.md`，再跑 `write_report.py`（经 `bash`）重命名为带全角引号的最终文件——见"0. 输入与落盘约定"。**别自己手敲全角引号文件名**（极易敲成 ASCII 引号），文件名交给脚本生成。
+- Step 1 / Step 6.0 init / Step 7：跑对应 `python` 脚本（经 `bash`），由脚本写盘。
+- Step 6：每个 `general` subagent 必须 `write` 出 `_verdict.md`（和 `_sources.md`）。
+
+**硬规则**：
+1. **只把报告内容打印到对话框、而没有写盘 = 该步未完成，属错误。** 对话框里只回**一句话摘要 + 写出的文件路径**，正文进文件。
+2. **每步写完后必须用 `read` 或 `bash ls` 确认目标文件已存在**，确认后再进下一步；`todowrite` 里该步**只有文件落盘后才能标 done**。
+3. 不要把多步内容合并成一条聊天长回复——那是最常见的"忘了写盘"表现。逐步执行、逐步落盘、逐步确认。
+
+> 为什么单列这条：opencode 的模型容易把下文那些 markdown 模板**误当成"回答的格式"**直接 narrate 出来，而不是当成"要写进文件的内容"。本 skill 的全部价值在于产出文件链，narrate 等于没干活。
+
 ---
 
 ## 0. 输入与落盘约定
@@ -63,9 +78,14 @@ pip install requests beautifulsoup4 lxml pdfplumber pypdf
     └── <下载的证据 PDF / HTML>
 ```
 
-**Windows 全角引号写法**：Claude 的 `Write` 工具直接写全角引号路径会 `ENOENT`。所有 Step 2-5 输出按下述流程：
-1. Claude 用 `Write` 写到 ASCII 临时名 `_scratch_stepN.md`
-2. Claude 调 `python <scripts>/write_report.py <PATENT_ID> <stage_name> _scratch_stepN.md` 完成 rename + 删源
+**全角引号文件怎么写**：上方树形里的最终文件名带的是**全角引号**（U+201C + U+201D），手敲极易写成 ASCII `"`（本文档为了可读，示例里显示的也是普通引号，**别照着引号字形复制**）。所以 Step 2-5 的最终文件名**一律交给脚本生成**，不要自己拼全角文件名：
+
+1. 用 `write` 把报告正文写到 ASCII 临时名 `_scratch_stepN.md`（N = 步号，如 `_scratch_step2.md`）
+2. 跑 `python .opencode/skills/patent-infringement-check/scripts/write_report.py <PATENT_ID> <stage_name> _scratch_stepN.md`——脚本用正确的 U+201C/U+201D 把它重命名为 `<PATENT_ID>"<stage_name>".md` 并删掉草稿
+
+`<stage_name>` 取值：`潜在应用场景及侵权特征` / `潜在使用组织` / `潜在侵权产品初选` / `潜在侵权产品-全` / `违约列表`。
+
+> 这两步**缺一不可**：只写了 `_scratch` 没跑脚本 = 没有最终交付文件。跑完脚本后用 `bash ls 专利集/<PATENT_ID>/` 确认那个全角引号文件已出现（见上方"⚠️ 最重要的一条"）。
 
 ---
 

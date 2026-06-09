@@ -1,0 +1,10 @@
+{
+  "nn": "05",
+  "slug": "05-tidb-tikv",
+  "type": "技术",
+  "name": "TiDB / TiKV Region 调度",
+  "organization": "PingCAP",
+  "hit_features_initial": "F1, F2, F3, F4",
+  "publicity": "高",
+  "blurb": "- 类型：技术\n- 名称：TiDB / TiKV Region 调度\n- 组织：PingCAP\n- 命中 F#（初判）：F1, F2, F3, F4\n- 公开度：高\n- 一句话定位：分布式 HTAP 数据库，PD (Placement Driver) 组件自动调度 Region（分区）分布 + Raft 副本管理 + 负载均衡\n- 应用案例：TiDB, TiDB Cloud, TiKV"
+}

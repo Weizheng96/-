@@ -1,0 +1,10 @@
+{
+  "nn": "14",
+  "slug": "14-aws-dynamodb",
+  "type": "产品",
+  "name": "Amazon DynamoDB",
+  "organization": "AWS",
+  "hit_features_initial": "F1, F2, F3, F4",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：Amazon DynamoDB\n- vendor：Amazon Web Services\n- 命中 F#（初判）：F1, F2, F3, F4\n- 公开度：中\n- 一句话定位：AWS 托管分布式 KV/文档数据库，自动分区 + 多副本 + 负载感知 rebalancing"
+}

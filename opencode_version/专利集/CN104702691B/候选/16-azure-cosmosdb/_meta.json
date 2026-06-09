@@ -1,0 +1,10 @@
+{
+  "nn": "16",
+  "slug": "16-azure-cosmosdb",
+  "type": "产品",
+  "name": "Azure Cosmos DB",
+  "organization": "Microsoft",
+  "hit_features_initial": "F1, F2, F3, F4",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：Azure Cosmos DB\n- vendor：Microsoft\n- 命中 F#（初判）：F1, F2, F3, F4\n- 公开度：中\n- 一句话定位：微软全球分布式多模型数据库，物理分区 + 多副本 + 自动 rebalancing"
+}

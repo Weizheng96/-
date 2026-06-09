@@ -1,0 +1,10 @@
+{
+  "nn": "20",
+  "slug": "20-singlestore-rebalance",
+  "type": "产品",
+  "name": "SingleStore 分区重平衡",
+  "organization": "SingleStore",
+  "hit_features_initial": "F1, F2, F3, F4",
+  "publicity": "中",
+  "blurb": "- 类型：产品\n- 名称：SingleStore 分区重平衡\n- vendor：SingleStore\n- 命中 F#（初判）：F1, F2, F3, F4\n- 公开度：中\n- 一句话定位：分布式关系数据库，REBALANCE PARTITIONS 命令自动分区重分布 + 副本冗余恢复"
+}
